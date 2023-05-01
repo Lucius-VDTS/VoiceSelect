@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="reserved_words">
+        <item>Save Entry</item>
+        <item>Complete Session</item>
+        <item>Recall Session</item>
+        <item>Cancel Last</item>
+        <item>Repeat Last</item>
+        <item>Edit Last</item>
+        <item>My Camera</item>
+        <item>Main Menu</item>
+        <item>Export Session</item>
+        <item>Scroll Up</item>
+        <item>Scroll Down</item>
+        <item>Scroll Top</item>
+        <item>Scroll Bottom</item>
+        <item>Edit Entry</item>
+        <item>Clear Entry</item>
+        <item>Select Entry</item>
+        <item>Delete Entry</item>
+    </string-array>
+</resources>

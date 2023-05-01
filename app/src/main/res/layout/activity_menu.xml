@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/footer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/startActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_start_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/resumeActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_resume_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/startActivityButton"/>
+
+            <Button
+                android:id="@+id/configureActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_configure_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/resumeActivityButton"/>
+
+            <Button
+                android:id="@+id/settingsActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_settings_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/configureActivityButton"/>
+
+            <Button
+                android:id="@+id/changeUserActivityButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_change_user_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/settingsActivityButton"/>
+
+            <Button
+                android:id="@+id/aboutActivityButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/menu_about_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/changeUserActivityButton"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/layoutLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_layout_label"
+            android:textSize="@dimen/medium_text_size"
+            app:layout_constraintBottom_toTopOf="@id/projectLabel"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/layoutValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_layout_value"
+            android:textSize="@dimen/medium_text_size"
+            app:layout_constraintBottom_toTopOf="@id/projectValue"
+            app:layout_constraintStart_toEndOf="@id/layoutLabel"/>
+
+        <TextView
+            android:id="@+id/projectLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_project_label"
+            android:textSize="@dimen/medium_text_size"
+            app:layout_constraintBottom_toTopOf="@id/footerUserValue"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/projectValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_project_value"
+            android:textSize="@dimen/medium_text_size"
+            app:layout_constraintBottom_toTopOf="@id/footerUserValue"
+            app:layout_constraintStart_toEndOf="@id/projectLabel"/>
+
+        <TextView
+            android:id="@+id/footerUserValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_user_value"
+            android:textSize="@dimen/small_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/versionValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/footer_version_value"
+            android:textSize="@dimen/small_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

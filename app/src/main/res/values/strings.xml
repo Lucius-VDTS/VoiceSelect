@@ -1,0 +1,135 @@
+<resources>
+    <string name="app_name">Voice Select</string>
+
+<!--  Voice Select Application  -->
+    <string name="voice_select_application_label">Voice Select</string>
+
+<!--  Main Activity  -->
+    <string name="main_activity_label">Voice Select</string>
+
+    <string name="main_request_permissions_label">Grant all permissions to continue.</string>
+    <string name="main_request_permissions_button">Request Permissions</string>
+
+    <string name="main_settings_permissions_label">In order to continue select the \'Settings\'
+        button below, then \'Permissions\'.
+        \n\nGrant all permissions under \'Not allowed\', and relaunch the application.</string>
+    <string name="main_settings_permissions_button">Settings</string>
+
+<!--  VDTS Login Activity  -->
+    <string name="login_activity_label">User Login</string>
+
+<!--  Menu Activity  -->
+    <string name="menu_activity_label">Menu</string>
+
+    <string name="menu_start_activity_button">Start</string>
+    <string name="menu_resume_activity_button">Resume</string>
+    <string name="menu_configure_activity_button">Configure</string>
+    <string name="menu_settings_activity_button">Settings</string>
+    <string name="menu_change_user_activity_button">Change User</string>
+    <string name="menu_about_activity_button">About Iristick</string>
+
+<!--  Configure Activity  -->
+    <string name="config_activity_label">Configure</string>
+
+    <string name="config_users_activity_button">Users</string>
+    <string name="config_feedback_activity_button">Feedback</string>
+    <string name="config_column_activity_button">Feedback</string>
+
+<!--  Configure Users Activity  -->
+    <string name="config_users_activity_label">Configure Users</string>
+
+    <string name="user_new_button">New</string>
+    <string name="user_reset_button">Reset</string>
+    <string name="user_save_button">Save</string>
+    <string name="user_delete_button">Del</string>
+    <string name="user_import_button">Import</string>
+    <string name="user_export_button">Export</string>
+
+    <string name="user_name_label">Name</string>
+    <string name="user_name_value">Enter user name</string>
+    <string name="user_export_code_label">Code</string>
+    <string name="user_export_code_value">Enter export code</string>
+    <string name="user_prefix_label">Prefix</string>
+    <string name="user_prefix_value">Enter prefix</string>
+
+    <string name="user_password_label">Password</string>
+    <string name="user_password_value">Enter admin password</string>
+    <string name="user_admin_Label">Admin</string>
+    <string name="user_primary_Label">Default\nSpokens</string>
+
+<!--  Configure Feedback Activity  -->
+    <string name="config_feedback_activity_label">Configure Feedback</string>
+
+    <string name="feedback_user_label">User:</string>
+
+    <string name="feedback_enabled_label">Enable</string>
+    <string name="feedback_enabled_label_content_description">Enable Feedback</string>
+    <string name="feedback_queue_label">Flush Queue</string>
+    <string name="feedback_queue_label_content_description">Flush Queue</string>
+
+    <string name="feedback_rate_label">Speech Rate</string>
+    <string name="feedback_pitch_label">Speech Pitch</string>
+
+    <string name="feedback_sample_text_hint">Sample Text</string>
+    <string name="feedback_sample_text_placeholder">Enter sample text</string>
+
+    <string name="feedback_test_button">Test</string>
+    <string name="feedback_reset_button">Reset</string>
+    <string name="feedback_default_button">Default</string>
+    <string name="feedback_save_button">Save</string>
+
+<!--  Configure Columns Activity  -->
+    <string name="config_columns_activity_label">Configure Columns</string>
+
+    <string name="column_new_button">New</string>
+    <string name="column_reset_button">Reset</string>
+    <string name="column_save_button">Save</string>
+    <string name="column_delete_button">Del</string>
+    <string name="column_import_button">Import</string>
+    <string name="column_export_button">Export</string>
+
+    <string name="column_name_label">Name</string>
+    <string name="column_name_value">Enter column name</string>
+    <string name="column_name_code_label">Abbr.</string>
+    <string name="column_name_code_value">Enter column abbreviation</string>
+    <string name="column_export_label">Code</string>
+    <string name="column_export_value">Enter export code</string>
+
+    <string name="column_spoken_label">Spoken</string>
+    <string name="column_spoken_value">Enter column spoken</string>
+
+<!--  Configure Values Activity  -->
+    <string name="config_values_activity_label">Configure Values</string>
+
+    <string name="column_value_new_button">New</string>
+    <string name="column_value_reset_button">Reset</string>
+    <string name="column_value_save_button">Save</string>
+    <string name="column_value_delete_button">Del</string>
+    <string name="column_value_import_button">Import</string>
+    <string name="column_value_export_button">Export</string>
+
+    <string name="column_value_name_label">Name</string>
+    <string name="column_value_name_value">Enter column name</string>
+    <string name="column_value_name_code_label">Abbr.</string>
+    <string name="column_value_name_code_value">Enter column abbreviation</string>
+    <string name="column_value_export_label">Code</string>
+    <string name="column_value_export_value">Enter export code</string>
+
+    <string name="column_value_spoken_label">Spoken</string>
+    <string name="column_value_spoken_value">Enter column spoken</string>
+
+<!--  Configure HUD  -->
+    <string name="config_on_device_text">Use your connected device to configure users</string>
+
+<!--  Menu Footer  -->
+    <string name="footer_layout_label">Layout:</string>
+    <string name="footer_layout_value">Layout Value</string>
+    <string name="footer_project_label">Project:</string>
+    <string name="footer_project_value">Project Value</string>
+    <string name="footer_user_value">User Name</string>
+    <string name="footer_version_value">Application Version</string>
+
+<!--  VDTS BNF Service  -->
+    <string name="inches">Inches</string>
+    <string name="number">NUMBER</string>
+</resources>

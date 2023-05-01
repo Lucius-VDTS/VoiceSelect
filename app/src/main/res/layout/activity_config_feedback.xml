@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/userLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/userLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:text="@string/feedback_user_label"
+            android:textSize="@dimen/xxl_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:textSize="@dimen/xxl_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/switchLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/userLinearLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/userSwitchLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/userAdminLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/feedback_enabled_label"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/userAdminSwitch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/double_padding"
+                android:paddingEnd="@dimen/padding"
+                android:contentDescription="@string/feedback_enabled_label_content_description"
+                app:layout_constraintStart_toEndOf="@id/userAdminLabel"/>
+
+            <TextView
+                android:id="@+id/userPrimaryLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/four_x_margin"
+                android:gravity="center_vertical"
+                android:text="@string/feedback_queue_label"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintStart_toEndOf="@id/userAdminSwitch"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/userPrimarySwitch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/double_padding"
+                android:paddingEnd="@dimen/padding"
+                android:contentDescription="@string/feedback_queue_label_content_description"
+                app:layout_constraintStart_toEndOf="@id/userPrimaryLabel"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rateLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/pitchLinearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchLinearLayout">
+
+        <TextView
+            android:id="@+id/rateLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_rate_label"
+            android:textSize="@dimen/large_text_size"/>
+
+        <SeekBar
+            android:id="@+id/rateSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/eight_x_height"
+            android:max="100"
+            android:progress="50"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pitchLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rateLinearLayout">
+
+        <TextView
+            android:id="@+id/pitchLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_pitch_label"
+            android:textSize="@dimen/large_text_size"/>
+
+        <SeekBar
+            android:id="@+id/pitchSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/eight_x_height"
+            android:max="100"
+            android:progress="50"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sampleLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pitchLinearLayout"
+        android:baselineAligned="false">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sampleTextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/feedback_sample_text_hint"
+            app:placeholderText="@string/feedback_sample_text_placeholder">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/sampleTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/medium_text_size"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/testFeedbackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:enabled="false"
+        android:text="@string/feedback_test_button"
+        android:textSize="@dimen/large_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sampleLinearLayout" />
+
+    <LinearLayout
+        android:id="@+id/feedbackBottomButtonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:layout_marginBottom="@dimen/double_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/resetFeedbackButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/feedback_reset_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/defaultFeedbackButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/feedback_default_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/saveFeedbackButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9"
+            android:layout_marginStart="@dimen/margin"
+            android:text="@string/feedback_save_button"
+            android:textSize="@dimen/large_text_size"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

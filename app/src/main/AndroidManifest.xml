@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <application
+        android:name=".VSApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/voice_select_application_label"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.VoiceSelectGeneral">
+        <activity
+            android:name=".library.activities.VDTSMainActivity"
+            android:label="@string/main_activity_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".library.activities.VDTSLoginActivity"
+            android:label="@string/login_activity_label" />
+
+        <activity android:name=".library.activities.VDTSMenuActivity"
+            android:label="@string/menu_activity_label" />
+
+        <activity android:name=".library.activities.configure.VDTSConfigActivity"
+            android:label="@string/config_activity_label" />
+
+        <activity android:name=".library.activities.configure.VDTSConfigUsersActivity"
+            android:label="@string/config_users_activity_label" />
+
+        <activity android:name=".library.activities.configure.VDTSConfigFeedbackActivity"
+            android:label="@string/config_feedback_activity_label" />
+
+        <activity android:name=".activities.configure.ConfigColumnsActivity"
+            android:label="@string/config_feedback_activity_label" />
+
+        <activity android:name=".activities.configure.ConfigColumnValuesActivity"
+            android:label="@string/config_values_activity_label" />
+    </application>
+</manifest>

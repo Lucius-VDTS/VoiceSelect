@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--  Text  -->
+    <color name="colorContrastText">#FFFFFF</color>
+
+<!--  Recycler View  -->
+    <color name="colorInputArea">#424242</color>
+    <color name="colorOutline">#303F9F</color>
+    <color name="colorBackgroundSelected">#6FDE89</color>
+    <color name="colorBackgroundPrimary">#b2c8eb</color>
+    <color name="colorBackgroundCyan">#9ab6e3</color>
+</resources>

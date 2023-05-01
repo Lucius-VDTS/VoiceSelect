@@ -1,0 +1,32 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        ivy {
+            url 'https://developer.iristick.com/android-trial/repo'
+            credentials {
+                username 'vdts'
+                password 'suv7cai6Aefe'
+            }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        ivy {
+            url 'https://developer.iristick.com/android-trial/repo'
+            credentials {
+                username 'vdts'
+                password 'suv7cai6Aefe'
+            }
+        }
+    }
+}
+
+rootProject.name = "Voice Select"
+include ':app'
