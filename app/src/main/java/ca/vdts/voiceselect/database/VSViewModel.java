@@ -87,6 +87,11 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
+    //todo - everywhere
+    public LiveData<List<Column>> findAllColumnsLive() {
+        return columnRepository.findAllColumnsLive();
+    }
+
     public List<Column> findAllActiveColumns() {
         return columnRepository.findAll(
                 "SELECT * FROM Columns " +
@@ -250,7 +255,7 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueSpokenRepository.findAll("SELECT * FROM ColumnValueSpokens");
     }
 
-    public LiveData<List<ColumnValueSpoken>> findAllColumnValueSpokensLive() {
+    public LiveData<List<ColumnValueSpoken>> findAllLiveColumnValueSpokens() {
         return columnValueSpokenRepository.findAllColumnValueSpokensLive();
     }
 

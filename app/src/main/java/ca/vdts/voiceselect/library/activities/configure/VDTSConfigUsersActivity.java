@@ -127,9 +127,24 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         exportButton = findViewById(R.id.userExportButton);
 
         //Recyclerview
+        userRecyclerView = findViewById(R.id.userRecyclerView);
+
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        executor.execute(() -> {
+//            userList.addAll(vsViewModel.findAllActiveUsers());
+//            userList.remove(VDTSUser.VDTS_USER_NONE);
+//            handler.post(() -> userAdapter.setDataset(userList));
+//        });
+
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        userRecyclerView = findViewById(R.id.userRecyclerView);
+        //todo - test
+        vsViewModel.findAllActiveUsersLive().observe(this, users -> {
+            userList.clear();
+            userList.addAll(users);
+        });
+
         userRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
                         this,
@@ -144,15 +159,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         );
 
         userRecyclerView.setAdapter(userAdapter);
-
-        //Update recycler view once user list has been generated
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            userList.addAll(vsViewModel.findAllActiveUsers());
-            userList.remove(VDTSUser.VDTS_USER_NONE);
-            handler.post(() -> userAdapter.setDataset(userList));
-        });
     }
 
     public void newUserButtonOnClick() {

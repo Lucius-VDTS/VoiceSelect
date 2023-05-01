@@ -132,16 +132,23 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         //Recyclerview
         columnRecyclerView = findViewById(R.id.columnRecyclerView);
-        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
-        Handler rvHandler = new Handler(Looper.getMainLooper());
-        rvExecutor.execute(() -> {
+
+//        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
+//        Handler rvHandler = new Handler(Looper.getMainLooper());
+//        rvExecutor.execute(() -> {
+//            columnList.clear();
+//            columnList.addAll(vsViewModel.findAllColumns());
+//            rvHandler.post(() -> columnAdapter.setDataset(columnList));
+//        });
+
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
+        //todo - test
+        vsViewModel.findAllColumnsLive().observe(this, columns -> {
             columnList.clear();
-            columnList.addAll(vsViewModel.findAllColumns());
-            rvHandler.post(() -> columnAdapter.setDataset(columnList));
+            columnList.addAll(columns);
         });
 
-        //todo - is observer needed??
-        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
         vsViewModel.findAllColumnSpokensLive().observe(this, columnSpokens -> {
             columnSpokenList.clear();
             columnSpokenList.addAll(columnSpokens);
