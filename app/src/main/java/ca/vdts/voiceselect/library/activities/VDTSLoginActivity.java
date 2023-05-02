@@ -95,47 +95,52 @@ public class VDTSLoginActivity extends AppCompatActivity {
         userAdapter.setSelectedEntity(index);
         VDTSUser currentUser = userAdapter.getSelectedEntity();
 
-        if (currentUser.getAuthority() == 1) {
-            AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this);
+        if (currentUser != null) {
+            if (currentUser.getAuthority() == 1) {
+                final EditText passwordText = new EditText(this);
+                final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.login_password_title)
+                        .setMessage(R.string.login_password_message)
+                        .setCancelable(false)
+                        .setView(passwordText);
 
-            final EditText passwordText = new EditText(this);
-            passwordAlert.setTitle(R.string.login_password_title);
-            passwordAlert.setMessage(R.string.login_password_message);
-            passwordAlert.setView(passwordText);
+                passwordAlert.setPositiveButton("Submit", (dialog, which) -> {
+                    if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
+                        vdtsApplication.setCurrentUser(currentUser);
+                        LOG.info("User Password: {}" + " validated", currentUser.getName());
+                        vdtsApplication.displayToast(
+                                vdtsApplication.getApplicationContext(),
+                                "User Password: " + currentUser.getName() + " validated",
+                                0);
 
-            passwordAlert.setPositiveButton("Submit", (dialog, which) -> {
-                if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
-                    vdtsApplication.setCurrentUser(currentUser);
-                    LOG.info("User Password: {}" + " validated", currentUser.getName());
-                    vdtsApplication.displayToast(
-                            vdtsApplication.getApplicationContext(),
-                            "User Password: " + currentUser.getName() + "validated",
-                            0);
+                        Intent vdtsMenuActivity = new Intent(
+                                vdtsApplication.getApplicationContext(),
+                                VDTSMenuActivity.class);
+                        startActivity(vdtsMenuActivity);
+                    } else {
+                        LOG.info("User Password: {}" + " invalid", currentUser.getName());
+                        vdtsApplication.displayToast(
+                                vdtsApplication.getApplicationContext(),
+                                "User Password: " + currentUser.getName() + " invalid",
+                                0);
+                    }
+                });
 
-                    Intent vdtsMenuActivity = new Intent(
-                            vdtsApplication.getApplicationContext(),
-                            VDTSMenuActivity.class);
-                    startActivity(vdtsMenuActivity);
-                } else {
-                    LOG.info("User Password: {}" + " invalid", currentUser.getName());
-                    vdtsApplication.displayToast(
-                            vdtsApplication.getApplicationContext(),
-                            "User Password: " + currentUser.getName() + " invalid",
-                            0);
-                }
-            });
+                passwordAlert.setNegativeButton("Cancel", (dialog, which) -> {
+                    userAdapterSelect(-1);
+                    dialog.dismiss();
+                });
 
-            passwordAlert.show();
-        } else {
-            vdtsApplication.setCurrentUser(currentUser);
+                passwordAlert.show();
+            } else {
+                vdtsApplication.setCurrentUser(currentUser);
+                Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
+                startActivity(vdtsMenuActivity);
+            }
+
+            //Initialize TTS Engine
+            ttsEngine.setSpeechRate(currentUser.getFeedbackRate());
+            ttsEngine.setPitch(currentUser.getFeedbackPitch());
         }
-
-        //Initialize TTS Engine
-        ttsEngine.setSpeechRate(currentUser.getFeedbackRate());
-        ttsEngine.setPitch(currentUser.getFeedbackPitch());
-
-        Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
-        startActivity(vdtsMenuActivity);
     }
 }
-

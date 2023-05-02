@@ -31,7 +31,6 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     private Button configFeedbackActivityButton;
     private Button configColumnsActivityButton;
 
-
     private TextView footerUserValue;
 
     //Iristick Components
