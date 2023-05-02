@@ -5,6 +5,9 @@ import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
 
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import ca.vdts.voiceselect.VSApplication;
 import ca.vdts.voiceselect.library.database.VDTSDatabase;
-import ca.vdts.voiceselect.library.database.VDTSPref;
+import ca.vdts.voiceselect.library.database.VDTSPrefKeyValue;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.database.repositories.VDTSPrefRepository;
 import ca.vdts.voiceselect.library.services.VDTSFeedbackService;
@@ -32,7 +35,7 @@ public class VDTSApplication extends Application {
     private VDTSDatabase vdtsDatabase;
 
     //VDTSPreferences
-    private VDTSPref preferences;
+    private VDTSPrefKeyValue preferences;
     private VDTSPrefRepository vdtsPrefRepository;
 
     //VDTSUser
@@ -127,16 +130,19 @@ public class VDTSApplication extends Application {
         vdtsApplication.vdtsDatabase = VDTSDatabase;
     }
 
-    public VDTSPref getPreferences() {
+    public VDTSPrefKeyValue getPreferences() {
         if (vdtsPrefRepository == null || preferences == null) {
             vdtsPrefRepository = VDTSPrefRepository.getInstance(getApplicationInstance(this));
-            preferences = new VDTSPref(vdtsPrefRepository);
+            preferences = new VDTSPrefKeyValue(vdtsPrefRepository);
         }
 
         return preferences;
     }
 
+    @WorkerThread
     public void displayToast(Context context, String message, int length) {
-        Toast.makeText(context, message, length).show();
+        ContextCompat.getMainExecutor(context).execute(() -> {
+            Toast.makeText(context, message, length).show();
+        });
     }
 }

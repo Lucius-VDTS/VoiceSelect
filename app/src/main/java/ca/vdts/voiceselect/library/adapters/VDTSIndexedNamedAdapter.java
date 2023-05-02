@@ -47,25 +47,6 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         setDataset(dataset);
     }
 
-//    //use to replace notify dataset changed - https://developer.android.com/reference/android/support/v7/recyclerview/extensions/AsyncListDiffer
-//    public DiffUtil.ItemCallback<Entity> diffCallback =
-//            new DiffUtil.ItemCallback<Entity>() {
-//                @Override
-//                public boolean areItemsTheSame(
-//                        @NonNull Entity oldItem, @NonNull Entity newItem) {
-//                    return oldItem.getId() == newItem.getId();
-//                }
-//
-//                @Override
-//                public boolean areContentsTheSame(
-//                        @NonNull Entity oldItem, @NonNull Entity newItem) {
-//                    return oldItem.equals(newItem);
-//                }
-//            };
-//
-//    private final AsyncListDiffer<Entity> difference =
-//            new AsyncListDiffer<Entity>(this, diffCallback);
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -191,10 +172,6 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         notifyDataSetChanged();
     }
 
-    public int getSelectedIndex() {
-        return this.selectedIndex;
-    }
-
     public Entity getEntity(int index) {
         if (filterCriteria == null) {
             return dataset.get(index);
@@ -203,11 +180,22 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         }
     }
 
+    public void updateEntity(Entity entity) {
+        int index = dataset.indexOf(entity);
+        dataset.remove(entity);
+        dataset.add(index, entity);
+        notifyItemChanged(index);
+    }
+
     public Entity getSelectedEntity() {
         if (selectedIndex >= 0 && selectedIndex < dataset.size()) {
             return dataset.get(selectedIndex);
         }
         return null;
+    }
+
+    public int getSelectedEntityIndex() {
+        return this.selectedIndex;
     }
 
     public void setSelectedEntity(int index) {
@@ -220,13 +208,13 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     }
 
     public void updateSelectedEntity() {
-       this.notifyItemChanged(this.selectedIndex);
+       notifyItemChanged(this.selectedIndex);
     }
 
     public void removeSelectedEntity() {
         Entity entity = dataset.get(selectedIndex);
         dataset.remove(entity);
-        notifyDataSetChanged();
+        notifyItemChanged(selectedIndex);
 
         selectedIndex = -1;
         setSelectedEntity(selectedIndex);

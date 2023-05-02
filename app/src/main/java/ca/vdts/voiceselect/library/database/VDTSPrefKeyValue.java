@@ -10,12 +10,12 @@ import java.util.Set;
 import ca.vdts.voiceselect.library.database.repositories.VDTSPrefRepository;
 
 //todo - rename
-public class VDTSPref {
-    private static final Logger LOG = LoggerFactory.getLogger(VDTSPref.class);
+public class VDTSPrefKeyValue {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSPrefKeyValue.class);
 
     private final VDTSPrefRepository prefRepo;
 
-    public VDTSPref(VDTSPrefRepository prefRepo) {
+    public VDTSPrefKeyValue(VDTSPrefRepository prefRepo) {
         this.prefRepo = prefRepo;
     }
 
@@ -51,7 +51,7 @@ public class VDTSPref {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return a Long: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Long: ", key, e);
             return null;
         }
     }
@@ -60,7 +60,7 @@ public class VDTSPref {
         try {
             return Long.parseLong(getString(key, Long.toString(defaultValue)));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return a Long: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Long: ", key, e);
             return null;
         }
     }
@@ -74,7 +74,7 @@ public class VDTSPref {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return a Double: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Double: ", key, e);
             return null;
         }
     }
@@ -83,7 +83,7 @@ public class VDTSPref {
         try {
             return Double.parseDouble(getString(key, Double.toString(defaultValue)));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return a Double: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Double: ", key, e);
             return null;
         }
     }
@@ -97,7 +97,7 @@ public class VDTSPref {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an Integer: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an Integer: ", key, e);
             return null;
         }
     }
@@ -106,7 +106,7 @@ public class VDTSPref {
         try {
             return Integer.parseInt(getString(key, Integer.toString(defaultValue)));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an Integer: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an Integer: ", key, e);
             return null;
         }
     }
@@ -120,7 +120,7 @@ public class VDTSPref {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an Boolean: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an Boolean: ", key, e);
             return null;
         }
     }
@@ -129,7 +129,7 @@ public class VDTSPref {
         try {
             return Boolean.parseBoolean(getString(key,defaultValue? "True":"False"));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an Boolean: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an Boolean: ", key, e);
             return null;
         }
     }
@@ -143,7 +143,7 @@ public class VDTSPref {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an String Set: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an String Set: ", key, e);
             return null;
         }
     }
@@ -153,7 +153,7 @@ public class VDTSPref {
             String value = defaultValue != null? defaultValue.toString() : null;
             return stringToSet(getString(key,value));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPref {} did not return an String Set: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return an String Set: ", key, e);
             return null;
         }
     }

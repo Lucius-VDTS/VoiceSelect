@@ -132,23 +132,24 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         //Recyclerview
         columnRecyclerView = findViewById(R.id.columnRecyclerView);
-
-//        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
-//        Handler rvHandler = new Handler(Looper.getMainLooper());
-//        rvExecutor.execute(() -> {
-//            columnList.clear();
-//            columnList.addAll(vsViewModel.findAllColumns());
-//            rvHandler.post(() -> columnAdapter.setDataset(columnList));
-//        });
-
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        //todo - test
+        //Populate column list
+        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
+        Handler rvHandler = new Handler(Looper.getMainLooper());
+        rvExecutor.execute(() -> {
+            columnList.clear();
+            columnList.addAll(vsViewModel.findAllColumns());
+            rvHandler.post(() -> columnAdapter.setDataset(columnList));
+        });
+
+        //Observe/Update column list
         vsViewModel.findAllColumnsLive().observe(this, columns -> {
             columnList.clear();
             columnList.addAll(columns);
         });
 
+        //Observe/Update column spoken list
         vsViewModel.findAllColumnSpokensLive().observe(this, columnSpokens -> {
             columnSpokenList.clear();
             columnSpokenList.addAll(columnSpokens);
@@ -159,7 +160,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+        ));
 
         columnAdapter = new VDTSIndexedNamedAdapter<>(
                 new VDTSClickListenerService(this::columnAdapterSelect, columnRecyclerView),
@@ -197,7 +198,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     public void resetColumnButtonOnClick() {
-        columnAdapterSelect(columnAdapter.getSelectedIndex());
+        columnAdapterSelect(columnAdapter.getSelectedEntityIndex());
         columnNameEditText.requestFocus();
     }
 
@@ -450,6 +451,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         }
     }
 
+    //todo - not needed if observed??
     /**
      * Update the column list after a column has been created or updated
      */
