@@ -23,7 +23,7 @@ import ca.vdts.voiceselect.library.services.VDTSAdapterClickListenerService;
 import ca.vdts.voiceselect.library.services.VDTSNameOrderService;
 
 /**
- * Generic recycler view adapter for entities with an index and name
+ * Generic recycler view adapter for entities with an index and name.
  * @param <Entity>
  */
 public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterface>
@@ -105,7 +105,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
      * Filter entities in the dataset whose names start with the input criteria. If the criteria is
      * the same as the current filter criteria then this function does nothing.
      *
-     * @param criteria - The string to filter by
+     * @param criteria - The string to filter by.
      */
     @Override
     public void filter(String criteria) {
@@ -131,9 +131,9 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
 
     /**
      * Concatenate the current filter with another filter. If there is no current filter,
-     * then this function acts as if {@link #filter(String)} was called
+     * then this function acts as if {@link #filter(String)} was called.
      *
-     * @param criteria - The string to add to the current filter
+     * @param criteria - The string to add to the current filter.
      */
     public void addFilter (String criteria) {
         oldCriteria = filterCriteria;
@@ -145,7 +145,8 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     }
 
     /**
-     * Clears the filter, restoring the unfiltered dataset. If there was no filter this function does nothing.
+     * Clears the filter, restoring the unfiltered dataset.
+     * If there is no filter this function does nothing.
      */
     @Override
     public void clearFilter() {

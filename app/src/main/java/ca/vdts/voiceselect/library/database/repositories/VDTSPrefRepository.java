@@ -13,6 +13,9 @@ import ca.vdts.voiceselect.library.database.VDTSPrefDatabase;
 import ca.vdts.voiceselect.library.database.entities.VDTSPref;
 import ca.vdts.voiceselect.library.services.VDTSTaskService;
 
+/**
+ * Repository for VDTSPref entity.
+ */
 public class VDTSPrefRepository {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSPrefRepository.class);
     private static volatile VDTSPrefRepository instance = null;

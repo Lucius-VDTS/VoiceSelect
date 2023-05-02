@@ -10,7 +10,7 @@ import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 
 /**
- * DAO for ColumnSpoken entity
+ * DAO for ColumnSpoken entity.
  */
 @Dao
 public interface ColumnSpokenDAO extends VDTSBaseDAO<ColumnSpoken> {

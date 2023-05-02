@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
 import ca.vdts.voiceselect.R;
 
 /**
- * Generic array adapter (ex - spinners) for named entities
+ * Generic array adapter (ex - spinners) for named entities.
  * @param <Entity>
  */
 public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
@@ -60,10 +60,6 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
         return getView(position, convertView, parent);
     }
 
-    /**
-     *
-     * @param toStringFunc
-     */
     public void setToStringFunction(BiFunction<Entity, Integer, String> toStringFunc) {
         this.toStringFunction = toStringFunc;
     }

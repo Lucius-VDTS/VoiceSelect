@@ -8,8 +8,8 @@ import java.util.List;
 import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 
 /**
- * Base repository provides data to base dao to perform CRUD operations
- * @param <Ent> - The entity being referenced
+ * Base repository provides data to base dao to perform CRUD operations.
+ * @param <Ent> - The entity being referenced.
  */
 public class VDTSBaseRepository<Ent> {
     protected VDTSBaseDAO<Ent> dao;

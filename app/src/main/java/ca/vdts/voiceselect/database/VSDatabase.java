@@ -23,11 +23,13 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
-import ca.vdts.voiceselect.library.database.converters.VDTSConverters;
-import ca.vdts.voiceselect.library.database.converters.VDTSDateConverter;
+import ca.vdts.voiceselect.library.database.converters.VDTSConverter;
 import ca.vdts.voiceselect.library.database.daos.VDTSUserDAO;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
+/**
+ * Database for Voice Select.
+ */
 @Database(
         entities = {
                 VDTSUser.class,
@@ -39,11 +41,9 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
         version = 1)
 @TypeConverters(
         {
-                VDTSConverters.class,
-                VDTSDateConverter.class
+                VDTSConverter.class,
         }
 )
-
 public abstract class VSDatabase extends RoomDatabase {
     private static final Logger LOG = LoggerFactory.getLogger(VSDatabase.class);
 

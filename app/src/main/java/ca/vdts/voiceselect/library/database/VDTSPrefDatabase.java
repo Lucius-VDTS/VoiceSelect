@@ -8,10 +8,13 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
-import ca.vdts.voiceselect.library.database.converters.VDTSDateConverter;
+import ca.vdts.voiceselect.library.database.converters.VDTSConverter;
 import ca.vdts.voiceselect.library.database.daos.VDTSPrefDAO;
 import ca.vdts.voiceselect.library.database.entities.VDTSPref;
 
+/**
+ * Database for VDTS preferences.
+ */
 @Database(
         entities = {
                 VDTSPref.class,
@@ -20,9 +23,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSPref;
         exportSchema = false
 )
 @TypeConverters({
-        VDTSDateConverter.class
+        VDTSConverter.class
 })
-
 public abstract class VDTSPrefDatabase extends RoomDatabase {
         private static final String DB_NAME = "vdts_preferences";
         private static VDTSPrefDatabase dbInstance = null;

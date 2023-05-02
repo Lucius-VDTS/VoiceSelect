@@ -17,7 +17,7 @@ import ca.vdts.voiceselect.library.database.VDTSPrefDatabase;
 import ca.vdts.voiceselect.library.services.VDTSUtilService;
 
 /**
- * Periodic database backup worker
+ * Periodic database backup worker.
  */
 public class VSBackupWorker extends VDTSBackupWorker {
     Context context = getApplicationContext();

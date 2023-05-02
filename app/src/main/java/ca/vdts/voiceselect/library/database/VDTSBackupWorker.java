@@ -23,7 +23,7 @@ import java.util.Locale;
 import ca.vdts.voiceselect.library.services.VDTSUtilService;
 
 /**
- * VDTSDatabase backup service utilized by the application defined backup worker
+ * VDTSDatabase backup service utilized by the application defined backup worker.
  */
 public class VDTSBackupWorker extends Worker {
     public static Logger LOG = LoggerFactory.getLogger(VDTSBackupWorker.class);

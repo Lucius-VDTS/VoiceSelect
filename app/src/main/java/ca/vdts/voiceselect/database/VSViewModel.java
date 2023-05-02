@@ -20,7 +20,7 @@ import ca.vdts.voiceselect.database.repositories.ColumnValueSpokenRepository;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 
 /**
- * VoiceSelect view model allows views to access data from entities
+ * VoiceSelect view model allows views to access data from entities.
  */
 public class VSViewModel extends VDTSViewModel {
     private final ColumnRepository columnRepository;

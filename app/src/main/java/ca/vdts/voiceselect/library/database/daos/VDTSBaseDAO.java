@@ -10,8 +10,8 @@ import androidx.sqlite.db.SupportSQLiteQuery;
 import java.util.List;
 
 /**
- * Base data access object that performs CRUD operations on database entities
- * @param <Entity> - The entity being referenced
+ * Base data access object that performs CRUD operations on database entities.
+ * @param <Entity> - The entity being referenced.
  */
 @Dao
 public interface VDTSBaseDAO<Entity> {

@@ -9,7 +9,9 @@ import java.util.Set;
 
 import ca.vdts.voiceselect.library.database.repositories.VDTSPrefRepository;
 
-//todo - rename
+/**
+ * Key/Value getters and setters for VDTSPref entity.
+ */
 public class VDTSPrefKeyValue {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSPrefKeyValue.class);
 

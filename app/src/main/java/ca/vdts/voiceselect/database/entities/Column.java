@@ -22,7 +22,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 
 /**
- * Entity defines the Columns table
+ * Entity defines the Columns table.
  */
 @Entity(
         tableName = "Columns",

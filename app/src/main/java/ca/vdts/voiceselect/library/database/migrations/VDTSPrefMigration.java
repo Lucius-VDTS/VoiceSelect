@@ -7,6 +7,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Database migration for VDTS preferences database.
+ */
 public class VDTSPrefMigration {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSPrefMigration.class);
 
@@ -14,7 +17,6 @@ public class VDTSPrefMigration {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             LOG.info("Migrating from 1 to 2");
-
         }
     };
 }

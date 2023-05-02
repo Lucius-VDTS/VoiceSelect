@@ -12,7 +12,7 @@ import java.util.List;
 import ca.vdts.voiceselect.library.database.entities.VDTSPref;
 
 /**
- * Dao for preference entity
+ * Dao for preference entity.
  */
 @Dao
 public interface VDTSPrefDAO {

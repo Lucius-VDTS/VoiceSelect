@@ -29,6 +29,8 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     //Views
     private Button configUsersActivityButton;
     private Button configFeedbackActivityButton;
+    private Button configColumnsActivityButton;
+
 
     private TextView footerUserValue;
 
@@ -52,8 +54,20 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
         configFeedbackActivityButton.setOnClickListener(
                 v -> configureFeedbackActivityButtonOnClick());
 
+        configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
+        configColumnsActivityButton.setOnClickListener(
+                v -> configureColumnActivityButtonOnClick());
+
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
+
+        disableViews();
+    }
+
+    private void disableViews() {
+        if (currentUser.getAuthority() <= 0) {
+            configUsersActivityButton.setEnabled(false);
+        }
     }
 
     public void configureUsersActivityButtonOnClick() {
@@ -64,6 +78,11 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     public void configureFeedbackActivityButtonOnClick() {
         Intent feedbackActivityIntent = new Intent(this, VDTSConfigFeedbackActivity.class);
         startActivity(feedbackActivityIntent);
+    }
+
+    public void configureColumnActivityButtonOnClick() {
+        Intent columnActivityIntent = new Intent(this, VDTSConfigFeedbackActivity.class);
+        startActivity(columnActivityIntent);
     }
 
     @Override

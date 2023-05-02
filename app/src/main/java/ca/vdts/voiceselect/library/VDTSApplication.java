@@ -21,6 +21,9 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.database.repositories.VDTSPrefRepository;
 import ca.vdts.voiceselect.library.services.VDTSFeedbackService;
 
+/**
+ * Base VDTS application class.
+ */
 public class VDTSApplication extends Application {
     private static final Logger LOG = LoggerFactory.getLogger(VSApplication.class);
 

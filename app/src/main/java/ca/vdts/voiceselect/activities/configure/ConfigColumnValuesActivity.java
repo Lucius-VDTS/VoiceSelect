@@ -32,7 +32,7 @@ import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Configure values that can be entered into columns
+ * Configure values that can be entered into columns.
  */
 public class ConfigColumnValuesActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnValuesActivity.class);
@@ -124,7 +124,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize elements based on Iristick connection.
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {

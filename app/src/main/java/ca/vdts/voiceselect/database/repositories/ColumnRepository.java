@@ -10,7 +10,7 @@ import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 import ca.vdts.voiceselect.library.database.repositories.VDTSBaseRepository;
 
 /**
- * Repository for Column entity
+ * Repository for Column entity.
  */
 public class ColumnRepository extends VDTSBaseRepository<Column> {
     public ColumnRepository(VDTSBaseDAO<Column> dao) {

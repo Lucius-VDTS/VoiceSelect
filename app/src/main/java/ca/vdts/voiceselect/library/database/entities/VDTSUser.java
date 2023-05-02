@@ -19,7 +19,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 
 /**
- * Entity defines the Users table
+ * Entity defines the Users table.
  */
 @Entity (
         tableName = "Users",

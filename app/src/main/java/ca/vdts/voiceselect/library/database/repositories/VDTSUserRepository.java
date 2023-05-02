@@ -9,7 +9,7 @@ import ca.vdts.voiceselect.library.database.daos.VDTSUserDAO;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Repository for User entity
+ * Repository for VDTSUser entity.
  */
 public class VDTSUserRepository extends VDTSBaseRepository<VDTSUser> {
     public VDTSUserRepository(VDTSBaseDAO<VDTSUser> dao) {

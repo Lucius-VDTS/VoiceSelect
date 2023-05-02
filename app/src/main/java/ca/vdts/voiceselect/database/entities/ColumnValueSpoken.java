@@ -21,7 +21,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
 import ca.vdts.voiceselect.library.services.VDTSBnfService;
 
 /**
- * Entity defines the ColumnValueSpokens table
+ * Entity defines the ColumnValueSpokens table.
  */
 @Entity(
         tableName = "ColumnValueSpokens",

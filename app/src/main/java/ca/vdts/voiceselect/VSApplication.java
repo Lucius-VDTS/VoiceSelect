@@ -4,6 +4,9 @@ import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.library.VDTSApplication;
 
+/**
+ * Custom Voice Select application class.
+ */
 public class VSApplication extends VDTSApplication {
     @Override
     public void onCreate() {

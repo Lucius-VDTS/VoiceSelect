@@ -23,7 +23,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.services.VDTSNotificationService;
 
 /**
- * VDTS application's main menu
+ * VDTS application's main menu.
  */
 public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     //private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
@@ -70,7 +70,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         settingsActivityButton = findViewById(R.id.settingsActivityButton);
 
-        //todo - test TTS
         TextToSpeech textToSpeech = vdtsApplication.getTTSEngine();
         settingsActivityButton.setOnClickListener(v -> {
             textToSpeech.speak("Good day " + currentUser.getName(), 0, null, null);
@@ -104,7 +103,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Show Iristick custom about screen - required for legal reasons
+     * Show Iristick custom about screen - required for legal reasons.
      */
     public void aboutActivityButtonOnClick() {
         IristickSDK.showAbout(VDTSMenuActivity.this);
@@ -125,7 +124,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize elements based on Iristick connection.
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {
@@ -145,7 +144,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Provide notifications to the user based on Iristick state
+     * Provide notifications to the user based on Iristick state.
      * @param state The new/current state.
      */
     @Override

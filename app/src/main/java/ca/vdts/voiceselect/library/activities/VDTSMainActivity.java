@@ -47,7 +47,7 @@ import ca.vdts.voiceselect.database.VSBackupWorker;
 import ca.vdts.voiceselect.database.VSDatabase;
 
 /**
- * Requests permissions, set up database, set current user
+ * Requests permissions, set up database, set current user.
  */
 public class VDTSMainActivity extends AppCompatActivity {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
@@ -98,7 +98,7 @@ public class VDTSMainActivity extends AppCompatActivity {
     }
 
     /**
-     * Re-Request permissions if not granted on first pass
+     * Re-Request permissions if not granted on first pass.
      */
     private void requestPermissionsButtonOnClick() {
         permissionRequests++;
@@ -108,7 +108,7 @@ public class VDTSMainActivity extends AppCompatActivity {
     }
 
     /**
-     * Go to application settings if permissions not granted on second pass
+     * Go to application settings if permissions not granted on second pass.
      */
     private void settingsPermissionsButtonOnClick() {
         Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -185,7 +185,7 @@ public class VDTSMainActivity extends AppCompatActivity {
     }
 
     /**
-     * Prepare database and backup worker
+     * Prepare database and backup worker.
      */
     private void initializeDatabase() {
         //Prepare db

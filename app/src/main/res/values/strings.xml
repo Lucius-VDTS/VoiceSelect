@@ -18,6 +18,9 @@
 <!--  VDTS Login Activity  -->
     <string name="login_activity_label">User Login</string>
 
+    <string name="login_password_title">Password</string>
+    <string name="login_password_message">Password</string>
+
 <!--  Menu Activity  -->
     <string name="menu_activity_label">Menu</string>
 

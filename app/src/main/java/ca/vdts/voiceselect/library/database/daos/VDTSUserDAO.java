@@ -9,7 +9,7 @@ import java.util.List;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * DAO for User entity
+ * DAO for User entity.
  */
 @Dao
 public interface VDTSUserDAO extends VDTSBaseDAO<VDTSUser> {

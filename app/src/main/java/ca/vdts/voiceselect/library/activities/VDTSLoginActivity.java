@@ -5,12 +5,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.widget.EditText;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +30,10 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
 
 /**
- * Basic login activity for VDTS applications
+ * Basic login activity for VDTS applications.
  */
 public class VDTSLoginActivity extends AppCompatActivity {
-    //private static final Logger LOG = LoggerFactory.getLogger(VDTSLoginActivity.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSLoginActivity.class);
 
     private VDTSApplication vdtsApplication;
     private TextToSpeech ttsEngine;
@@ -82,14 +87,48 @@ public class VDTSLoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Select the appropriate user from the recycler view and set global user
-     * @param index - Index of the user
+     * Select the appropriate user from the recycler view and set as global user. Password must be
+     * entered if the user is an admin.
+     * @param index - Index of the user.
      */
     private void userAdapterSelect(Integer index) {
         userAdapter.setSelectedEntity(index);
-
         VDTSUser currentUser = userAdapter.getSelectedEntity();
-        vdtsApplication.setCurrentUser(currentUser);
+
+        if (currentUser.getAuthority() == 1) {
+            AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this);
+
+            final EditText passwordText = new EditText(this);
+            passwordAlert.setTitle(R.string.login_password_title);
+            passwordAlert.setMessage(R.string.login_password_message);
+            passwordAlert.setView(passwordText);
+
+            passwordAlert.setPositiveButton("Submit", (dialog, which) -> {
+                if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
+                    vdtsApplication.setCurrentUser(currentUser);
+                    LOG.info("User Password: {}" + " validated", currentUser.getName());
+                    vdtsApplication.displayToast(
+                            vdtsApplication.getApplicationContext(),
+                            "User Password: " + currentUser.getName() + "validated",
+                            0);
+
+                    Intent vdtsMenuActivity = new Intent(
+                            vdtsApplication.getApplicationContext(),
+                            VDTSMenuActivity.class);
+                    startActivity(vdtsMenuActivity);
+                } else {
+                    LOG.info("User Password: {}" + " invalid", currentUser.getName());
+                    vdtsApplication.displayToast(
+                            vdtsApplication.getApplicationContext(),
+                            "User Password: " + currentUser.getName() + " invalid",
+                            0);
+                }
+            });
+
+            passwordAlert.show();
+        } else {
+            vdtsApplication.setCurrentUser(currentUser);
+        }
 
         //Initialize TTS Engine
         ttsEngine.setSpeechRate(currentUser.getFeedbackRate());

@@ -13,7 +13,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.database.repositories.VDTSUserRepository;
 
 /**
- * Basic view model for VDTS applications
+ * Base view model for VDTS applications.
  */
 public class VDTSViewModel extends AndroidViewModel {
     private final VDTSUserRepository userRepository;

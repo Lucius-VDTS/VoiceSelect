@@ -40,7 +40,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
 
 /**
- * Configure the application's users
+ * Configure the application's users.
  */
 public class VDTSConfigUsersActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigUsersActivity.class);
@@ -323,8 +323,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Select the appropriate user from the recycler view
-     * @param index - Index of the user to select
+     * Select the appropriate user from the recycler view.
+     * @param index - Index of the user to select.
      */
     private void userAdapterSelect(Integer index) {
         userAdapter.setSelectedEntity(index);
@@ -359,8 +359,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Check if an admin and primary user exists
-     * @return - True if a user with admin and primary permissions exists
+     * Check if an admin and primary user exists.
+     * @return - True if a user with admin and primary permissions exists.
      */
     public boolean adminPrimaryCheck() {
         VDTSUser selectedUser = userAdapter.getSelectedEntity();
@@ -387,9 +387,9 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Check if vdtsUser has a name, code, and does not already exist
-     * @param vdtsUser - The vdtsUser to be checked
-     * @return - True if the vdtsUser is valid
+     * Check if vdtsUser has a name, code, and does not already exist.
+     * @param vdtsUser - The vdtsUser to be checked.
+     * @return - True if the vdtsUser is valid.
      */
     private boolean isValidUser(VDTSUser vdtsUser) {
         return !vdtsUser.getName().isEmpty() &&
@@ -401,30 +401,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                             .equals(StringUtils.lowerCase(vdtsUser.getCode()))));
 
     }
-
-//    /**
-//     * Set all user's primary field to false
-//     */
-//    private void clearPrimaries() {
-//        for (VDTSUser user : userList) {
-//            user.setPrimary(false);
-//        }
-//    }
-
-//    /**
-//     * Set oldest user as the primary if none exist
-//     */
-//    private void setOldestAsPrimary() {
-//        if (userList.stream().noneMatch(VDTSUser::isPrimary)) {
-//            VDTSUser oldestPrimary = userList.stream()
-//                    .min(Comparator.comparing(VDTSUser::getUid))
-//                    .orElse(null);
-//            if (oldestPrimary != null) {
-//                oldestPrimary.setPrimary(true);
-//                vsViewModel.updateUser(oldestPrimary);
-//            }
-//        }
-//    }
 
     private void clearFocus() {
         userNameEditText.clearFocus();
@@ -448,7 +424,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize elements based on Iristick connection.
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {

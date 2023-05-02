@@ -30,7 +30,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Config user's feedback params
+ * Config user's feedback params.
  */
 public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigFeedbackActivity.class);
@@ -110,7 +110,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
     }
 
     /**
-     * Initialize views with feedback values from the current user
+     * Initialize views with feedback values from the current user.
      */
     private void initializeUserSettings() {
         userText.setText(currentUser.getName());
@@ -121,7 +121,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
     }
 
     /**
-     * Test the TTS engine's feedback
+     * Test the TTS engine's feedback.
      */
     public void testFeedbackButtonOnClick() {
         String sampleTextOutput = Objects.requireNonNull(sampleTextInput.getText()).toString();
@@ -206,7 +206,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize elements based on Iristick connection.
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {

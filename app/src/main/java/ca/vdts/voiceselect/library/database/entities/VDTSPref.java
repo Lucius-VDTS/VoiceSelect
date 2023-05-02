@@ -9,7 +9,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Entity defines the preference table
+ * Entity defines the preference table.
  */
 @Entity (
         tableName = "Preferences",

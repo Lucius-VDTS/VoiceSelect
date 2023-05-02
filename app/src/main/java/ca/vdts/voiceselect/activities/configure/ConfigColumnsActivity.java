@@ -44,7 +44,7 @@ import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
 
 //todo - add toast when non admin user tries to select only admin editable fields
 /**
- * Configure column parameters
+ * Configure column parameters.
  */
 public class ConfigColumnsActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);
@@ -268,7 +268,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Click listener for user spinner
+     * Click listener for user spinner.
      */
     private final AdapterView.OnItemSelectedListener userSpinnerSelect =
             new AdapterView.OnItemSelectedListener() {
@@ -283,8 +283,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             };
 
     /**
-     * Select the appropriate column from the recycler view
-     * @param index - Index of the column to select
+     * Select the appropriate column from the recycler view.
+     * @param index - Index of the column to select.
      */
     private void columnAdapterSelect(Integer index) {
         columnAdapter.setSelectedEntity(index);
@@ -325,9 +325,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Check if the column is unique, has a name, name code (abbreviated name), and export code
-     * @param column - The column to be checked
-     * @return - True if valid
+     * Check if the column is unique, has a name, name code (abbreviated name), and export code.
+     * @param column - The column to be checked.
+     * @return - True if valid.
      */
     private boolean isValidColumn(Column column) {
         //todo - is refresh of list needed
@@ -352,9 +352,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Check if the column's spokens exist, are unique, and do not contain reserved words
-     * @param column - The column to be checked
-     * @return - True if valid
+     * Check if the column's spokens exist, are unique, and do not contain reserved words.
+     * @param column - The column to be checked.
+     * @return - True if valid.
      */
     private boolean isValidColumnSpoken(Column column) {
         if (!columnSpokenEditText.getText().toString().isEmpty()) {
@@ -398,9 +398,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Update the spokens associated with a column that is to be created or updated
-     * @param column - The column to be updated
-     * @param isNew - Is the column new
+     * Update the spokens associated with a column that is to be created or updated.
+     * @param column - The column to be updated.
+     * @param isNew - Is the column new.
      */
     private void updateColumnSpokens(Column column, boolean isNew) {
         final List<String> spokenList = getFormattedColumnSpokenList();
@@ -453,7 +453,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
     //todo - not needed if observed??
     /**
-     * Update the column list after a column has been created or updated
+     * Update the column list after a column has been created or updated.
      */
     private void updateColumnList() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -470,8 +470,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Create a comma separated list from the strings in the spokens text field
-     * @return - A comma separated list of strings
+     * Create a comma separated list from the strings in the spokens text field.
+     * @return - A comma separated list of strings.
      */
     private List<String> getFormattedColumnSpokenList() {
         return Arrays.stream(
@@ -499,7 +499,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize elements based on Iristick connection.
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {

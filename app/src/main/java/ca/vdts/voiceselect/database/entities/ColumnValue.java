@@ -23,7 +23,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 
 /**
- * Entity defines the ColumnValues table
+ * Entity defines the ColumnValues table.
  */
 @Entity(
         tableName = "ColumnValues",
