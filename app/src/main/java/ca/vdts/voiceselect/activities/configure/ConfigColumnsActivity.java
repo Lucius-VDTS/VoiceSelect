@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.activities.configure;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -120,21 +121,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         //User Spinner
         columnUserSpinner = findViewById(R.id.columnUserSpinner);
 
-        if (currentUser.getAuthority() <= 0) {
-            userList.clear();
-            userList.add(currentUser);
-        } else {
-            ExecutorService usExecutor = Executors.newSingleThreadExecutor();
-            Handler usHandler = new Handler(Looper.getMainLooper());
-            usExecutor.execute(() -> {
-                userList.clear();
-                userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
-                usHandler.post(() -> {
-                    userAdapter.notifyDataSetChanged();
-                    columnUserSpinner.setSelection(userList.indexOf(currentUser));
-                });
-            });
-        }
+        initializeUserList();
 
         userAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());
@@ -187,6 +174,12 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         disableViews();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeUserList();
+    }
+
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
             columnNewButton.setEnabled(false);
@@ -200,10 +193,38 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             columnImportButton.setEnabled(false);
             columnExportButton.setEnabled(false);
 
-            if (columnList.size() < 1) {
+            if (columnList.size() <= 0) {
                 columnResetButton.setEnabled(false);
                 columnSaveButton.setEnabled(false);
             }
+        } else if (userList.size() <= 1) {
+            columnUserSpinner.setEnabled(false);
+//            columnUserSpinner.setOnTouchListener((v, event) -> {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    vdtsApplication.displayToast(
+//                            vdtsApplication, "Only one user exists", 0);
+//                }
+//
+//                return false;
+//            });
+        }
+    }
+
+    private void initializeUserList() {
+        if (currentUser.getAuthority() <= 0) {
+            userList.clear();
+            userList.add(currentUser);
+        } else {
+            ExecutorService usExecutor = Executors.newSingleThreadExecutor();
+            Handler usHandler = new Handler(Looper.getMainLooper());
+            usExecutor.execute(() -> {
+                userList.clear();
+                userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
+                usHandler.post(() -> {
+                    userAdapter.notifyDataSetChanged();
+                    columnUserSpinner.setSelection(userList.indexOf(currentUser));
+                });
+            });
         }
     }
 

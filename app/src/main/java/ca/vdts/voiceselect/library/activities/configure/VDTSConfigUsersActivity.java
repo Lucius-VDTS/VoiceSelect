@@ -301,11 +301,23 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
         if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
             selectedUser.setActive(false);
-            new Thread(() -> vsViewModel.updateUser(selectedUser)).start();
-            clearFocus();
-            userAdapter.removeSelectedEntity();
-            userAdapterSelect(-1);
-            vdtsApplication.setUserCount(userAdapter.getItemCount());
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
+                vsViewModel.updateUser(selectedUser);
+                handler.post(() -> {
+                    clearFocus();
+                    userAdapter.removeSelectedEntity();
+                    userAdapterSelect(-1);
+                    vdtsApplication.setUserCount(userAdapter.getItemCount());
+                });
+            });
+
+//            new Thread(() -> vsViewModel.updateUser(selectedUser)).start();
+//            clearFocus();
+//            userAdapter.removeSelectedEntity();
+//            userAdapterSelect(-1);
+//            vdtsApplication.setUserCount(userAdapter.getItemCount());
         } else {
             LOG.info("Delete user failed - admin/default spoken must exist");
             vdtsApplication.displayToast(

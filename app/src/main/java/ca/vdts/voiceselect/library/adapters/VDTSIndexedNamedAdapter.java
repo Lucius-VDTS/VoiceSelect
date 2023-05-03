@@ -215,8 +215,9 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     public void removeSelectedEntity() {
         Entity entity = dataset.get(selectedIndex);
         dataset.remove(entity);
-        notifyItemChanged(selectedIndex);
-
+        notifyDataSetChanged();
+        //todo - notifyItemRemoved does not reset indices - use diffUtil to recalc indices and remove notifyDataSetChanged
+        //notifyItemRemoved(selectedIndex);
         selectedIndex = -1;
         setSelectedEntity(selectedIndex);
     }

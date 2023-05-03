@@ -67,7 +67,6 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     @Override
     protected void onResume() {
         super.onResume();
-
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
     }

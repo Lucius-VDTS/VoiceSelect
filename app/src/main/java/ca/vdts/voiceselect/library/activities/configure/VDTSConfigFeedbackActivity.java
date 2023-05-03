@@ -112,7 +112,6 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
     @Override
     protected void onResume() {
         super.onResume();
-
         currentUser = vdtsApplication.getCurrentUser();
         userText.setText(currentUser.getName());
     }

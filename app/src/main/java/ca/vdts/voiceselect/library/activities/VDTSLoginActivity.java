@@ -109,10 +109,6 @@ public class VDTSLoginActivity extends AppCompatActivity {
                     if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
                         vdtsApplication.setCurrentUser(currentUser);
                         LOG.info("User Password: {}" + " validated", currentUser.getName());
-                        vdtsApplication.displayToast(
-                                vdtsApplication.getApplicationContext(),
-                                "User Password: " + currentUser.getName() + " validated",
-                                0);
 
                         Intent vdtsMenuActivity = new Intent(
                                 vdtsApplication.getApplicationContext(),
