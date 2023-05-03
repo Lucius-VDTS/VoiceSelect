@@ -29,7 +29,7 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
     }
 
     public VDTSNamedAdapter(Context context, List<Entity> objects) {
-        this(context, R.layout.array_view_named, objects);
+        this(context, R.layout.spinner_view_named, objects);
     }
 
     @NonNull
@@ -60,7 +60,11 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
         return getView(position, convertView, parent);
     }
 
-    public void setToStringFunction(BiFunction<Entity, Integer, String> toStringFunc) {
-        this.toStringFunction = toStringFunc;
+    /**
+     * Receives an entity and an integer and produces a string
+     * @param toStringFunction
+     */
+    public void setToStringFunction(BiFunction<Entity, Integer, String> toStringFunction) {
+        this.toStringFunction = toStringFunction;
     }
 }

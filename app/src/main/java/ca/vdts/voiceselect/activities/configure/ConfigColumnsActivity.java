@@ -39,6 +39,7 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
+import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
 
@@ -70,9 +71,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private Button columnImportButton;
     private Button columnExportButton;
 
-    //Recycler View
+    //Recycler View - User Spinner
     private VSViewModel vsViewModel;
     private VDTSIndexedNamedAdapter<Column> columnAdapter;
+    private VDTSNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView columnRecyclerView;
     private final List<Column> columnList = new ArrayList<>();
     private final List<ColumnSpoken> columnSpokenList = new ArrayList<>();
@@ -111,9 +113,14 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         columnExportCodeEditText = findViewById(R.id.columnExportCodeEditText);
         columnSpokenEditText = findViewById(R.id.columnSpokenEditText);
 
+        columnImportButton = findViewById(R.id.columnImportButton);
+        columnExportButton = findViewById(R.id.columnExportButton);
+
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
         //User Spinner
         columnUserSpinner = findViewById(R.id.columnUserSpinner);
-        columnUserSpinner.setOnItemSelectedListener(userSpinnerSelect);
+
         if (currentUser.getAuthority() <= 0) {
             userList.clear();
             userList.add(currentUser);
@@ -122,17 +129,22 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             Handler usHandler = new Handler(Looper.getMainLooper());
             usExecutor.execute(() -> {
                 userList.clear();
-                userList.addAll(vsViewModel.findAllActiveUsers());
-                usHandler.post(() -> columnUserSpinner.setSelection(userList.indexOf(currentUser)));
+                userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
+                usHandler.post(() -> {
+                    userAdapter.notifyDataSetChanged();
+                    columnUserSpinner.setSelection(userList.indexOf(currentUser));
+                });
             });
         }
 
-        columnImportButton = findViewById(R.id.columnImportButton);
-        columnExportButton = findViewById(R.id.columnExportButton);
+        userAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, userList);
+        userAdapter.setToStringFunction((user, integer) -> user.getName());
+        columnUserSpinner.setAdapter(userAdapter);
+        columnUserSpinner.setOnItemSelectedListener(userSpinnerListener);
+        //columnUserSpinner.setSelection(userList.indexOf(currentUser));
 
         //Recyclerview
         columnRecyclerView = findViewById(R.id.columnRecyclerView);
-        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         //Populate column list
         ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
@@ -189,8 +201,28 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
             columnImportButton.setEnabled(false);
             columnExportButton.setEnabled(false);
+
+            if (columnList.size() < 1) {
+                columnResetButton.setEnabled(false);
+                columnSaveButton.setEnabled(false);
+            }
         }
     }
+
+    /**
+     * Click listener for user spinner.
+     */
+    private final AdapterView.OnItemSelectedListener userSpinnerListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,
+                                           int position, long id) {
+                    selectedUser = (VDTSUser) parent.getItemAtPosition(position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            };
 
     public void newColumnButtonOnClick() {
         columnAdapterSelect(-1);
@@ -213,12 +245,14 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
             if (isValidColumn(selectedColumn)) {
                if (isValidColumnSpoken(selectedColumn)) {
-                   new Thread(() -> {
+                   ExecutorService executor = Executors.newSingleThreadExecutor();
+                   Handler handler = new Handler(Looper.getMainLooper());
+                   executor.execute(() -> {
                        vsViewModel.updateColumn(selectedColumn);
                        updateColumnSpokens(selectedColumn, false);
-                       updateColumnList();
-                   }).start();
 
+                       handler.post(() -> columnAdapter.updateSelectedEntity());
+                   });
                }
             } else {
                 LOG.info("Invalid column");
@@ -235,11 +269,20 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
             if (isValidColumn(column)) {
                 if (isValidColumnSpoken(column)) {
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    executor.execute(() -> {
+                        long uid = vsViewModel.insertColumn(column);
+                        column.setUid(uid);
+                        updateColumnSpokens(column, true);
+
+                        handler.post(() -> columnAdapter.updateEntity(column));
+                    });
+
                     new Thread(() -> {
                         long uid = vsViewModel.insertColumn(column);
                         column.setUid(uid);
                         updateColumnSpokens(column, true);
-                        updateColumnList();
                     }).start();
                 }
             } else {
@@ -262,25 +305,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
                 vsViewModel.deleteAllColumnSpokens(spokenArray);
             }).start();
-
-            updateColumnList();
         }
     }
-
-    /**
-     * Click listener for user spinner.
-     */
-    private final AdapterView.OnItemSelectedListener userSpinnerSelect =
-            new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
-                    selectedUser = (VDTSUser) parent.getItemAtPosition(position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
-            };
 
     /**
      * Select the appropriate column from the recycler view.
@@ -330,15 +356,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
      * @return - True if valid.
      */
     private boolean isValidColumn(Column column) {
-        //todo - is refresh of list needed
-//        try {
-//            columnList.clear();
-//            new Thread(() -> columnList.addAll(vsViewModel.findAllColumns())).join();
-//        } catch (InterruptedException e) {
-//            LOG.error("Getting all columns interrupted: ", e);
-//        }
-
-        //todo - split up and provide meaningful toast messages to users
+        //todo - split up and provide meaningful toast messages to users - similar to isValidColumnSpoken
         return !column.getName().isEmpty() &&
                !column.getNameCode().isEmpty() &&
                !column.getExportCode().isEmpty() &&
@@ -451,26 +469,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         }
     }
 
-    //todo - not needed if observed??
     /**
-     * Update the column list after a column has been created or updated.
-     */
-    private void updateColumnList() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            columnList.clear();
-            columnList.addAll(vsViewModel.findAllColumns());
-            handler.post(() -> {
-                columnAdapter.setDataset(columnList);
-                columnAdapter.notifyDataSetChanged();
-                columnAdapterSelect(-1);
-            });
-        });
-    }
-
-    /**
-     * Create a comma separated list from the strings in the spokens text field.
+     * Create a comma separated list from strings in the spoken text field.
      * @return - A comma separated list of strings.
      */
     private List<String> getFormattedColumnSpokenList() {

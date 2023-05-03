@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -211,9 +210,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                 "Updated user: " + selectedUser.getName(),
                                 0);
 
-                        handler.post(() -> {
-                            userAdapter.updateSelectedEntity();
-                        });
+                        handler.post(() -> userAdapter.updateSelectedEntity());
                     });
                 } else {
                     LOG.error("Unable to update user");

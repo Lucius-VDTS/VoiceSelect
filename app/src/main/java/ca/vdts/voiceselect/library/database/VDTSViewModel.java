@@ -1,5 +1,7 @@
 package ca.vdts.voiceselect.library.database;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
+
 import android.app.Application;
 
 import androidx.annotation.NonNull;
@@ -59,9 +61,18 @@ public class VDTSViewModel extends AndroidViewModel {
     }
 
     public List<VDTSUser> findAllActiveUsers() {
-        return userRepository.findAllActiveUsers(); }
+        return userRepository.findAllActiveUsers();
+    }
 
     public LiveData<List<VDTSUser>> findAllActiveUsersLive() {
         return userRepository.findAllActiveUsersLive();
+    }
+
+    public List<VDTSUser> findAllActiveUsersExcludeDefault() {
+        return userRepository.findAll(
+                "SELECT * FROM Users " +
+                        "WHERE active = 1 " +
+                        "AND uid <> " + DEFAULT_UID
+        );
     }
 }

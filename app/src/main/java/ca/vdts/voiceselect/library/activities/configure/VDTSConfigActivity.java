@@ -14,6 +14,7 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
@@ -80,7 +81,7 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     }
 
     public void configureColumnActivityButtonOnClick() {
-        Intent columnActivityIntent = new Intent(this, VDTSConfigFeedbackActivity.class);
+        Intent columnActivityIntent = new Intent(this, ConfigColumnsActivity.class);
         startActivity(columnActivityIntent);
     }
 

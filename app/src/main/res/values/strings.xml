@@ -18,8 +18,7 @@
 <!--  VDTS Login Activity  -->
     <string name="login_activity_label">User Login</string>
 
-    <string name="login_password_title">Password</string>
-    <string name="login_password_message">Enter Password</string>
+    <string name="login_password_title">Enter Password</string>
 
 <!--  Menu Activity  -->
     <string name="menu_activity_label">Menu</string>
@@ -36,7 +35,7 @@
 
     <string name="config_users_activity_button">Users</string>
     <string name="config_feedback_activity_button">Feedback</string>
-    <string name="config_column_activity_button">Feedback</string>
+    <string name="config_column_activity_button">Columns</string>
 
 <!--  Configure Users Activity  -->
     <string name="config_users_activity_label">Configure Users</string>

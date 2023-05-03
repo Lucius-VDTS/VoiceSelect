@@ -98,9 +98,10 @@ public class VDTSLoginActivity extends AppCompatActivity {
         if (currentUser != null) {
             if (currentUser.getAuthority() == 1) {
                 final EditText passwordText = new EditText(this);
+
                 final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this)
                         .setTitle(R.string.login_password_title)
-                        .setMessage(R.string.login_password_message)
+                        .setMessage(currentUser.getName())
                         .setCancelable(false)
                         .setView(passwordText);
 
@@ -132,6 +133,7 @@ public class VDTSLoginActivity extends AppCompatActivity {
                 });
 
                 passwordAlert.show();
+                passwordText.requestFocus();
             } else {
                 vdtsApplication.setCurrentUser(currentUser);
                 Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);

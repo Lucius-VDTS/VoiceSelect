@@ -82,12 +82,11 @@ public class VSViewModel extends VDTSViewModel {
 
     public List<Column> findAllColumns() {
         return columnRepository.findAll(
-                "SELECT * FROM Columns" +
+                "SELECT * FROM Columns " +
                         "WHERE uid <> " + DEFAULT_UID
         );
     }
 
-    //todo - everywhere
     public LiveData<List<Column>> findAllColumnsLive() {
         return columnRepository.findAllColumnsLive();
     }
