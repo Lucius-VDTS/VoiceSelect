@@ -109,6 +109,14 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
         initializeUserSettings();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        currentUser = vdtsApplication.getCurrentUser();
+        userText.setText(currentUser.getName());
+    }
+
     /**
      * Initialize views with feedback values from the current user.
      */

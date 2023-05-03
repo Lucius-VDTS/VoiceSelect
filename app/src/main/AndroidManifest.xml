@@ -47,7 +47,7 @@
             android:label="@string/config_feedback_activity_label" />
 
         <activity android:name=".activities.configure.ConfigColumnsActivity"
-            android:label="@string/config_feedback_activity_label" />
+            android:label="@string/config_columns_activity_label" />
 
         <activity android:name=".activities.configure.ConfigColumnValuesActivity"
             android:label="@string/config_values_activity_label" />

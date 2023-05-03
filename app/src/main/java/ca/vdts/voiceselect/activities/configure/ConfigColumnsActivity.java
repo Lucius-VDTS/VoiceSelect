@@ -84,7 +84,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private boolean isHeadsetAvailable = false;
     private ConfigColumnsActivity.IristickHUD iristickHUD;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,7 +140,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         userAdapter.setToStringFunction((user, integer) -> user.getName());
         columnUserSpinner.setAdapter(userAdapter);
         columnUserSpinner.setOnItemSelectedListener(userSpinnerListener);
-        //columnUserSpinner.setSelection(userList.indexOf(currentUser));
 
         //Recyclerview
         columnRecyclerView = findViewById(R.id.columnRecyclerView);
@@ -274,6 +272,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     executor.execute(() -> {
                         long uid = vsViewModel.insertColumn(column);
                         column.setUid(uid);
+                        LOG.info("Added column: {}", column.getName());
                         updateColumnSpokens(column, true);
 
                         handler.post(() -> columnAdapter.updateEntity(column));

@@ -240,7 +240,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             final List<ColumnSpoken> primaryColumnSpokens = vsViewModel
                                     .findAllColumnSpokensByUser(primaryUser.getUid()
                             );
-
                             primaryColumnSpokens.forEach(columnSpoken -> {
                                 final ColumnSpoken userColumnSpoken = new ColumnSpoken(
                                         userId,
@@ -252,7 +251,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
                             final List<ColumnValueSpoken> primaryColumnValueSpokens = vsViewModel
                                     .findAllColumnValueSpokensByUser(primaryUser.getUid()
-                                    );
+                            );
                             primaryColumnValueSpokens.forEach(columnValueSpoken -> {
                                 final ColumnValueSpoken userColumnValueSpoken =
                                         new ColumnValueSpoken(
@@ -268,10 +267,13 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         }
 
                         handler.post(() -> {
-                            if (primaryUser != null) {
-                                userAdapter.updateEntity(primaryUser);
-                            }
+                            if (primaryUser != null) { userAdapter.updateEntity(primaryUser); }
+
                             userAdapter.add(vdtsUser);
+
+                            if (userAdapter.getItemCount() == 1) {
+                                vdtsApplication.setCurrentUser(userAdapter.getEntity(0));
+                            }
                         });
                     });
                 } else {
@@ -279,10 +281,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     vdtsApplication.displayToast(
                             this, "User does not meet requirements", 0);
                 }
-            }
-
-            if (userAdapter.getItemCount() == 1) {
-                vdtsApplication.setCurrentUser(userAdapter.getEntity(0));
             }
 
             clearFocus();

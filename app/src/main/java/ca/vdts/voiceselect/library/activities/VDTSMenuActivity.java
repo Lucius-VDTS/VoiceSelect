@@ -39,7 +39,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private Button changeUserActivityButton;
     private Button aboutActivityButton;
 
-    private TextView userValue;
+    private TextView footerUserValue;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -81,15 +81,16 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         aboutActivityButton = findViewById(R.id.aboutActivityButton);
         aboutActivityButton.setVisibility(View.GONE);
 
-        userValue = findViewById(R.id.footerUserValue);
-        userValue.setText(currentUser.getName());
+        footerUserValue = findViewById(R.id.footerUserValue);
+        footerUserValue.setText(currentUser.getName());
     }
 
     @Override
-    public void onRestart() {
-        super.onRestart();
-        finish();
-        startActivity(getIntent());
+    protected void onResume() {
+        super.onResume();
+
+        currentUser = vdtsApplication.getCurrentUser();
+        footerUserValue.setText(currentUser.getName());
     }
 
     public void configureActivityButtonOnClick() {

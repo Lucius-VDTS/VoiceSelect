@@ -64,6 +64,14 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
         disableViews();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        currentUser = vdtsApplication.getCurrentUser();
+        footerUserValue.setText(currentUser.getName());
+    }
+
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
             configUsersActivityButton.setEnabled(false);
