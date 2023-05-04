@@ -30,12 +30,13 @@
     <string name="menu_change_user_activity_button">Change User</string>
     <string name="menu_about_activity_button">About Iristick</string>
 
-<!--  Configure Activity  -->
+<!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>
 
     <string name="config_users_activity_button">Users</string>
     <string name="config_feedback_activity_button">Feedback</string>
     <string name="config_column_activity_button">Columns</string>
+    <string name="config_column_values_activity_button">Column Values</string>
 
 <!--  Configure Users Activity  -->
     <string name="config_users_activity_label">Configure Users</string>

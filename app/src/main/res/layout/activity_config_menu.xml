@@ -54,6 +54,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/configFeedbackActivityButton"/>
+
+            <Button
+                android:id="@+id/configColumnValuesActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/config_column_values_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/configColumnsActivityButton"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

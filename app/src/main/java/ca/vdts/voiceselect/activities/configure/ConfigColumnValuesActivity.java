@@ -99,6 +99,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         IristickSDK.registerListener(this.getLifecycle(), this);
 
         vdtsApplication = (VDTSApplication) this.getApplication();
+        selectedColumn = Column.COLUMN_NONE;
         currentUser = vdtsApplication.getCurrentUser();
 
         //Views
@@ -210,7 +211,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             columnList.addAll(vsViewModel.findAllActiveColumns());
             handler.post(() -> {
                 columnAdapter.notifyDataSetChanged();
-                columnValueColumnSpinner.setSelection(0);
+                columnValueColumnSpinner.setSelection(columnList.indexOf(selectedColumn));
             });
         });
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -81,19 +82,19 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         }
 
         if (position == selectedIndex) {
-            holder.constraintLayout.setBackgroundColor(
+            holder.linearLayout.setBackgroundColor(
                     context.getColor(R.color.colorBackgroundSelected));
         } else {
             if (position % 2 == 0) {
-                holder.constraintLayout.setBackgroundColor(
+                holder.linearLayout.setBackgroundColor(
                         context.getColor(R.color.colorBackgroundPrimary));
             } else {
-                holder.constraintLayout.setBackgroundColor(
+                holder.linearLayout.setBackgroundColor(
                         context.getColor(R.color.colorBackgroundCyan));
             }
         }
 
-        holder.constraintLayout.setOnClickListener(selectedListener);
+        holder.linearLayout.setOnClickListener(selectedListener);
     }
 
     public void add(Entity entity) {
@@ -233,14 +234,13 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
 
 ////VIEWHOLDER_SUBCLASS/////////////////////////////////////////////////////////////////////////////
     static class ViewHolder extends RecyclerView.ViewHolder {
-        final ConstraintLayout constraintLayout;
+        final LinearLayout linearLayout;
         final TextView indexTextView;
         final TextView nameTextView;
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.constraintLayout = (ConstraintLayout) itemView;
+            this.linearLayout = (LinearLayout) itemView;
             this.indexTextView = itemView.findViewById(R.id.index);
             this.nameTextView = itemView.findViewById(R.id.name);
         }

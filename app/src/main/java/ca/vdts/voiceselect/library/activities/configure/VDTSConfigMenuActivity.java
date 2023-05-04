@@ -14,6 +14,7 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -31,6 +32,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private Button configUsersActivityButton;
     private Button configFeedbackActivityButton;
     private Button configColumnsActivityButton;
+    private Button configColumnValuessActivityButton;
 
     private TextView footerUserValue;
 
@@ -48,15 +50,19 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         currentUser = vdtsApplication.getCurrentUser();
 
         configUsersActivityButton = findViewById(R.id.configUsersActivityButton);
-        configUsersActivityButton.setOnClickListener(v -> configureUsersActivityButtonOnClick());
+        configUsersActivityButton.setOnClickListener(v -> configUsersActivityButtonOnClick());
 
         configFeedbackActivityButton = findViewById(R.id.configFeedbackActivityButton);
         configFeedbackActivityButton.setOnClickListener(
-                v -> configureFeedbackActivityButtonOnClick());
+                v -> configFeedbackActivityButtonOnClick());
 
         configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
         configColumnsActivityButton.setOnClickListener(
-                v -> configureColumnActivityButtonOnClick());
+                v -> configColumnActivityButtonOnClick());
+
+        configColumnValuessActivityButton = findViewById(R.id.configColumnValuesActivityButton);
+        configColumnValuessActivityButton.setOnClickListener(
+                v -> configColumnValuesActivityButtonOnClick());
 
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
@@ -77,19 +83,24 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         }
     }
 
-    public void configureUsersActivityButtonOnClick() {
+    public void configUsersActivityButtonOnClick() {
         Intent usersActivityIntent = new Intent(this, VDTSConfigUsersActivity.class);
         startActivity(usersActivityIntent);
     }
 
-    public void configureFeedbackActivityButtonOnClick() {
+    public void configFeedbackActivityButtonOnClick() {
         Intent feedbackActivityIntent = new Intent(this, VDTSConfigFeedbackActivity.class);
         startActivity(feedbackActivityIntent);
     }
 
-    public void configureColumnActivityButtonOnClick() {
+    public void configColumnActivityButtonOnClick() {
         Intent columnActivityIntent = new Intent(this, ConfigColumnsActivity.class);
         startActivity(columnActivityIntent);
+    }
+
+    public void configColumnValuesActivityButtonOnClick() {
+        Intent columnValuesActivityIntent = new Intent(this, ConfigColumnValuesActivity.class);
+        startActivity(columnValuesActivityIntent);
     }
 
     @Override
@@ -112,7 +123,16 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private void initializeIristick() {
         if (isHeadsetAvailable) {
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Users", this::configureUsersActivityButtonOnClick));
+                    vc.add("Users", this::configUsersActivityButtonOnClick));
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Feedback", this::configFeedbackActivityButtonOnClick));
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Columns", this::configColumnActivityButtonOnClick));
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Column Values", this::configColumnValuesActivityButtonOnClick));
         }
     }
 }

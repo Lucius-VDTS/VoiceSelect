@@ -169,7 +169,7 @@
         android:layout_marginEnd="@dimen/double_margin"
         android:paddingTop="@dimen/padding"
         android:paddingBottom="@dimen/padding"
-        android:background="@drawable/color_table_background"
+        android:background="@drawable/recycler_view_background"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/columnValueBottomButtonsLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
