@@ -96,7 +96,7 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
 
     //Default super user
     public static final VDTSUser VDTS_USER_NONE = new VDTSUser(
-            -9001L, "Super", "", "", "", 9001, true,
+            -9001L, "SUPER", "", "", "", 9001, true,
             "", 1, false, 1f, 1f);
 
     //Default Constructor

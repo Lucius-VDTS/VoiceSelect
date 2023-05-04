@@ -180,6 +180,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             executor.execute(() -> {
                 userList.clear();
                 userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
+                userList.remove(VDTSUser.VDTS_USER_NONE);
                 handler.post(() -> {
                     userAdapter.notifyDataSetChanged();
                     columnUserSpinner.setSelection(userList.indexOf(currentUser));

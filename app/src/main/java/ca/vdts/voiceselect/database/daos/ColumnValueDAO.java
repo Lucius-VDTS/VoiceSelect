@@ -15,6 +15,6 @@ import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
  */
 @Dao
 public interface ColumnValueDAO extends VDTSBaseDAO<ColumnValue> {
-    @Query("SELECT * FROM ColumnValues")
+    @Query("SELECT * FROM ColumnValues WHERE active = 1")
     LiveData<List<ColumnValue>> findAllColumnValuesLive();
 }

@@ -94,10 +94,10 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
             VDTS_USER_NONE.getUid(),
             COLUMN_NONE.getUid(),
             DEFAULT_DATE,
-            "-",
-            "-",
+            "NONE",
             "",
-            true
+            "",
+            false
     );
 
     public static final ColumnValue COLUMN_VALUE_NOT_FOUND = new ColumnValue(
@@ -105,10 +105,10 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
             VDTS_USER_NONE.getUid(),
             COLUMN_NONE.getUid(),
             DEFAULT_DATE.minusDays(1),
+            "NOT_FOUND",
             "",
             "",
-            "",
-            true
+            false
     );
 
     //Non-Default Constructor

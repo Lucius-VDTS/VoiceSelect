@@ -44,10 +44,10 @@ public class Column implements VDTSIndexedNamedEntityInterface {
             DEFAULT_UID,
             VDTS_USER_NONE.getUid(),
             DEFAULT_DATE,
+            "NONE",
             "",
             "",
-            "",
-            true
+            false
     );
 
     @Expose

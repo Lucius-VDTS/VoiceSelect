@@ -82,8 +82,7 @@ public class VSViewModel extends VDTSViewModel {
 
     public List<Column> findAllColumns() {
         return columnRepository.findAll(
-                "SELECT * FROM Columns " +
-                        "WHERE uid <> " + DEFAULT_UID
+                "SELECT * FROM Columns"
         );
     }
 
@@ -94,8 +93,7 @@ public class VSViewModel extends VDTSViewModel {
     public List<Column> findAllActiveColumns() {
         return columnRepository.findAll(
                 "SELECT * FROM Columns " +
-                        "WHERE active = 1 " +
-                        "AND uid <> " + DEFAULT_UID
+                        "WHERE active = 1"
         );
     }
 
@@ -203,8 +201,7 @@ public class VSViewModel extends VDTSViewModel {
     public List<ColumnValue> findAllActiveColumnValues() {
         return columnValueRepository.findAll(
                 "SELECT * FROM ColumnValues " +
-                        "WHERE active = 1 " +
-                        "AND uid <> " + DEFAULT_UID
+                        "WHERE active = 1"
         );
     }
 

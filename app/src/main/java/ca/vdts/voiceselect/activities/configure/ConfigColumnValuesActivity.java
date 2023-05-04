@@ -195,6 +195,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             usExecutor.execute(() -> {
                 userList.clear();
                 userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
+                userList.remove(VDTSUser.VDTS_USER_NONE);
                 usHandler.post(() -> {
                     userAdapter.notifyDataSetChanged();
                     columnValueUserSpinner.setSelection(userList.indexOf(currentUser));
