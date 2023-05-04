@@ -6,12 +6,12 @@
     android:background="#000000">
 
     <TextView
-        android:id="@+id/configOnDeviceText"
+        android:id="@+id/configHUDText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/four_x_margin"
         android:layout_marginEnd="@dimen/four_x_margin"
-        android:text="@string/config_on_device_text"
+        android:text="@string/config_hud_text"
         android:textAlignment="center"
         android:textColor="#ffffff"
         android:textSize="@dimen/medium_text_size"

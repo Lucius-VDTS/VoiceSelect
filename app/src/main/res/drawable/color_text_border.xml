@@ -9,8 +9,8 @@
             <stroke
                 android:width="@dimen/outline_width"
                 android:color="@color/colorOutline" />
-
             <solid android:color="#00FFFFFF" />
+            <corners android:radius="@dimen/corner_radius"/>
         </shape>
     </item>
 </layer-list>

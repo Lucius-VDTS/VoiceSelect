@@ -184,7 +184,7 @@ public class VSViewModel extends VDTSViewModel {
         columnValueRepository.insertAll(columnValues);
     }
 
-    public void updateVolumeValue(ColumnValue columnValue) {
+    public void updateColumnValue(ColumnValue columnValue) {
         columnValueRepository.update(columnValue);
     }
 
@@ -198,6 +198,18 @@ public class VSViewModel extends VDTSViewModel {
 
     public void deleteAllColumnValues(ColumnValue[] columnValues) {
         columnValueRepository.deleteAll(columnValues);
+    }
+
+    public List<ColumnValue> findAllActiveColumnValues() {
+        return columnValueRepository.findAll(
+                "SELECT * FROM ColumnValues " +
+                        "WHERE active = 1 " +
+                        "AND uid <> " + DEFAULT_UID
+        );
+    }
+
+    public LiveData<List<ColumnValue>> findAllColumnValuesLive() {
+        return columnValueRepository.findAllColumnValuesLive();
     }
 
     public List<ColumnValue> findAllColumnValuesByColumn(long columnId) {
@@ -226,27 +238,27 @@ public class VSViewModel extends VDTSViewModel {
     }
 
     //ColumnValueSpoken
-    public long insert(ColumnValueSpoken columnValueSpoken) {
+    public long insertColumnValueSpoken(ColumnValueSpoken columnValueSpoken) {
         return columnValueSpokenRepository.insert(columnValueSpoken);
     }
 
-    public void insertAll(ColumnValueSpoken[] columnValueSpokens) {
+    public void insertAllColumnValueSpokens(ColumnValueSpoken[] columnValueSpokens) {
         columnValueSpokenRepository.insertAll(columnValueSpokens);
     }
 
-    public void update(ColumnValueSpoken columnValueSpoken) {
+    public void updateColumnValueSpoken(ColumnValueSpoken columnValueSpoken) {
         columnValueSpokenRepository.update(columnValueSpoken);
     }
 
-    public void updateAll(ColumnValueSpoken[] columnValueSpokens) {
+    public void updateAllColumnValueSpokens(ColumnValueSpoken[] columnValueSpokens) {
         columnValueSpokenRepository.updateAll(columnValueSpokens);
     }
 
-    public void delete(ColumnValueSpoken columnValueSpoken) {
+    public void deleteColumnValueSpoken(ColumnValueSpoken columnValueSpoken) {
         columnValueSpokenRepository.delete(columnValueSpoken);
     }
 
-    public void deleteAll(ColumnValueSpoken[] columnValueSpokens) {
+    public void deleteAllColumnValueSpokens(ColumnValueSpoken[] columnValueSpokens) {
         columnValueSpokenRepository.deleteAll(columnValueSpokens);
     }
 
@@ -254,7 +266,7 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueSpokenRepository.findAll("SELECT * FROM ColumnValueSpokens");
     }
 
-    public LiveData<List<ColumnValueSpoken>> findAllLiveColumnValueSpokens() {
+    public LiveData<List<ColumnValueSpoken>> findAllColumnValueSpokensLive() {
         return columnValueSpokenRepository.findAllColumnValueSpokensLive();
     }
 

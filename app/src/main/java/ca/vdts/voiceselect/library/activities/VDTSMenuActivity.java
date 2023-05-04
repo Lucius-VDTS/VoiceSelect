@@ -17,7 +17,7 @@ import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.R;
-import ca.vdts.voiceselect.library.activities.configure.VDTSConfigActivity;
+import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.services.VDTSNotificationService;
@@ -77,6 +77,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         changeUserActivityButton = findViewById(R.id.changeUserActivityButton);
         changeUserActivityButton.setOnClickListener(v -> changeUserActivityButtonOnClick());
+        if (currentUser.getUid() == -9001) { changeUserActivityButton.setEnabled(false); }
 
         aboutActivityButton = findViewById(R.id.aboutActivityButton);
         aboutActivityButton.setVisibility(View.GONE);
@@ -93,7 +94,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     public void configureActivityButtonOnClick() {
-        Intent configureActivityIntent = new Intent(this, VDTSConfigActivity.class);
+        Intent configureActivityIntent = new Intent(this, VDTSConfigMenuActivity.class);
         startActivity(configureActivityIntent);
     }
 
@@ -138,6 +139,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
                     vc.add("About Iris Stick", this::aboutActivityButtonOnClick));
+
+            if (currentUser.getUid() != -9001) {
+                IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                        vc.add("Change User", this::changeUserActivityButtonOnClick));
+            }
         } else {
             aboutActivityButton.setVisibility(View.GONE);
         }

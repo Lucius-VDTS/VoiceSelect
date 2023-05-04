@@ -10,9 +10,6 @@
     <dimen name="thirty_two_x_margin">128dp</dimen>
     <dimen name="sixty_four_x_margin">256dp</dimen>
 
-<!--  Outline  -->
-    <dimen name="outline_width">4dp</dimen>
-
 <!--  Padding  -->
     <dimen name="half_padding">2dp</dimen>
     <dimen name="padding">4dp</dimen>
@@ -29,10 +26,16 @@
     <dimen name="thirty_two_x_height">128dp</dimen>
     <dimen name="sixty_four_x_height">256dp</dimen>
 
+<!--  Corner Radius  -->
+    <dimen name="corner_radius">4dp</dimen>
+
 <!--   Fonts   -->
     <dimen name="small_text_size">18sp</dimen>
     <dimen name="medium_text_size">20sp</dimen>
     <dimen name="large_text_size">22sp</dimen>
     <dimen name="xl_text_size">24sp</dimen>
     <dimen name="xxl_text_size">26sp</dimen>
+
+<!--  Outline  -->
+    <dimen name="outline_width">4dp</dimen>
 </resources>

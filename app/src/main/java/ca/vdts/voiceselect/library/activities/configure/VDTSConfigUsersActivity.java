@@ -266,7 +266,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                                 columnValueSpoken.getColumnValueId(),
                                                 columnValueSpoken.getSpoken()
                                         );
-                                vsViewModel.insert(userColumnValueSpoken);
+                                vsViewModel.insertColumnValueSpoken(userColumnValueSpoken);
                             });
                         } else if (isPrimary && primaryUser != null) {
                             primaryUser.setPrimary(false);
@@ -441,11 +441,11 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_config_on_device_hud);
+            setContentView(R.layout.activity_config_hud);
 
-            configOnDeviceText = findViewById(R.id.configOnDeviceText);
+            configOnDeviceText = findViewById(R.id.configHUDText);
             assert configOnDeviceText != null;
-            configOnDeviceText.setText(R.string.config_on_device_text);
+            configOnDeviceText.setText(R.string.config_hud_text);
         }
     }
 }

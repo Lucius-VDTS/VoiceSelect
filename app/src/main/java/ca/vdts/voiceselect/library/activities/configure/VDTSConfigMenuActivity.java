@@ -21,8 +21,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 /**
  * Customize features of the application
  */
-public class VDTSConfigActivity extends AppCompatActivity implements IRIListener {
-    //private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigActivity.class);
+public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIListener {
+    //private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigMenuActivity.class);
 
     VDTSApplication vdtsApplication;
     VDTSUser currentUser;
@@ -40,7 +40,7 @@ public class VDTSConfigActivity extends AppCompatActivity implements IRIListener
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_config);
+        setContentView(R.layout.activity_config_menu);
 
         IristickSDK.registerListener(this.getLifecycle(), this);
 

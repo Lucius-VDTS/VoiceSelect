@@ -121,7 +121,7 @@
     <string name="column_value_spoken_value">Enter column spoken</string>
 
 <!--  Configure HUD  -->
-    <string name="config_on_device_text">Use your connected device to configure users</string>
+    <string name="config_hud_text">Use your connected device to complete configuration.</string>
 
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>

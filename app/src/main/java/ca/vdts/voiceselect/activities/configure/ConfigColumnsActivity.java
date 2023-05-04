@@ -3,7 +3,6 @@ package ca.vdts.voiceselect.activities.configure;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -54,7 +53,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
     private VDTSUser selectedUser;
-    private final List<VDTSUser> userList = new ArrayList<>();
 
     //Views
     private Button columnNewButton;
@@ -77,8 +75,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private VDTSIndexedNamedAdapter<Column> columnAdapter;
     private VDTSNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView columnRecyclerView;
+
+    //Lists
     private final List<Column> columnList = new ArrayList<>();
     private final List<ColumnSpoken> columnSpokenList = new ArrayList<>();
+    private final List<VDTSUser> userList = new ArrayList<>();
     private ArrayList<String> reservedWords;
 
     //Iristick Components
@@ -169,6 +170,34 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         disableViews();
     }
 
+    private void initializeUserList() {
+        if (currentUser.getAuthority() <= 0) {
+            userList.clear();
+            userList.add(currentUser);
+        } else {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
+                userList.clear();
+                userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
+                handler.post(() -> {
+                    userAdapter.notifyDataSetChanged();
+                    columnUserSpinner.setSelection(userList.indexOf(currentUser));
+                });
+            });
+        }
+    }
+
+    private void initializeColumnList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            columnList.clear();
+            columnList.addAll(vsViewModel.findAllActiveColumns());
+            handler.post(() -> columnAdapter.setDataset(columnList));
+        });
+    }
+
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
             columnNewButton.setEnabled(false);
@@ -189,34 +218,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         }
     }
 
-    private void initializeUserList() {
-        if (currentUser.getAuthority() <= 0) {
-            userList.clear();
-            userList.add(currentUser);
-        } else {
-            ExecutorService usExecutor = Executors.newSingleThreadExecutor();
-            Handler usHandler = new Handler(Looper.getMainLooper());
-            usExecutor.execute(() -> {
-                userList.clear();
-                userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
-                usHandler.post(() -> {
-                    userAdapter.notifyDataSetChanged();
-                    columnUserSpinner.setSelection(userList.indexOf(currentUser));
-                });
-            });
-        }
-    }
-
-    private void initializeColumnList() {
-        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
-        Handler rvHandler = new Handler(Looper.getMainLooper());
-        rvExecutor.execute(() -> {
-            columnList.clear();
-            columnList.addAll(vsViewModel.findAllActiveColumns());
-            rvHandler.post(() -> columnAdapter.setDataset(columnList));
-        });
-    }
-
     /**
      * Click listener for user spinner.
      */
@@ -232,17 +233,17 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 public void onNothingSelected(AdapterView<?> parent) {}
             };
 
-    public void newColumnButtonOnClick() {
+    private void newColumnButtonOnClick() {
         columnAdapterSelect(-1);
         columnNameEditText.requestFocus();
     }
 
-    public void resetColumnButtonOnClick() {
+    private void resetColumnButtonOnClick() {
         columnAdapterSelect(columnAdapter.getSelectedEntityIndex());
         columnNameEditText.requestFocus();
     }
 
-    public void saveColumnButtonOnClick() {
+    private void saveColumnButtonOnClick() {
         Column selectedColumn = columnAdapter.getSelectedEntity();
 
         if (selectedColumn != null) {
@@ -258,11 +259,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                    executor.execute(() -> {
                        vsViewModel.updateColumn(selectedColumn);
                        updateColumnSpokens(selectedColumn, false);
-
                        handler.post(() -> columnAdapter.updateSelectedEntity());
                    });
                }
-
                newColumnButtonOnClick();
             } else {
                 LOG.info("Invalid column");
@@ -291,7 +290,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         handler.post(() -> columnAdapter.add(column));
                     });
                 }
-
                 newColumnButtonOnClick();
             } else {
                 LOG.info("Invalid column");
@@ -403,10 +401,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                         for (String reserved : reservedWords) {
                             if (spoken.toLowerCase().contains(reserved.toLowerCase())) {
-                                LOG.info("Column's spokens contains a reserved word");
+                                LOG.info("Column's spokens contain a reserved word");
                                 vdtsApplication.displayToast(
                                         this,
-                                        "Column's spokens contains a reserved word",
+                                        "Column's spokens contain a reserved word",
                                         0);
                                 return false;
                             }
@@ -414,7 +412,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     }
                 }
             }
-
             return true;
         } else {
             LOG.info("Column must have a spoken term");
@@ -529,11 +526,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_config_on_device_hud);
+            setContentView(R.layout.activity_config_hud);
 
-            configOnDeviceText = findViewById(R.id.configOnDeviceText);
+            configOnDeviceText = findViewById(R.id.configHUDText);
             assert configOnDeviceText != null;
-            configOnDeviceText.setText(R.string.config_on_device_text);
+            configOnDeviceText.setText(R.string.config_hud_text);
         }
     }
 }
