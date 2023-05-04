@@ -129,16 +129,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userRecyclerView = findViewById(R.id.userRecyclerView);
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        //Populate user list
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            userList.clear();
-            userList.addAll(vsViewModel.findAllActiveUsers());
-            userList.remove(VDTSUser.VDTS_USER_NONE);
-            handler.post(() -> userAdapter.setDataset(userList));
-        });
-
         //Observe/Update user list
         vsViewModel.findAllActiveUsersLive().observe(this, users -> {
             userList.clear();
@@ -160,6 +150,23 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         );
 
         userRecyclerView.setAdapter(userAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeUserList();
+    }
+
+    private void initializeUserList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            userList.clear();
+            userList.addAll(vsViewModel.findAllActiveUsers());
+            userList.remove(VDTSUser.VDTS_USER_NONE);
+            handler.post(() -> userAdapter.setDataset(userList));
+        });
     }
 
     public void newUserButtonOnClick() {
@@ -283,8 +290,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 }
             }
 
-            clearFocus();
-            userAdapterSelect(-1);
+            newUserButtonOnClick();
         } else {
             LOG.error("Save user failed - admin/default spoken must exist");
             vdtsApplication.displayToast(
@@ -306,18 +312,11 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             executor.execute(() -> {
                 vsViewModel.updateUser(selectedUser);
                 handler.post(() -> {
-                    clearFocus();
                     userAdapter.removeSelectedEntity();
-                    userAdapterSelect(-1);
+                    newUserButtonOnClick();
                     vdtsApplication.setUserCount(userAdapter.getItemCount());
                 });
             });
-
-//            new Thread(() -> vsViewModel.updateUser(selectedUser)).start();
-//            clearFocus();
-//            userAdapter.removeSelectedEntity();
-//            userAdapterSelect(-1);
-//            vdtsApplication.setUserCount(userAdapter.getItemCount());
         } else {
             LOG.info("Delete user failed - admin/default spoken must exist");
             vdtsApplication.displayToast(
@@ -407,13 +406,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                     StringUtils.lowerCase(user1.getCode())
                                             .equals(StringUtils.lowerCase(vdtsUser.getCode()))));
 
-    }
-
-    private void clearFocus() {
-        userNameEditText.clearFocus();
-        userPrefixEditText.clearFocus();
-        userExportCodeEditText.clearFocus();
-        userPasswordEditText.clearFocus();
     }
 
     @Override

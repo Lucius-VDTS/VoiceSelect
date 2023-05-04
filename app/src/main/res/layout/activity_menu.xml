@@ -103,29 +103,29 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
-            android:id="@+id/layoutLabel"
+            android:id="@+id/footerLayoutLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/padding"
             android:layout_marginStart="@dimen/double_margin"
             android:text="@string/footer_layout_label"
             android:textSize="@dimen/medium_text_size"
-            app:layout_constraintBottom_toTopOf="@id/projectLabel"
+            app:layout_constraintBottom_toTopOf="@id/footerProjectLabel"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/layoutValue"
+            android:id="@+id/footerLayoutValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/padding"
             android:layout_marginStart="@dimen/double_margin"
             android:text="@string/footer_layout_value"
             android:textSize="@dimen/medium_text_size"
-            app:layout_constraintBottom_toTopOf="@id/projectValue"
-            app:layout_constraintStart_toEndOf="@id/layoutLabel"/>
+            app:layout_constraintBottom_toTopOf="@id/footerProjectValue"
+            app:layout_constraintStart_toEndOf="@id/footerLayoutLabel"/>
 
         <TextView
-            android:id="@+id/projectLabel"
+            android:id="@+id/footerProjectLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/double_margin"
@@ -135,14 +135,24 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/projectValue"
+            android:id="@+id/footerProjectValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/double_margin"
             android:text="@string/footer_project_value"
             android:textSize="@dimen/medium_text_size"
             app:layout_constraintBottom_toTopOf="@id/footerUserValue"
-            app:layout_constraintStart_toEndOf="@id/projectLabel"/>
+            app:layout_constraintStart_toEndOf="@id/footerProjectLabel"/>
+
+        <TextView
+            android:id="@+id/footerUserLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/double_margin"
+            android:text="@string/footer_user_label"
+            android:textSize="@dimen/small_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/footerUserValue"
@@ -152,10 +162,10 @@
             android:text="@string/footer_user_value"
             android:textSize="@dimen/small_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/footerUserLabel"/>
 
         <TextView
-            android:id="@+id/versionValue"
+            android:id="@+id/footerVersionValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/double_margin"

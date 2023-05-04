@@ -121,8 +121,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         //User Spinner
         columnUserSpinner = findViewById(R.id.columnUserSpinner);
 
-        initializeUserList();
-
         userAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());
         columnUserSpinner.setAdapter(userAdapter);
@@ -130,15 +128,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         //Recyclerview
         columnRecyclerView = findViewById(R.id.columnRecyclerView);
-
-        //Populate column list
-        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
-        Handler rvHandler = new Handler(Looper.getMainLooper());
-        rvExecutor.execute(() -> {
-            columnList.clear();
-            columnList.addAll(vsViewModel.findAllColumns());
-            rvHandler.post(() -> columnAdapter.setDataset(columnList));
-        });
 
         //Observe/Update column list
         vsViewModel.findAllColumnsLive().observe(this, columns -> {
@@ -170,14 +159,14 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         reservedWords = new ArrayList<>(
                 Arrays.asList(this.getResources().getStringArray(R.array.reserved_words))
         );
-
-        disableViews();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initializeUserList();
+        initializeColumnList();
+        disableViews();
     }
 
     private void disableViews() {
@@ -197,16 +186,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 columnResetButton.setEnabled(false);
                 columnSaveButton.setEnabled(false);
             }
-        } else if (userList.size() <= 1) {
-            columnUserSpinner.setEnabled(false);
-//            columnUserSpinner.setOnTouchListener((v, event) -> {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    vdtsApplication.displayToast(
-//                            vdtsApplication, "Only one user exists", 0);
-//                }
-//
-//                return false;
-//            });
         }
     }
 
@@ -226,6 +205,16 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 });
             });
         }
+    }
+
+    private void initializeColumnList() {
+        ExecutorService rvExecutor = Executors.newSingleThreadExecutor();
+        Handler rvHandler = new Handler(Looper.getMainLooper());
+        rvExecutor.execute(() -> {
+            columnList.clear();
+            columnList.addAll(vsViewModel.findAllActiveColumns());
+            rvHandler.post(() -> columnAdapter.setDataset(columnList));
+        });
     }
 
     /**
@@ -273,9 +262,12 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                        handler.post(() -> columnAdapter.updateSelectedEntity());
                    });
                }
+
+               newColumnButtonOnClick();
             } else {
                 LOG.info("Invalid column");
                 vdtsApplication.displayToast(this, "Invalid column", 0);
+                resetColumnButtonOnClick();
             }
         } else {
             //Create new column
@@ -296,15 +288,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         LOG.info("Added column: {}", column.getName());
                         updateColumnSpokens(column, true);
 
-                        handler.post(() -> columnAdapter.updateEntity(column));
+                        handler.post(() -> columnAdapter.add(column));
                     });
-
-                    new Thread(() -> {
-                        long uid = vsViewModel.insertColumn(column);
-                        column.setUid(uid);
-                        updateColumnSpokens(column, true);
-                    }).start();
                 }
+
+                newColumnButtonOnClick();
             } else {
                 LOG.info("Invalid column");
                 vdtsApplication.displayToast(this, "Invalid column", 0);
@@ -321,10 +309,13 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 final List<ColumnSpoken> spokenList =
                         vsViewModel.findAllColumnSpokensByColumn(selectedColumn.getUid());
 
-                //Convert list to array for deleteAllColumns query
+                //Convert list to array for deleteAllColumnSpokens query
                 final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
                 vsViewModel.deleteAllColumnSpokens(spokenArray);
             }).start();
+
+            columnAdapter.removeSelectedEntity();
+            newColumnButtonOnClick();
         }
     }
 
@@ -472,6 +463,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             }
 
             //Insert new spokens
+            if (selectedUser == null) { selectedUser = currentUser; }
             for (String spoken : spokenList) {
                 if (existingSpokenList.stream()
                         .noneMatch(oldSpoken -> oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
