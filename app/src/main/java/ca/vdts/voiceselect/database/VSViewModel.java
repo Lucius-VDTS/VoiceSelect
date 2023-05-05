@@ -9,14 +9,19 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import ca.vdts.voiceselect.database.daos.LayoutDAO;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.repositories.ColumnRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueSpokenRepository;
+import ca.vdts.voiceselect.database.repositories.LayoutColumnRepository;
+import ca.vdts.voiceselect.database.repositories.LayoutRepository;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 
 /**
@@ -27,6 +32,8 @@ public class VSViewModel extends VDTSViewModel {
     private final ColumnSpokenRepository columnSpokenRepository;
     private final ColumnValueRepository columnValueRepository;
     private final ColumnValueSpokenRepository columnValueSpokenRepository;
+    private final LayoutRepository layoutRepository;
+    private final LayoutColumnRepository layoutColumnRepository;
 
     public VSViewModel(@NonNull Application application) {
         super(application);
@@ -36,6 +43,8 @@ public class VSViewModel extends VDTSViewModel {
         columnSpokenRepository = new ColumnSpokenRepository(vsDatabase.columnSpokenDAO());
         columnValueRepository = new ColumnValueRepository(vsDatabase.columnValueDAO());
         columnValueSpokenRepository = new ColumnValueSpokenRepository(vsDatabase.columnValueSpokenDAO());
+        layoutRepository = new LayoutRepository(vsDatabase.layoutDAO());
+        layoutColumnRepository = new LayoutColumnRepository(vsDatabase.layoutColumnDAO());
     }
 
     //Column
@@ -47,19 +56,19 @@ public class VSViewModel extends VDTSViewModel {
         columnRepository.insertAll(columns);
     }
 
-    public void updateColumn (Column column) {
+    public void updateColumn(Column column) {
         columnRepository.update(column);
     }
 
-    public void updateAllColumns (Column[] columns) {
+    public void updateAllColumns(Column[] columns) {
         columnRepository.updateAll(columns);
     }
 
-    public void deleteColumn (Column column) {
+    public void deleteColumn(Column column) {
         columnRepository.delete(column);
     }
 
-    public void deleteAllColumns (Column[] columns) { columnRepository.deleteAll(columns); }
+    public void deleteAllColumns(Column[] columns) { columnRepository.deleteAll(columns); }
 
     public Column findColumn(long uid) {
         return columnRepository.find(
@@ -301,5 +310,77 @@ public class VSViewModel extends VDTSViewModel {
                         "WHERE C.uid = " + columnId + " " +
                         "AND VS.userID = " + userId
         );
+    }
+
+    //Layout
+    public long insertLayout(Layout layout) {
+        return layoutRepository.insert(layout);
+    }
+
+    public void insertAllLayouts(Layout[] layouts) {
+        layoutRepository.insertAll(layouts);
+    }
+
+    public void updateLayout (Layout layout) {
+        layoutRepository.update(layout);
+    }
+
+    public void updateAllLayouts (Layout[] layouts) {
+        layoutRepository.updateAll(layouts);
+    }
+
+    public void deleteLayout (Layout layout) {
+        layoutRepository.delete(layout);
+    }
+
+    public void deleteAllLayouts (Layout[] layouts) {
+        layoutRepository.deleteAll(layouts);
+    }
+
+    public Layout findLayout(long uid) {
+        return layoutRepository.find(
+                "SELECT * FROM Layouts " +
+                        "WHERE uid = " + uid
+        );
+    }
+
+    public List<Layout> findAllLayouts() {
+        return layoutRepository.findAll("SELECT * FROM Layouts");
+    }
+
+    public List<Layout> findAllActiveLayouts() {
+        return layoutRepository.findAll(
+                "SELECT * FROM Layouts " +
+                        "WHERE active = 1"
+        );
+    }
+
+    public LiveData<List<Layout>> findAllActiveLayoutsLive() {
+        return layoutRepository.findAllActiveLayoutsLive();
+    }
+
+    //LayoutColumn
+    public long insertLayoutColumn(LayoutColumn layoutColumn) {
+        return layoutColumnRepository.insert(layoutColumn);
+    }
+
+    public void insertAllLayoutColumns(LayoutColumn[] layoutColumns) {
+        layoutColumnRepository.insertAll(layoutColumns);
+    }
+
+    public void updateLayoutColumn (LayoutColumn layoutColumn) {
+        layoutColumnRepository.update(layoutColumn);
+    }
+
+    public void updateAllLayoutColumns (LayoutColumn[] layoutColumns) {
+        layoutColumnRepository.updateAll(layoutColumns);
+    }
+
+    public void deleteLayoutColumn (LayoutColumn layoutColumn) {
+        layoutColumnRepository.delete(layoutColumn);
+    }
+
+    public void deleteAllLayoutColumns (LayoutColumn[] layoutColumns) {
+        layoutColumnRepository.deleteAll(layoutColumns);
     }
 }

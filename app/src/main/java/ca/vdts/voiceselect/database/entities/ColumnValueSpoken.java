@@ -18,7 +18,7 @@ import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
-import ca.vdts.voiceselect.library.services.VDTSBnfService;
+import ca.vdts.voiceselect.library.services.VDTSBNFService;
 
 /**
  * Entity defines the ColumnValueSpokens table.
@@ -46,7 +46,7 @@ import ca.vdts.voiceselect.library.services.VDTSBnfService;
                 @Index(value = "columnValueId")
         }
 )
-public class ColumnValueSpoken implements VDTSBnfGrammarInterface {
+public class ColumnValueSpoken {
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)
@@ -111,11 +111,6 @@ public class ColumnValueSpoken implements VDTSBnfGrammarInterface {
 
     public void setSpoken(String spoken) {
         this.spoken = spoken;
-    }
-
-    @Override
-    public String toGrammar(Context context) {
-        return VDTSBnfService.sanitizeGrammar(spoken, context);
     }
 
     @Override

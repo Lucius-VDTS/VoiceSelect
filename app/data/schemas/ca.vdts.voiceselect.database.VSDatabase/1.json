@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4eb799c24076cdd38e3904e3a60f237e",
+    "identityHash": "37e77f3846df3968e9068f42a355cd85",
     "entities": [
       {
         "tableName": "Users",
@@ -447,12 +447,165 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "Layouts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "createdDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nameCode",
+            "columnName": "nameCode",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "exportCode",
+            "columnName": "exportCode",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Layouts_userId",
+            "unique": false,
+            "columnNames": [
+              "userId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Layouts_userId` ON `${TABLE_NAME}` (`userId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Users",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "userId"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "LayoutsColumns",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`layoutId` INTEGER NOT NULL, `columnId` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, PRIMARY KEY(`layoutId`, `columnId`), FOREIGN KEY(`layoutId`) REFERENCES `Layouts`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnId`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "layoutId",
+            "columnName": "layoutId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnId",
+            "columnName": "columnId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnPosition",
+            "columnName": "columnPosition",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "layoutId",
+            "columnId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LayoutsColumns_layoutId",
+            "unique": false,
+            "columnNames": [
+              "layoutId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_layoutId` ON `${TABLE_NAME}` (`layoutId`)"
+          },
+          {
+            "name": "index_LayoutsColumns_columnId",
+            "unique": false,
+            "columnNames": [
+              "columnId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_columnId` ON `${TABLE_NAME}` (`columnId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Layouts",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "layoutId"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          },
+          {
+            "table": "Columns",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "columnId"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4eb799c24076cdd38e3904e3a60f237e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '37e77f3846df3968e9068f42a355cd85')"
     ]
   }
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import ca.vdts.voiceselect.R;
 
-public class VDTSBnfService {
+public class VDTSBNFService {
     /**
      * Sanitizes grammar so that it will be usable for voice commands.
      * Several of the characters removed are replaced by spaces, except for " and #

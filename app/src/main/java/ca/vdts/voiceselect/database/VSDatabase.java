@@ -19,10 +19,14 @@ import ca.vdts.voiceselect.database.daos.ColumnDAO;
 import ca.vdts.voiceselect.database.daos.ColumnSpokenDAO;
 import ca.vdts.voiceselect.database.daos.ColumnValueDAO;
 import ca.vdts.voiceselect.database.daos.ColumnValueSpokenDAO;
+import ca.vdts.voiceselect.database.daos.LayoutColumnDAO;
+import ca.vdts.voiceselect.database.daos.LayoutDAO;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.library.database.converters.VDTSConverter;
 import ca.vdts.voiceselect.library.database.daos.VDTSUserDAO;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -36,7 +40,9 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
                 Column.class,
                 ColumnSpoken.class,
                 ColumnValue.class,
-                ColumnValueSpoken.class
+                ColumnValueSpoken.class,
+                Layout.class,
+                LayoutColumn.class
         },
         version = 1)
 @TypeConverters(
@@ -47,7 +53,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 public abstract class VSDatabase extends RoomDatabase {
     private static final Logger LOG = LoggerFactory.getLogger(VSDatabase.class);
 
-    private static final String DB_NAME = "voice_select";
+    private static final String DB_NAME = "voiceSelect";
     private static VSDatabase dbInstance = null;
 
     //DAOs
@@ -56,7 +62,8 @@ public abstract class VSDatabase extends RoomDatabase {
     public abstract ColumnSpokenDAO columnSpokenDAO();
     public abstract ColumnValueDAO columnValueDAO();
     public abstract ColumnValueSpokenDAO columnValueSpokenDAO();
-
+    public abstract LayoutDAO layoutDAO();
+    public abstract LayoutColumnDAO layoutColumnDAO();
 
     public static synchronized VSDatabase getInstance(VSApplication vsApplication) {
         LOG.info("Getting database instance");
@@ -104,6 +111,8 @@ public abstract class VSDatabase extends RoomDatabase {
         final ColumnSpokenDAO columnSpokenDAO = dbInstance.columnSpokenDAO();
         final ColumnValueDAO columnValueDAO = dbInstance.columnValueDAO();
         final ColumnValueSpokenDAO columnValueSpokenDAO = dbInstance.columnValueSpokenDAO();
+        final LayoutDAO layoutDAO = dbInstance.layoutDAO();
+        final LayoutColumnDAO layoutColumnDAO = dbInstance.layoutColumnDAO();
 
         executor.execute(() -> {
             //Users
@@ -116,14 +125,14 @@ public abstract class VSDatabase extends RoomDatabase {
 
             //Columns
             int columnCount = columnDAO.findAll(new SimpleSQLiteQuery(
-                    "select * from Columns")).size();
+                    "SELECT * FROM Columns")).size();
             if (option == PopulateOption.DB_CREATE || columnCount == 0) {
                 columnDAO.insert(Column.COLUMN_NONE);
             }
 
             //ColumnValues
             int columnValueCount = columnValueDAO.findAll(
-                    new SimpleSQLiteQuery("select * from ColumnValues")).size();
+                    new SimpleSQLiteQuery("SELECT * FROM ColumnValues")).size();
             if (option == PopulateOption.DB_CREATE || columnValueCount == 0) {
                 columnValueDAO.insert(ColumnValue.COLUMN_VALUE_NONE);
             }

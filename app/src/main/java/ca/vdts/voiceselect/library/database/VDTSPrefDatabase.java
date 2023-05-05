@@ -26,7 +26,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSPref;
         VDTSConverter.class
 })
 public abstract class VDTSPrefDatabase extends RoomDatabase {
-        private static final String DB_NAME = "vdts_preferences";
+        private static final String DB_NAME = "vdtsPreferences";
         private static VDTSPrefDatabase dbInstance = null;
 
         Application application;

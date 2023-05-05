@@ -121,6 +121,11 @@
     <string name="column_value_spoken_label">Spoken</string>
     <string name="column_value_spoken_value">Enter column spoken</string>
 
+<!--  Configure Layout  -->
+    <string name="config_layout_activity_label">Configure Layout</string>
+
+
+
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>
 
