@@ -1,6 +1,9 @@
 package ca.vdts.voiceselect.library.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -65,6 +69,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Entity entity;
+        int size = dataset.size();
 
         if (filterCriteria == null) {
             entity = dataset.get(position);
@@ -81,16 +86,28 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
             holder.nameTextView.setText(entity.name());
         }
 
+        if (size == 1) {
+            holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_item);
+        } else if (position == 0) {
+            holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_first_item);
+        } else if (position == size - 1) {
+            holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_last_item);
+        } else {
+            holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_middle_item);
+        }
+
+        Drawable backgroundResource = holder.linearLayout.getBackground();;
+        int backgroundColor;
         if (position == selectedIndex) {
-            holder.linearLayout.setBackgroundColor(
-                    context.getColor(R.color.colorBackgroundSelected));
+            backgroundColor = ContextCompat.getColor(context, R.color.colorBackgroundSelected);
+            backgroundResource.setTint(backgroundColor);
         } else {
             if (position % 2 == 0) {
-                holder.linearLayout.setBackgroundColor(
-                        context.getColor(R.color.colorBackgroundPrimary));
+                backgroundColor = ContextCompat.getColor(context, R.color.colorBackgroundPrimary);
+                backgroundResource.setTint(backgroundColor);
             } else {
-                holder.linearLayout.setBackgroundColor(
-                        context.getColor(R.color.colorBackgroundCyan));
+                backgroundColor = ContextCompat.getColor(context, R.color.colorBackgroundSecondary);
+                backgroundResource.setTint(backgroundColor);
             }
         }
 

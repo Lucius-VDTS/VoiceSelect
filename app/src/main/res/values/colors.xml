@@ -15,7 +15,7 @@
 <!--  Recycler View  -->
     <color name="colorInputArea">#D9DCE1</color>
     <color name="colorOutline">#303F9F</color>
-    <color name="colorBackgroundSelected">#9FFFBD</color>
+    <color name="colorBackgroundSelected">#FF018786</color>
     <color name="colorBackgroundPrimary">#d8e7ff</color>
-    <color name="colorBackgroundCyan">#c4daff</color>
+    <color name="colorBackgroundSecondary">#c4daff</color>
 </resources>

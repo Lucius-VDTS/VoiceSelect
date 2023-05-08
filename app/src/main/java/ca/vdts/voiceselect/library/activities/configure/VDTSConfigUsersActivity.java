@@ -305,26 +305,28 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     public void deleteUserButtonOnClick() {
         VDTSUser selectedUser = userAdapter.getSelectedEntity();
 
-        if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
-            selectedUser.setActive(false);
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Handler handler = new Handler(Looper.getMainLooper());
-            executor.execute(() -> {
-                vsViewModel.updateUser(selectedUser);
-                handler.post(() -> {
-                    userAdapter.removeSelectedEntity();
-                    newUserButtonOnClick();
-                    vdtsApplication.setUserCount(userAdapter.getItemCount());
+        if (selectedUser != null) {
+            if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
+                selectedUser.setActive(false);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+                executor.execute(() -> {
+                    vsViewModel.updateUser(selectedUser);
+                    handler.post(() -> {
+                        userAdapter.removeSelectedEntity();
+                        newUserButtonOnClick();
+                        vdtsApplication.setUserCount(userAdapter.getItemCount());
+                    });
                 });
-            });
-        } else {
-            LOG.info("Delete user failed - admin/default spoken must exist");
-            vdtsApplication.displayToast(
-                    this,
-                    "Delete user failed - admin/default spoken must exist",
-                    0);
+            } else {
+                LOG.info("Delete user failed - admin/default spoken must exist");
+                vdtsApplication.displayToast(
+                        this,
+                        "Delete user failed - admin/default spoken must exist",
+                        0);
 
-            resetUserButtonOnClick();
+                resetUserButtonOnClick();
+            }
         }
     }
 

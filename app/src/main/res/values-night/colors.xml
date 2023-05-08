@@ -6,7 +6,7 @@
 <!--  Recycler View  -->
     <color name="colorInputArea">#424242</color>
     <color name="colorOutline">#303F9F</color>
-    <color name="colorBackgroundSelected">#6FDE89</color>
+    <color name="colorBackgroundSelected">#FF018786</color>
     <color name="colorBackgroundPrimary">#b2c8eb</color>
-    <color name="colorBackgroundCyan">#9ab6e3</color>
+    <color name="colorBackgroundSecondary">#9ab6e3</color>
 </resources>

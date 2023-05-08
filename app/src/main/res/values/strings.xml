@@ -124,8 +124,6 @@
 <!--  Configure Layout  -->
     <string name="config_layout_activity_label">Configure Layout</string>
 
-
-
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>
 
