@@ -108,7 +108,7 @@ public class VDTSFeedbackService {
     }
 
     /**
-     * Install Google's TTS engine from play store
+     * Install TTS engine from play store
      */
     private void installTTSEngine() {
         if (isNetworkAvailable(vdtsApplication)) {

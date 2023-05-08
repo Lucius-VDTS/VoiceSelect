@@ -13,7 +13,7 @@ public class LayoutColumnRepository extends VDTSBaseRepository<LayoutColumn> {
         super(dao);
     }
 
-    public List<VSLayoutColumn> findAllLayoutColumns() {
+    public List<LayoutColumn> findAllLayoutColumns() {
         return ((LayoutColumnDAO) dao).findAllLayoutColumns();
     }
 }

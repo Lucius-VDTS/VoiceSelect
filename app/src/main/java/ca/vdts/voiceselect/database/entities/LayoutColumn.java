@@ -10,6 +10,8 @@ import androidx.room.Index;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 @Entity(
@@ -81,5 +83,18 @@ public class LayoutColumn {
 
     public void setColumnPosition(long columnPosition) {
         this.columnPosition = columnPosition;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LayoutColumn that = (LayoutColumn) o;
+        return layoutId == that.layoutId && columnId == that.columnId && columnPosition == that.columnPosition;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(layoutId, columnId, columnPosition);
     }
 }
