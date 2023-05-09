@@ -12,6 +12,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
+/**
+ * Entity defines the LayoutsColumns junction table.
+ */
 @Entity(
         tableName = "LayoutsColumns",
         primaryKeys = { "layoutID", "columnID" },
@@ -88,11 +91,11 @@ public class LayoutColumn {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LayoutColumn that = (LayoutColumn) o;
-        return layoutID == that.layoutID && columnID == that.columnID && columnPosition == that.columnPosition;
+        return layoutID == that.layoutID && columnID == that.columnID;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(layoutID, columnID, columnPosition);
+        return Objects.hash(layoutID, columnID);
     }
 }

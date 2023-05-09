@@ -17,7 +17,8 @@ import java.util.Objects;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Entity defines the ColumnValueSpokens table.
+ * Entity defines the ColumnValueSpokens table. Entity associates values that can be placed in
+ * particular columns with their spoken terms.
  */
 @Entity(
         tableName = "ColumnValueSpokens",

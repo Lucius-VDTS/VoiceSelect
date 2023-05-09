@@ -14,15 +14,19 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.Session;
+import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.database.repositories.ColumnRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueSpokenRepository;
+import ca.vdts.voiceselect.database.repositories.EntryRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutColumnRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutRepository;
+import ca.vdts.voiceselect.database.repositories.SessionLayoutRepository;
 import ca.vdts.voiceselect.database.repositories.SessionRepository;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 
@@ -37,6 +41,8 @@ public class VSViewModel extends VDTSViewModel {
     private final LayoutRepository layoutRepository;
     private final LayoutColumnRepository layoutColumnRepository;
     private final SessionRepository sessionRepository;
+    private final SessionLayoutRepository sessionLayoutRepository;
+    private final EntryRepository entryRepository;
 
     public VSViewModel(@NonNull Application application) {
         super(application);
@@ -49,6 +55,8 @@ public class VSViewModel extends VDTSViewModel {
         layoutRepository = new LayoutRepository(vsDatabase.layoutDAO());
         layoutColumnRepository = new LayoutColumnRepository(vsDatabase.layoutColumnDAO());
         sessionRepository = new SessionRepository(vsDatabase.sessionDAO());
+        sessionLayoutRepository = new SessionLayoutRepository(vsDatabase.sessionLayoutDAO());
+        entryRepository = new EntryRepository(vsDatabase.entryDAO());
     }
 
     //Column
@@ -433,5 +441,77 @@ public class VSViewModel extends VDTSViewModel {
                         "WHERE startDate >= '" + LocalDateTime.now() + "' " +
                         "AND uid <> " + DEFAULT_UID
         ).size();
+    }
+
+    //Session Layout
+    public long insertSessionLayout(SessionLayout sessionLayout) {
+        return sessionLayoutRepository.insert(sessionLayout);
+    }
+
+    public void insertAllSessionLayouts(SessionLayout[] sessionLayouts) {
+        sessionLayoutRepository.insertAll(sessionLayouts);
+    }
+
+    public void updateSessionLayout(SessionLayout sessionLayout) {
+        sessionLayoutRepository.update(sessionLayout);
+    }
+
+    public void updateAllSessionLayouts(SessionLayout[] sessionLayouts) {
+        sessionLayoutRepository.updateAll(sessionLayouts);
+    }
+
+    public void deleteSessionLayout(SessionLayout sessionLayout) {
+        sessionLayoutRepository.delete(sessionLayout);
+    }
+
+    public void deleteAllSessionLayouts(SessionLayout[] sessionLayouts) {
+        sessionLayoutRepository.deleteAll(sessionLayouts);
+    }
+
+    public List<SessionLayout> findAllSessionLayoutsBySession(long sessionID) {
+        return sessionLayoutRepository.findAll(
+                "SELECT * FROM SessionLayouts " +
+                        "WHERE sessionID = " + sessionID
+        );
+    }
+
+    //Entry
+    public long insertEntry(Entry entry) {
+        return entryRepository.insert(entry);
+    }
+
+    public void insertAllEntries(Entry[] entries) {
+        entryRepository.insertAll(entries);
+    }
+
+    public void updateEntry(Entry entry) {
+        entryRepository.update(entry);
+    }
+
+    public void updateAllEntries(Entry[] entries) {
+        entryRepository.updateAll(entries);
+    }
+
+    public void deleteEntry(Entry entry) {
+        entryRepository.delete(entry);
+    }
+
+    public void deleteAllEntries(Entry[] entries) {
+        entryRepository.deleteAll(entries);
+    }
+
+    public List<Entry> findAllEntriesBySession(long sessionID) {
+        return entryRepository.findAll(
+                "SELECT * FROM Entries " +
+                        "WHERE sessionID " + sessionID
+        );
+    }
+
+    public LiveData<List<Entry>> findAllEntriesBySessionLive(long sessionID) {
+        return entryRepository.findAllEntriesLive(
+                "SELECT * FROM Entries " +
+                        "WHERE sessionID = " + sessionID
+
+        );
     }
 }
