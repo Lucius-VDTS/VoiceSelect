@@ -12,42 +12,40 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-
 @Entity(
         tableName = "LayoutsColumns",
-        primaryKeys = { "layoutId", "columnId" },
+        primaryKeys = { "layoutID", "columnID" },
         foreignKeys = {
                 @ForeignKey(
                         entity = Layout.class,
                         parentColumns = "uid",
-                        childColumns = "layoutId",
+                        childColumns = "layoutID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 ),
                 @ForeignKey(
                         entity = Column.class,
                         parentColumns = "uid",
-                        childColumns = "columnId",
+                        childColumns = "columnID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 )
         },
         indices = {
-                @Index(value = "layoutId"),
-                @Index(value = "columnId")
+                @Index(value = "layoutID"),
+                @Index(value = "columnID")
         }
 )
 public class LayoutColumn {
     @Expose
-    @SerializedName("layoutId")
-    @ColumnInfo(name = "layoutId")
-    private long layoutId;
+    @SerializedName("layoutID")
+    @ColumnInfo(name = "layoutID")
+    private long layoutID;
 
     @Expose
-    @SerializedName("columnId")
-    @ColumnInfo(name = "columnId")
-    private long columnId;
+    @SerializedName("columnID")
+    @ColumnInfo(name = "columnID")
+    private long columnID;
 
     @Expose
     @SerializedName("columnPosition")
@@ -55,26 +53,26 @@ public class LayoutColumn {
     private long columnPosition;
 
     //Non-Default Constructor
-    public LayoutColumn(long layoutId, long columnId, long columnPosition) {
-        this.layoutId = layoutId;
-        this.columnId = columnId;
+    public LayoutColumn(long layoutID, long columnID, long columnPosition) {
+        this.layoutID = layoutID;
+        this.columnID = columnID;
         this.columnPosition = columnPosition;
     }
 
-    public long getLayoutId() {
-        return layoutId;
+    public long getLayoutID() {
+        return layoutID;
     }
 
-    public void setLayoutId(long layoutId) {
-        this.layoutId = layoutId;
+    public void setLayoutID(long layoutID) {
+        this.layoutID = layoutID;
     }
 
-    public long getColumnId() {
-        return columnId;
+    public long getColumnID() {
+        return columnID;
     }
 
-    public void setColumnId(long columnId) {
-        this.columnId = columnId;
+    public void setColumnID(long columnID) {
+        this.columnID = columnID;
     }
 
     public long getColumnPosition() {
@@ -90,11 +88,11 @@ public class LayoutColumn {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LayoutColumn that = (LayoutColumn) o;
-        return layoutId == that.layoutId && columnId == that.columnId && columnPosition == that.columnPosition;
+        return layoutID == that.layoutID && columnID == that.columnID && columnPosition == that.columnPosition;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(layoutId, columnId, columnPosition);
+        return Objects.hash(layoutID, columnID, columnPosition);
     }
 }

@@ -40,9 +40,9 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
     private String name;
 
     @Expose
-    @SerializedName("code")
-    @ColumnInfo(name = "code")
-    private String code;
+    @SerializedName("exportCode")
+    @ColumnInfo(name = "exportCode")
+    private String exportCode;
 
     @Expose
     @SerializedName("initials")
@@ -50,9 +50,9 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
     private String initials;
 
     @Expose
-    @SerializedName("prefix")
-    @ColumnInfo(name = "prefix")
-    private String prefix;
+    @SerializedName("sessionPrefix")
+    @ColumnInfo(name = "sessionPrefix")
+    private String sessionPrefix;
 
     @Expose
     @SerializedName("authority")
@@ -100,14 +100,14 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
             "", 1, false, 1f, 1f);
 
     //Default Constructor
-    public VDTSUser(long uid, String name, String code, String initials, String prefix,
+    public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
                     int authority, boolean primary, String password, int feedback,
                     boolean feedbackQueue, float feedbackRate, float feedbackPitch) {
         this.uid = uid;
         this.name = name;
-        this.code = code;
+        this.exportCode = exportCode;
         this.initials = initials;
-        this.prefix = prefix;
+        this.sessionPrefix = sessionPrefix;
         this.authority = authority;
         this.primary = primary;
         this.password = password;
@@ -120,15 +120,15 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
 
     //Non-Default Constructor
     @Ignore
-    public VDTSUser(long uid, String name, String code, String initials, String prefix,
+    public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
                     int authority, boolean primary, String password, int feedback,
                     boolean feedbackQueue, float feedbackRate, float feedbackPitch,
                     boolean active) {
         this.uid = uid;
         this.name = name;
-        this.code = code;
+        this.exportCode = exportCode;
         this.initials = initials;
-        this.prefix = prefix;
+        this.sessionPrefix = sessionPrefix;
         this.authority = authority;
         this.primary = primary;
         this.password = password;
@@ -141,10 +141,10 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
 
     //Minimal Constructor - id is 0 until entity is saved
     @Ignore
-    public VDTSUser(String name, String code) {
+    public VDTSUser(String name, String exportCode) {
         this.uid = 0L;
         this.name = name;
-        this.code = code;
+        this.exportCode = exportCode;
         this.active = true;
     }
 
@@ -152,7 +152,7 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
     @Ignore
     public VDTSUser(VDTSUser copy) {
         this(
-            copy.getUid(), copy.getName(), copy.getCode(), copy.getInitials(), copy.getPrefix(),
+            copy.getUid(), copy.getName(), copy.getExportCode(), copy.getInitials(), copy.getSessionPrefix(),
             copy.getAuthority(), copy.isPrimary(), copy.getPassword(), copy.getFeedback(),
             copy.isFeedbackQueue(), copy.getFeedbackRate(), copy.getFeedbackPitch(), copy.isActive()
         );
@@ -160,12 +160,12 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
 
     //Typical Constructor (ex - VoiceSelect) - id is 0 until entity is saved
     @Ignore
-    public VDTSUser(String name, String code, String prefix, int authority, boolean primary,
+    public VDTSUser(String name, String exportCode, String sessionPrefix, int authority, boolean primary,
                     String password) {
         this.uid = 0L;
         this.name = name;
-        this.code = code;
-        this.prefix = prefix;
+        this.exportCode = exportCode;
+        this.sessionPrefix = sessionPrefix;
         this.authority = authority;
         this.primary = primary;
         this.password = password;
@@ -192,12 +192,12 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
+    public String getExportCode() {
+        return exportCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setExportCode(String exportCode) {
+        this.exportCode = exportCode;
     }
 
     public String getInitials() {
@@ -208,12 +208,12 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
         this.initials = initials;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public String getSessionPrefix() {
+        return sessionPrefix;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setSessionPrefix(String sessionPrefix) {
+        this.sessionPrefix = sessionPrefix;
     }
 
     public int getAuthority() {
@@ -302,11 +302,11 @@ public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammar
         if (this == o) return true;
         if (!(o instanceof VDTSUser)) return false;
         VDTSUser vdtsUser = (VDTSUser) o;
-        return Objects.equals(getCode(), vdtsUser.getCode());
+        return Objects.equals(getExportCode(), vdtsUser.getExportCode());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCode());
+        return Objects.hash(getExportCode());
     }
 }

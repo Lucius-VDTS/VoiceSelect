@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "37e77f3846df3968e9068f42a355cd85",
+    "identityHash": "ba184148bd1e2ad32be81daa41c5cb6d",
     "entities": [
       {
         "tableName": "Users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `code` TEXT, `initials` TEXT, `prefix` TEXT, `authority` INTEGER NOT NULL, `primary` INTEGER NOT NULL, `password` TEXT, `feedback` INTEGER NOT NULL, `feedbackQueue` INTEGER NOT NULL, `feedbackRate` REAL NOT NULL, `feedbackPitch` REAL NOT NULL, `active` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `exportCode` TEXT, `initials` TEXT, `sessionPrefix` TEXT, `authority` INTEGER NOT NULL, `primary` INTEGER NOT NULL, `password` TEXT, `feedback` INTEGER NOT NULL, `feedbackQueue` INTEGER NOT NULL, `feedbackRate` REAL NOT NULL, `feedbackPitch` REAL NOT NULL, `active` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -21,8 +21,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "code",
-            "columnName": "code",
+            "fieldPath": "exportCode",
+            "columnName": "exportCode",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -33,8 +33,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "prefix",
-            "columnName": "prefix",
+            "fieldPath": "sessionPrefix",
+            "columnName": "sessionPrefix",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -108,7 +108,7 @@
       },
       {
         "tableName": "Columns",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -117,8 +117,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "userId",
+            "fieldPath": "userID",
+            "columnName": "userID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -161,13 +161,13 @@
         },
         "indices": [
           {
-            "name": "index_Columns_userId",
+            "name": "index_Columns_userID",
             "unique": false,
             "columnNames": [
-              "userId"
+              "userID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Columns_userId` ON `${TABLE_NAME}` (`userId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Columns_userID` ON `${TABLE_NAME}` (`userID`)"
           }
         ],
         "foreignKeys": [
@@ -176,7 +176,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "userId"
+              "userID"
             ],
             "referencedColumns": [
               "uid"
@@ -186,7 +186,7 @@
       },
       {
         "tableName": "ColumnSpokens",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `columnId` INTEGER NOT NULL, `spoken` TEXT, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnId`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `spoken` TEXT, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -195,14 +195,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "userId",
+            "fieldPath": "userID",
+            "columnName": "userID",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "columnId",
-            "columnName": "columnId",
+            "fieldPath": "columnID",
+            "columnName": "columnID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -221,22 +221,22 @@
         },
         "indices": [
           {
-            "name": "index_ColumnSpokens_userId",
+            "name": "index_ColumnSpokens_userID",
             "unique": false,
             "columnNames": [
-              "userId"
+              "userID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnSpokens_userId` ON `${TABLE_NAME}` (`userId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnSpokens_userID` ON `${TABLE_NAME}` (`userID`)"
           },
           {
-            "name": "index_ColumnSpokens_columnId",
+            "name": "index_ColumnSpokens_columnID",
             "unique": false,
             "columnNames": [
-              "columnId"
+              "columnID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnSpokens_columnId` ON `${TABLE_NAME}` (`columnId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnSpokens_columnID` ON `${TABLE_NAME}` (`columnID`)"
           }
         ],
         "foreignKeys": [
@@ -245,7 +245,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "userId"
+              "userID"
             ],
             "referencedColumns": [
               "uid"
@@ -256,7 +256,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "columnId"
+              "columnID"
             ],
             "referencedColumns": [
               "uid"
@@ -266,7 +266,7 @@
       },
       {
         "tableName": "ColumnValues",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `columnId` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnId`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -275,14 +275,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "userId",
+            "fieldPath": "userID",
+            "columnName": "userID",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "columnId",
-            "columnName": "columnId",
+            "fieldPath": "columnID",
+            "columnName": "columnID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -325,22 +325,22 @@
         },
         "indices": [
           {
-            "name": "index_ColumnValues_userId",
+            "name": "index_ColumnValues_userID",
             "unique": false,
             "columnNames": [
-              "userId"
+              "userID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValues_userId` ON `${TABLE_NAME}` (`userId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValues_userID` ON `${TABLE_NAME}` (`userID`)"
           },
           {
-            "name": "index_ColumnValues_columnId",
+            "name": "index_ColumnValues_columnID",
             "unique": false,
             "columnNames": [
-              "columnId"
+              "columnID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValues_columnId` ON `${TABLE_NAME}` (`columnId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValues_columnID` ON `${TABLE_NAME}` (`columnID`)"
           }
         ],
         "foreignKeys": [
@@ -349,7 +349,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "userId"
+              "userID"
             ],
             "referencedColumns": [
               "uid"
@@ -360,7 +360,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "columnId"
+              "columnID"
             ],
             "referencedColumns": [
               "uid"
@@ -370,7 +370,7 @@
       },
       {
         "tableName": "ColumnValueSpokens",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `columnValueId` INTEGER NOT NULL, `spoken` TEXT, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnValueId`) REFERENCES `ColumnValues`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `columnValueID` INTEGER NOT NULL, `spoken` TEXT, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnValueID`) REFERENCES `ColumnValues`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -379,14 +379,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "userId",
+            "fieldPath": "userID",
+            "columnName": "userID",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "columnValueId",
-            "columnName": "columnValueId",
+            "fieldPath": "columnValueID",
+            "columnName": "columnValueID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -405,22 +405,22 @@
         },
         "indices": [
           {
-            "name": "index_ColumnValueSpokens_userId",
+            "name": "index_ColumnValueSpokens_userID",
             "unique": false,
             "columnNames": [
-              "userId"
+              "userID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValueSpokens_userId` ON `${TABLE_NAME}` (`userId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValueSpokens_userID` ON `${TABLE_NAME}` (`userID`)"
           },
           {
-            "name": "index_ColumnValueSpokens_columnValueId",
+            "name": "index_ColumnValueSpokens_columnValueID",
             "unique": false,
             "columnNames": [
-              "columnValueId"
+              "columnValueID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValueSpokens_columnValueId` ON `${TABLE_NAME}` (`columnValueId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ColumnValueSpokens_columnValueID` ON `${TABLE_NAME}` (`columnValueID`)"
           }
         ],
         "foreignKeys": [
@@ -429,7 +429,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "userId"
+              "userID"
             ],
             "referencedColumns": [
               "uid"
@@ -440,7 +440,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "columnValueId"
+              "columnValueID"
             ],
             "referencedColumns": [
               "uid"
@@ -450,7 +450,7 @@
       },
       {
         "tableName": "Layouts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `createdDate` TEXT, `name` TEXT, `nameCode` TEXT, `exportCode` TEXT, `active` INTEGER NOT NULL, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -459,8 +459,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "userId",
+            "fieldPath": "userID",
+            "columnName": "userID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -503,13 +503,13 @@
         },
         "indices": [
           {
-            "name": "index_Layouts_userId",
+            "name": "index_Layouts_userID",
             "unique": false,
             "columnNames": [
-              "userId"
+              "userID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_Layouts_userId` ON `${TABLE_NAME}` (`userId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Layouts_userID` ON `${TABLE_NAME}` (`userID`)"
           }
         ],
         "foreignKeys": [
@@ -518,7 +518,7 @@
             "onDelete": "SET NULL",
             "onUpdate": "CASCADE",
             "columns": [
-              "userId"
+              "userID"
             ],
             "referencedColumns": [
               "uid"
@@ -528,17 +528,17 @@
       },
       {
         "tableName": "LayoutsColumns",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`layoutId` INTEGER NOT NULL, `columnId` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, PRIMARY KEY(`layoutId`, `columnId`), FOREIGN KEY(`layoutId`) REFERENCES `Layouts`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnId`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`layoutID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, PRIMARY KEY(`layoutID`, `columnID`), FOREIGN KEY(`layoutID`) REFERENCES `Layouts`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "layoutId",
-            "columnName": "layoutId",
+            "fieldPath": "layoutID",
+            "columnName": "layoutID",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "columnId",
-            "columnName": "columnId",
+            "fieldPath": "columnID",
+            "columnName": "columnID",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -552,28 +552,28 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "layoutId",
-            "columnId"
+            "layoutID",
+            "columnID"
           ]
         },
         "indices": [
           {
-            "name": "index_LayoutsColumns_layoutId",
+            "name": "index_LayoutsColumns_layoutID",
             "unique": false,
             "columnNames": [
-              "layoutId"
+              "layoutID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_layoutId` ON `${TABLE_NAME}` (`layoutId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_layoutID` ON `${TABLE_NAME}` (`layoutID`)"
           },
           {
-            "name": "index_LayoutsColumns_columnId",
+            "name": "index_LayoutsColumns_columnID",
             "unique": false,
             "columnNames": [
-              "columnId"
+              "columnID"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_columnId` ON `${TABLE_NAME}` (`columnId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LayoutsColumns_columnID` ON `${TABLE_NAME}` (`columnID`)"
           }
         ],
         "foreignKeys": [
@@ -582,7 +582,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "layoutId"
+              "layoutID"
             ],
             "referencedColumns": [
               "uid"
@@ -593,7 +593,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "columnId"
+              "columnID"
             ],
             "referencedColumns": [
               "uid"
@@ -605,7 +605,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '37e77f3846df3968e9068f42a355cd85')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ba184148bd1e2ad32be81daa41c5cb6d')"
     ]
   }
 }

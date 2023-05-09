@@ -333,8 +333,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 columnExportCodeEditText.setText(selectedColumn.getExportCode());
 
                 final List<ColumnSpoken> spokenList = columnSpokenList.stream()
-                        .filter(spoken -> spoken.getColumnId() == selectedColumn.getUid())
-                        .filter(spoken -> spoken.getUserId() == currentUser.getUid())
+                        .filter(spoken -> spoken.getColumnID() == selectedColumn.getUid())
+                        .filter(spoken -> spoken.getUserID() == currentUser.getUid())
                         .collect(Collectors.toList());
 
                 String spokens = "";
@@ -389,7 +389,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             final List<String> spokenList = getFormattedColumnSpokenList();
 
             for (ColumnSpoken columnSpoken : columnSpokenList) {
-                if (columnSpoken.getColumnId() != column.getUid()) {
+                if (columnSpoken.getColumnID() != column.getUid()) {
                     for (String spoken : spokenList) {
                         if (columnSpoken.getSpoken().equalsIgnoreCase(spoken)) {
                             LOG.info("Column's spokens must be unique");
@@ -448,8 +448,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             }
         } else {
             final List<ColumnSpoken> existingSpokenList = columnSpokenList.stream()
-                    .filter(spoken -> spoken.getColumnId() == column.getUid())
-                    .filter(spoken -> spoken.getUserId() == column.getUserId())
+                    .filter(spoken -> spoken.getColumnID() == column.getUid())
+                    .filter(spoken -> spoken.getUserID() == column.getUserID())
                     .collect(Collectors.toList());
 
             //Delete spokens that no longer exist

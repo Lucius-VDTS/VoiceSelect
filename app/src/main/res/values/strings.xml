@@ -50,10 +50,10 @@
 
     <string name="user_name_label">Name</string>
     <string name="user_name_value">Enter user name</string>
+    <string name="user_prefix_label">Session Prefix</string>
+    <string name="user_prefix_value">Enter session prefix</string>
     <string name="user_export_code_label">Code</string>
     <string name="user_export_code_value">Enter export code</string>
-    <string name="user_prefix_label">Prefix</string>
-    <string name="user_prefix_value">Enter prefix</string>
 
     <string name="user_password_label">Password</string>
     <string name="user_password_value">Enter admin password</string>
@@ -93,7 +93,7 @@
 
     <string name="column_name_label">Name</string>
     <string name="column_name_value">Enter column name</string>
-    <string name="column_name_code_label">Abbr.</string>
+    <string name="column_name_code_label">Abbreviation</string>
     <string name="column_name_code_value">Enter column abbreviation</string>
     <string name="column_export_label">Code</string>
     <string name="column_export_value">Enter export code</string>
@@ -113,7 +113,7 @@
 
     <string name="column_value_name_label">Name</string>
     <string name="column_value_name_value">Enter column name</string>
-    <string name="column_value_name_code_label">Abbr.</string>
+    <string name="column_value_name_code_label">Abbreviation</string>
     <string name="column_value_name_code_value">Enter column abbreviation</string>
     <string name="column_value_export_label">Code</string>
     <string name="column_value_export_value">Enter export code</string>
@@ -121,11 +121,22 @@
     <string name="column_value_spoken_label">Spoken</string>
     <string name="column_value_spoken_value">Enter column spoken</string>
 
-<!--  Configure Layout  -->
+<!--  Configure Layout Activity  -->
     <string name="config_layout_activity_label">Configure Layout</string>
 
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>
+
+<!--  Data Gathering Activity  -->
+    <string name="data_gathering_activity_label">Data Gathering</string>
+
+    <string name="data_gathering_index_label">#</string>
+    <string name="data_gathering_comment_label">CMT</string>
+    <string name="data_gathering_photo_label">PIC</string>
+
+    <string name="data_gathering_session_label">Session:</string>
+    <string name="data_gathering_entries_label">Entries:</string>
+    <string name="data_gathering_save_button">Save</string>
 
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>

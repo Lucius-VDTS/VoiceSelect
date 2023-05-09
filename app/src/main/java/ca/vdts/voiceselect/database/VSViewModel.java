@@ -7,25 +7,27 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import ca.vdts.voiceselect.database.daos.LayoutDAO;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.repositories.ColumnRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutColumnRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutRepository;
+import ca.vdts.voiceselect.database.repositories.SessionRepository;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 
 /**
- * VoiceSelect view model allows views to access data from entities.
+ * VoiceSelect view model allows views to access data from tables.
  */
 public class VSViewModel extends VDTSViewModel {
     private final ColumnRepository columnRepository;
@@ -34,6 +36,7 @@ public class VSViewModel extends VDTSViewModel {
     private final ColumnValueSpokenRepository columnValueSpokenRepository;
     private final LayoutRepository layoutRepository;
     private final LayoutColumnRepository layoutColumnRepository;
+    private final SessionRepository sessionRepository;
 
     public VSViewModel(@NonNull Application application) {
         super(application);
@@ -45,6 +48,7 @@ public class VSViewModel extends VDTSViewModel {
         columnValueSpokenRepository = new ColumnValueSpokenRepository(vsDatabase.columnValueSpokenDAO());
         layoutRepository = new LayoutRepository(vsDatabase.layoutDAO());
         layoutColumnRepository = new LayoutColumnRepository(vsDatabase.layoutColumnDAO());
+        sessionRepository = new SessionRepository(vsDatabase.sessionDAO());
     }
 
     //Column
@@ -77,12 +81,12 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
-    public Column findFirstColumn(Long userId, String columnName, String columnNameCode,
+    public Column findFirstColumn(Long userID, String columnName, String columnNameCode,
                                   String columnExportCode) {
         return columnRepository.find(
                 "SELECT * FROM Columns " +
                         "WHERE active = 1 " +
-                        "AND userId = " + userId + " " +
+                        "AND userID = " + userID + " " +
                         "AND columnName = '" + columnName + "' " +
                         "AND columnNameCode = '" + columnNameCode + "' " +
                         "AND columnExportCode = '" + columnExportCode + "'"
@@ -106,23 +110,13 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
-    public List<Column> findAllColumnsBySession(long sessionId) {
+    public List<Column> findAllColumnsBySession(long sessionID) {
         return columnRepository.findAll(
                 "SELECT DISTINCT C.* FROM Columns AS C " +
-                        "LEFT JOIN ColumnValues AS CV ON CV.columnId = C.uid " +
-                        "LEFT JOIN EntryValues AS EV ON EV.columnValueId = CV.uid " +
-                        "LEFT JOIN Entries AS E ON E.uid = EV.entryId " +
-                        "WHERE E.sessionId = " + sessionId + " " +
-                        "AND C.uid <> " + DEFAULT_UID
-        );
-    }
-
-    //TODO - Is this needed?
-    public List<Column> findAllColumnsByHeader(long headerId) {
-        return columnRepository.findAll(
-                "SELECT C.* FROM Columns AS C " +
-                        "LEFT JOIN HeaderColumns AS HC ON HC.columnId = C.uid " +
-                        "WHERE HC.headerId = " + headerId + " " +
+                        "LEFT JOIN ColumnValues AS CV ON CV.columnID = C.uid " +
+                        "LEFT JOIN EntryValues AS EV ON EV.columnValueID = CV.uid " +
+                        "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
+                        "WHERE E.sessionID = " + sessionID + " " +
                         "AND C.uid <> " + DEFAULT_UID
         );
     }
@@ -160,25 +154,25 @@ public class VSViewModel extends VDTSViewModel {
         return columnSpokenRepository.findAllColumnSpokensLive();
     }
 
-    public List<ColumnSpoken> findAllColumnSpokensByUser(long userId) {
+    public List<ColumnSpoken> findAllColumnSpokensByUser(long userID) {
         return columnSpokenRepository.findAll(
                 "SELECT * FROM ColumnSpokens " +
-                        "WHERE userId = " + userId
+                        "WHERE userID = " + userID
         );
     }
 
-    public List<ColumnSpoken> findAllColumnSpokensByColumn(long columnId) {
+    public List<ColumnSpoken> findAllColumnSpokensByColumn(long columnID) {
         return columnSpokenRepository.findAll(
                 "SELECT * FROM ColumnSpokens " +
-                        "WHERE columnId = " + columnId
+                        "WHERE columnID = " + columnID
         );
     }
 
-    public List<ColumnSpoken> findAllColumnSpokensByColumnAndUser(long columnId, long userId) {
+    public List<ColumnSpoken> findAllColumnSpokensByColumnAndUser(long columnID, long userID) {
         return columnSpokenRepository.findAll(
                 "SELECT * FROM ColumnSpokens " +
-                        "WHERE columnId = " + columnId + " " +
-                        "AND userId = " + userId
+                        "WHERE columnID = " + columnID + " " +
+                        "AND userID = " + userID
         );
     }
 
@@ -218,27 +212,27 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueRepository.findAllColumnValuesLive();
     }
 
-    public List<ColumnValue> findAllColumnValuesByColumn(long columnId) {
+    public List<ColumnValue> findAllColumnValuesByColumn(long columnID) {
         return columnValueRepository.findAll(
                 "SELECT * FROM ColumnValues " +
-                        "WHERE columnId = " + columnId
+                        "WHERE columnID = " + columnID
         );
     }
 
-    public List<ColumnValue> findAllActiveColumnValuesByColumn(long columnId) {
+    public List<ColumnValue> findAllActiveColumnValuesByColumn(long columnID) {
         return columnValueRepository.findAll(
                 "SELECT * FROM ColumnValues " +
                         "WHERE active = 1 " +
-                        "AND columnId = " + columnId
+                        "AND columnID = " + columnID
         );
     }
 
-    public List<ColumnValue> findAllColumnValuesBySession(long sessionId) {
+    public List<ColumnValue> findAllColumnValuesBySession(long sessionID) {
         return columnValueRepository.findAll(
                 "SELECT CV.* FROM ColumnValues AS CV " +
-                        "LEFT JOIN EntryValues AS EV ON EV.columnValueId = CV.uid " +
-                        "LEFT JOIN Entries AS E ON E.uid = EV.entryId " +
-                        "WHERE E.sessionId = " + sessionId + " " +
+                        "LEFT JOIN EntryValues AS EV ON EV.columnValueID = CV.uid " +
+                        "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
+                        "WHERE E.sessionID = " + sessionID + " " +
                         "AND E.uid <> " + DEFAULT_UID
         );
     }
@@ -276,39 +270,39 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueSpokenRepository.findAllColumnValueSpokensLive();
     }
 
-    public List<ColumnValueSpoken> findAllColumnValueSpokensByColumn(long columnId) {
+    public List<ColumnValueSpoken> findAllColumnValueSpokensByColumn(long columnID) {
         return columnValueSpokenRepository.findAll(
                 "SELECT CVS.* FROM ColumnValueSpokens AS CVS " +
-                        "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueId " +
-                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnId " +
-                        "WHERE C.uid = " + columnId
+                        "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueID " +
+                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnID " +
+                        "WHERE C.uid = " + columnID
         );
     }
 
-    public List<ColumnValueSpoken> findAllColumnValueSpokensByUser(long userId) {
+    public List<ColumnValueSpoken> findAllColumnValueSpokensByUser(long userID) {
         return columnValueSpokenRepository.findAll(
                 "SELECT * FROM ColumnValueSpokens " +
-                        "WHERE userId = " + userId
+                        "WHERE userID = " + userID
         );
     }
 
     public List<ColumnValueSpoken> findAllColumnValueSpokensByColumnValueAndUser(
-            long columnValueId, long userId) {
+            long columnValueID, long userID) {
         return columnValueSpokenRepository.findAll(
                 "SELECT * FROM ColumnValueSpokens " +
-                        "WHERE columnValueId = " + columnValueId + " " +
-                        "AND userId = " + userId
+                        "WHERE columnValueID = " + columnValueID + " " +
+                        "AND userID = " + userID
         );
     }
 
     public List<ColumnValueSpoken> findAllColumnValueSpokensByColumnAndUser(
-            long columnId, long userId) {
+            long columnID, long userID) {
         return columnValueSpokenRepository.findAll(
                 "SELECT CVS.* FROM ColumnValueSpokens AS CVS " +
-                        "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueId " +
-                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnId " +
-                        "WHERE C.uid = " + columnId + " " +
-                        "AND VS.userID = " + userId
+                        "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueID " +
+                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnID " +
+                        "WHERE C.uid = " + columnID + " " +
+                        "AND VS.userID = " + userID
         );
     }
 
@@ -321,19 +315,19 @@ public class VSViewModel extends VDTSViewModel {
         layoutRepository.insertAll(layouts);
     }
 
-    public void updateLayout (Layout layout) {
+    public void updateLayout(Layout layout) {
         layoutRepository.update(layout);
     }
 
-    public void updateAllLayouts (Layout[] layouts) {
+    public void updateAllLayouts(Layout[] layouts) {
         layoutRepository.updateAll(layouts);
     }
 
-    public void deleteLayout (Layout layout) {
+    public void deleteLayout(Layout layout) {
         layoutRepository.delete(layout);
     }
 
-    public void deleteAllLayouts (Layout[] layouts) {
+    public void deleteAllLayouts(Layout[] layouts) {
         layoutRepository.deleteAll(layouts);
     }
 
@@ -368,19 +362,76 @@ public class VSViewModel extends VDTSViewModel {
         layoutColumnRepository.insertAll(layoutColumns);
     }
 
-    public void updateLayoutColumn (LayoutColumn layoutColumn) {
+    public void updateLayoutColumn(LayoutColumn layoutColumn) {
         layoutColumnRepository.update(layoutColumn);
     }
 
-    public void updateAllLayoutColumns (LayoutColumn[] layoutColumns) {
+    public void updateAllLayoutColumns(LayoutColumn[] layoutColumns) {
         layoutColumnRepository.updateAll(layoutColumns);
     }
 
-    public void deleteLayoutColumn (LayoutColumn layoutColumn) {
+    public void deleteLayoutColumn(LayoutColumn layoutColumn) {
         layoutColumnRepository.delete(layoutColumn);
     }
 
-    public void deleteAllLayoutColumns (LayoutColumn[] layoutColumns) {
+    public void deleteAllLayoutColumns(LayoutColumn[] layoutColumns) {
         layoutColumnRepository.deleteAll(layoutColumns);
+    }
+
+    //Session
+    public long insertSession(Session session) {
+        return sessionRepository.insert(session);
+    }
+
+    public void insertAllSessions(Session[] sessions) {
+        sessionRepository.insertAll(sessions);
+    }
+
+    public void updateSession(Session session) {
+        sessionRepository.update(session);
+    }
+
+    public void updateAllSessions(Session[] sessions) {
+        sessionRepository.updateAll(sessions);
+    }
+
+    public void deleteSession(Session session) {
+        sessionRepository.delete(session);
+    }
+
+    public void deleteAllSessions(Session[] sessions) {
+        sessionRepository.deleteAll(sessions);
+    }
+
+    public Session findSessionByID(long uid) {
+        return sessionRepository.find(
+                "SELECT * FROM Sessions " +
+                        "WHERE uid = " + uid
+        );
+    }
+
+    public List<Session> findAllSessionsOrderByStartDate() {
+        return sessionRepository.findAll(
+                "SELECT * FROM Sessions " +
+                        "WHERE uid <> " + DEFAULT_UID + " " +
+                        "ORDER BY startDate DESC"
+        );
+    }
+
+    public List<Session> findAllOpenSessionsOrderByStartDate() {
+        return sessionRepository.findAll(
+                "SELECT * FROM Sessions " +
+                        "WHERE uid <> " + DEFAULT_UID + " " +
+                        "AND endDate IS NULL " +
+                        "ORDER BY startDate DESC"
+        );
+    }
+
+    public int countSessionsStartedToday() {
+        return sessionRepository.findAll(
+                "SELECT * FROM Sessions " +
+                        "WHERE startDate >= '" + LocalDateTime.now() + "' " +
+                        "AND uid <> " + DEFAULT_UID
+        ).size();
     }
 }

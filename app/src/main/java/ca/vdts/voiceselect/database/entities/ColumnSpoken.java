@@ -28,21 +28,21 @@ import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
                 @ForeignKey(
                         entity = VDTSUser.class,
                         parentColumns = "uid",
-                        childColumns = "userId",
+                        childColumns = "userID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 ),
                 @ForeignKey(
                         entity = Column.class,
                         parentColumns = "uid",
-                        childColumns = "columnId",
+                        childColumns = "columnID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 )
         },
         indices = {
-                @Index(value = "userId"),
-                @Index(value = "columnId")
+                @Index(value = "userID"),
+                @Index(value = "columnID")
         }
 )
 public class ColumnSpoken implements VDTSBnfGrammarInterface {
@@ -52,14 +52,14 @@ public class ColumnSpoken implements VDTSBnfGrammarInterface {
     private long uid;
 
     @Expose
-    @SerializedName("userId")
-    @ColumnInfo(name = "userId")
-    private long userId;
+    @SerializedName("userID")
+    @ColumnInfo(name = "userID")
+    private long userID;
 
     @Expose
-    @SerializedName("columnId")
-    @ColumnInfo(name = "columnId")
-    private long columnId;
+    @SerializedName("columnID")
+    @ColumnInfo(name = "columnID")
+    private long columnID;
 
     @Expose
     @SerializedName("spoken")
@@ -67,10 +67,10 @@ public class ColumnSpoken implements VDTSBnfGrammarInterface {
     private String spoken;
 
     //Non-Default Constructor
-    public ColumnSpoken(long uid, long userId, long columnId, String spoken) {
+    public ColumnSpoken(long uid, long userID, long columnID, String spoken) {
         this.uid = uid;
-        this.userId = userId;
-        this.columnId = columnId;
+        this.userID = userID;
+        this.columnID = columnID;
         this.spoken = spoken;
     }
 
@@ -88,20 +88,20 @@ public class ColumnSpoken implements VDTSBnfGrammarInterface {
         this.uid = uid;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getUserID() {
+        return userID;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
-    public long getColumnId() {
-        return columnId;
+    public long getColumnID() {
+        return columnID;
     }
 
-    public void setColumnId(long columnId) {
-        this.columnId = columnId;
+    public void setColumnID(long columnID) {
+        this.columnID = columnID;
     }
 
     public String getSpoken() {
@@ -122,13 +122,13 @@ public class ColumnSpoken implements VDTSBnfGrammarInterface {
         if (this == o) return true;
         if (!(o instanceof ColumnSpoken)) return false;
         ColumnSpoken that = (ColumnSpoken) o;
-        return getUserId() == that.getUserId() &&
-                getColumnId() == that.getColumnId() &&
+        return getUserID() == that.getUserID() &&
+                getColumnID() == that.getColumnID() &&
                 Objects.equals(getSpoken(), that.getSpoken());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getColumnId(), getSpoken());
+        return Objects.hash(getUserID(), getColumnID(), getSpoken());
     }
 }

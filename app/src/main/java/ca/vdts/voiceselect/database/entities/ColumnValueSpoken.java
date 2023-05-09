@@ -2,8 +2,6 @@ package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-import android.content.Context;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -17,8 +15,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
-import ca.vdts.voiceselect.library.services.VDTSBNFService;
 
 /**
  * Entity defines the ColumnValueSpokens table.
@@ -29,21 +25,21 @@ import ca.vdts.voiceselect.library.services.VDTSBNFService;
                 @ForeignKey(
                         entity = VDTSUser.class,
                         parentColumns = "uid",
-                        childColumns = "userId",
+                        childColumns = "userID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 ),
                 @ForeignKey(
                         entity = ColumnValue.class,
                         parentColumns = "uid",
-                        childColumns = "columnValueId",
+                        childColumns = "columnValueID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 )
         },
         indices = {
-                @Index(value = "userId"),
-                @Index(value = "columnValueId")
+                @Index(value = "userID"),
+                @Index(value = "columnValueID")
         }
 )
 public class ColumnValueSpoken {
@@ -53,14 +49,14 @@ public class ColumnValueSpoken {
     private long uid;
 
     @Expose
-    @SerializedName("userId")
-    @ColumnInfo(name = "userId")
-    private long userId;
+    @SerializedName("userID")
+    @ColumnInfo(name = "userID")
+    private long userID;
 
     @Expose
-    @SerializedName("columnValueId")
-    @ColumnInfo(name = "columnValueId")
-    private long columnValueId;
+    @SerializedName("columnValueID")
+    @ColumnInfo(name = "columnValueID")
+    private long columnValueID;
 
     @Expose
     @SerializedName("spoken")
@@ -68,17 +64,17 @@ public class ColumnValueSpoken {
     private String spoken;
 
     //Non-Default Constructor
-    public ColumnValueSpoken(long uid, long userId, long columnValueId, String spoken) {
+    public ColumnValueSpoken(long uid, long userID, long columnValueID, String spoken) {
         this.uid = uid;
-        this.userId = userId;
-        this.columnValueId = columnValueId;
+        this.userID = userID;
+        this.columnValueID = columnValueID;
         this.spoken = spoken;
     }
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public ColumnValueSpoken(long userId, long columnValueId, String spoken) {
-        this(0L, userId, columnValueId, spoken);
+    public ColumnValueSpoken(long userID, long columnValueID, String spoken) {
+        this(0L, userID, columnValueID, spoken);
     }
 
     public long getUid() {
@@ -89,20 +85,20 @@ public class ColumnValueSpoken {
         this.uid = uid;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getUserID() {
+        return userID;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
-    public long getColumnValueId() {
-        return columnValueId;
+    public long getColumnValueID() {
+        return columnValueID;
     }
 
-    public void setColumnValueId(long columnValueId) {
-        this.columnValueId = columnValueId;
+    public void setColumnValueID(long columnValueID) {
+        this.columnValueID = columnValueID;
     }
 
     public String getSpoken() {
@@ -118,13 +114,13 @@ public class ColumnValueSpoken {
         if (this == o) return true;
         if (!(o instanceof ColumnValueSpoken)) return false;
         ColumnValueSpoken that = (ColumnValueSpoken) o;
-        return getUserId() == that.getUserId() &&
-                getColumnValueId() == that.getColumnValueId() &&
+        return getUserID() == that.getUserID() &&
+                getColumnValueID() == that.getColumnValueID() &&
                 Objects.equals(getSpoken(), that.getSpoken());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getColumnValueId(), getSpoken());
+        return Objects.hash(getUserID(), getColumnValueID(), getSpoken());
     }
 }

@@ -16,12 +16,12 @@ public class VDTSUserRepository extends VDTSBaseRepository<VDTSUser> {
         super(dao);
     }
 
-    public VDTSUser findUserById(long uid) {
-        return ((VDTSUserDAO)this.dao).findUserById(uid);
+    public VDTSUser findUserByID(long uid) {
+        return ((VDTSUserDAO)this.dao).findUserByID(uid);
     }
 
-    public VDTSUser findUserByCode(String code) {
-        return ((VDTSUserDAO)this.dao).findUserByCode(code);
+    public VDTSUser findUserByExportCode(String exportCode) {
+        return ((VDTSUserDAO)this.dao).findUserByCode(exportCode);
     }
 
     public List<VDTSUser> findAllActiveUsers() {

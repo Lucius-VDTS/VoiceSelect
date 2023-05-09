@@ -51,5 +51,11 @@
 
         <activity android:name=".activities.configure.ConfigColumnValuesActivity"
             android:label="@string/config_values_activity_label" />
+
+        <activity android:name=".activities.configure.ConfigLayoutsActivity"
+            android:label="@string/config_layout_activity_label" />
+
+        <activity android:name=".activities.DataGatheringActivity"
+            android:label="@string/data_gathering_activity_label" />
     </application>
 </manifest>

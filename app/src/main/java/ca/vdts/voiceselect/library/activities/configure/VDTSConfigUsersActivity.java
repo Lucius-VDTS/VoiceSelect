@@ -191,8 +191,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (selectedUser != null) {
                 //Update existing user
                 selectedUser.setName(userNameEditText.getText().toString().trim());
-                selectedUser.setPrefix(userPrefixEditText.getText().toString().trim());
-                selectedUser.setCode(userExportCodeEditText.getText().toString().trim());
+                selectedUser.setSessionPrefix(userPrefixEditText.getText().toString().trim());
+                selectedUser.setExportCode(userExportCodeEditText.getText().toString().trim());
                 selectedUser.setPassword(userPasswordEditText.getText().toString().trim());
                 selectedUser.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
                 selectedUser.setPrimary(userPrimarySwitch.isChecked());
@@ -239,8 +239,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     Handler handler = new Handler(Looper.getMainLooper());
                     executor.execute(() -> {
-                        final long userId = vsViewModel.insertUser(vdtsUser);
-                        vdtsUser.setUid(userId);
+                        final long userID = vsViewModel.insertUser(vdtsUser);
+                        vdtsUser.setUid(userID);
                         LOG.info("Added user: {}", vdtsUser.getName());
 
                         if (!isPrimary && primaryUser != null) {
@@ -249,8 +249,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             );
                             primaryColumnSpokens.forEach(columnSpoken -> {
                                 final ColumnSpoken userColumnSpoken = new ColumnSpoken(
-                                        userId,
-                                        columnSpoken.getColumnId(),
+                                        userID,
+                                        columnSpoken.getColumnID(),
                                         columnSpoken.getSpoken()
                                 );
                                 vsViewModel.insertColumnSpoken(userColumnSpoken);
@@ -262,8 +262,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             primaryColumnValueSpokens.forEach(columnValueSpoken -> {
                                 final ColumnValueSpoken userColumnValueSpoken =
                                         new ColumnValueSpoken(
-                                                userId,
-                                                columnValueSpoken.getColumnValueId(),
+                                                userID,
+                                                columnValueSpoken.getColumnValueID(),
                                                 columnValueSpoken.getSpoken()
                                         );
                                 vsViewModel.insertColumnValueSpoken(userColumnValueSpoken);
@@ -304,7 +304,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
     public void deleteUserButtonOnClick() {
         VDTSUser selectedUser = userAdapter.getSelectedEntity();
-
         if (selectedUser != null) {
             if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
                 selectedUser.setActive(false);
@@ -343,8 +342,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 final boolean isPrimary = selectedUser.isPrimary();
 
                 userNameEditText.setText(selectedUser.getName());
-                userPrefixEditText.setText(selectedUser.getPrefix());
-                userExportCodeEditText.setText(selectedUser.getCode());
+                userPrefixEditText.setText(selectedUser.getSessionPrefix());
+                userExportCodeEditText.setText(selectedUser.getExportCode());
                 userPasswordEditText.setText(selectedUser.getPassword());
                 userAdminSwitch.setChecked(isAdmin);
                 userPrimarySwitch.setChecked(isPrimary);
@@ -401,12 +400,12 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
      */
     private boolean isValidUser(VDTSUser vdtsUser) {
         return !vdtsUser.getName().isEmpty() &&
-               !vdtsUser.getCode().isEmpty() &&
+               !vdtsUser.getExportCode().isEmpty() &&
                userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
                     (StringUtils.lowerCase(user1.getName())
                             .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
-                                    StringUtils.lowerCase(user1.getCode())
-                                            .equals(StringUtils.lowerCase(vdtsUser.getCode()))));
+                                    StringUtils.lowerCase(user1.getExportCode())
+                                            .equals(StringUtils.lowerCase(vdtsUser.getExportCode()))));
 
     }
 

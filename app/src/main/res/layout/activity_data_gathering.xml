@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">>
+
+    <!--  Header View  -->
+    <LinearLayout
+        android:id="@+id/headerLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/headerIndexLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.75"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_index_label"
+            android:textSize="@dimen/large_text_size">
+        </TextView>
+
+        <HorizontalScrollView
+            android:id="@+id/headerScrollView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:layout_weight="4">
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/headerCommentLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_comment_label"
+            android:textSize="@dimen/large_text_size">
+        </TextView>
+
+        <TextView
+            android:id="@+id/headerPhotoLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/margin"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_photo_label"
+            android:textSize="@dimen/large_text_size">
+        </TextView>
+    </LinearLayout>
+
+    <!--  Recycler View  -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/entryRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:paddingTop="@dimen/padding"
+        android:paddingBottom="@dimen/padding"
+        android:background="@drawable/recycler_view_background"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/entryLinearLayout"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <!--  Entry View  -->
+    <LinearLayout
+        android:id="@+id/entryLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sessionLinearLayout">
+
+        <TextView
+            android:id="@+id/entryIndexLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.75"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_index_label"
+            android:textSize="@dimen/large_text_size">
+        </TextView>
+
+        <HorizontalScrollView
+            android:id="@+id/entryScrollView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:layout_weight="4">
+        </HorizontalScrollView>
+
+        <Button
+            android:id="@+id/entryCommentLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_comment_label"
+            android:textSize="@dimen/small_text_size">
+        </Button>
+
+        <Button
+            android:id="@+id/entryPhotoLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_photo_label"
+            android:textSize="@dimen/small_text_size">
+        </Button>
+    </LinearLayout>
+
+    <!--  Session View  -->
+    <LinearLayout
+        android:id="@+id/sessionLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/sessionLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:gravity="center_vertical"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_session_label"
+            android:textSize="@dimen/small_text_size">
+        </TextView>
+
+        <TextView
+            android:id="@+id/sessionValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:padding="@dimen/padding"
+            android:text="LB 23/02/09"
+            android:textSize="@dimen/small_text_size">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entriesLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.65"
+            android:gravity="end|center_vertical"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_entries_label"
+            android:textSize="@dimen/small_text_size">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entriesValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:padding="@dimen/padding"
+            android:text="####"
+            android:textSize="@dimen/small_text_size">
+        </TextView>
+
+        <Button
+            android:id="@+id/entrySaveButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/data_gathering_save_button"
+            android:textSize="@dimen/small_text_size">
+        </Button>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

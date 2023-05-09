@@ -85,7 +85,7 @@ public class VDTSApplication extends Application {
             Thread thread = new Thread(() -> foundUser.set(getDatabase()
                     .getInterfaceInstance(this)
                     .vdtsUserDao()
-                    .findUserById(
+                    .findUserByID(
                             this.getPreferences().getLong(
                                     "CURRENT_USER", VDTSUser.VDTS_USER_NONE.getUid()))));
             thread.start();

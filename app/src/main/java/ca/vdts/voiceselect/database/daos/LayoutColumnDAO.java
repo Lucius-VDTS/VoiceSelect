@@ -5,8 +5,6 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import ca.vdts.voiceselect.database.VSLayoutColumn;
-import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 

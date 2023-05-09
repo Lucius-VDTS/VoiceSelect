@@ -31,21 +31,21 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
                 @ForeignKey(
                         entity = VDTSUser.class,
                         parentColumns = "uid",
-                        childColumns = "userId",
+                        childColumns = "userID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 ),
                 @ForeignKey(
                         entity = Column.class,
                         parentColumns = "uid",
-                        childColumns = "columnId",
+                        childColumns = "columnID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 )
         },
         indices = {
-                @Index(value = "userId"),
-                @Index(value = "columnId")
+                @Index(value = "userID"),
+                @Index(value = "columnID")
         }
 )
 public class ColumnValue implements VDTSIndexedNamedEntityInterface {
@@ -55,14 +55,14 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
     private long uid;
 
     @Expose
-    @SerializedName("userId")
-    @ColumnInfo(name = "userId")
-    private long userId;
+    @SerializedName("userID")
+    @ColumnInfo(name = "userID")
+    private long userID;
 
     @Expose
-    @SerializedName("columnId")
-    @ColumnInfo(name = "columnId")
-    private long columnId;
+    @SerializedName("columnID")
+    @ColumnInfo(name = "columnID")
+    private long columnID;
 
     @Expose
     @SerializedName("createdDate")
@@ -112,11 +112,11 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
     );
 
     //Non-Default Constructor
-    public ColumnValue(long uid, long userId, long columnId, LocalDateTime createdDate, String name,
+    public ColumnValue(long uid, long userID, long columnID, LocalDateTime createdDate, String name,
                        String nameCode, String exportCode, boolean active) {
         this.uid = uid;
-        this.userId = userId;
-        this.columnId = columnId;
+        this.userID = userID;
+        this.columnID = columnID;
         this.createdDate = createdDate;
         this.name = name;
         this.nameCode = nameCode;
@@ -126,12 +126,12 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public ColumnValue(long userId, long columnId, String name,
+    public ColumnValue(long userID, long columnID, String name,
                        String nameCode, String exportCode) {
         this(
                 0L,
-                userId,
-                columnId,
+                userID,
+                columnID,
                 LocalDateTime.now(),
                 name,
                 nameCode,
@@ -148,20 +148,20 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
         this.uid = uid;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getUserID() {
+        return userID;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
-    public long getColumnId() {
-        return columnId;
+    public long getColumnID() {
+        return columnID;
     }
 
-    public void setColumnId(long columnId) {
-        this.columnId = columnId;
+    public void setColumnID(long columnID) {
+        this.columnID = columnID;
     }
 
     public LocalDateTime getCreatedDate() {
@@ -221,13 +221,13 @@ public class ColumnValue implements VDTSIndexedNamedEntityInterface {
         if (this == o) return true;
         if (!(o instanceof ColumnValue)) return false;
         ColumnValue that = (ColumnValue) o;
-        return getUserId() == that.getUserId() &&
-                getColumnId() == that.getColumnId() &&
+        return getUserID() == that.getUserID() &&
+                getColumnID() == that.getColumnID() &&
                 Objects.equals(getCreatedDate(), that.getCreatedDate());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getColumnId(), getCreatedDate());
+        return Objects.hash(getUserID(), getColumnID(), getCreatedDate());
     }
 }

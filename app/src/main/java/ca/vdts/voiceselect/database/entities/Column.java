@@ -30,13 +30,13 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
                 @ForeignKey(
                         entity = VDTSUser.class,
                         parentColumns = "uid",
-                        childColumns = "userId",
+                        childColumns = "userID",
                         onUpdate = CASCADE,
                         onDelete = CASCADE
                 )
         },
         indices = {
-                @Index(value = "userId")
+                @Index(value = "userID")
         }
 )
 public class Column implements VDTSIndexedNamedEntityInterface {
@@ -56,9 +56,9 @@ public class Column implements VDTSIndexedNamedEntityInterface {
     private long uid;
 
     @Expose
-    @SerializedName("userId")
-    @ColumnInfo(name = "userId")
-    private long userId;
+    @SerializedName("userID")
+    @ColumnInfo(name = "userID")
+    private long userID;
 
     @Expose
     @SerializedName("createdDate")
@@ -86,10 +86,10 @@ public class Column implements VDTSIndexedNamedEntityInterface {
     private boolean active;
 
     //Non-default constructor
-    public Column(long uid, long userId, LocalDateTime createdDate, String name, String nameCode,
+    public Column(long uid, long userID, LocalDateTime createdDate, String name, String nameCode,
                   String exportCode, boolean active) {
         this.uid = uid;
-        this.userId = userId;
+        this.userID = userID;
         this.createdDate = createdDate;
         this.name = name;
         this.nameCode = nameCode;
@@ -99,10 +99,10 @@ public class Column implements VDTSIndexedNamedEntityInterface {
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public Column(long userId, String name, String nameCode, String exportCode) {
+    public Column(long userID, String name, String nameCode, String exportCode) {
         this(
                 0L,
-                userId,
+                userID,
                 LocalDateTime.now(),
                 name,
                 nameCode,
@@ -119,12 +119,12 @@ public class Column implements VDTSIndexedNamedEntityInterface {
         this.uid = uid;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getUserID() {
+        return userID;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
     public LocalDateTime getCreatedDate() {
@@ -184,12 +184,12 @@ public class Column implements VDTSIndexedNamedEntityInterface {
         if (this == o) return true;
         if (!(o instanceof Column)) return false;
         Column column = (Column) o;
-        return getUserId() == column.getUserId() &&
+        return getUserID() == column.getUserID() &&
                 Objects.equals(getCreatedDate(), column.getCreatedDate());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getCreatedDate());
+        return Objects.hash(getUserID(), getCreatedDate());
     }
 }

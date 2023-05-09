@@ -52,12 +52,8 @@ public class VDTSViewModel extends AndroidViewModel {
         userRepository.deleteAll(VDTSUserEntities);
     }
 
-    public VDTSUser findUserById(long uid) {
-        return userRepository.findUserById(uid);
-    }
-
-    public List<VDTSUser> findAllUsers() {
-        return userRepository.findAll("SELECT * FROM Users");
+    public VDTSUser findUserByID(long uid) {
+        return userRepository.findUserByID(uid);
     }
 
     public List<VDTSUser> findAllActiveUsers() {

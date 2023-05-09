@@ -2,7 +2,6 @@
 <!-- Recycler View Background -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/colorInputArea"/>
     <corners android:topLeftRadius="@dimen/corner_radius"
              android:topRightRadius="@dimen/corner_radius"/>
 </shape>

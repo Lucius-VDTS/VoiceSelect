@@ -14,10 +14,10 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 @Dao
 public interface VDTSUserDAO extends VDTSBaseDAO<VDTSUser> {
     @Query("SELECT * FROM Users WHERE uid = :uid")
-    VDTSUser findUserById(long uid);
+    VDTSUser findUserByID(long uid);
 
-    @Query("SELECT * FROM Users WHERE code = :code")
-    VDTSUser findUserByCode(String code);
+    @Query("SELECT * FROM Users WHERE exportCode = :exportCode")
+    VDTSUser findUserByCode(String exportCode);
 
     @Query("SELECT * FROM Users WHERE active = 1")
     List<VDTSUser> findAllActiveUsers();

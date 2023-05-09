@@ -394,8 +394,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 columnValueExportCodeEditText.setText(selectedColumnValue.getExportCode());
 
                 final List<ColumnValueSpoken> spokenList = columnValueSpokenList.stream()
-                        .filter(spoken -> spoken.getColumnValueId() == selectedColumnValue.getUid())
-                        .filter(spoken -> spoken.getUserId() == currentUser.getUid())
+                        .filter(spoken -> spoken.getColumnValueID() == selectedColumnValue.getUid())
+                        .filter(spoken -> spoken.getUserID() == currentUser.getUid())
                         .collect(Collectors.toList());
 
                 String spokens = "";
@@ -451,7 +451,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             final List<String> spokenList = getFormattedColumnValueSpokenList();
 
             for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                if (columnValueSpoken.getColumnValueId() != columnValue.getUid()) {
+                if (columnValueSpoken.getColumnValueID() != columnValue.getUid()) {
                     for (String spoken: spokenList) {
                         if (columnValueSpoken.getSpoken().equalsIgnoreCase(spoken)) {
                             LOG.info("Column value's spokens must be unique");
@@ -506,8 +506,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             }
         } else {
             final List<ColumnValueSpoken> existingSpokenList = columnValueSpokenList.stream()
-                    .filter(spoken -> spoken.getColumnValueId() == columnValue.getUid())
-                    .filter(spoken -> spoken.getUserId() == columnValue.getUserId())
+                    .filter(spoken -> spoken.getColumnValueID() == columnValue.getUid())
+                    .filter(spoken -> spoken.getUserID() == columnValue.getUserID())
                     .collect(Collectors.toList());
 
             //Delete spokens that no longer exist
