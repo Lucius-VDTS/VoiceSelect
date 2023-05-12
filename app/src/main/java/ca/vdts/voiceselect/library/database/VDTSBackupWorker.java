@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Locale;
 
-import ca.vdts.voiceselect.library.services.VDTSUtilService;
+import ca.vdts.voiceselect.library.utilities.VDTSToolUtil;
 
 /**
  * VDTSDatabase backup service utilized by the application defined backup worker.
@@ -56,10 +56,10 @@ public class VDTSBackupWorker extends Worker {
         String backupName = dbName + "_" + String.format(
                 Locale.getDefault(),
                 "%1$tY-%1$tm-%1$td_%1$tH-%1$tM-%1$tS",
-                VDTSUtilService.getTimeStamp()
+                VDTSToolUtil.getTimeStamp()
         ).concat(".db");
 
-        if (VDTSUtilService.getTimeStamp().getTime() > lastBackup + 86400000L) {
+        if (VDTSToolUtil.getTimeStamp().getTime() > lastBackup + 86400000L) {
             File db = new File(dbPath);
 
             File dbBackupDir = new File(backupDir);
@@ -114,7 +114,7 @@ public class VDTSBackupWorker extends Worker {
 
                 backupSharedPreferences.edit().putLong(
                         "LAST_BACKUP",
-                        VDTSUtilService.getTimeStamp().getTime()).apply();
+                        VDTSToolUtil.getTimeStamp().getTime()).apply();
 
                 LOG.info("Backup saved to {}", dbBackupDir);
             } catch (IOException e) {

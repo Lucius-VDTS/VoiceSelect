@@ -21,7 +21,7 @@ import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.services.VDTSNotificationService;
+import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
 /**
  * VDTS application's main menu.
@@ -45,13 +45,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     //Iristick Components
     private boolean isHeadsetAvailable = false;
     @Nullable
-    private VDTSNotificationService errorIristickNotifService;
+    private VDTSNotificationUtil errorIristickNotifService;
     @Nullable
-    private VDTSNotificationService firmwareIristickNotifService;
+    private VDTSNotificationUtil firmwareIristickNotifService;
     @Nullable
-    private VDTSNotificationService connectedIristickNotifService;
+    private VDTSNotificationUtil connectedIristickNotifService;
     @Nullable
-    private VDTSNotificationService disconnectedIristickNotifService;
+    private VDTSNotificationUtil disconnectedIristickNotifService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -147,7 +147,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             aboutActivityButton.setVisibility(View.VISIBLE);
             aboutActivityButton.setOnClickListener(v -> aboutActivityButtonOnClick());
 
-            VDTSNotificationService.init(this);
+            VDTSNotificationUtil.init(this);
 
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
                     vc.add("Start", this::startActivityButtonOnClick));
@@ -178,8 +178,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public void onIristickState(@NonNull IRIState state) {
         if (state.isError()) {
             if (errorIristickNotifService == null) {
-                errorIristickNotifService = new VDTSNotificationService(
-                        getApplicationContext(), VDTSNotificationService.Channel.ERROR);
+                errorIristickNotifService = new VDTSNotificationUtil(
+                        getApplicationContext(), VDTSNotificationUtil.Channel.ERROR);
             }
             errorIristickNotifService.setContentTitle("Error: " + state);
             errorIristickNotifService.show();
@@ -192,8 +192,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         if (state == IRIState.SYNCHRONIZING_FIRMWARE) {
             if (firmwareIristickNotifService == null) {
-                firmwareIristickNotifService = new VDTSNotificationService(
-                        getApplicationContext(), VDTSNotificationService.Channel.FIRMWARE);
+                firmwareIristickNotifService = new VDTSNotificationUtil(
+                        getApplicationContext(), VDTSNotificationUtil.Channel.FIRMWARE);
                 firmwareIristickNotifService.setOngoing(true);
                 firmwareIristickNotifService.setContentTitle("Firmware sync in progress");
                 firmwareIristickNotifService.setProgress(100, 0, true);
@@ -208,8 +208,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         if (state == IRIState.HEADSET_CONNECTED) {
             if (connectedIristickNotifService == null) {
-                connectedIristickNotifService = new VDTSNotificationService(
-                        getApplicationContext(), VDTSNotificationService.Channel.CONNECTED);
+                connectedIristickNotifService = new VDTSNotificationUtil(
+                        getApplicationContext(), VDTSNotificationUtil.Channel.CONNECTED);
             }
             connectedIristickNotifService.setContentTitle("Iristick connected");
             connectedIristickNotifService.show();
@@ -222,8 +222,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         if (state == IRIState.DISCONNECTED) {
             if (disconnectedIristickNotifService == null) {
-                disconnectedIristickNotifService = new VDTSNotificationService(
-                        getApplicationContext(), VDTSNotificationService.Channel.DISCONNECTED);
+                disconnectedIristickNotifService = new VDTSNotificationUtil(
+                        getApplicationContext(), VDTSNotificationUtil.Channel.DISCONNECTED);
             }
             disconnectedIristickNotifService.setContentTitle("Iristick disconnected");
             disconnectedIristickNotifService.show();

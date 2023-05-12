@@ -36,7 +36,7 @@ import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
+import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
 /**
  * Configure the application's users.
@@ -147,7 +147,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 ));
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerService(this::userAdapterSelect, userRecyclerView),
+                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 this,
                 userList
         );

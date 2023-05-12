@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.app.Application;
 import android.content.ActivityNotFoundException;
@@ -22,7 +22,7 @@ import java.util.Set;
 import ca.vdts.voiceselect.VSApplication;
 import ca.vdts.voiceselect.library.VDTSApplication;
 
-public class VDTSFeedbackService {
+public class VDTSFeedbackUtil {
     private static final Logger LOG = LoggerFactory.getLogger(VSApplication.class);
 
     private final VDTSApplication vdtsApplication;
@@ -30,7 +30,7 @@ public class VDTSFeedbackService {
     private TextToSpeech ttsEngine;
     private final String packageName = "com.google.android.tts";
 
-    public VDTSFeedbackService(VDTSApplication vdtsApplication) {
+    public VDTSFeedbackUtil(VDTSApplication vdtsApplication) {
         this.vdtsApplication = vdtsApplication;
         initializeTTSEngine();
     }

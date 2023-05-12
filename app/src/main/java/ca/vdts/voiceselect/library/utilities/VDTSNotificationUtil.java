@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -15,7 +15,7 @@ import ca.vdts.voiceselect.R;
 /**
  * Notification service that includes channels for the iristick
  */
-public class VDTSNotificationService extends Notification.Builder {
+public class VDTSNotificationUtil extends Notification.Builder {
     @NonNull
     private final NotificationManager notificationManager;
 
@@ -44,7 +44,7 @@ public class VDTSNotificationService extends Notification.Builder {
     }
 
     @MainThread
-    public VDTSNotificationService(@NonNull Context context, Channel channel) {
+    public VDTSNotificationUtil(@NonNull Context context, Channel channel) {
         super(context, channel.id);
         id = nextID++;
         notificationManager = context.getSystemService(NotificationManager.class);

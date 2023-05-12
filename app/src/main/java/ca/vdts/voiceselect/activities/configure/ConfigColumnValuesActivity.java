@@ -43,7 +43,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
+import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
 /**
  * Configure values that can be entered into columns.
@@ -164,7 +164,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 ));
 
         columnValueAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerService(this::columnValueAdapterSelect, columnValueRecyclerView),
+                new VDTSClickListenerUtil(this::columnValueAdapterSelect, columnValueRecyclerView),
                 this,
                 columnValueList
         );

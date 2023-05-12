@@ -130,9 +130,16 @@
 <!--  Data Gathering Activity  -->
     <string name="data_gathering_activity_label">Data Gathering</string>
 
+    <string name="data_gathering_header_scroll_description">Scroll horizontally through columns</string>
+    <string name="data_gathering_rv_scroll_description">Scroll horizontally through entered data</string>
+    <string name="data_gathering_entry_scroll_description">Scroll horizontally through
+        values that can be added to a row</string>
+
     <string name="data_gathering_index_label">#</string>
     <string name="data_gathering_comment_label">CMT</string>
+    <string name="data_gathering_comment_description">Button opens the comment entry dialogue</string>
     <string name="data_gathering_photo_label">PIC</string>
+    <string name="data_gathering_photo_description">Button opens the camera</string>
 
     <string name="data_gathering_session_label">Session:</string>
     <string name="data_gathering_entries_label">Entries:</string>

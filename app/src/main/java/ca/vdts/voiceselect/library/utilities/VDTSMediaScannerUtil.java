@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
@@ -9,11 +9,11 @@ import java.io.File;
 /**
  * Service that scans files and adds them to media apps, file explorers, etc.
  */
-public class VDTSMediaScannerService implements MediaScannerConnection.MediaScannerConnectionClient {
+public class VDTSMediaScannerUtil implements MediaScannerConnection.MediaScannerConnectionClient {
     private final MediaScannerConnection mediaScanner;
     private final File file;
 
-    public VDTSMediaScannerService(Context context, File file) {
+    public VDTSMediaScannerUtil(Context context, File file) {
         this.file = file;
         mediaScanner = new MediaScannerConnection(context, this);
         mediaScanner.connect();

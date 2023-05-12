@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.library.interfaces.VDTSFilterableInterface;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
-import ca.vdts.voiceselect.library.services.VDTSAdapterClickListenerService;
-import ca.vdts.voiceselect.library.services.VDTSNameOrderService;
+import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
+import ca.vdts.voiceselect.library.utilities.VDTSNameOrderUtil;
 //todo - replace notifyDataSetChanged
 //todo - notifyItemRemoved does not reset indices - use diffUtil to recalc indices and remove notifyDataSetChanged
 /**
@@ -32,7 +32,7 @@ import ca.vdts.voiceselect.library.services.VDTSNameOrderService;
 public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterface>
         extends RecyclerView.Adapter<VDTSIndexedNamedAdapter.ViewHolder>
         implements VDTSFilterableInterface {
-    private final VDTSAdapterClickListenerService selectedListener;
+    private final VDTSAdapterClickListenerUtil selectedListener;
     private final Context context;
 
     private final List<Entity> dataset = new ArrayList<>();
@@ -43,7 +43,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
-    public VDTSIndexedNamedAdapter(VDTSAdapterClickListenerService selectedListener,
+    public VDTSIndexedNamedAdapter(VDTSAdapterClickListenerUtil selectedListener,
                                    Context context, List<Entity> dataset) {
         this.selectedListener = selectedListener;
         this.context = context;
@@ -115,7 +115,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     public void setDataset(List<Entity> dataset) {
         this.dataset.clear();
         this.dataset.addAll(dataset);
-        this.dataset.sort(VDTSNameOrderService.getInstance());
+        this.dataset.sort(VDTSNameOrderUtil.getInstance());
         notifyDataSetChanged();
     }
 

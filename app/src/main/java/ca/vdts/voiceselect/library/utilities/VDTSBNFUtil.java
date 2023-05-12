@@ -1,10 +1,10 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.content.Context;
 
 import ca.vdts.voiceselect.R;
 
-public class VDTSBNFService {
+public class VDTSBNFUtil {
     /**
      * Sanitizes grammar so that it will be usable for voice commands.
      * Several of the characters removed are replaced by spaces, except for " and #

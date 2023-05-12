@@ -1,13 +1,13 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Service that contains general utilities and tools
+ * Utility that contains general tools
  */
-public class VDTSUtilService {
+public class VDTSToolUtil {
     public static Date getTimeStamp() {
         return Calendar.getInstance(TimeZone.getDefault()).getTime();
     }

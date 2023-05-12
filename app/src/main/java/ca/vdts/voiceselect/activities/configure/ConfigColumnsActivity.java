@@ -41,7 +41,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
+import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
 //todo - add toast when non admin user tries to select only admin editable fields
 /**
@@ -150,7 +150,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         ));
 
         columnAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerService(this::columnAdapterSelect, columnRecyclerView),
+                new VDTSClickListenerUtil(this::columnAdapterSelect, columnRecyclerView),
                 this,
                 columnList
         );

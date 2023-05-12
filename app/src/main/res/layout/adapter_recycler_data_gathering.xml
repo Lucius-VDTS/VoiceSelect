@@ -24,6 +24,7 @@
 
         <HorizontalScrollView
             android:id="@+id/rvScrollView"
+            android:contentDescription="@string/data_gathering_rv_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:fillViewport="true"

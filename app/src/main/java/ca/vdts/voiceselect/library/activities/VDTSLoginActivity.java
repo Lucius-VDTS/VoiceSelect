@@ -27,7 +27,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.services.VDTSClickListenerService;
+import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
 /**
  * Basic login activity for VDTS applications.
@@ -63,7 +63,7 @@ public class VDTSLoginActivity extends AppCompatActivity {
                 ));
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerService(this::userAdapterSelect, userRecyclerView),
+                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 this,
                 userList
         );

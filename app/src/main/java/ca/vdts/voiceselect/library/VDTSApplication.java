@@ -19,7 +19,7 @@ import ca.vdts.voiceselect.library.database.VDTSDatabase;
 import ca.vdts.voiceselect.library.database.VDTSPrefKeyValue;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.database.repositories.VDTSPrefRepository;
-import ca.vdts.voiceselect.library.services.VDTSFeedbackService;
+import ca.vdts.voiceselect.library.utilities.VDTSFeedbackUtil;
 
 /**
  * Base VDTS application class.
@@ -46,7 +46,7 @@ public class VDTSApplication extends Application {
     private int userCount = 0;
 
     //VDTSFeedback
-    private VDTSFeedbackService vdtsFeedbackService;
+    private VDTSFeedbackUtil vdtsFeedbackUtil;
     private TextToSpeech ttsEngine;
 
     @Override
@@ -56,8 +56,8 @@ public class VDTSApplication extends Application {
 
         vdtsApplication = (VDTSApplication) this.getApplicationContext();
 
-        vdtsFeedbackService = new VDTSFeedbackService(vdtsApplication);
-        ttsEngine = vdtsFeedbackService.getTTSEngine();
+        vdtsFeedbackUtil = new VDTSFeedbackUtil(vdtsApplication);
+        ttsEngine = vdtsFeedbackUtil.getTTSEngine();
 
         LOG.debug("VDTSApplication onCreate finished");
     }

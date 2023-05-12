@@ -122,6 +122,11 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
                 handler.post(() -> {
                     //todo - fix concatenated string
+                    String formattedDate
+                    String currentSessionString = String.format(
+                            currentSession.getSessionPrefix(),
+
+                    );
                     sessionValue.setText(
                             currentSession.getSessionPrefix() + " " +
                                     LocalDateTime.now() + " " +

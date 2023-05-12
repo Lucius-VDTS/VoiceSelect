@@ -11,7 +11,7 @@ import java.util.List;
 
 import ca.vdts.voiceselect.library.database.VDTSPrefDatabase;
 import ca.vdts.voiceselect.library.database.entities.VDTSPref;
-import ca.vdts.voiceselect.library.services.VDTSTaskService;
+import ca.vdts.voiceselect.library.utilities.VDTSTaskUtil;
 
 /**
  * Repository for VDTSPref entity.
@@ -38,7 +38,7 @@ public class VDTSPrefRepository {
 
     public void insert(final VDTSPref pref) {
         if (Looper.getMainLooper().getThread().equals(Thread.currentThread())) {
-            VDTSTaskService.performAsynchronousAction(() -> VDTSPrefDAO.insert(pref));
+            VDTSTaskUtil.performAsynchronousAction(() -> VDTSPrefDAO.insert(pref));
         } else {
             VDTSPrefDAO.insert(pref);
         }
@@ -46,7 +46,7 @@ public class VDTSPrefRepository {
 
     public void update(final VDTSPref pref) {
         if (Looper.getMainLooper().getThread().equals(Thread.currentThread())) {
-            VDTSTaskService.performAsynchronousAction(() -> VDTSPrefDAO.update(pref));
+            VDTSTaskUtil.performAsynchronousAction(() -> VDTSPrefDAO.update(pref));
         } else {
             VDTSPrefDAO.update(pref);
         }
@@ -56,7 +56,7 @@ public class VDTSPrefRepository {
         final VDTSPref pref = find(key);
         if (pref != null) {
             if (Looper.getMainLooper().getThread().equals(Thread.currentThread())) {
-                VDTSTaskService.performAsynchronousAction(() -> VDTSPrefDAO.delete(pref));
+                VDTSTaskUtil.performAsynchronousAction(() -> VDTSPrefDAO.delete(pref));
             } else {
                 VDTSPrefDAO.delete(pref);
             }

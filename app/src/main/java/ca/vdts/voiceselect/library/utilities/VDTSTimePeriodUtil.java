@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import androidx.room.TypeConverter;
 
@@ -12,7 +12,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 /**
  * ENUM used for time period dropdowns
  */
-public enum VDTSTimePeriodService implements VDTSIndexedNamedEntityInterface {
+public enum VDTSTimePeriodUtil implements VDTSIndexedNamedEntityInterface {
     @SerializedName("0")
     SEC(0, "Seconds"),
     @SerializedName("1")
@@ -31,7 +31,7 @@ public enum VDTSTimePeriodService implements VDTSIndexedNamedEntityInterface {
     private final long id;
     private final String name;
 
-    VDTSTimePeriodService(long id, String name) {
+    VDTSTimePeriodUtil(long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -50,14 +50,14 @@ public enum VDTSTimePeriodService implements VDTSIndexedNamedEntityInterface {
         return id;
     }
 
-    public static VDTSTimePeriodService getByID(long id) {
-        return Arrays.stream(VDTSTimePeriodService.values())
-                .filter(VDTSTimePeriodService -> VDTSTimePeriodService.id() == id)
+    public static VDTSTimePeriodUtil getByID(long id) {
+        return Arrays.stream(VDTSTimePeriodUtil.values())
+                .filter(VDTSTimePeriodUtil -> VDTSTimePeriodUtil.id() == id)
                 .findFirst()
                 .orElse(MTH);
     }
 
-    public static LocalDateTime getTime(boolean add, long length, VDTSTimePeriodService unit) {
+    public static LocalDateTime getTime(boolean add, long length, VDTSTimePeriodUtil unit) {
         switch (unit) {
             case SEC:
                 if (add) {
@@ -110,12 +110,12 @@ public enum VDTSTimePeriodService implements VDTSIndexedNamedEntityInterface {
     }
 
     @TypeConverter
-    public static VDTSTimePeriodService toPeriod(long id) {
-        return VDTSTimePeriodService.getByID(id);
+    public static VDTSTimePeriodUtil toPeriod(long id) {
+        return VDTSTimePeriodUtil.getByID(id);
     }
 
     @TypeConverter
-    public static long toLong(VDTSTimePeriodService period) {
+    public static long toLong(VDTSTimePeriodUtil period) {
         return period != null ? period.id() : 5;
     }
 }

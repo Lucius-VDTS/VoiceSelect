@@ -14,7 +14,7 @@ import androidx.work.WorkerParameters;
 import ca.vdts.voiceselect.VSApplication;
 import ca.vdts.voiceselect.library.database.VDTSBackupWorker;
 import ca.vdts.voiceselect.library.database.VDTSPrefDatabase;
-import ca.vdts.voiceselect.library.services.VDTSUtilService;
+import ca.vdts.voiceselect.library.utilities.VDTSToolUtil;
 
 /**
  * Periodic database backup worker.
@@ -43,7 +43,7 @@ public class VSBackupWorker extends VDTSBackupWorker {
                 Context.MODE_PRIVATE);
         long lastBackup = sharedPreferences.getLong("LAST_BACKUP", 1L);
 
-        if (VDTSUtilService.getTimeStamp().getTime() > lastBackup + 86400000) {
+        if (VDTSToolUtil.getTimeStamp().getTime() > lastBackup + 86400000) {
             dbCheckpoint(VSDatabase.getInstance(vsApplication));
             super.backupDB(vsApplication, dbName, appName);
         }

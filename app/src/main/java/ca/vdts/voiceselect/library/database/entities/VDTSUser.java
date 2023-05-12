@@ -1,6 +1,6 @@
 package ca.vdts.voiceselect.library.database.entities;
 
-import static ca.vdts.voiceselect.library.services.VDTSBNFService.sanitizeGrammar;
+import static ca.vdts.voiceselect.library.utilities.VDTSBNFUtil.sanitizeGrammar;
 
 import android.content.Context;
 

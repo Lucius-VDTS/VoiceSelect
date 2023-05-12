@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.view.View;
 
@@ -9,9 +9,9 @@ import ca.vdts.voiceselect.library.interfaces.VDTSCallbackInterface;
 /**
  * Click listener used by adapter
  */
-public class VDTSClickListenerService extends VDTSAdapterClickListenerService {
-    public VDTSClickListenerService(VDTSCallbackInterface<Integer> callback,
-                                    RecyclerView recyclerView) {
+public class VDTSClickListenerUtil extends VDTSAdapterClickListenerUtil {
+    public VDTSClickListenerUtil(VDTSCallbackInterface<Integer> callback,
+                                 RecyclerView recyclerView) {
         super(callback, recyclerView);
     }
 

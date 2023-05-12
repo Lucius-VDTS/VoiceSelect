@@ -1,9 +1,9 @@
-package ca.vdts.voiceselect.library.services;
+package ca.vdts.voiceselect.library.utilities;
 
 import android.os.Looper;
 import android.util.Log;
 
-public class VDTSTaskService {
+public class VDTSTaskUtil {
     /**
      * Perform an action on a separate thread and block until the action is finished
      * @param action - Action to perform
@@ -14,7 +14,7 @@ public class VDTSTaskService {
         try {
             syncThread.join();
         } catch (InterruptedException e) {
-            Log.e(VDTSUtilService.class.getName(), "performSynchronousAction: ", e);
+            Log.e(VDTSToolUtil.class.getName(), "performSynchronousAction: ", e);
         }
     }
 
