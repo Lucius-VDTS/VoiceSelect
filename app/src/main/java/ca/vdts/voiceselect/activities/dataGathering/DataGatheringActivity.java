@@ -27,7 +27,9 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -104,12 +106,12 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        //todo - update isNewSession
         initializeSession();
         initializeHeaderColumns();
     }
 
     private void initializeSession() {
+        //todo - update isNewSession
         if (isNewSession) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
@@ -121,26 +123,20 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                         dailySessionCount + 1);
 
                 handler.post(() -> {
-                    //todo - fix concatenated string
-                    String formattedDate
+                    LocalDate today = LocalDate.now();
+                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
+                    String formattedDate = today.format(datePattern);
                     String currentSessionString = String.format(
+                            "%s %s-%o",
                             currentSession.getSessionPrefix(),
-
+                            formattedDate,
+                            currentSession.getDateIteration()
                     );
-                    sessionValue.setText(
-                            currentSession.getSessionPrefix() + " " +
-                                    LocalDateTime.now() + " " +
-                                    currentSession.getDateIteration()
-                    );
+                    sessionValue.setText(currentSessionString);
                 });
             });
         } else {
             //todo - resume existing session
-            sessionValue.setText(
-                    currentSession.getSessionPrefix() + " " +
-                            LocalDateTime.now() + " " +
-                            currentSession.getDateIteration()
-            );
         }
     }
 
@@ -172,8 +168,8 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                     headerColumnText.setGravity(Gravity.CENTER);
                     headerColumnText.setLayoutParams(layoutParams);
                     headerColumnText.setPadding(dimen, dimen, dimen, dimen);
-                    headerColumnText.setMaxLines(1);        //todo maybe not a good idea
-                    headerColumnText.setText(column.getName());   //todo - if columns are squeezed get name code
+                    headerColumnText.setMaxLines(1);        //todo - maybe not a good idea
+                    headerColumnText.setText(column.getNameCode());   //todo - use name instead????
                     headerColumnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
                     headerColumnLinearLayout.addView(headerColumnText);
@@ -222,8 +218,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                     entryValueSpinner.setGravity(Gravity.CENTER);
                     entryValueSpinner.setLayoutParams(layoutParams);
                     entryValueSpinner.setPadding(dimen, dimen, dimen, dimen);
-//                        entryValueSpinner.setMaxLines(1);
-//                        entryValueSpinner.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
                     entryValueSpinner.setAdapter(entryValueAdapter);
                     entryValueSpinner.setOnItemSelectedListener(entryValueSpinnerListener);
