@@ -99,13 +99,14 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userPrefixEditText = findViewById(R.id.userPrefixEditText);
         userExportCodeEditText = findViewById(R.id.userExportCodeEditText);
         userPasswordEditText = findViewById(R.id.userPasswordEditText);
-
+        userPasswordEditText.setInputType(0);
         userPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && !userAdminSwitch.isChecked()) {
                 vdtsApplication.displayToast(
                         vdtsApplication,
                         "User must be an admin to set password",
                         0);
+
                 userPasswordEditText.clearFocus();
             }
         });
@@ -113,9 +114,11 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userAdminSwitch = findViewById(R.id.userAdminSwitch);
         userAdminSwitch.setOnClickListener(v -> {
             if (!userAdminSwitch.isChecked()) {
-                userPasswordEditText.clearFocus();
+                userPasswordEditText.setInputType(0);
                 userPasswordEditText.setText("");
+                userPasswordEditText.clearFocus();
             } else {
+                userPasswordEditText.setInputType(1);
                 userPasswordEditText.requestFocus();
             }
         });
