@@ -29,7 +29,7 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
     }
 
     public VDTSNamedAdapter(Context context, List<Entity> objects) {
-        this(context, R.layout.spinner_view_named, objects);
+        this(context, R.layout.adapter_spinner_named, objects);
     }
 
     @NonNull

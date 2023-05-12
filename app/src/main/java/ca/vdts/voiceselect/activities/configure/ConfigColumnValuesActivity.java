@@ -128,7 +128,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //Column Spinner
         columnValueColumnSpinner = findViewById(R.id.columnValueColumnSpinner);
 
-        columnAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, columnList);
+        columnAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, columnList);
         columnAdapter.setToStringFunction((column, integer) -> column.getName());
         columnValueColumnSpinner.setAdapter(columnAdapter);
         columnValueColumnSpinner.setOnItemSelectedListener(columnSpinnerListener);
@@ -136,7 +136,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //User Spinner
         columnValueUserSpinner = findViewById(R.id.columnValueUserSpinner);
 
-        userAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, userList);
+        userAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());
         columnValueUserSpinner.setAdapter(userAdapter);
         columnValueUserSpinner.setOnItemSelectedListener(userSpinnerListener);
@@ -179,16 +179,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     @Override
     protected void onResume() {
         super.onResume();
-        initializeColumnList();
         initializeUserList();
-        initializeColumnValueList();
         disableViews();
     }
 
+    //Initialize user list then column list
     private void initializeUserList() {
         if (currentUser.getAuthority() <= 0) {
             userList.clear();
             userList.add(currentUser);
+            initializeColumnList();
         } else {
             ExecutorService usExecutor = Executors.newSingleThreadExecutor();
             Handler usHandler = new Handler(Looper.getMainLooper());
@@ -199,11 +199,13 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 usHandler.post(() -> {
                     userAdapter.notifyDataSetChanged();
                     columnValueUserSpinner.setSelection(userList.indexOf(currentUser));
+                    initializeColumnList();
                 });
             });
         }
     }
 
+    //Initialize column list then column value list
     private void initializeColumnList() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -212,21 +214,34 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             columnList.addAll(vsViewModel.findAllActiveColumns());
             handler.post(() -> {
                 columnAdapter.notifyDataSetChanged();
-                columnValueColumnSpinner.setSelection(columnList.indexOf(selectedColumn));
+                columnValueColumnSpinner.setSelection(0);
+                initializeColumnValueList();
             });
         });
     }
 
     private void initializeColumnValueList() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            columnValueList.clear();
-            columnValueList.addAll(vsViewModel.findAllActiveColumnValues());
-            handler.post(() -> columnValueAdapter.setDataset(columnValueList));
-        });
+        if (selectedColumn == null) {
+            columnValueAdapter.setDataset(new ArrayList<>());
+            columnValueAdapter.notifyDataSetChanged();
+        } else {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
+                columnValueList.clear();
+                columnValueList.addAll(
+                        vsViewModel.findAllActiveColumnValuesByColumn(selectedColumn.getUid()));
+                handler.post(() -> {
+                    columnValueAdapter.setDataset(columnValueList);
+                    columnValueAdapter.notifyDataSetChanged();
+                });
+            });
+        }
     }
 
+    /**
+     * Disable views based on the current users authority
+     */
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
             columnValueNewButton.setEnabled(false);
@@ -240,7 +255,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             columnValueImportButton.setEnabled(false);
             columnValueExportButton.setEnabled(false);
 
-            if (columnList.size() <= 0) {
+            if (columnList.size() == 0) {
                 columnValueResetButton.setEnabled(false);
                 columnValueSaveButton.setEnabled(false);
             }
@@ -256,6 +271,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     selectedColumn = (Column) parent.getItemAtPosition(position);
+                    initializeColumnValueList();
                 }
 
                 @Override
@@ -288,7 +304,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     private void saveColumnValueButtonOnClick() {
-        final Column selectedColumn = (Column) columnValueColumnSpinner.getSelectedItem();
+        final VDTSUser selectedUser = (VDTSUser) columnValueUserSpinner.getSelectedItem();
 
         if (selectedColumn != null) {
             ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
@@ -301,6 +317,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         columnValueNameCodeEditText.getText().toString().trim());
                 selectedColumnValue.setExportCode(
                         columnValueExportCodeEditText.getText().toString().trim());
+                selectedColumnValue.setColumnID(selectedColumn.getUid());
+                selectedColumnValue.setUserID(selectedUser.getUid());
 
                 if (isValidColumnValue(selectedColumnValue)) {
                     if (isValidColumnValueSpoken(selectedColumnValue)) {
@@ -324,7 +342,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             } else {
                 //Create new column value
                 ColumnValue columnValue = new ColumnValue(
-                        currentUser.getUid(),
+                        selectedUser.getUid(),
                         selectedColumn.getUid(),
                         columnValueNameEditText.getText().toString().trim(),
                         columnValueNameCodeEditText.getText().toString().trim(),
@@ -340,7 +358,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             columnValue.setUid(uid);
                             LOG.info("Added column: {}", columnValue.getName());
                             updateColumnValueSpokens(columnValue, true);
-                            handler.post(() -> columnValueAdapter.add(columnValue));
+                            handler.post(() -> columnValueAdapter.addEntity(columnValue));
                         });
                     }
                     newColumnValueButtonOnClick();
@@ -494,8 +512,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             for (VDTSUser user : userList) {
                 for (String spoken : spokenList) {
                     new Thread(
-                            () -> vsViewModel.insertColumnSpoken(
-                                    new ColumnSpoken(
+                            () -> vsViewModel.insertColumnValueSpoken(
+                                    new ColumnValueSpoken(
                                             user.getUid(),
                                             columnValue.getUid(),
                                             spoken
@@ -507,7 +525,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         } else {
             final List<ColumnValueSpoken> existingSpokenList = columnValueSpokenList.stream()
                     .filter(spoken -> spoken.getColumnValueID() == columnValue.getUid())
-                    .filter(spoken -> spoken.getUserID() == columnValue.getUserID())
+                    .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
                     .collect(Collectors.toList());
 
             //Delete spokens that no longer exist
@@ -524,8 +542,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 if (existingSpokenList.stream()
                         .noneMatch(oldSpoken -> oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
                     new Thread(
-                            () -> vsViewModel.insertColumnSpoken(
-                                    new ColumnSpoken(
+                            () -> vsViewModel.insertColumnValueSpoken(
+                                    new ColumnValueSpoken(
                                             selectedUser.getUid(),
                                             columnValue.getUid(),
                                             spoken

@@ -193,9 +193,14 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 selectedUser.setName(userNameEditText.getText().toString().trim());
                 selectedUser.setSessionPrefix(userPrefixEditText.getText().toString().trim());
                 selectedUser.setExportCode(userExportCodeEditText.getText().toString().trim());
-                selectedUser.setPassword(userPasswordEditText.getText().toString().trim());
                 selectedUser.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
                 selectedUser.setPrimary(userPrimarySwitch.isChecked());
+
+                if (!userAdminSwitch.isChecked()) {
+                    selectedUser.setPassword("");
+                } else {
+                    selectedUser.setPassword(userPasswordEditText.getText().toString().trim());
+                }
 
                 if (isValidUser(selectedUser)) {
                     if (selectedUser.getUid() == vdtsApplication.getCurrentUser().getUid()) {
@@ -234,6 +239,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         userPrimarySwitch.isChecked(),
                         userPasswordEditText.getText().toString().trim()
                 );
+
+                if (!userAdminSwitch.isChecked()) {
+                    vdtsUser.setPassword("");
+                }
 
                 if (isValidUser(vdtsUser)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -276,7 +285,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         handler.post(() -> {
                             if (primaryUser != null) { userAdapter.updateEntity(primaryUser); }
 
-                            userAdapter.add(vdtsUser);
+                            userAdapter.addEntity(vdtsUser);
 
                             if (userAdapter.getItemCount() == 1) {
                                 vdtsApplication.setCurrentUser(userAdapter.getEntity(0));

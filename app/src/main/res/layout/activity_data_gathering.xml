@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--  Header View  -->
     <LinearLayout
@@ -22,6 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.75"
             android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_index_label"
             android:textSize="@dimen/large_text_size">
@@ -33,6 +34,13 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:layout_weight="4">
+
+            <LinearLayout
+                android:id="@+id/headerColumnLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
         </HorizontalScrollView>
 
         <TextView
@@ -41,7 +49,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_comment_label"
@@ -94,7 +102,7 @@
         app:layout_constraintBottom_toTopOf="@id/sessionLinearLayout">
 
         <TextView
-            android:id="@+id/entryIndexLabel"
+            android:id="@+id/entryIndexValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.75"
@@ -110,10 +118,17 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:layout_weight="4">
+
+            <LinearLayout
+                android:id="@+id/entryValueLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
         </HorizontalScrollView>
 
         <Button
-            android:id="@+id/entryCommentLabel"
+            android:id="@+id/entryCommentButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -126,7 +141,7 @@
         </Button>
 
         <Button
-            android:id="@+id/entryPhotoLabel"
+            android:id="@+id/entryPhotoButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -175,7 +190,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/entriesLabel"
+            android:id="@+id/sessionEntriesLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.65"
@@ -186,7 +201,7 @@
         </TextView>
 
         <TextView
-            android:id="@+id/entriesValue"
+            android:id="@+id/sessionEntriesValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"

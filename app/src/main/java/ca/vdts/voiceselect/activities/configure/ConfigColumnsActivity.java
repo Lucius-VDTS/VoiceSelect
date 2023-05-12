@@ -122,7 +122,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         //User Spinner
         columnUserSpinner = findViewById(R.id.columnUserSpinner);
 
-        userAdapter = new VDTSNamedAdapter<>(this, R.layout.spinner_view_named, userList);
+        userAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());
         columnUserSpinner.setAdapter(userAdapter);
         columnUserSpinner.setOnItemSelectedListener(userSpinnerListener);
@@ -166,14 +166,15 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     protected void onResume() {
         super.onResume();
         initializeUserList();
-        initializeColumnList();
         disableViews();
     }
 
+    //Initialize user list then column list
     private void initializeUserList() {
         if (currentUser.getAuthority() <= 0) {
             userList.clear();
             userList.add(currentUser);
+            initializeColumnList();
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
@@ -184,19 +185,31 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 handler.post(() -> {
                     userAdapter.notifyDataSetChanged();
                     columnUserSpinner.setSelection(userList.indexOf(currentUser));
+                    initializeColumnList();
                 });
             });
         }
     }
 
     private void initializeColumnList() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            columnList.clear();
-            columnList.addAll(vsViewModel.findAllActiveColumns());
-            handler.post(() -> columnAdapter.setDataset(columnList));
-        });
+        if (selectedUser == null) {
+            columnAdapter.setDataset(new ArrayList<>());
+            columnAdapter.notifyDataSetChanged();
+            columnAdapterSelect(-1);
+        } else {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
+                columnList.clear();
+                columnList.addAll(vsViewModel.findAllActiveColumnsByUser(currentUser.getUid()));
+                columnList.remove(Column.COLUMN_NONE);
+                handler.post(() -> {
+                    columnAdapter.setDataset(columnList);
+                    columnAdapter.notifyDataSetChanged();
+                    columnAdapterSelect(-1);
+                });
+            });
+        }
     }
 
     private void disableViews() {
@@ -212,7 +225,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             columnImportButton.setEnabled(false);
             columnExportButton.setEnabled(false);
 
-            if (columnList.size() <= 0) {
+            if (columnList.size() == 0) {
                 columnResetButton.setEnabled(false);
                 columnSaveButton.setEnabled(false);
             }
@@ -228,6 +241,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     selectedUser = (VDTSUser) parent.getItemAtPosition(position);
+                    initializeColumnList();
                 }
 
                 @Override
@@ -262,6 +276,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                        updateColumnSpokens(selectedColumn, false);
                        handler.post(() -> columnAdapter.updateSelectedEntity());
                    });
+               } else {
+                   LOG.info("Invalid column spoken");
+                   vdtsApplication.displayToast(this, "Invalid column spoken", 0);
                }
                newColumnButtonOnClick();
             } else {
@@ -272,7 +289,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         } else {
             //Create new column
             Column column = new Column(
-                    currentUser.getUid(),
+                    selectedUser.getUid(),
                     columnNameEditText.getText().toString().trim(),
                     columnNameCodeEditText.getText().toString().trim(),
                     columnExportCodeEditText.getText().toString().trim()
@@ -288,7 +305,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         LOG.info("Added column: {}", column.getName());
                         updateColumnSpokens(column, true);
 
-                        handler.post(() -> columnAdapter.add(column));
+                        handler.post(() -> columnAdapter.addEntity(column));
                     });
                 }
                 newColumnButtonOnClick();
@@ -334,7 +351,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                 final List<ColumnSpoken> spokenList = columnSpokenList.stream()
                         .filter(spoken -> spoken.getColumnID() == selectedColumn.getUid())
-                        .filter(spoken -> spoken.getUserID() == currentUser.getUid())
+                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())      //todo maybe??????
                         .collect(Collectors.toList());
 
                 String spokens = "";
@@ -449,7 +466,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         } else {
             final List<ColumnSpoken> existingSpokenList = columnSpokenList.stream()
                     .filter(spoken -> spoken.getColumnID() == column.getUid())
-                    .filter(spoken -> spoken.getUserID() == column.getUserID())
+                    .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
                     .collect(Collectors.toList());
 
             //Delete spokens that no longer exist

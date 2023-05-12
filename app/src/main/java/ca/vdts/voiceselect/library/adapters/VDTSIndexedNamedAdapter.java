@@ -1,8 +1,6 @@
 package ca.vdts.voiceselect.library.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +23,8 @@ import ca.vdts.voiceselect.library.interfaces.VDTSFilterableInterface;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 import ca.vdts.voiceselect.library.services.VDTSAdapterClickListenerService;
 import ca.vdts.voiceselect.library.services.VDTSNameOrderService;
-
+//todo - replace notifyDataSetChanged
+//todo - notifyItemRemoved does not reset indices - use diffUtil to recalc indices and remove notifyDataSetChanged
 /**
  * Generic recycler view adapter for entities with an index and name.
  * @param <Entity>
@@ -35,13 +33,13 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         extends RecyclerView.Adapter<VDTSIndexedNamedAdapter.ViewHolder>
         implements VDTSFilterableInterface {
     private final VDTSAdapterClickListenerService selectedListener;
-    Context context;
+    private final Context context;
 
     private final List<Entity> dataset = new ArrayList<>();
     private List<Entity> filteredDataset = new ArrayList<>();
     private String oldCriteria;
     private String filterCriteria;
-    int selectedIndex = -1;
+    private int selectedIndex = -1;
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
@@ -57,7 +55,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.recycler_view_indexed_named, parent, false);
+                .inflate(R.layout.adapter_recycler_indexed_named, parent, false);
 
         if (selectedListener != null) {
             view.setOnClickListener(selectedListener);
@@ -114,9 +112,38 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         holder.linearLayout.setOnClickListener(selectedListener);
     }
 
-    public void add(Entity entity) {
-        this.dataset.add(entity);
-        this.notifyItemChanged(dataset.size() - 1);
+    public void setDataset(List<Entity> dataset) {
+        this.dataset.clear();
+        this.dataset.addAll(dataset);
+        this.dataset.sort(VDTSNameOrderService.getInstance());
+        notifyDataSetChanged();
+    }
+
+    public void addEntity(Entity entity) {
+        dataset.add(entity);
+        //notifyItemInserted(dataset.size() - 1);
+        notifyDataSetChanged();
+    }
+
+    public void updateEntity(Entity entity) {
+        int index = dataset.indexOf(entity);
+        dataset.remove(entity);
+        dataset.add(index, entity);
+        //notifyItemChanged(index);
+        notifyDataSetChanged();
+    }
+
+    public void updateSelectedEntity() {
+        notifyItemChanged(this.selectedIndex);
+    }
+
+    public void removeSelectedEntity() {
+        Entity entity = dataset.get(selectedIndex);
+        dataset.remove(entity);
+        //notifyItemRemoved(selectedIndex);
+        notifyDataSetChanged();
+        selectedIndex = -1;
+        setSelectedEntity(selectedIndex);
     }
 
     /**
@@ -184,26 +211,12 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         }
     }
 
-    public void setDataset(List<Entity> dataset) {
-        this.dataset.clear();
-        this.dataset.addAll(dataset);
-        this.dataset.sort(VDTSNameOrderService.getInstance());
-        notifyDataSetChanged();
-    }
-
     public Entity getEntity(int index) {
         if (filterCriteria == null) {
             return dataset.get(index);
         } else {
             return filteredDataset.get(index);
         }
-    }
-
-    public void updateEntity(Entity entity) {
-        int index = dataset.indexOf(entity);
-        dataset.remove(entity);
-        dataset.add(index, entity);
-        notifyItemChanged(index);
     }
 
     public Entity getSelectedEntity() {
@@ -226,20 +239,6 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         }
     }
 
-    public void updateSelectedEntity() {
-       notifyItemChanged(this.selectedIndex);
-    }
-
-    public void removeSelectedEntity() {
-        Entity entity = dataset.get(selectedIndex);
-        dataset.remove(entity);
-        notifyDataSetChanged();
-        //todo - notifyItemRemoved does not reset indices - use diffUtil to recalc indices and remove notifyDataSetChanged
-        //notifyItemRemoved(selectedIndex);
-        selectedIndex = -1;
-        setSelectedEntity(selectedIndex);
-    }
-
     @Override
     public int getItemCount() {
         if (filterCriteria == null) {
@@ -249,7 +248,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         }
     }
 
-////VIEWHOLDER_SUBCLASS/////////////////////////////////////////////////////////////////////////////
+////VIEW_HOLDER_SUBCLASS////////////////////////////////////////////////////////////////////////////
     static class ViewHolder extends RecyclerView.ViewHolder {
         final LinearLayout linearLayout;
         final TextView indexTextView;
@@ -258,8 +257,8 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.linearLayout = (LinearLayout) itemView;
-            this.indexTextView = itemView.findViewById(R.id.index);
-            this.nameTextView = itemView.findViewById(R.id.name);
+            this.indexTextView = itemView.findViewById(R.id.indexValue);
+            this.nameTextView = itemView.findViewById(R.id.nameValue);
         }
     }
 }

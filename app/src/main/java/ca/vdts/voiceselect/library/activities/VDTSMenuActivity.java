@@ -17,6 +17,7 @@ import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -63,7 +64,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         currentUser = vdtsApplication.getCurrentUser();
 
         startActivityButton = findViewById(R.id.startActivityButton);
+        startActivityButton.setOnClickListener(v -> startActivityButtonOnClick());
+
+        //todo - disabled if data gathering has not been started
         resumeActivityButton = findViewById(R.id.resumeActivityButton);
+        resumeActivityButton.setOnClickListener(v -> resumeActivityButtonOnClick());
 
         configureActivityButton = findViewById(R.id.configureActivityButton);
         configureActivityButton.setOnClickListener(v -> configureActivityButtonOnClick());
@@ -91,6 +96,16 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         super.onResume();
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
+    }
+
+    public void startActivityButtonOnClick() {
+        Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
+        startActivity(startActivityIntent);
+    }
+
+    public void resumeActivityButtonOnClick() {
+        Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
+        startActivity(resumeActivityIntent);
     }
 
     public void configureActivityButtonOnClick() {
@@ -133,6 +148,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             aboutActivityButton.setOnClickListener(v -> aboutActivityButtonOnClick());
 
             VDTSNotificationService.init(this);
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Start", this::startActivityButtonOnClick));
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Resume", this::resumeActivityButtonOnClick));
 
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
                     vc.add("Configure", this::configureActivityButtonOnClick));

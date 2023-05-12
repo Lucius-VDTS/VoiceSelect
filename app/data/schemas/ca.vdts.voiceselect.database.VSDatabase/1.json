@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ba184148bd1e2ad32be81daa41c5cb6d",
+    "identityHash": "955639a5dd8e36f9814c67abf02ba3ad",
     "entities": [
       {
         "tableName": "Users",
@@ -600,12 +600,330 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "Sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `sessionPrefix` TEXT, `startDate` TEXT, `dateIteration` INTEGER NOT NULL, `endDate` TEXT, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userID",
+            "columnName": "userID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionPrefix",
+            "columnName": "sessionPrefix",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateIteration",
+            "columnName": "dateIteration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Sessions_userID",
+            "unique": false,
+            "columnNames": [
+              "userID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Sessions_userID` ON `${TABLE_NAME}` (`userID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Users",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "userID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SessionLayouts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sessionID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, FOREIGN KEY(`sessionID`) REFERENCES `Sessions`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionID",
+            "columnName": "sessionID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnID",
+            "columnName": "columnID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnPosition",
+            "columnName": "columnPosition",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SessionLayouts_sessionID",
+            "unique": false,
+            "columnNames": [
+              "sessionID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SessionLayouts_sessionID` ON `${TABLE_NAME}` (`sessionID`)"
+          },
+          {
+            "name": "index_SessionLayouts_columnID",
+            "unique": false,
+            "columnNames": [
+              "columnID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_SessionLayouts_columnID` ON `${TABLE_NAME}` (`columnID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Sessions",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "sessionID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          },
+          {
+            "table": "Columns",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "columnID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `sessionID` INTEGER NOT NULL, `createdDate` TEXT, `latitude` REAL, `longitude` REAL, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`sessionID`) REFERENCES `Sessions`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userID",
+            "columnName": "userID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionID",
+            "columnName": "sessionID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "createdDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Entries_userID",
+            "unique": false,
+            "columnNames": [
+              "userID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Entries_userID` ON `${TABLE_NAME}` (`userID`)"
+          },
+          {
+            "name": "index_Entries_sessionID",
+            "unique": false,
+            "columnNames": [
+              "sessionID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Entries_sessionID` ON `${TABLE_NAME}` (`sessionID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Users",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "userID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          },
+          {
+            "table": "Sessions",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "sessionID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "EntryValues",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entryID` INTEGER NOT NULL, `columnValueID` INTEGER NOT NULL, FOREIGN KEY(`entryID`) REFERENCES `Entries`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnValueID`) REFERENCES `ColumnValues`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryID",
+            "columnName": "entryID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "columnValueID",
+            "columnName": "columnValueID",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_EntryValues_entryID",
+            "unique": false,
+            "columnNames": [
+              "entryID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EntryValues_entryID` ON `${TABLE_NAME}` (`entryID`)"
+          },
+          {
+            "name": "index_EntryValues_columnValueID",
+            "unique": false,
+            "columnNames": [
+              "columnValueID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EntryValues_columnValueID` ON `${TABLE_NAME}` (`columnValueID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Entries",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "entryID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          },
+          {
+            "table": "ColumnValues",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "columnValueID"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ba184148bd1e2ad32be81daa41c5cb6d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '955639a5dd8e36f9814c67abf02ba3ad')"
     ]
   }
 }

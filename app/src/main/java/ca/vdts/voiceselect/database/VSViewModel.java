@@ -15,6 +15,7 @@ import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Entry;
+import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.Session;
@@ -24,6 +25,7 @@ import ca.vdts.voiceselect.database.repositories.ColumnSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.EntryRepository;
+import ca.vdts.voiceselect.database.repositories.EntryValueRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutColumnRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutRepository;
 import ca.vdts.voiceselect.database.repositories.SessionLayoutRepository;
@@ -43,6 +45,7 @@ public class VSViewModel extends VDTSViewModel {
     private final SessionRepository sessionRepository;
     private final SessionLayoutRepository sessionLayoutRepository;
     private final EntryRepository entryRepository;
+    private final EntryValueRepository entryValueRepository;
 
     public VSViewModel(@NonNull Application application) {
         super(application);
@@ -57,6 +60,7 @@ public class VSViewModel extends VDTSViewModel {
         sessionRepository = new SessionRepository(vsDatabase.sessionDAO());
         sessionLayoutRepository = new SessionLayoutRepository(vsDatabase.sessionLayoutDAO());
         entryRepository = new EntryRepository(vsDatabase.entryDAO());
+        entryValueRepository = new EntryValueRepository(vsDatabase.entryValueDAO());
     }
 
     //Column
@@ -115,6 +119,14 @@ public class VSViewModel extends VDTSViewModel {
         return columnRepository.findAll(
                 "SELECT * FROM Columns " +
                         "WHERE active = 1"
+        );
+    }
+
+    public List<Column> findAllActiveColumnsByUser(long userID) {
+        return columnRepository.findAll(
+                "SELECT * FROM Columns " +
+                        "WHERE active = 1 " +
+                        "AND userID = " + userID
         );
     }
 
@@ -511,6 +523,48 @@ public class VSViewModel extends VDTSViewModel {
         return entryRepository.findAllEntriesLive(
                 "SELECT * FROM Entries " +
                         "WHERE sessionID = " + sessionID
+
+        );
+    }
+
+    //EntryValue
+    public long insertEntryValue(EntryValue entryValue) {
+        return entryValueRepository.insert(entryValue);
+    }
+
+    public void insertAllEntryValues(EntryValue[] entryValues) {
+        entryValueRepository.insertAll(entryValues);
+    }
+
+    public void updateEntryValue(EntryValue entryValue) {
+        entryValueRepository.update(entryValue);
+    }
+
+    public void updateAllEntryValues(EntryValue[] entryValues) {
+        entryValueRepository.updateAll(entryValues);
+    }
+
+    public void deleteEntryValue(EntryValue entryValue) {
+        entryValueRepository.delete(entryValue);
+    }
+
+    public void deleteAllEntryValues(EntryValue[] entryValues) {
+        entryValueRepository.deleteAll(entryValues);
+    }
+
+    public List<EntryValue> findAllEntryValuesBySession(long sessionID) {
+        return entryValueRepository.findAll(
+                "SELECT EV.* FROM EntryValues AS EV " +
+                        "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
+                        "WHERE E.sessionID = " + sessionID
+        );
+    }
+
+    public LiveData<List<EntryValue>> findAllEntryValuesLiveBySession(long sessionID) {
+        return entryValueRepository.findAllEntryValuesLive(
+                "SELECT EV.* FROM EntryValues AS EV " +
+                        "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
+                        "WHERE E.sessionID = " + sessionID
 
         );
     }

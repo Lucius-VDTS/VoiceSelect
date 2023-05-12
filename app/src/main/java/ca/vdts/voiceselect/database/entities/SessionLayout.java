@@ -79,7 +79,7 @@ public class SessionLayout {
         this.uid = uid;
         this.sessionID = sessionID;
         this.columnID = columnID;
-        this.columnID = columnPosition;
+        this.columnPosition = columnPosition;
     }
 
     //Place holder constructor - entity has id 0 until saved to database

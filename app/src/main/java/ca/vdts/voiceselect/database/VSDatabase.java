@@ -20,6 +20,7 @@ import ca.vdts.voiceselect.database.daos.ColumnSpokenDAO;
 import ca.vdts.voiceselect.database.daos.ColumnValueDAO;
 import ca.vdts.voiceselect.database.daos.ColumnValueSpokenDAO;
 import ca.vdts.voiceselect.database.daos.EntryDAO;
+import ca.vdts.voiceselect.database.daos.EntryValueDAO;
 import ca.vdts.voiceselect.database.daos.LayoutColumnDAO;
 import ca.vdts.voiceselect.database.daos.LayoutDAO;
 import ca.vdts.voiceselect.database.daos.SessionDAO;
@@ -29,6 +30,7 @@ import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Entry;
+import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.Session;
@@ -51,7 +53,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
                 LayoutColumn.class,
                 Session.class,
                 SessionLayout.class,
-                Entry.class
+                Entry.class,
+                EntryValue.class
         },
         version = 1)
 @TypeConverters(
@@ -76,6 +79,8 @@ public abstract class VSDatabase extends RoomDatabase {
     public abstract SessionDAO sessionDAO();
     public abstract SessionLayoutDAO sessionLayoutDAO();
     public abstract EntryDAO entryDAO();
+    public abstract EntryValueDAO entryValueDAO();
+
 
     public static synchronized VSDatabase getInstance(VSApplication vsApplication) {
         LOG.info("Getting database instance");
@@ -120,14 +125,9 @@ public abstract class VSDatabase extends RoomDatabase {
 
         final VDTSUserDAO VDTSUserDao = dbInstance.userDAO();
         final ColumnDAO columnDAO = dbInstance.columnDAO();
-        final ColumnSpokenDAO columnSpokenDAO = dbInstance.columnSpokenDAO();
         final ColumnValueDAO columnValueDAO = dbInstance.columnValueDAO();
-        final ColumnValueSpokenDAO columnValueSpokenDAO = dbInstance.columnValueSpokenDAO();
-        final LayoutDAO layoutDAO = dbInstance.layoutDAO();
-        final LayoutColumnDAO layoutColumnDAO = dbInstance.layoutColumnDAO();
         final SessionDAO sessionDAO = dbInstance.sessionDAO();
         final SessionLayoutDAO sessionLayoutDAO = dbInstance.sessionLayoutDAO();
-        final EntryDAO entryDAO = dbInstance.entryDAO();
 
         executor.execute(() -> {
             //Users
@@ -179,6 +179,7 @@ public abstract class VSDatabase extends RoomDatabase {
         vsDatabase.sessionDAO().checkpoint(new SimpleSQLiteQuery(checkpoint));
         vsDatabase.sessionLayoutDAO().checkpoint(new SimpleSQLiteQuery(checkpoint));
         vsDatabase.entryDAO().checkpoint(new SimpleSQLiteQuery(checkpoint));
+        vsDatabase.entryValueDAO().checkpoint(new SimpleSQLiteQuery(checkpoint));
     }
 
     public static String getDbName() {

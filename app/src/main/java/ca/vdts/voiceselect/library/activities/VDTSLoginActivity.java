@@ -78,7 +78,7 @@ public class VDTSLoginActivity extends AppCompatActivity {
             userList.remove(VDTSUser.VDTS_USER_NONE);
             handler.post(() -> {
                 userAdapter.setDataset(userList);
-                if (userList.size() <= 0) {
+                if (userList.size() == 0) {
                     Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
                     startActivity(vdtsMenuActivity);
                 }

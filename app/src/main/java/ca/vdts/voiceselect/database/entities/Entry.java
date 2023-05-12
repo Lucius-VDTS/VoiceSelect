@@ -18,7 +18,7 @@ import java.util.Objects;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Entity defines the Entries table.
+ * Entity defines the Entries table. Entity represents a row in the data gathering table.
  */
 @Entity(
         tableName = "Entries",
