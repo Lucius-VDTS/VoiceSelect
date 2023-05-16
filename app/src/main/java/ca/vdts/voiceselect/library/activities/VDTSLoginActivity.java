@@ -82,10 +82,12 @@ public class VDTSLoginActivity extends AppCompatActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            userList.clear();
             userList.addAll(vdtsViewModel.findAllActiveUsers());
             userList.remove(VDTSUser.VDTS_USER_NONE);
             handler.post(() -> {
                 userAdapter.setDataset(userList);
+                userAdapterSelect(-1);
                 if (userList.size() == 0) {
                     Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
                     startActivity(vdtsMenuActivity);

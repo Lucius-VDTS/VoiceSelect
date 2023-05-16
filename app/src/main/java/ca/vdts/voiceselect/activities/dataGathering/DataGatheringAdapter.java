@@ -69,9 +69,6 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
 
         holder.entryIndexValue.setText(position + 1);
 
-
-
-
         for (int i = 0; i <= holder.entryLinearLayout.getChildCount(); i++) {
             TextView currentEntry = (TextView) holder.entryLinearLayout.getChildAt(i);
 

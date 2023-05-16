@@ -224,6 +224,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         if (selectedColumn == null) {
             columnValueAdapter.setDataset(new ArrayList<>());
             columnValueAdapter.notifyDataSetChanged();
+            columnValueAdapterSelect(-1);
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
@@ -234,6 +235,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 handler.post(() -> {
                     columnValueAdapter.setDataset(columnValueList);
                     columnValueAdapter.notifyDataSetChanged();
+                    columnValueAdapterSelect(-1);
                 });
             });
         }
@@ -270,8 +272,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
-                    //newColumnValueButtonOnClick();
-                    columnValueAdapterSelect(-1);
                     selectedColumn = (Column) parent.getItemAtPosition(position);
                     initializeColumnValueList();
                 }
@@ -289,6 +289,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     selectedUser = (VDTSUser) parent.getItemAtPosition(position);
+                    initializeColumnList();
                 }
 
                 @Override
@@ -413,9 +414,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 columnValueNameCodeEditText.setText(selectedColumnValue.getNameCode());
                 columnValueExportCodeEditText.setText(selectedColumnValue.getExportCode());
 
+                if (selectedUser == null) { selectedUser = currentUser; }
                 final List<ColumnValueSpoken> spokenList = columnValueSpokenList.stream()
                         .filter(spoken -> spoken.getColumnValueID() == selectedColumnValue.getUid())
-                        .filter(spoken -> spoken.getUserID() == currentUser.getUid())
+                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
                         .collect(Collectors.toList());
 
                 String spokens = "";
@@ -510,7 +512,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         final List<String> spokenList = getFormattedColumnValueSpokenList();
 
         if (isNew) {
-            if (userList.isEmpty()) userList.add(VDTSUser.VDTS_USER_NONE);
             for (VDTSUser user : userList) {
                 for (String spoken : spokenList) {
                     new Thread(
