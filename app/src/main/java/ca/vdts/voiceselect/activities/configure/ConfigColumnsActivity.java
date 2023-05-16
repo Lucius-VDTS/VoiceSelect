@@ -449,7 +449,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private void updateColumnSpokens(Column column, boolean isNew) {
         final List<String> spokenList = getFormattedColumnSpokenList();
         if (isNew) {
-            if (userList.isEmpty()) userList.add(VDTSUser.VDTS_USER_NONE);
             for (VDTSUser user : userList) {
                 for (String spoken : spokenList) {
                     new Thread(
