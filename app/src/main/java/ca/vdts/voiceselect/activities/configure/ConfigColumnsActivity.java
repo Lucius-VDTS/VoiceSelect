@@ -54,6 +54,12 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private VDTSUser currentUser;
     private VDTSUser selectedUser;
 
+    //Lists
+    private final List<Column> columnList = new ArrayList<>();
+    private final List<ColumnSpoken> columnSpokenList = new ArrayList<>();
+    private final List<VDTSUser> userList = new ArrayList<>();
+    private ArrayList<String> reservedWords;
+
     //Views
     private Button columnNewButton;
     private Button columnResetButton;
@@ -75,12 +81,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private VDTSIndexedNamedAdapter<Column> columnAdapter;
     private VDTSNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView columnRecyclerView;
-
-    //Lists
-    private final List<Column> columnList = new ArrayList<>();
-    private final List<ColumnSpoken> columnSpokenList = new ArrayList<>();
-    private final List<VDTSUser> userList = new ArrayList<>();
-    private ArrayList<String> reservedWords;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;

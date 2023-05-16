@@ -17,7 +17,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -28,10 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,6 +45,7 @@ import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
+import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
@@ -56,13 +61,20 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private Entry currentEntry;
     private ColumnValue selectedColumnValue;
 
-    //Views
-    private LinearLayout headerColumnLinearLayout;
+    //Lists
+    private final List<Column> columnList = new ArrayList<>();
+    private final List<ColumnValue> columnValueList = new ArrayList<>();
+    private final List<Entry> entryList = new ArrayList<>();
+    private LiveData<List<Entry>> entryListLive;
+    private final List<EntryValue> entryValueList = new ArrayList<>();
+    private LiveData<List<EntryValue>> entryValueListLive;
 
-    private TextView entryIndexValue;
-    private LinearLayout entryValueLinearLayout;
-    private Button entryCommentButton;
-    private Button entryPhotoButton;
+    //Views
+    private LinearLayout columnLinearLayout;
+    private TextView columnValueIndexValue;
+    private LinearLayout columnValueLinearLayout;
+    private Button columnValueCommentButton;
+    private Button columnValuePhotoButton;
 
     private TextView sessionValue;
     private TextView sessionEntriesValue;
@@ -70,13 +82,9 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
-    private VDTSNamedAdapter<ColumnValue> entryValueAdapter;
-
-    //todo - Camera Stuff
-
-    //Lists
-    private final List<Column> headerColumnList = new ArrayList<>();
-    private final List<ColumnValue> entryValueList = new ArrayList<>();
+    private VDTSNamedAdapter<ColumnValue> columnValueAdapter;
+    private DataGatheringAdapter dataGatheringAdapter;
+    private RecyclerView entryRecyclerView;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -93,21 +101,47 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
 
-        headerColumnLinearLayout = findViewById(R.id.headerColumnLinearLayout);
+        columnLinearLayout = findViewById(R.id.columnsLinearLayout);
 
-        entryIndexValue = findViewById(R.id.entryIndexValue);
-        entryValueLinearLayout = findViewById(R.id.entryValueLinearLayout);
-        entryCommentButton = findViewById(R.id.entryCommentButton);
-        entryPhotoButton = findViewById(R.id.entryPhotoButton);
+        columnValueIndexValue = findViewById(R.id.columnValuesIndexValue);
+        columnValueLinearLayout = findViewById(R.id.columnValuesLinearLayout);
+        columnValueCommentButton = findViewById(R.id.columnValuesCommentButton);
+        columnValuePhotoButton = findViewById(R.id.columnValuesPhotoButton);
 
         sessionValue = findViewById(R.id.sessionValue);
         sessionEntriesValue = findViewById(R.id.sessionEntriesValue);
         entrySaveButton = findViewById(R.id.entrySaveButton);
+        entrySaveButton.setOnClickListener(v -> saveEntryButtonOnClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
+        //Recycler View
+        entryRecyclerView = findViewById(R.id.entryRecyclerView);
+
+        entryRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        this,
+                        LinearLayoutManager.VERTICAL,
+                        false
+                ));
+
+        dataGatheringAdapter = new DataGatheringAdapter(
+                this,
+                columnList,
+                columnValueList,
+                entryList,
+                entryValueList
+        );
+
+        entryRecyclerView.setAdapter(dataGatheringAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         initializeSession();
-        initializeHeaderColumns();
+        initializeColumnsLayout();
     }
 
     private void initializeSession() {
@@ -140,7 +174,10 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         }
     }
 
-    private void initializeHeaderColumns() {
+    /**
+     * Programmatically generate column headers based on the current session's layout
+     */
+    private void initializeColumnsLayout() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -157,31 +194,34 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            headerColumnList.clear();
-            headerColumnList.addAll(vsViewModel.findAllActiveColumns());
-            headerColumnList.remove(Column.COLUMN_NONE);
+            columnList.clear();
+            columnList.addAll(vsViewModel.findAllActiveColumns());
+            columnList.remove(Column.COLUMN_NONE);
             handler.post(() -> {
                 int index = 0;
-                for (Column column : headerColumnList) {
-                    TextView headerColumnText = new TextView(this);
-                    headerColumnText.setId(index);
-                    headerColumnText.setGravity(Gravity.CENTER);
-                    headerColumnText.setLayoutParams(layoutParams);
-                    headerColumnText.setPadding(dimen, dimen, dimen, dimen);
-                    headerColumnText.setMaxLines(1);        //todo - maybe not a good idea
-                    headerColumnText.setText(column.getNameCode());   //todo - use name instead????
-                    headerColumnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                for (Column column : columnList) {
+                    TextView columnText = new TextView(this);
+                    columnText.setId(index);
+                    columnText.setGravity(Gravity.CENTER);
+                    columnText.setLayoutParams(layoutParams);
+                    columnText.setPadding(dimen, dimen, dimen, dimen);
+                    columnText.setMaxLines(1);        //todo - maybe not a good idea
+                    columnText.setText(column.getNameCode());   //todo - use name instead????
+                    columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-                    headerColumnLinearLayout.addView(headerColumnText);
+                    columnLinearLayout.addView(columnText);
                     index++;
                 }
 
-                initializeEntryValues();
+                initializeColumnValuesLayout();
             });
         });
     }
 
-    private void initializeEntryValues() {
+    /**
+     * Programmatically generate value spinners based on the current session's columns
+     */
+    private void initializeColumnValuesLayout() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -196,33 +236,35 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         layoutParams.setMargins(dimen, 0, dimen, 0);
 
         int index = 0;
-        for (Column column : headerColumnList) {
+        for (Column column : columnList) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
             int finalIndex = index;
             executor.execute(() -> {
-                entryValueList.clear();
-                entryValueList.addAll(
+                columnValueList.clear();
+                columnValueList.addAll(
                         vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
-                entryValueList.remove(ColumnValue.COLUMN_VALUE_NONE);
+                columnValueList.remove(ColumnValue.COLUMN_VALUE_NONE);
                 handler.post(() -> {
-                    entryValueAdapter = new VDTSNamedAdapter<>(
+                    columnValueAdapter = new VDTSNamedAdapter<>(
                             this,
                             R.layout.adapter_spinner_named,
-                            entryValueList);
-                    entryValueAdapter.setToStringFunction((columnValue, integer) ->
+                            columnValueList);
+                    columnValueAdapter.setToStringFunction((columnValue, integer) ->
                             columnValue.getName());
 
-                    Spinner entryValueSpinner = new Spinner(this);
-                    entryValueSpinner.setId(finalIndex);
-                    entryValueSpinner.setGravity(Gravity.CENTER);
-                    entryValueSpinner.setLayoutParams(layoutParams);
-                    entryValueSpinner.setPadding(dimen, dimen, dimen, dimen);
+                    Spinner columnValueSpinner = new Spinner(this);
+                    columnValueSpinner.setId(finalIndex);
+                    columnValueSpinner.setGravity(Gravity.CENTER);
+                    columnValueSpinner.setLayoutParams(layoutParams);
+                    columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
 
-                    entryValueSpinner.setAdapter(entryValueAdapter);
-                    entryValueSpinner.setOnItemSelectedListener(entryValueSpinnerListener);
+                    columnValueSpinner.setAdapter(columnValueAdapter);
+                    columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
 
-                    entryValueLinearLayout.addView(entryValueSpinner);
+                    columnValueLinearLayout.addView(columnValueSpinner);
+
+                    initializeEntriesList();
                 });
             });
 
@@ -230,7 +272,49 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         }
     }
 
-    private final AdapterView.OnItemSelectedListener entryValueSpinnerListener =
+    private void initializeEntriesList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            entryList.clear();
+            entryList.addAll(vsViewModel.findAllEntriesBySession(currentSession.getUid()));
+
+            entryListLive.removeObservers(this);
+            entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
+            handler.post(() -> {
+                entryListLive.observe(this, entryObserver);
+                initializeEntryValuesList();
+            });
+        });
+    }
+
+    private void initializeEntryValuesList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            entryValueList.clear();
+            entryValueList.addAll(vsViewModel.findAllEntryValuesBySession(currentSession.getUid()));
+
+            entryValueListLive.removeObservers(this);
+            entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
+            handler.post(() -> {
+                entryValueListLive.observe(this, entryValueObserver);
+                initializeDGAdapter();
+            });
+        });
+    }
+
+    private void initializeDGAdapter() {
+        dataGatheringAdapter = new DataGatheringAdapter(
+                this,
+                columnList,
+                columnValueList,
+                entryList,
+                entryValueList
+        );
+    }
+
+    private final AdapterView.OnItemSelectedListener columnValueSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
@@ -241,6 +325,40 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {}
             };
+
+    private final Observer<List<Entry>> entryObserver = new Observer<List<Entry>>() {
+        @Override
+        public void onChanged(List<Entry> entries) {
+            if (entries != null) {
+                dataGatheringAdapter.clearEntries();
+                dataGatheringAdapter.addAllEntries(entries);
+                sessionEntriesValue.setText(String.format(
+                        Locale.getDefault(), "%d", entries.size()));
+            }
+        }
+    };
+
+    private final Observer<List<EntryValue>> entryValueObserver = new Observer<List<EntryValue>>() {
+        @Override
+        public void onChanged(List<EntryValue> entryValues) {
+            if (entryValues != null) {
+                dataGatheringAdapter.clearValues();
+                dataGatheringAdapter.addAllEntryValues(entryValues);
+            }
+        }
+    };
+
+    private void saveEntryButtonOnClick() {
+        initializeEntriesList();
+//
+//        //Update existing entry
+//        if (currentEntry != null) {
+//            entryList.add();
+//
+//        }
+//
+//        //Create new entry
+    }
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {

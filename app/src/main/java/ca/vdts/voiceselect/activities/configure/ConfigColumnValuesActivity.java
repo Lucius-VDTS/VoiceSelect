@@ -56,6 +56,13 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private VDTSUser currentUser;
     private VDTSUser selectedUser;
 
+    //Lists
+    private final List<ColumnValue> columnValueList = new ArrayList<>();
+    private final List<ColumnValueSpoken> columnValueSpokenList = new ArrayList<>();
+    private final List<Column> columnList = new ArrayList<>();
+    private final List<VDTSUser> userList = new ArrayList<>();
+    private ArrayList<String> reservedWords;
+
     //Views
     private Button columnValueNewButton;
     private Button columnValueResetButton;
@@ -79,13 +86,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private VDTSNamedAdapter<Column> columnAdapter;
     private VDTSNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView columnValueRecyclerView;
-
-    //Lists
-    private final List<ColumnValue> columnValueList = new ArrayList<>();
-    private final List<ColumnValueSpoken> columnValueSpokenList = new ArrayList<>();
-    private final List<Column> columnList = new ArrayList<>();
-    private final List<VDTSUser> userList = new ArrayList<>();
-    private ArrayList<String> reservedWords;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -190,13 +190,13 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             userList.add(currentUser);
             initializeColumnList();
         } else {
-            ExecutorService usExecutor = Executors.newSingleThreadExecutor();
-            Handler usHandler = new Handler(Looper.getMainLooper());
-            usExecutor.execute(() -> {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
                 userList.clear();
                 userList.addAll(vsViewModel.findAllActiveUsersExcludeDefault());
                 userList.remove(VDTSUser.VDTS_USER_NONE);
-                usHandler.post(() -> {
+                handler.post(() -> {
                     userAdapter.notifyDataSetChanged();
                     columnValueUserSpinner.setSelection(userList.indexOf(currentUser));
                     initializeColumnList();
@@ -270,6 +270,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
+                    //newColumnValueButtonOnClick();
+                    columnValueAdapterSelect(-1);
                     selectedColumn = (Column) parent.getItemAtPosition(position);
                     initializeColumnValueList();
                 }

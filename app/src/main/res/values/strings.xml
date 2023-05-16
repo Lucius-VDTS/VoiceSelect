@@ -35,8 +35,9 @@
 
     <string name="config_users_activity_button">Users</string>
     <string name="config_feedback_activity_button">Feedback</string>
-    <string name="config_column_activity_button">Columns</string>
-    <string name="config_column_values_activity_button">Column Values</string>
+    <string name="config_columns_activity_button">Columns</string>
+    <string name="config_column_values_activity_button">Values</string>
+    <string name="config_layouts_activity_button">Layouts</string>
 
 <!--  Configure Users Activity  -->
     <string name="config_users_activity_label">Configure Users</string>

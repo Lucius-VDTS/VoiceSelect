@@ -32,14 +32,14 @@ import ca.vdts.voiceselect.library.utilities.VDTSNameOrderUtil;
 public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterface>
         extends RecyclerView.Adapter<VDTSIndexedNamedAdapter.ViewHolder>
         implements VDTSFilterableInterface {
-    private final VDTSAdapterClickListenerUtil selectedListener;
     private final Context context;
-
+    private final VDTSAdapterClickListenerUtil selectedListener;
+    private int selectedIndex = -1;
     private final List<Entity> dataset = new ArrayList<>();
     private List<Entity> filteredDataset = new ArrayList<>();
     private String oldCriteria;
     private String filterCriteria;
-    private int selectedIndex = -1;
+
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
@@ -175,7 +175,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     }
 
     /**
-     * Concatenate the current filter with another filter. If there is no current filter,
+     * Concatenate the current filter with another filter. If there is no current filter
      * then this function acts as if {@link #filter(String)} was called.
      *
      * @param criteria - The string to add to the current filter.
@@ -237,6 +237,12 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         if (old >= 0 && old < dataset.size()) {
             notifyItemChanged(old);
         }
+    }
+
+    public void clearSelected() {
+        int old = selectedIndex;
+        selectedIndex = -1;
+        notifyItemChanged(old);
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.iristick.sdk.IristickSDK;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
+import ca.vdts.voiceselect.activities.configure.ConfigLayoutsActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
@@ -33,6 +34,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private Button configFeedbackActivityButton;
     private Button configColumnsActivityButton;
     private Button configColumnValuessActivityButton;
+    private Button configLayoutsActivityButton;
 
     private TextView footerUserValue;
 
@@ -58,16 +60,18 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
 
         configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
         configColumnsActivityButton.setOnClickListener(
-                v -> configColumnActivityButtonOnClick());
+                v -> configColumnsActivityButtonOnClick());
 
         configColumnValuessActivityButton = findViewById(R.id.configColumnValuesActivityButton);
         configColumnValuessActivityButton.setOnClickListener(
                 v -> configColumnValuesActivityButtonOnClick());
 
+        configLayoutsActivityButton = findViewById(R.id.configLayoutsActivityButton);
+        configLayoutsActivityButton.setOnClickListener(
+                v -> configLayoutsActivityButtonOnClick());
+
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
-
-        disableViews();
     }
 
     @Override
@@ -75,11 +79,23 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         super.onResume();
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
+
+        disableViews();
     }
 
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
             configUsersActivityButton.setEnabled(false);
+        } else if (currentUser.getUid() == -9001L) {
+            configFeedbackActivityButton.setEnabled(false);
+            configColumnsActivityButton.setEnabled(false);
+            configColumnValuessActivityButton.setEnabled(false);
+            configLayoutsActivityButton.setEnabled(false);
+        } else {
+            configFeedbackActivityButton.setEnabled(true);
+            configColumnsActivityButton.setEnabled(true);
+            configColumnValuessActivityButton.setEnabled(true);
+            configLayoutsActivityButton.setEnabled(true);
         }
     }
 
@@ -93,7 +109,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         startActivity(feedbackActivityIntent);
     }
 
-    public void configColumnActivityButtonOnClick() {
+    public void configColumnsActivityButtonOnClick() {
         Intent columnActivityIntent = new Intent(this, ConfigColumnsActivity.class);
         startActivity(columnActivityIntent);
     }
@@ -101,6 +117,11 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     public void configColumnValuesActivityButtonOnClick() {
         Intent columnValuesActivityIntent = new Intent(this, ConfigColumnValuesActivity.class);
         startActivity(columnValuesActivityIntent);
+    }
+
+    public void configLayoutsActivityButtonOnClick() {
+        Intent layoutsActivityIntent = new Intent(this, ConfigLayoutsActivity.class);
+        startActivity(layoutsActivityIntent);
     }
 
     @Override
@@ -129,10 +150,13 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
                     vc.add("Feedback", this::configFeedbackActivityButtonOnClick));
 
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Columns", this::configColumnActivityButtonOnClick));
+                    vc.add("Columns", this::configColumnsActivityButtonOnClick));
 
             IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
                     vc.add("Column Values", this::configColumnValuesActivityButtonOnClick));
+
+            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
+                    vc.add("Layouts", this::configLayoutsActivityButtonOnClick));
         }
     }
 }

@@ -49,7 +49,7 @@
                 android:layout_marginTop="@dimen/four_x_margin"
                 android:layout_marginStart="@dimen/eight_x_margin"
                 android:layout_marginEnd="@dimen/eight_x_margin"
-                android:text="@string/config_column_activity_button"
+                android:text="@string/config_columns_activity_button"
                 android:textSize="@dimen/large_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -67,6 +67,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/configColumnsActivityButton"/>
+
+            <Button
+                android:id="@+id/configLayoutsActivityButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/four_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:text="@string/config_layouts_activity_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/configColumnValuesActivityButton"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

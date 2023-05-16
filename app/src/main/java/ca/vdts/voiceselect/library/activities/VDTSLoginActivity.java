@@ -69,8 +69,16 @@ public class VDTSLoginActivity extends AppCompatActivity {
         );
 
         userRecyclerView.setAdapter(userAdapter);
+    }
 
-        //Update recycler view once user list has been generated
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        initializeUserList();
+    }
+
+    private void initializeUserList() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
