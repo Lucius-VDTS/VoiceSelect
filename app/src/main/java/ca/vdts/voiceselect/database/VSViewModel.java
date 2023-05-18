@@ -515,7 +515,7 @@ public class VSViewModel extends VDTSViewModel {
     public List<Entry> findAllEntriesBySession(long sessionID) {
         return entryRepository.findAll(
                 "SELECT * FROM Entries " +
-                        "WHERE sessionID " + sessionID
+                        "WHERE sessionID = " + sessionID
         );
     }
 
@@ -565,7 +565,6 @@ public class VSViewModel extends VDTSViewModel {
                 "SELECT EV.* FROM EntryValues AS EV " +
                         "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
                         "WHERE E.sessionID = " + sessionID
-
         );
     }
 }

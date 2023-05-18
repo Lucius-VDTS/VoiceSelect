@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -58,12 +60,21 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private VDTSUser currentUser;
     private Session currentSession;
     private boolean isNewSession = true;
-    private Entry currentEntry;
+    private Entry selectedEntry;
     private ColumnValue selectedColumnValue;
+
+
+//    //todo - temp
+//    int index = 1;
+
 
     //Lists
     private final List<Column> columnList = new ArrayList<>();
+    private final HashMap<Integer, TextView> columnTextHashMap = new HashMap<>();
+
     private final List<ColumnValue> columnValueList = new ArrayList<>();
+    private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
+
     private final List<Entry> entryList = new ArrayList<>();
     private LiveData<List<Entry>> entryListLive;
     private final List<EntryValue> entryValueList = new ArrayList<>();
@@ -82,7 +93,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
-    private VDTSNamedAdapter<ColumnValue> columnValueAdapter;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
 
@@ -104,7 +114,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         columnLinearLayout = findViewById(R.id.columnsLinearLayout);
 
         columnValueIndexValue = findViewById(R.id.columnValuesIndexValue);
-        columnValueLinearLayout = findViewById(R.id.columnValuesLinearLayout);
+        columnValueLinearLayout = findViewById(R.id.columnLayoutLinearLayout);
         columnValueCommentButton = findViewById(R.id.columnValuesCommentButton);
         columnValuePhotoButton = findViewById(R.id.columnValuesPhotoButton);
 
@@ -141,12 +151,12 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         super.onResume();
 
         initializeSession();
-        initializeColumnsLayout();
     }
 
     private void initializeSession() {
         //todo - update isNewSession
         if (isNewSession) {
+            //Create new session
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
             executor.execute(() -> {
@@ -155,6 +165,9 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                         currentUser.getUid(),
                         currentUser.getSessionPrefix(),
                         dailySessionCount + 1);
+                long uid = vsViewModel.insertSession(currentSession);
+                currentSession.setUid(uid);
+                LOG.info("Added session: {}", currentSession.getSessionPrefix());
 
                 handler.post(() -> {
                     LocalDate today = LocalDate.now();
@@ -167,9 +180,12 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                             currentSession.getDateIteration()
                     );
                     sessionValue.setText(currentSessionString);
+
+                    initializeColumnsLayout();
                 });
             });
         } else {
+            //Resume existing session
             //todo - resume existing session
         }
     }
@@ -235,41 +251,48 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         );
         layoutParams.setMargins(dimen, 0, dimen, 0);
 
-        int index = 0;
-        for (Column column : columnList) {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Handler handler = new Handler(Looper.getMainLooper());
-            int finalIndex = index;
-            executor.execute(() -> {
-                columnValueList.clear();
-                columnValueList.addAll(
-                        vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
-                columnValueList.remove(ColumnValue.COLUMN_VALUE_NONE);
-                handler.post(() -> {
-                    columnValueAdapter = new VDTSNamedAdapter<>(
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            int columnValueMapIndex = 0;
+            for (Column column : columnList) {
+                columnValueMap.put(
+                        columnValueMapIndex, vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
+                columnValueMapIndex++;
+            }
+
+            handler.post(() -> {
+                final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
+                final List<Spinner> columnValueSpinners = new ArrayList<>();
+                final HashMap<Integer, VDTSNamedAdapter> columnValueAdapters = new HashMap<>();
+                for (int index = 0; index < columnValueMap.size(); index++) {
+                    columnValuesByColumn.clear();
+                    columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
+
+                    VDTSNamedAdapter<ColumnValue> columnValueAdapter = new VDTSNamedAdapter<>(
                             this,
                             R.layout.adapter_spinner_named,
-                            columnValueList);
+                            columnValuesByColumn);
                     columnValueAdapter.setToStringFunction((columnValue, integer) ->
                             columnValue.getName());
+                    columnValueAdapters.put(index, columnValueAdapter);
 
                     Spinner columnValueSpinner = new Spinner(this);
-                    columnValueSpinner.setId(finalIndex);
+                    columnValueSpinner.setId(index);
                     columnValueSpinner.setGravity(Gravity.CENTER);
                     columnValueSpinner.setLayoutParams(layoutParams);
                     columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
-
-                    columnValueSpinner.setAdapter(columnValueAdapter);
+                    //columnValueSpinner.setAdapter(columnValueAdapter);
+                    columnValueSpinner.setAdapter(columnValueAdapters.get(index));
                     columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
+                    columnValueSpinners.add(columnValueSpinner);
 
-                    columnValueLinearLayout.addView(columnValueSpinner);
+                    columnValueLinearLayout.addView(columnValueSpinners.get(index));
+                }
 
-                    initializeEntriesList();
-                });
+                initializeEntriesList();
             });
-
-            index++;
-        }
+        });
     }
 
     private void initializeEntriesList() {
@@ -279,7 +302,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
             entryList.clear();
             entryList.addAll(vsViewModel.findAllEntriesBySession(currentSession.getUid()));
 
-            entryListLive.removeObservers(this);
+//            entryListLive.removeObservers(this);
             entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
             handler.post(() -> {
                 entryListLive.observe(this, entryObserver);
@@ -295,7 +318,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
             entryValueList.clear();
             entryValueList.addAll(vsViewModel.findAllEntryValuesBySession(currentSession.getUid()));
 
-            entryValueListLive.removeObservers(this);
+//            entryValueListLive.removeObservers(this);
             entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
             handler.post(() -> {
                 entryValueListLive.observe(this, entryValueObserver);
@@ -349,16 +372,42 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     };
 
     private void saveEntryButtonOnClick() {
-        initializeEntriesList();
+//        if (selectedEntry != null) {
+//            //Update existing entry
+//            initializeEntriesList();
+//        } else {
+//            //Create new entry
+//            Entry newEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+//            dataGatheringAdapter.addEntry(newEntry);
 //
-//        //Update existing entry
-//        if (currentEntry != null) {
-//            entryList.add();
+//            List<EntryValue> entryValues = new ArrayList<>();
+//            for (int index = 0; index < spinnerList.size(); index++) {
+//                ColumnValue columnValue = (ColumnValue) spinnerList.get(index).getSelectedItem();
+//
+//                EntryValue newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+//                entryValues.add(newEntryValue);
+//            }
+//
+//            dataGatheringAdapter.addAllEntryValues(entryValues);
+//
+//            index++;
+//            columnValueIndexValue.setText(index + "");
+//        }
+    }
+
+    //todo adapterselect - select entry
+//    private void entryAdapterSelect(int index) {
+//        if (index >= 0) {
+//            columnValueIndexValue.setText(index);
+//            dataGatheringAdapter.setSelected(index - 1);
+//            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
+//            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
+//            entryValueList.clear();
+//            entryValueList.addAll()
+//        } else {
 //
 //        }
-//
-//        //Create new entry
-    }
+//    }
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {

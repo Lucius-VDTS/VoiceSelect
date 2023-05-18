@@ -33,8 +33,8 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
     //Lists - Maps
     final List<Column> columnList = new ArrayList<>();
     final List<ColumnValue> columnValueList = new ArrayList<>();
-    final List<Entry> entriesDataset = new ArrayList<>();
-    final List<EntryValue> entryValuesDataset = new ArrayList<>();
+    final List<Entry> entryDataset = new ArrayList<>();
+    final List<EntryValue> entryValueDataset = new ArrayList<>();
 
     public DataGatheringAdapter(Context context,
                                 List<Column> columnList,
@@ -44,8 +44,8 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         this.context = context;
         this.columnList.addAll(columnList);
         this.columnValueList.addAll(columnValueList);
-        this.entriesDataset.addAll(entryList);
-        this.entryValuesDataset.addAll(entryValueList);
+        this.entryDataset.addAll(entryList);
+        this.entryValueDataset.addAll(entryValueList);
     }
 
     @NonNull
@@ -53,17 +53,17 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.adapter_recycler_indexed_named, parent, false),
+                .inflate(R.layout.adapter_recycler_data_gathering, parent, false),
                 context,
                 columnList);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DataGatheringAdapter.ViewHolder holder, int position) {
-        int size = entriesDataset.size();
-        final Entry entry = entriesDataset.get(position);
+        int size = entryDataset.size();
+        final Entry entry = entryDataset.get(position);
 
-        final List<EntryValue> entryValues = entryValuesDataset.stream()
+        final List<EntryValue> entryValues = entryValueDataset.stream()
                 .filter(entryValue -> entryValue.getEntryID() == entry.getUid())
                 .collect(Collectors.toList());
 
@@ -73,7 +73,7 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
             TextView currentEntry = (TextView) holder.entryLinearLayout.getChildAt(i);
 
             ColumnValue columnValue = columnValueList.stream().filter(
-                    columnVal -> entryValuesDataset.stream()
+                    columnVal -> entryValueDataset.stream()
                             .anyMatch(
                                     entryVal -> entryVal.getColumnValueID() == columnVal.getUid()
                             )
@@ -115,39 +115,44 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
 
     @Override
     public int getItemCount() {
-        return entriesDataset.size();
+        return entryDataset.size();
+    }
+
+    public void addEntry(Entry entry) {
+        entryDataset.add(entry);
+        notifyDataSetChanged();
     }
 
     public void addAllEntries(Collection<Entry> entries) {
-        final int startRange = entriesDataset.size();
-        entriesDataset.addAll(entries);
+        final int startRange = entryDataset.size();
+        entryDataset.addAll(entries);
         notifyItemRangeInserted(startRange, entries.size());
     }
 
     public void addAllEntryValues(Collection<EntryValue> entryValues) {
-        final int startRange = entriesDataset.size();
-        entryValuesDataset.addAll(entryValues);
-        notifyItemRangeInserted(startRange, entriesDataset.size());
+        final int startRange = entryDataset.size();
+        entryValueDataset.addAll(entryValues);
+        notifyItemRangeInserted(startRange, entryDataset.size());
     }
 
     public void clearEntries() {
-        entriesDataset.clear();
+        entryDataset.clear();
         notifyDataSetChanged();
     }
 
     public void clearValues() {
-        entryValuesDataset.clear();
+        entryValueDataset.clear();
         notifyDataSetChanged();
     }
 
     public Entry getEntry(int index) {
-        return entriesDataset.get(index);
+        return entryDataset.get(index);
     }
 
     public List<EntryValue> getEntryValues(int index) {
-        return entryValuesDataset.stream()
+        return entryValueDataset.stream()
                 .filter(entryValue ->
-                        entryValue.getEntryID() == entriesDataset.get(index).getUid())
+                        entryValue.getEntryID() == entryDataset.get(index).getUid())
                 .collect(Collectors.toList());
     }
 
@@ -155,7 +160,7 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         int old = selectedIndex;
         selectedIndex = index;
         notifyItemChanged(index);
-        if (old >= 0 && old < entriesDataset.size()) {
+        if (old >= 0 && old < entryDataset.size()) {
             notifyItemChanged(old);
         }
     }

@@ -125,6 +125,15 @@
 <!--  Configure Layout Activity  -->
     <string name="config_layout_activity_label">Configure Layout</string>
 
+    <string name="layout_name_label">Name</string>
+    <string name="layout_name_value">Enter layout name</string>
+    <string name="layout_export_code_label">Code</string>
+    <string name="layout_export_code_value">Enter export code</string>
+
+    <string name="layout_available_columns_label">Columns</string>
+
+    <string name="layout_column_enable_label">Enable</string>
+
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>
 

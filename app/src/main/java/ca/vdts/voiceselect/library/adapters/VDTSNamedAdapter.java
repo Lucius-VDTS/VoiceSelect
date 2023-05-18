@@ -16,12 +16,13 @@ import java.util.function.BiFunction;
 import ca.vdts.voiceselect.R;
 
 /**
- * Generic array adapter (ex - spinners) for named entities.
+ * Generic array adapter for named entities (ex - spinners).
  * @param <Entity>
  */
 public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
-    private BiFunction<Entity, Integer, String> toStringFunction;
     private final int resource;
+
+    private BiFunction<Entity, Integer, String> toStringFunction;
 
     public VDTSNamedAdapter(Context context, int resource, List<Entity> objects) {
         super(context, resource, objects);

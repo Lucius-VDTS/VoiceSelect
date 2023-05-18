@@ -180,7 +180,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
      *
      * @param criteria - The string to add to the current filter.
      */
-    public void addFilter (String criteria) {
+    public void addFilter(String criteria) {
         oldCriteria = filterCriteria;
         if (filterCriteria == null) {
             filter(criteria);

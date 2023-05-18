@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        android:id="@+id/columnTopButtonsLinearLayout"
+        android:id="@+id/layoutTopButtonsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/columnNewButton"
+            android:id="@+id/layoutNewButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.88"
@@ -24,7 +24,7 @@
             android:textSize="@dimen/large_text_size"/>
 
         <Button
-            android:id="@+id/columnResetButton"
+            android:id="@+id/layoutResetButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.12"
@@ -34,7 +34,7 @@
             android:textSize="@dimen/large_text_size"/>
 
         <Button
-            android:id="@+id/columnSaveButton"
+            android:id="@+id/layoutSaveButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -44,7 +44,7 @@
             android:textSize="@dimen/large_text_size"/>
 
         <Button
-            android:id="@+id/columnDeleteButton"
+            android:id="@+id/layoutDeleteButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.8"
@@ -61,7 +61,7 @@
         android:orientation="horizontal"
         android:layout_marginTop="@dimen/margin"
         android:baselineAligned="false"
-        app:layout_constraintTop_toBottomOf="@id/columnTopButtonsLinearLayout"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopButtonsLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -118,7 +118,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/columnSpokenLinearLayout"
+        android:id="@+id/availableColumnsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -128,7 +128,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/columnSpokenInputLayout"
+            android:id="@+id/layoutNameInputLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -138,14 +138,14 @@
             app:placeholderText="@string/column_spoken_value">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/columnSpokenEditText"
+                android:id="@+id/layoutNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
-            android:id="@+id/columnUserSpinner"
+            android:id="@+id/layoutSpinner"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/double_margin"
@@ -159,20 +159,18 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:paddingTop="@dimen/padding"
-        android:paddingBottom="@dimen/padding"
         android:background="@drawable/recycler_view_background"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/columnBottomButtonsLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/layoutBottomButtonsLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/columnSpokenLinearLayout"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="true">
+        app:layout_constraintTop_toBottomOf="@id/availableColumnsLinearLayout">
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
-        android:id="@+id/columnBottomButtonsLinearLayout"
+        android:id="@+id/layoutBottomButtonsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -181,7 +179,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-            android:id="@+id/columnImportButton"
+            android:id="@+id/layoutImportButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -191,7 +189,7 @@
             android:textSize="@dimen/large_text_size"/>
 
         <Button
-            android:id="@+id/columnExportButton"
+            android:id="@+id/layoutExportButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

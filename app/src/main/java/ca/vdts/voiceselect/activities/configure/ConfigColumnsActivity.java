@@ -97,30 +97,30 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         currentUser = vdtsApplication.getCurrentUser();
 
         //Views
-        columnNewButton = findViewById(R.id.columnNewButton);
+        columnNewButton = findViewById(R.id.layoutNewButton);
         columnNewButton.setOnClickListener(v -> newColumnButtonOnClick());
 
-        columnResetButton = findViewById(R.id.columnResetButton);
+        columnResetButton = findViewById(R.id.layoutResetButton);
         columnResetButton.setOnClickListener(v -> resetColumnButtonOnClick());
 
-        columnSaveButton = findViewById(R.id.columnSaveButton);
+        columnSaveButton = findViewById(R.id.layoutSaveButton);
         columnSaveButton.setOnClickListener(v -> saveColumnButtonOnClick());
 
-        columnDeleteButton = findViewById(R.id.columnDeleteButton);
+        columnDeleteButton = findViewById(R.id.layoutDeleteButton);
         columnDeleteButton.setOnClickListener(v -> deleteColumnButtonOnClick());
 
         columnNameEditText = findViewById(R.id.columnNameEditText);
         columnNameCodeEditText = findViewById(R.id.columnNameCodeEditText);
         columnExportCodeEditText = findViewById(R.id.columnExportCodeEditText);
-        columnSpokenEditText = findViewById(R.id.columnSpokenEditText);
+        columnSpokenEditText = findViewById(R.id.layoutNameEditText);
 
-        columnImportButton = findViewById(R.id.columnImportButton);
-        columnExportButton = findViewById(R.id.columnExportButton);
+        columnImportButton = findViewById(R.id.layoutImportButton);
+        columnExportButton = findViewById(R.id.layoutExportButton);
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         //User Spinner
-        columnUserSpinner = findViewById(R.id.columnUserSpinner);
+        columnUserSpinner = findViewById(R.id.layoutSpinner);
 
         userAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());

@@ -82,7 +82,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         changeUserActivityButton = findViewById(R.id.changeUserActivityButton);
         changeUserActivityButton.setOnClickListener(v -> changeUserActivityButtonOnClick());
-        if (currentUser.getUid() == -9001) { changeUserActivityButton.setEnabled(false); }
 
         aboutActivityButton = findViewById(R.id.aboutActivityButton);
         aboutActivityButton.setVisibility(View.GONE);
@@ -96,6 +95,22 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         super.onResume();
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
+
+        disableViews();
+    }
+
+    private void disableViews() {
+        if (currentUser.getUid() == -9001L) {
+            startActivityButton.setEnabled(false);
+            resumeActivityButton.setEnabled(false);
+            settingsActivityButton.setEnabled(false);
+            changeUserActivityButton.setEnabled(false);
+        } else {
+            startActivityButton.setEnabled(true);
+            resumeActivityButton.setEnabled(true);
+            settingsActivityButton.setEnabled(true);
+            changeUserActivityButton.setEnabled(true);
+        }
     }
 
     public void startActivityButtonOnClick() {

@@ -1,6 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <LinearLayout
+        android:id="@+id/layoutTopButtonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/layoutNewButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.88"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/column_new_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/layoutResetButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.12"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/column_reset_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/layoutSaveButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/column_save_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/layoutDeleteButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/column_delete_button"
+            android:textSize="@dimen/large_text_size"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutValuesLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/double_margin"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopButtonsLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutNameInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:hint="@string/layout_name_label"
+            app:placeholderText="@string/layout_name_value">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/layoutNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/medium_text_size"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutExportCodeInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.75"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:hint="@string/layout_export_code_label"
+            app:placeholderText="@string/layout_export_code_value">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/layoutExportCodeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/medium_text_size"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/layoutSpinner"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/availableColumnsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/double_margin"
+        app:layout_constraintTop_toBottomOf="@id/layoutValuesLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/availableColumnsText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:layout_weight="0.5"
+            android:gravity="center_vertical"
+            android:text="@string/layout_available_columns_label"
+            android:textSize="@dimen/xl_text_size"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginBottom="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:background="@drawable/recycler_view_background"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/columnLayoutLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/availableColumnsLinearLayout">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/columnLayoutLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/double_margin"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomButtonsLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/columnEnableSwitch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:paddingStart="@dimen/double_padding"
+            android:paddingEnd="@dimen/padding"
+            android:text="@string/layout_column_enable_label"
+            android:textSize="@dimen/medium_text_size"/>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/columnPositionBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.2"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:valueFrom="1"
+            android:valueTo="12"
+            android:stepSize="1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutBottomButtonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/layoutImportButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/column_import_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/layoutExportButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/column_export_button"
+            android:textSize="@dimen/large_text_size"/>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
