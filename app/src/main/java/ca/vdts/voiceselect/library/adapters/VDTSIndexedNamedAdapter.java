@@ -40,13 +40,13 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
     private String oldCriteria;
     private String filterCriteria;
 
-
     private BiFunction<Entity, Integer, String> toStringFunction;
 
-    public VDTSIndexedNamedAdapter(VDTSAdapterClickListenerUtil selectedListener,
-                                   Context context, List<Entity> dataset) {
-        this.selectedListener = selectedListener;
+    public VDTSIndexedNamedAdapter(Context context,
+                                   VDTSAdapterClickListenerUtil selectedListener,
+                                   List<Entity> dataset) {
         this.context = context;
+        this.selectedListener = selectedListener;
         setDataset(dataset);
     }
 
@@ -146,6 +146,40 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         setSelectedEntity(selectedIndex);
     }
 
+    public Entity getEntity(int index) {
+        if (filterCriteria == null) {
+            return dataset.get(index);
+        } else {
+            return filteredDataset.get(index);
+        }
+    }
+
+    public Entity getSelectedEntity() {
+        if (selectedIndex >= 0 && selectedIndex < dataset.size()) {
+            return dataset.get(selectedIndex);
+        }
+        return null;
+    }
+
+    public int getSelectedEntityIndex() {
+        return this.selectedIndex;
+    }
+
+    public void setSelectedEntity(int index) {
+        int old = selectedIndex;
+        selectedIndex = index;
+        notifyItemChanged(index);
+        if (old >= 0 && old < dataset.size()) {
+            notifyItemChanged(old);
+        }
+    }
+
+    public void clearSelected() {
+        int old = selectedIndex;
+        selectedIndex = -1;
+        notifyItemChanged(old);
+    }
+
     /**
      * Filter entities in the dataset whose names start with the input criteria. If the criteria is
      * the same as the current filter criteria then this function does nothing.
@@ -209,40 +243,6 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterf
         } else {
             return "";
         }
-    }
-
-    public Entity getEntity(int index) {
-        if (filterCriteria == null) {
-            return dataset.get(index);
-        } else {
-            return filteredDataset.get(index);
-        }
-    }
-
-    public Entity getSelectedEntity() {
-        if (selectedIndex >= 0 && selectedIndex < dataset.size()) {
-            return dataset.get(selectedIndex);
-        }
-        return null;
-    }
-
-    public int getSelectedEntityIndex() {
-        return this.selectedIndex;
-    }
-
-    public void setSelectedEntity(int index) {
-        int old = selectedIndex;
-        selectedIndex = index;
-        notifyItemChanged(index);
-        if (old >= 0 && old < dataset.size()) {
-            notifyItemChanged(old);
-        }
-    }
-
-    public void clearSelected() {
-        int old = selectedIndex;
-        selectedIndex = -1;
-        notifyItemChanged(old);
     }
 
     @Override

@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
+import ca.vdts.voiceselect.adapters.DataGatheringAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;

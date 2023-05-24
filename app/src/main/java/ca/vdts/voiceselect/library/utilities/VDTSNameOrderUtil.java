@@ -5,7 +5,7 @@ import java.util.Comparator;
 import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
 
 /**
- * Service used to compare two names
+ * Utility used to compare and order two names
  */
 public class VDTSNameOrderUtil implements Comparator<VDTSIndexedNamedEntityInterface> {
     private static VDTSNameOrderUtil instance;

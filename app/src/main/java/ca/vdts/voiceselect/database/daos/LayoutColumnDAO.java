@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.database.daos;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
@@ -15,4 +16,7 @@ import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 public interface LayoutColumnDAO extends VDTSBaseDAO<LayoutColumn> {
     @Query("SELECT * FROM LayoutsColumns")
     List<LayoutColumn> findAllLayoutColumns();
+
+    @Query("SELECT * FROM LayoutsColumns")
+    LiveData<List<LayoutColumn>> findAllLayoutColumnsLive();
 }

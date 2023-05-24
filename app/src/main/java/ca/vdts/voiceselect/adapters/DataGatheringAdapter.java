@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.activities.dataGathering;
+package ca.vdts.voiceselect.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;

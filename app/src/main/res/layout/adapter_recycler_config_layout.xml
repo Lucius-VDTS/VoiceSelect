@@ -7,19 +7,31 @@
     android:paddingVertical="@dimen/double_padding">
 
     <TextView
-        android:id="@+id/indexValue"
+        android:id="@+id/columnNameValue"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
+        android:gravity="center_vertical"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/margin"
         android:textSize="@dimen/xxl_text_size"/>
 
     <TextView
-        android:id="@+id/nameValue"
+        android:id="@+id/columnEnabledValue"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="6"
+        android:layout_weight="1.1"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
+        android:textSize="@dimen/xxl_text_size"/>
+
+    <TextView
+        android:id="@+id/columnPositionValue"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.1"
+        android:gravity="center_vertical|right"
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:textSize="@dimen/xxl_text_size"/>

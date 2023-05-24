@@ -369,6 +369,10 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
+    public LiveData<List<Layout>> findAllLayoutsLive() {
+        return layoutRepository.findAllLayoutsLive();
+    }
+
     public LiveData<List<Layout>> findAllActiveLayoutsLive() {
         return layoutRepository.findAllActiveLayoutsLive();
     }
@@ -396,6 +400,14 @@ public class VSViewModel extends VDTSViewModel {
 
     public void deleteAllLayoutColumns(LayoutColumn[] layoutColumns) {
         layoutColumnRepository.deleteAll(layoutColumns);
+    }
+
+    public List<LayoutColumn> findAllLayoutColumns() {
+        return layoutColumnRepository.findAllLayoutColumns();
+    }
+
+    public LiveData<List<LayoutColumn>> findAllLayoutColumnsLive() {
+        return layoutColumnRepository.findAllLayoutColumnsLive();
     }
 
     //Session

@@ -150,8 +150,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         ));
 
         columnAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerUtil(this::columnAdapterSelect, columnRecyclerView),
                 this,
+                new VDTSClickListenerUtil(this::columnAdapterSelect, columnRecyclerView),
                 columnList
         );
 
@@ -246,7 +246,49 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {}
-            };
+    };
+
+    /**
+     * Select the appropriate column from the recycler view.
+     * @param index - Index of the column to select.
+     */
+    private void columnAdapterSelect(Integer index) {
+        columnAdapter.setSelectedEntity(index);
+        if (index >= 0) {
+            final Column selectedColumn = columnAdapter.getSelectedEntity();
+
+            if (selectedColumn != null) {
+                columnNameEditText.setText(selectedColumn.getName());
+                columnNameCodeEditText.setText(selectedColumn.getNameCode());
+                columnExportCodeEditText.setText(selectedColumn.getExportCode());
+
+                final List<ColumnSpoken> spokenList = columnSpokenList.stream()
+                        .filter(spoken -> spoken.getColumnID() == selectedColumn.getUid())
+                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())      //todo maybe??????
+                        .collect(Collectors.toList());
+
+                String spokens = "";
+                for (ColumnSpoken columnSpoken : spokenList) {
+                    if (!spokens.isEmpty()) {
+                        spokens = spokens.concat(", ");
+                    }
+                    spokens = spokens.concat(columnSpoken.getSpoken());
+                }
+
+                columnSpokenEditText.setText(spokens);
+            } else {
+                columnNameEditText.setText("");
+                columnNameCodeEditText.setText("");
+                columnExportCodeEditText.setText("");
+                columnSpokenEditText.setText("");
+            }
+        } else {
+            columnNameEditText.setText("");
+            columnNameCodeEditText.setText("");
+            columnExportCodeEditText.setText("");
+            columnSpokenEditText.setText("");
+        }
+    }
 
     private void newColumnButtonOnClick() {
         columnAdapterSelect(-1);
@@ -332,48 +374,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
             columnAdapter.removeSelectedEntity();
             newColumnButtonOnClick();
-        }
-    }
-
-    /**
-     * Select the appropriate column from the recycler view.
-     * @param index - Index of the column to select.
-     */
-    private void columnAdapterSelect(Integer index) {
-        columnAdapter.setSelectedEntity(index);
-        if (index >= 0) {
-            final Column selectedColumn = columnAdapter.getSelectedEntity();
-
-            if (selectedColumn != null) {
-                columnNameEditText.setText(selectedColumn.getName());
-                columnNameCodeEditText.setText(selectedColumn.getNameCode());
-                columnExportCodeEditText.setText(selectedColumn.getExportCode());
-
-                final List<ColumnSpoken> spokenList = columnSpokenList.stream()
-                        .filter(spoken -> spoken.getColumnID() == selectedColumn.getUid())
-                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())      //todo maybe??????
-                        .collect(Collectors.toList());
-
-                String spokens = "";
-                for (ColumnSpoken columnSpoken : spokenList) {
-                    if (!spokens.isEmpty()) {
-                        spokens = spokens.concat(", ");
-                    }
-                    spokens = spokens.concat(columnSpoken.getSpoken());
-                }
-
-                columnSpokenEditText.setText(spokens);
-            } else {
-                columnNameEditText.setText("");
-                columnNameCodeEditText.setText("");
-                columnExportCodeEditText.setText("");
-                columnSpokenEditText.setText("");
-            }
-        } else {
-            columnNameEditText.setText("");
-            columnNameCodeEditText.setText("");
-            columnExportCodeEditText.setText("");
-            columnSpokenEditText.setText("");
         }
     }
 

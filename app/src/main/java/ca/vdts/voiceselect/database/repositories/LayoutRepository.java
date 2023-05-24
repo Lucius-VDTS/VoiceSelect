@@ -14,6 +14,10 @@ public class LayoutRepository extends VDTSBaseRepository<Layout> {
         super(dao);
     }
 
+    public LiveData<List<Layout>> findAllLayoutsLive() {
+        return ((LayoutDAO) dao).findAllLayoutsLive();
+    }
+
     public LiveData<List<Layout>> findAllActiveLayoutsLive() {
         return ((LayoutDAO) dao).findAllActiveLayoutsLive();
     }

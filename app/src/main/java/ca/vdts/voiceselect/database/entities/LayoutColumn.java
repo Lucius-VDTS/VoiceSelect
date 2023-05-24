@@ -55,11 +55,17 @@ public class LayoutColumn {
     @ColumnInfo(name = "columnPosition")
     private long columnPosition;
 
+    @Expose
+    @SerializedName("columnEnabled")
+    @ColumnInfo(name = "columnEnabled")
+    private boolean columnEnabled;
+
     //Non-Default Constructor
-    public LayoutColumn(long layoutID, long columnID, long columnPosition) {
+    public LayoutColumn(long layoutID, long columnID, long columnPosition, boolean columnEnabled) {
         this.layoutID = layoutID;
         this.columnID = columnID;
         this.columnPosition = columnPosition;
+        this.columnEnabled = columnEnabled;
     }
 
     public long getLayoutID() {
@@ -84,6 +90,14 @@ public class LayoutColumn {
 
     public void setColumnPosition(long columnPosition) {
         this.columnPosition = columnPosition;
+    }
+
+    public boolean isColumnEnabled() {
+        return columnEnabled;
+    }
+
+    public void setColumnEnabled(boolean columnEnabled) {
+        this.columnEnabled = columnEnabled;
     }
 
     @Override

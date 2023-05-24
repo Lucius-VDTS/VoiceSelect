@@ -108,7 +108,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/availableColumnsLinearLayout"
+        android:id="@+id/layoutColumnLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -118,26 +118,54 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
-            android:id="@+id/availableColumnsText"
+            android:id="@+id/layoutColumnNameText"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:layout_weight="0.5"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/padding"
+            android:layout_weight="2"
             android:gravity="center_vertical"
-            android:text="@string/layout_available_columns_label"
-            android:textSize="@dimen/xl_text_size"
+            android:text="@string/layout_column_name_label"
+            android:textSize="@dimen/medium_text_size"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/layoutColumnEnabledText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/padding"
+            android:layout_weight="1.1"
+            android:gravity="center"
+            android:text="@string/layout_column_enabled_label"
+            android:textSize="@dimen/medium_text_size"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/layoutColumnPositionText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:padding="@dimen/padding"
+            android:layout_weight="1.1"
+            android:gravity="center_vertical|right"
+            android:text="@string/layout_column_position_label"
+            android:textSize="@dimen/medium_text_size"
             android:textStyle="bold"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/userRecyclerView"
+        android:id="@+id/layoutColumnRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/double_margin"
-        android:layout_marginBottom="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
+        android:layout_marginBottom="@dimen/double_margin"
+        android:paddingTop="@dimen/padding"
+        android:paddingBottom="@dimen/padding"
         android:background="@drawable/recycler_view_background"
         android:scrollbars="vertical"
         android:fadeScrollbars="true"
@@ -145,7 +173,7 @@
         app:layout_constraintBottom_toTopOf="@+id/columnLayoutLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/availableColumnsLinearLayout">
+        app:layout_constraintTop_toBottomOf="@id/layoutColumnLinearLayout">
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
@@ -168,13 +196,14 @@
             android:paddingStart="@dimen/double_padding"
             android:paddingEnd="@dimen/padding"
             android:text="@string/layout_column_enable_label"
-            android:textSize="@dimen/medium_text_size"/>
+            android:textSize="@dimen/large_text_size"/>
 
         <com.google.android.material.slider.Slider
-            android:id="@+id/columnPositionBar"
+            android:id="@+id/columnPositionSlider"
+            android:contentDescription="@string/layout_column_position_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.2"
+            android:layout_weight="2"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:valueFrom="1"

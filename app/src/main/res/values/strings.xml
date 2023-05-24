@@ -130,9 +130,12 @@
     <string name="layout_export_code_label">Code</string>
     <string name="layout_export_code_value">Enter export code</string>
 
-    <string name="layout_available_columns_label">Columns</string>
+    <string name="layout_column_name_label">Column Name</string>
+    <string name="layout_column_enabled_label">Enabled</string>
+    <string name="layout_column_position_label">Position</string>
 
     <string name="layout_column_enable_label">Enable</string>
+    <string name="layout_column_position_description">Select position</string>
 
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>

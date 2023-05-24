@@ -12,6 +12,9 @@ import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 
 @Dao
 public interface LayoutDAO extends VDTSBaseDAO<Layout> {
+    @Query("SELECT * FROM Layouts")
+    LiveData<List<Layout>> findAllLayoutsLive();
+
     @Query("SELECT * FROM Layouts WHERE active = 1")
     LiveData<List<Layout>> findAllActiveLayoutsLive();
 }

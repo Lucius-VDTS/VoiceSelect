@@ -1,5 +1,7 @@
 package ca.vdts.voiceselect.database.repositories;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 import ca.vdts.voiceselect.database.daos.LayoutColumnDAO;
@@ -17,5 +19,9 @@ public class LayoutColumnRepository extends VDTSBaseRepository<LayoutColumn> {
 
     public List<LayoutColumn> findAllLayoutColumns() {
         return ((LayoutColumnDAO) dao).findAllLayoutColumns();
+    }
+
+    public LiveData<List<LayoutColumn>> findAllLayoutColumnsLive() {
+        return ((LayoutColumnDAO) dao).findAllLayoutColumnsLive();
     }
 }

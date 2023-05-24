@@ -1,7 +1,7 @@
 package ca.vdts.voiceselect.library.interfaces;
 
 /**
- * Defines entities that are indexed and named.
+ * Used to access entities index and name.
  */
 public interface VDTSIndexedNamedEntityInterface {
     long id();

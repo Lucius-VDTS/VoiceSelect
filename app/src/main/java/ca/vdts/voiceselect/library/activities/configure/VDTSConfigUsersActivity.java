@@ -147,8 +147,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 ));
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 this,
+                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 userList
         );
 
@@ -170,6 +170,42 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             userList.remove(VDTSUser.VDTS_USER_NONE);
             handler.post(() -> userAdapter.setDataset(userList));
         });
+    }
+
+    /**
+     * Select the appropriate user from the recycler view.
+     * @param index - Index of the user to select.
+     */
+    private void userAdapterSelect(Integer index) {
+        userAdapter.setSelectedEntity(index);
+        if (index >= 0) {
+            VDTSUser selectedUser = userAdapter.getSelectedEntity();
+            if (selectedUser != null) {
+                final boolean isAdmin = selectedUser.getAuthority() >= 1;
+                final boolean isPrimary = selectedUser.isPrimary();
+
+                userNameEditText.setText(selectedUser.getName());
+                userPrefixEditText.setText(selectedUser.getSessionPrefix());
+                userExportCodeEditText.setText(selectedUser.getExportCode());
+                userPasswordEditText.setText(selectedUser.getPassword());
+                userAdminSwitch.setChecked(isAdmin);
+                userPrimarySwitch.setChecked(isPrimary);
+            } else {
+                userNameEditText.setText("");
+                userPrefixEditText.setText("");
+                userExportCodeEditText.setText("");
+                userPasswordEditText.setText("");
+                userAdminSwitch.setChecked(false);
+                userPrimarySwitch.setChecked(false);
+            }
+        } else {
+            userNameEditText.setText("");
+            userPrefixEditText.setText("");
+            userExportCodeEditText.setText("");
+            userPasswordEditText.setText("");
+            userAdminSwitch.setChecked(false);
+            userPrimarySwitch.setChecked(false);
+        }
     }
 
     public void newUserButtonOnClick() {
@@ -295,14 +331,14 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             }
                         });
                     });
+
+                    newUserButtonOnClick();
                 } else {
                     LOG.error("User does not meet requirements");
                     vdtsApplication.displayToast(
                             this, "User does not meet requirements", 0);
                 }
             }
-
-            newUserButtonOnClick();
         } else {
             LOG.error("Save user failed - admin/default spoken must exist");
             vdtsApplication.displayToast(
@@ -342,42 +378,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Select the appropriate user from the recycler view.
-     * @param index - Index of the user to select.
-     */
-    private void userAdapterSelect(Integer index) {
-        userAdapter.setSelectedEntity(index);
-        if (index >= 0) {
-            VDTSUser selectedUser = userAdapter.getSelectedEntity();
-            if (selectedUser != null) {
-                final boolean isAdmin = selectedUser.getAuthority() >= 1;
-                final boolean isPrimary = selectedUser.isPrimary();
-
-                userNameEditText.setText(selectedUser.getName());
-                userPrefixEditText.setText(selectedUser.getSessionPrefix());
-                userExportCodeEditText.setText(selectedUser.getExportCode());
-                userPasswordEditText.setText(selectedUser.getPassword());
-                userAdminSwitch.setChecked(isAdmin);
-                userPrimarySwitch.setChecked(isPrimary);
-            } else {
-                userNameEditText.setText("");
-                userPrefixEditText.setText("");
-                userExportCodeEditText.setText("");
-                userPasswordEditText.setText("");
-                userAdminSwitch.setChecked(false);
-                userPrimarySwitch.setChecked(false);
-            }
-        } else {
-            userNameEditText.setText("");
-            userPrefixEditText.setText("");
-            userExportCodeEditText.setText("");
-            userPasswordEditText.setText("");
-            userAdminSwitch.setChecked(false);
-            userPrimarySwitch.setChecked(false);
-        }
-    }
-
-    /**
      * Check if an admin and primary user exists.
      * @return - True if a user with admin and primary permissions exists.
      */
@@ -411,13 +411,25 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
      * @return - True if the vdtsUser is valid.
      */
     private boolean isValidUser(VDTSUser vdtsUser) {
-        return !vdtsUser.getName().isEmpty() &&
-               !vdtsUser.getExportCode().isEmpty() &&
-               userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
-                    (StringUtils.lowerCase(user1.getName())
-                            .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
+        if (userAdminSwitch.isChecked()) {
+            return !vdtsUser.getName().isEmpty() &&
+                    !vdtsUser.getExportCode().isEmpty() &&
+                    !vdtsUser.getPassword().isEmpty() &&
+                    userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
+                            (StringUtils.lowerCase(user1.getName())
+                                    .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
                                     StringUtils.lowerCase(user1.getExportCode())
                                             .equals(StringUtils.lowerCase(vdtsUser.getExportCode()))));
+
+        } else {
+            return !vdtsUser.getName().isEmpty() &&
+                    !vdtsUser.getExportCode().isEmpty() &&
+                    userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
+                            (StringUtils.lowerCase(user1.getName())
+                                    .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
+                                    StringUtils.lowerCase(user1.getExportCode())
+                                            .equals(StringUtils.lowerCase(vdtsUser.getExportCode()))));
+        }
 
     }
 

@@ -40,16 +40,6 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
         }
 )
 public class Column implements VDTSIndexedNamedEntityInterface {
-    public static final Column COLUMN_NONE = new Column(
-            DEFAULT_UID,
-            VDTS_USER_NONE.getUid(),
-            DEFAULT_DATE,
-            "NONE",
-            "",
-            "",
-            false
-    );
-
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)
@@ -84,6 +74,16 @@ public class Column implements VDTSIndexedNamedEntityInterface {
     @SerializedName("active")
     @ColumnInfo(name = "active")
     private boolean active;
+
+    public static final Column COLUMN_NONE = new Column(
+            DEFAULT_UID,
+            VDTS_USER_NONE.getUid(),
+            DEFAULT_DATE,
+            "NONE",
+            "",
+            "",
+            false
+    );
 
     //Non-default constructor
     public Column(long uid, long userID, LocalDateTime createdDate, String name, String nameCode,

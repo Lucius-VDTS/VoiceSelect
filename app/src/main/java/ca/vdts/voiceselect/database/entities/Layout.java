@@ -3,6 +3,10 @@ package ca.vdts.voiceselect.database.entities;
 import static androidx.room.ForeignKey.CASCADE;
 import static androidx.room.ForeignKey.SET_NULL;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_DATE;
+import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
+import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -59,11 +63,6 @@ public class Layout implements VDTSIndexedNamedEntityInterface {
     private String name;
 
     @Expose
-    @SerializedName("nameCode")
-    @ColumnInfo(name = "nameCode")
-    private String nameCode;
-
-    @Expose
     @SerializedName("exportCode")
     @ColumnInfo(name = "exportCode")
     private String exportCode;
@@ -73,27 +72,34 @@ public class Layout implements VDTSIndexedNamedEntityInterface {
     @ColumnInfo(name = "active")
     private boolean active;
 
+    public static final Layout LAYOUT_NONE = new Layout(
+            DEFAULT_UID,
+            VDTS_USER_NONE.getUid(),
+            DEFAULT_DATE,
+            "",
+            "",
+            true
+    );
+
     //Non-Default Constructor
-    public Layout(long uid, long userID, LocalDateTime createdDate, String name, String nameCode,
-                  String exportCode, boolean active) {
+    public Layout(long uid, long userID, LocalDateTime createdDate, String name, String exportCode,
+                  boolean active) {
         this.uid = uid;
         this.userID = userID;
         this.createdDate = createdDate;
         this.name = name;
-        this.nameCode = nameCode;
         this.exportCode = exportCode;
         this.active = active;
     }
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public Layout(long userID, String name, String nameCode, String exportCode) {
+    public Layout(long userID, String name, String exportCode) {
         this(
                 0L,
                 userID,
                 LocalDateTime.now(),
                 name,
-                nameCode,
                 exportCode,
                 true
         );
@@ -129,14 +135,6 @@ public class Layout implements VDTSIndexedNamedEntityInterface {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNameCode() {
-        return nameCode;
-    }
-
-    public void setNameCode(String nameCode) {
-        this.nameCode = nameCode;
     }
 
     public String getExportCode() {

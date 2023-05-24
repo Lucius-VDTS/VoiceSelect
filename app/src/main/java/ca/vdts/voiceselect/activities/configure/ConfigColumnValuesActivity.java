@@ -77,15 +77,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private Spinner columnValueColumnSpinner;
     private Spinner columnValueUserSpinner;
 
+    private RecyclerView columnValueRecyclerView;
+
     private Button columnValueImportButton;
     private Button columnValueExportButton;
 
-    //Recycler View - Spinners
+    //View Model - Adapters
     private VSViewModel vsViewModel;
-    private VDTSIndexedNamedAdapter<ColumnValue> columnValueAdapter;
     private VDTSNamedAdapter<Column> columnAdapter;
     private VDTSNamedAdapter<VDTSUser> userAdapter;
-    private RecyclerView columnValueRecyclerView;
+    private VDTSIndexedNamedAdapter<ColumnValue> columnValueAdapter;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -161,11 +162,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+        ));
 
         columnValueAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerUtil(this::columnValueAdapterSelect, columnValueRecyclerView),
                 this,
+                new VDTSClickListenerUtil(this::columnValueAdapterSelect, columnValueRecyclerView),
                 columnValueList
         );
 
@@ -296,6 +297,49 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 public void onNothingSelected(AdapterView<?> parent) {}
             };
 
+    /**
+     * Select the appropriate column from the recycler view.
+     * @param index - Index of the column to select.
+     */
+    private void columnValueAdapterSelect(Integer index) {
+        columnValueAdapter.setSelectedEntity(index);
+        if (index >= 0) {
+            final ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
+
+            if (selectedColumnValue != null) {
+                columnValueNameEditText.setText(selectedColumnValue.getName());
+                columnValueNameCodeEditText.setText(selectedColumnValue.getNameCode());
+                columnValueExportCodeEditText.setText(selectedColumnValue.getExportCode());
+
+                if (selectedUser == null) { selectedUser = currentUser; }
+                final List<ColumnValueSpoken> spokenList = columnValueSpokenList.stream()
+                        .filter(spoken -> spoken.getColumnValueID() == selectedColumnValue.getUid())
+                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
+                        .collect(Collectors.toList());
+
+                String spokens = "";
+                for (ColumnValueSpoken columnValueSpoken : spokenList) {
+                    if (!spokens.isEmpty()) {
+                        spokens = spokens.concat(", ");
+                    }
+                    spokens = spokens.concat(columnValueSpoken.getSpoken());
+                }
+
+                columnValueSpokenEditText.setText(spokens);
+            } else {
+                columnValueNameEditText.setText("");
+                columnValueNameCodeEditText.setText("");
+                columnValueExportCodeEditText.setText("");
+                columnValueSpokenEditText.setText("");
+            }
+        } else {
+            columnValueNameEditText.setText("");
+            columnValueNameCodeEditText.setText("");
+            columnValueExportCodeEditText.setText("");
+            columnValueSpokenEditText.setText("");
+        }
+    }
+
     private void newColumnValueButtonOnClick() {
         columnValueAdapterSelect(-1);
         columnValueNameEditText.requestFocus();
@@ -397,49 +441,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
             columnValueAdapter.removeSelectedEntity();
             newColumnValueButtonOnClick();
-        }
-    }
-
-    /**
-     * Select the appropriate column from the recycler view.
-     * @param index - Index of the column to select.
-     */
-    private void columnValueAdapterSelect(Integer index) {
-        columnValueAdapter.setSelectedEntity(index);
-        if (index >= 0) {
-            final ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
-
-            if (selectedColumnValue != null) {
-                columnValueNameEditText.setText(selectedColumnValue.getName());
-                columnValueNameCodeEditText.setText(selectedColumnValue.getNameCode());
-                columnValueExportCodeEditText.setText(selectedColumnValue.getExportCode());
-
-                if (selectedUser == null) { selectedUser = currentUser; }
-                final List<ColumnValueSpoken> spokenList = columnValueSpokenList.stream()
-                        .filter(spoken -> spoken.getColumnValueID() == selectedColumnValue.getUid())
-                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
-                        .collect(Collectors.toList());
-
-                String spokens = "";
-                for (ColumnValueSpoken columnValueSpoken : spokenList) {
-                    if (!spokens.isEmpty()) {
-                        spokens = spokens.concat(", ");
-                    }
-                    spokens = spokens.concat(columnValueSpoken.getSpoken());
-                }
-
-                columnValueSpokenEditText.setText(spokens);
-            } else {
-                columnValueNameEditText.setText("");
-                columnValueNameCodeEditText.setText("");
-                columnValueExportCodeEditText.setText("");
-                columnValueSpokenEditText.setText("");
-            }
-        } else {
-            columnValueNameEditText.setText("");
-            columnValueNameCodeEditText.setText("");
-            columnValueExportCodeEditText.setText("");
-            columnValueSpokenEditText.setText("");
         }
     }
 

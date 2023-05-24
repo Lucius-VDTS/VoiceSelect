@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 /**
  * Generic array adapter for named entities (ex - spinners).
@@ -24,12 +25,14 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
-    public VDTSNamedAdapter(Context context, int resource, List<Entity> objects) {
+    public VDTSNamedAdapter(Context context,
+                            int resource,
+                            List<Entity> objects) {
         super(context, resource, objects);
         this.resource = resource;
     }
 
-    public VDTSNamedAdapter(Context context, List<Entity> objects) {
+    public VDTSNamedAdapter(Context context,  List<Entity> objects) {
         this(context, R.layout.adapter_spinner_named, objects);
     }
 

@@ -63,8 +63,8 @@ public class VDTSLoginActivity extends AppCompatActivity {
                 ));
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
-                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 this,
+                new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
                 userList
         );
 
