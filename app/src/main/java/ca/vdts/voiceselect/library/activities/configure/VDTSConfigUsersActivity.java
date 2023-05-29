@@ -128,9 +128,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         importButton = findViewById(R.id.userImportButton);
         exportButton = findViewById(R.id.userExportButton);
 
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
         //Recyclerview
         userRecyclerView = findViewById(R.id.userRecyclerView);
-        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         //Observe/Update user list
         vsViewModel.findAllActiveUsersLive().observe(this, users -> {

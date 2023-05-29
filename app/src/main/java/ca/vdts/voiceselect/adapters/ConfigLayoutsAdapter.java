@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.entities.Column;
@@ -28,17 +28,18 @@ import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdapter.ViewHolder> {
     private final Context context;
     private final VDTSAdapterClickListenerUtil selectedListener;
+    private Column selectedColumn;
     private int selectedIndex = -1;
-    private final HashMap<Long, Column> columnHashMap;
-    private final List<LayoutColumn> layoutColumnDataset = new ArrayList<>();
+    private final List<Column> columnDataset = new ArrayList<>();
+    private final List<LayoutColumn> layoutColumnDataset;
 
     public ConfigLayoutsAdapter(Context context, VDTSAdapterClickListenerUtil selectedListener,
-                                HashMap<Long, Column> columnHashMap,
-                                List<LayoutColumn> layoutColumnDataset) {
+                                List<Column> columnList,
+                                List<LayoutColumn> layoutColumnList) {
         this.context = context;
         this.selectedListener = selectedListener;
-        this.columnHashMap = columnHashMap;
-        setDataset(layoutColumnDataset);
+        this.layoutColumnDataset = layoutColumnList;
+        setColumnDataset(columnList);
     }
 
     @NonNull
@@ -57,22 +58,35 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        LayoutColumn layoutColumn = layoutColumnDataset.get(position);
-        int size = layoutColumnDataset.size();
+        selectedColumn = columnDataset.get(position);
+        int size = columnDataset.size();
 
-        String columnName = Objects.requireNonNull(
-                columnHashMap.get(layoutColumn.getColumnID())).getName();
-        holder.columnNameTextView.setText(columnName);
+        if (selectedColumn != null) {
+            //Name
+            holder.columnNameTextView.setText(selectedColumn.getName());
 
-        String isEnabled;
-        if (layoutColumn.isColumnEnabled()) {
-            isEnabled = "Yes";
+            //Enabled - Position
+            LayoutColumn enabledLayoutColumn = layoutColumnDataset.stream()
+                    .filter(column -> column.getColumnID() == selectedColumn.getUid())
+                    .findFirst()
+                    .orElse(null);
+
+            if (enabledLayoutColumn == null) {
+                holder.columnEnabledTextView.setText(R.string.layout_column_enabled_no);
+                holder.columnPositionTextView.setText("");
+            } else {
+                holder.columnEnabledTextView.setText(R.string.layout_column_enabled_yes);
+                holder.columnPositionTextView.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "%d",
+                                enabledLayoutColumn.getColumnPosition()));
+            }
         } else {
-            isEnabled = "No";
+            holder.columnNameTextView.setText("");
+            holder.columnEnabledTextView.setText("");
+            holder.columnPositionTextView.setText("");
         }
-        holder.columnEnabledTextView.setText(isEnabled);
-
-        holder.columnPositionTextView.setText((int) layoutColumn.getColumnPosition());
 
         if (size == 1) {
             holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_item);
@@ -102,20 +116,64 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
         holder.linearLayout.setOnClickListener(selectedListener);
     }
 
-    public void setDataset(List<LayoutColumn> layoutColumnDataset) {
-        this.layoutColumnDataset.clear();
-        this.layoutColumnDataset.addAll(layoutColumnDataset);
-        sortDataset(layoutColumnDataset);
+    public void setColumnDataset(List<Column> columnDataset) {
+        this.columnDataset.clear();
+        this.columnDataset.addAll(columnDataset);
+        //sortDataset(columnDataset); //todo - fix
         notifyDataSetChanged();
     }
 
-    public void sortDataset(List<LayoutColumn> layoutColumnDataset) {
+    public void sortColumnDataset(List<LayoutColumn> layoutColumnDataset) {
         layoutColumnDataset.sort((layoutColumn1, layoutColumn2) ->
                 (int) (layoutColumn1.getColumnPosition() - layoutColumn2.getColumnPosition()));
     }
 
-    public void addAllLayoutColumns(List<LayoutColumn> layoutColumnList) {
-        layoutColumnDataset.addAll(layoutColumnList);
+    public void addAllColumns(List<Column> columnList) {
+        columnDataset.addAll(columnList);
+        notifyDataSetChanged();
+    }
+
+    public void updateColumn(Column column) {
+        int index = columnDataset.indexOf(column);
+        columnDataset.remove(column);
+        columnDataset.add(index, column);
+    }
+
+    public void updateSelectedColumn() {
+        notifyItemChanged(this.selectedIndex);
+    }
+
+    public void removeAllColumns(List<Column> columnList) {
+        columnDataset.removeAll(columnList);
+        notifyDataSetChanged();
+    }
+
+    public Column getColumn(int index) {
+        return columnDataset.get(index);
+    }
+
+    public int getSelectedColumnIndex() {
+        return this.selectedIndex;
+    }
+
+    public void setSelectedColumn(int index) {
+        int old = selectedIndex;
+        selectedIndex = index;
+        notifyItemChanged(index);
+        if (old >= 0 && old < columnDataset.size()) {
+            notifyItemChanged(old);
+        }
+    }
+
+    public void setLayoutColumnDataset(List<LayoutColumn> layoutColumnDataset) {
+        this.layoutColumnDataset.clear();
+        this.layoutColumnDataset.addAll(layoutColumnDataset);
+        //sortDataset(columnDataset); //todo - fix
+        notifyDataSetChanged();
+    }
+
+    public void addLayoutColumn(LayoutColumn layoutColumn) {
+        layoutColumnDataset.add(layoutColumn);
         notifyDataSetChanged();
     }
 
@@ -123,35 +181,20 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
         int index = layoutColumnDataset.indexOf(layoutColumn);
         layoutColumnDataset.remove(layoutColumn);
         layoutColumnDataset.add(index, layoutColumn);
-    }
-
-    public void updateSelectedLayoutColumn() {
-        notifyItemChanged(this.selectedIndex);
-    }
-
-    public void removeAllLayoutColumns(List<LayoutColumn> layoutColumnList) {
-        layoutColumnDataset.removeAll(layoutColumnList);
+        //notifyItemChanged(index);
         notifyDataSetChanged();
     }
 
-    public LayoutColumn getLayoutColumn(int index) {
-        return layoutColumnDataset.get(index);
-    }
+    public Pair<Column, LayoutColumn> getSelectedColumnLayoutColumn() {
+        if (selectedIndex >= 0 && selectedIndex < columnDataset.size()) {
+            LayoutColumn layoutColumn = layoutColumnDataset.stream()
+                    .filter(column -> column.getColumnID() == getColumn(selectedIndex).getUid() /*selectedColumn.getUid()*/)
+                    .findFirst()
+                    .orElse(null);
 
-    public LayoutColumn getSelectedLayoutColumn() {
-        if (selectedIndex >= 0 && selectedIndex < layoutColumnDataset.size()) {
-            return layoutColumnDataset.get(selectedIndex);
+            return new Pair<>(columnDataset.get(selectedIndex), layoutColumn);
         }
         return null;
-    }
-
-    public void setSelectedLayoutColumn(int index) {
-        int old = selectedIndex;
-        selectedIndex = index;
-        notifyItemChanged(index);
-        if (old >= 0 && old < layoutColumnDataset.size()) {
-            notifyItemChanged(old);
-        }
     }
 
     public void clearSelected() {
@@ -162,7 +205,7 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
 
     @Override
     public int getItemCount() {
-        return layoutColumnDataset.size();
+        return columnDataset.size();
     }
 
 ////VIEW_HOLDER_SUBCLASS////////////////////////////////////////////////////////////////////////////

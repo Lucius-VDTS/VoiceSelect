@@ -406,6 +406,13 @@ public class VSViewModel extends VDTSViewModel {
         return layoutColumnRepository.findAllLayoutColumns();
     }
 
+    public List<LayoutColumn> findAllLayoutColumnsByLayout(Layout layout) {
+        return layoutColumnRepository.findAll(
+                "SELECT * FROM LayoutsColumns " +
+                        "WHERE layoutID = " + layout.getUid()
+        );
+    }
+
     public LiveData<List<LayoutColumn>> findAllLayoutColumnsLive() {
         return layoutColumnRepository.findAllLayoutColumnsLive();
     }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "649e4ba71cfda5d80ea012ba264eb4de",
+    "identityHash": "bfccabc21c6d50716cec79db458d26b1",
     "entities": [
       {
         "tableName": "Users",
@@ -522,7 +522,7 @@
       },
       {
         "tableName": "LayoutsColumns",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`layoutID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, `columnEnabled` INTEGER NOT NULL, PRIMARY KEY(`layoutID`, `columnID`), FOREIGN KEY(`layoutID`) REFERENCES `Layouts`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`layoutID` INTEGER NOT NULL, `columnID` INTEGER NOT NULL, `columnPosition` INTEGER NOT NULL, PRIMARY KEY(`layoutID`, `columnID`), FOREIGN KEY(`layoutID`) REFERENCES `Layouts`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`columnID`) REFERENCES `Columns`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "layoutID",
@@ -539,12 +539,6 @@
           {
             "fieldPath": "columnPosition",
             "columnName": "columnPosition",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "columnEnabled",
-            "columnName": "columnEnabled",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -923,7 +917,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '649e4ba71cfda5d80ea012ba264eb4de')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bfccabc21c6d50716cec79db458d26b1')"
     ]
   }
 }

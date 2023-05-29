@@ -132,6 +132,8 @@
 
     <string name="layout_column_name_label">Column Name</string>
     <string name="layout_column_enabled_label">Enabled</string>
+    <string name="layout_column_enabled_yes">Yes</string>
+    <string name="layout_column_enabled_no">No</string>
     <string name="layout_column_position_label">Position</string>
 
     <string name="layout_column_enable_label">Enable</string>

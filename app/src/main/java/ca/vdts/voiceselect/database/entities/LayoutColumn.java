@@ -5,6 +5,7 @@ import static androidx.room.ForeignKey.CASCADE;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 
 import com.google.gson.annotations.Expose;
@@ -55,17 +56,11 @@ public class LayoutColumn {
     @ColumnInfo(name = "columnPosition")
     private long columnPosition;
 
-    @Expose
-    @SerializedName("columnEnabled")
-    @ColumnInfo(name = "columnEnabled")
-    private boolean columnEnabled;
-
     //Non-Default Constructor
-    public LayoutColumn(long layoutID, long columnID, long columnPosition, boolean columnEnabled) {
+    public LayoutColumn(long layoutID, long columnID, long columnPosition) {
         this.layoutID = layoutID;
         this.columnID = columnID;
         this.columnPosition = columnPosition;
-        this.columnEnabled = columnEnabled;
     }
 
     public long getLayoutID() {
@@ -90,14 +85,6 @@ public class LayoutColumn {
 
     public void setColumnPosition(long columnPosition) {
         this.columnPosition = columnPosition;
-    }
-
-    public boolean isColumnEnabled() {
-        return columnEnabled;
-    }
-
-    public void setColumnEnabled(boolean columnEnabled) {
-        this.columnEnabled = columnEnabled;
     }
 
     @Override
