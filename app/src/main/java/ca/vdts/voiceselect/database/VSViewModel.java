@@ -417,6 +417,10 @@ public class VSViewModel extends VDTSViewModel {
         return layoutColumnRepository.findAllLayoutColumnsLive();
     }
 
+    public LiveData<List<LayoutColumn>> findAllLayoutColumnsByLayoutLive(long layoutID) {
+        return layoutColumnRepository.findAllLayoutColumnsByLayoutLive(layoutID);
+    }
+
     //Session
     public long insertSession(Session session) {
         return sessionRepository.insert(session);

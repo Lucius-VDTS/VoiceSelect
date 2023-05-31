@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import ca.vdts.voiceselect.database.daos.LayoutColumnDAO;
+import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 import ca.vdts.voiceselect.library.database.repositories.VDTSBaseRepository;
@@ -23,5 +24,9 @@ public class LayoutColumnRepository extends VDTSBaseRepository<LayoutColumn> {
 
     public LiveData<List<LayoutColumn>> findAllLayoutColumnsLive() {
         return ((LayoutColumnDAO) dao).findAllLayoutColumnsLive();
+    }
+
+    public LiveData<List<LayoutColumn>> findAllLayoutColumnsByLayoutLive(long layoutID) {
+        return ((LayoutColumnDAO) dao).findAllLayoutColumnsByLayoutLive(layoutID);
     }
 }

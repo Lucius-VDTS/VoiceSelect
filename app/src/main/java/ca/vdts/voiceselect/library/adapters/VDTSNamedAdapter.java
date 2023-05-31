@@ -22,6 +22,7 @@ import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
  */
 public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
     private final int resource;
+    private int position;
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
@@ -44,6 +45,7 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
         final TextView tv = (TextView)v;
 
         final Entity item = getItem(position);
+        this.position = position;
         final String text;
         if (item != null) {
             if (toStringFunction != null) {
@@ -62,6 +64,10 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
     @Override
     public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
         return getView(position, convertView, parent);
+    }
+
+    public int getSelectedEntityIndex(Entity entity) {
+        return position;
     }
 
     /**

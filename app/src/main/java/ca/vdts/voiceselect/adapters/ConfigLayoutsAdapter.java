@@ -31,15 +31,15 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
     private Column selectedColumn;
     private int selectedIndex = -1;
     private final List<Column> columnDataset = new ArrayList<>();
-    private final List<LayoutColumn> layoutColumnDataset;
+    private final List<LayoutColumn> layoutColumnDataset = new ArrayList<>();
 
     public ConfigLayoutsAdapter(Context context, VDTSAdapterClickListenerUtil selectedListener,
                                 List<Column> columnList,
                                 List<LayoutColumn> layoutColumnList) {
         this.context = context;
         this.selectedListener = selectedListener;
-        this.layoutColumnDataset = layoutColumnList;
         setColumnDataset(columnList);
+        setLayoutColumnDataset(layoutColumnList);
     }
 
     @NonNull
@@ -140,7 +140,7 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
     }
 
     public void updateSelectedColumn() {
-        notifyItemChanged(this.selectedIndex);
+        notifyItemChanged(selectedIndex);
     }
 
     public void removeAllColumns(List<Column> columnList) {
@@ -153,7 +153,7 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
     }
 
     public int getSelectedColumnIndex() {
-        return this.selectedIndex;
+        return selectedIndex;
     }
 
     public void setSelectedColumn(int index) {
@@ -185,14 +185,20 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
         notifyDataSetChanged();
     }
 
+    public void removeLayoutColumn(LayoutColumn layoutColumn) {
+        int index = layoutColumnDataset.indexOf(layoutColumn);
+        layoutColumnDataset.remove(layoutColumn);
+        notifyItemChanged(index);
+    }
+
     public Pair<Column, LayoutColumn> getSelectedColumnLayoutColumn() {
         if (selectedIndex >= 0 && selectedIndex < columnDataset.size()) {
             LayoutColumn layoutColumn = layoutColumnDataset.stream()
-                    .filter(column -> column.getColumnID() == getColumn(selectedIndex).getUid() /*selectedColumn.getUid()*/)
+                    .filter(column -> column.getColumnID() == getColumn(selectedIndex).getUid())
                     .findFirst()
                     .orElse(null);
 
-            return new Pair<>(columnDataset.get(selectedIndex), layoutColumn);
+            return new Pair<>(getColumn(selectedIndex), layoutColumn);
         }
         return null;
     }
