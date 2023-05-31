@@ -76,7 +76,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     //View Model - Adapters
     private VSViewModel vsViewModel;
-    private VDTSNamedAdapter<Layout> layoutAdapter;
+    private VDTSNamedAdapter<Layout> layoutSpinnerAdapter;
     private ConfigLayoutsAdapter configLayoutsAdapter;
 
     //Iristick Components
@@ -125,13 +125,13 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.addAll(layouts);
         });
 
-        layoutAdapter = new VDTSNamedAdapter<>(
+        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
                 this,
                 R.layout.adapter_spinner_named,
                 layoutList);
-        layoutAdapter.setToStringFunction((layout, integer) -> layout.getName());
+        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
 
-        layoutSpinner.setAdapter(layoutAdapter);
+        layoutSpinner.setAdapter(layoutSpinnerAdapter);
         layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
         //Recycler View
@@ -167,7 +167,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
             handler.post(() -> {
-                layoutAdapter.notifyDataSetChanged();
+                layoutSpinnerAdapter.notifyDataSetChanged();
                 initializeColumnList();
             });
         });
@@ -306,7 +306,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void resetLayoutButtonOnClick() {
-        layoutSpinner.setSelection(layoutAdapter.getSelectedEntityIndex(selectedLayout));
+        layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex(selectedLayout));
         layoutNameEditText.setText(selectedLayout.getName());
         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
         configLayoutsAdapterSelect(configLayoutsAdapter.getSelectedColumnIndex());
@@ -336,7 +336,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         String message = "Updated layout: " + selectedLayout.getName();
                         LOG.info(message);
                         vdtsApplication.displayToast(this, message, 0);
-                        layoutAdapter.notifyDataSetChanged();
+                        layoutSpinnerAdapter.notifyDataSetChanged();
 
                         //Update layout columns
                         if (columnEnabledSwitch.isChecked() &&
@@ -402,9 +402,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     long uid = vsViewModel.insertLayout(layout);
                     layout.setUid(uid);
                     createLayoutHandler.post(() -> {
-                        layoutAdapter.add(layout);
+                        layoutSpinnerAdapter.remove(layout);
+                        layoutSpinnerAdapter.add(layout);
 
-                        layoutSpinner.setSelection(layoutAdapter.getPosition(layout));
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(layout));
                         layoutNameEditText.clearFocus();
                         layoutExportCodeEditText.clearFocus();
 
