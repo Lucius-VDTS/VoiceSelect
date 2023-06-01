@@ -43,6 +43,9 @@ import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
+/**
+ * Configure layouts and their associated columns.
+ */
 public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnValuesActivity.class);
 
@@ -81,7 +84,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
-    private ConfigColumnValuesActivity.IristickHUD iristickHUD;
+    private ConfigLayoutsActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -226,6 +229,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         });
     }
 
+    /**
+     * Click listener for layout spinner.
+     */
     private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -256,6 +262,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 public void onNothingSelected(AdapterView<?> parent) {}
             };
 
+    /**
+     * Select the appropriate column and layout column from the recycler view.
+     * @param index - Index of the column and layout column to select.
+     */
     private void configLayoutsAdapterSelect(Integer index) {
         if (index >= 0) {
             configLayoutsAdapter.setSelectedColumn(index);
@@ -445,7 +455,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private void initializeIristick() {
         if (isHeadsetAvailable) {
             IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new ConfigColumnValuesActivity.IristickHUD();
+                iristickHUD = new ConfigLayoutsActivity.IristickHUD();
                 return iristickHUD;
             });
         }

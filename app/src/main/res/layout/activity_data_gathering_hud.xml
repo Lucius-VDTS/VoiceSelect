@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--  Columns  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/columnLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/entryLayout">
+
+        <TextView
+            android:id="@+id/columnsIndexLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_index_label"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toStartOf="@id/columnLayout"
+            app:layout_constraintEnd_toStartOf="@id/columnsScrollView">
+        </TextView>
+
+        <HorizontalScrollView
+            android:id="@+id/columnsScrollView"
+            android:contentDescription="@string/data_gathering_header_scroll_description"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_constraintHorizontal_weight="8"
+            app:layout_constraintStart_toEndOf="@id/columnsIndexLabel"
+            app:layout_constraintEnd_toStartOf="@id/columnsCommentLabel">
+
+            <LinearLayout
+                android:id="@+id/columnsLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/half_margin"
+                android:layout_marginEnd="@dimen/half_margin">
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/columnsCommentLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/half_margin"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_comment_label"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/columnsScrollView"
+            app:layout_constraintEnd_toStartOf="@id/columnsPhotoLabel">
+        </TextView>
+
+        <TextView
+            android:id="@+id/columnsPhotoLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_photo_label"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/columnsCommentLabel"
+            app:layout_constraintEnd_toEndOf="@id/columnLayout">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--  Entries  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/entryLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="1"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginBottom="@dimen/margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/columnLayout"
+        app:layout_constraintBottom_toTopOf="@id/sessionLayout">
+
+        <TextView
+            android:id="@+id/entryIndexValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toStartOf="@id/entryLayout"
+            app:layout_constraintEnd_toStartOf="@id/entryScrollView">
+        </TextView>
+
+        <HorizontalScrollView
+            android:id="@+id/entryScrollView"
+            android:contentDescription="@string/data_gathering_entry_scroll_description"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_constraintHorizontal_weight="8"
+            app:layout_constraintStart_toEndOf="@id/entryIndexValue"
+            app:layout_constraintEnd_toStartOf="@id/entryCommentValue">
+
+            <LinearLayout
+                android:id="@+id/entryValuesLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/half_margin"
+                android:layout_marginEnd="@dimen/half_margin">
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/entryCommentValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/half_margin"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/entryScrollView"
+            app:layout_constraintEnd_toStartOf="@id/entryPhotoValue">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entryPhotoValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/xxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/entryCommentValue"
+            app:layout_constraintEnd_toEndOf="@id/entryLayout">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--  Session Footer  -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sessionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_weight="0.5"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
+        android:layout_marginBottom="@dimen/margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/entryLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/sessionLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="0.8"
+            android:gravity="center_vertical"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_session_label"
+            android:textSize="@dimen/xxxs_text_size"
+            app:layout_constraintStart_toStartOf="@id/sessionLayout"
+            app:layout_constraintEnd_toStartOf="@id/sessionValue">
+        </TextView>
+
+        <TextView
+            android:id="@+id/sessionValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="2"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_session_value"
+            android:textSize="@dimen/xxxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/sessionLabel"
+            app:layout_constraintEnd_toStartOf="@id/sessionEntriesLabel">
+        </TextView>
+
+        <TextView
+            android:id="@+id/sessionEntriesLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="1"
+            android:gravity="center_vertical|end"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_entries_label"
+            android:textSize="@dimen/xxxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/sessionValue"
+            app:layout_constraintEnd_toStartOf="@id/sessionEntriesValue">
+        </TextView>
+
+        <TextView
+            android:id="@+id/sessionEntriesValue"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="0.5"
+            android:gravity="center_vertical|end"
+            android:padding="@dimen/half_padding"
+            android:text="@string/data_gathering_entries_value"
+            android:textSize="@dimen/xxxs_text_size"
+            app:layout_constraintStart_toEndOf="@id/sessionEntriesLabel"
+            app:layout_constraintEnd_toEndOf="parent">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

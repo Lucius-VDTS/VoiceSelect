@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.library.interfaces.VDTSFilterableInterface;
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 import ca.vdts.voiceselect.library.utilities.VDTSNameOrderUtil;
 //todo - replace notifyDataSetChanged
@@ -29,7 +29,7 @@ import ca.vdts.voiceselect.library.utilities.VDTSNameOrderUtil;
  * Generic recycler view adapter for entities with an index and name.
  * @param <Entity>
  */
-public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedEntityInterface>
+public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedInterface>
         extends RecyclerView.Adapter<VDTSIndexedNamedAdapter.ViewHolder>
         implements VDTSFilterableInterface {
     private final Context context;

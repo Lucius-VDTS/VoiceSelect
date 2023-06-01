@@ -37,7 +37,7 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'                             //Original - 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.8.0'                     //Original - 'com.google.android.material:material:1.7.0'
+    implementation 'com.google.android.material:material:1.9.0'                     //Original - 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'               //Original - 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'                                         //Original - 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'                       //Original - 'androidx.test.ext:junit:1.1.5'
@@ -45,7 +45,7 @@ dependencies {
 
     //The following dependencies were added after the application was created
     //Iristick
-    implementation 'com.iristick.android:iristick-sdk-trial:2.2-rc.2'               //Original - 'com.iristick.android:iristick-sdk-trial:2.1'
+    implementation 'com.iristick.android:iristick-sdk-trial:2.3'               //Original - 'com.iristick.android:iristick-sdk-trial:2.1'
 
     //Logging
     implementation 'org.slf4j:slf4j-api:1.7.36'                                     //Original - 'org.slf4j:slf4j-api:1.7.36'

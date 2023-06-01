@@ -7,12 +7,12 @@ import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 
 /**
  * ENUM used for time period dropdowns
  */
-public enum VDTSTimePeriodUtil implements VDTSIndexedNamedEntityInterface {
+public enum VDTSTimePeriodUtil implements VDTSIndexedNamedInterface {
     @SerializedName("0")
     SEC(0, "Seconds"),
     @SerializedName("1")

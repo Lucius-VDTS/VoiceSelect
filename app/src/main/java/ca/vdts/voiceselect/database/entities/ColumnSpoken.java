@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSBNFGrammarInterface;
 
 /**
  * Entity defines the ColumnSpokens table. Entity associates columns with their spoken terms.
@@ -45,7 +45,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
                 @Index(value = "columnID")
         }
 )
-public class ColumnSpoken implements VDTSBnfGrammarInterface {
+public class ColumnSpoken implements VDTSBNFGrammarInterface {
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)

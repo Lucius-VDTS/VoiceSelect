@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.75"
             android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_index_label"
             android:textSize="@dimen/large_text_size">
@@ -40,7 +40,9 @@
                 android:id="@+id/columnsLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/half_margin"
+                android:layout_marginEnd="@dimen/half_margin">
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -50,8 +52,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/half_margin"
+            android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_comment_label"
             android:textSize="@dimen/large_text_size">
@@ -63,7 +65,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginStart="@dimen/margin"
+            android:layout_marginStart="@dimen/half_margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_photo_label"
             android:textSize="@dimen/large_text_size">
@@ -94,13 +96,12 @@
         android:id="@+id/columnValueLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintVertical_weight="1"
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/sessionLinearLayout">
+        app:layout_constraintBottom_toTopOf="@id/entryButtonsLinearLayout">
 
         <TextView
             android:id="@+id/columnValuesIndexValue"
@@ -108,6 +109,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.75"
             android:gravity="center"
+            android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
             android:textSize="@dimen/large_text_size">
         </TextView>
@@ -124,7 +126,9 @@
                 android:id="@+id/columnLayoutLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/half_margin"
+                android:layout_marginEnd="@dimen/half_margin">
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -134,9 +138,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/half_margin"
+            android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_comment_label"
             android:textSize="@dimen/small_text_size">
@@ -148,22 +151,71 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginStart="@dimen/margin"
+            android:layout_marginStart="@dimen/half_margin"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_photo_label"
             android:textSize="@dimen/small_text_size">
         </Button>
     </LinearLayout>
 
-    <!--  Session  -->
+    <!--  Entry buttons  -->
+    <LinearLayout
+        android:id="@+id/entryButtonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sessionLinearLayout">
+
+        <Button
+            android:id="@+id/entryDeleteButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/data_gathering_delete_button"
+            android:textSize="@dimen/small_text_size"/>
+
+        <Button
+            android:id="@+id/entryResetButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/data_gathering_reset_button"
+            android:textSize="@dimen/small_text_size"/>
+
+        <Button
+            android:id="@+id/entryRepeatButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/data_gathering_repeat_button"
+            android:textSize="@dimen/small_text_size"/>
+
+        <Button
+            android:id="@+id/entrySaveButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.9"
+            android:layout_marginStart="@dimen/margin"
+            android:text="@string/data_gathering_save_button"
+            android:textSize="@dimen/small_text_size"/>
+    </LinearLayout>
+
+    <!--  Session Footer  -->
     <LinearLayout
         android:id="@+id/sessionLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginTop="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +225,7 @@
             android:id="@+id/sessionLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
+            android:layout_weight="0.7"
             android:gravity="center_vertical"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_session_label"
@@ -184,11 +236,11 @@
             android:id="@+id/sessionValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.2"
+            android:layout_weight="1.5"
             android:gravity="center_vertical"
             android:layout_marginEnd="@dimen/double_margin"
             android:padding="@dimen/padding"
-            android:text="LB 23/02/09-1"
+            android:text="@string/data_gathering_session_value"
             android:textSize="@dimen/small_text_size">
         </TextView>
 
@@ -209,21 +261,9 @@
             android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:gravity="center_vertical"
-            android:layout_marginEnd="@dimen/double_margin"
             android:padding="@dimen/padding"
-            android:text="1234"
+            android:text="@string/data_gathering_entries_value"
             android:textSize="@dimen/small_text_size">
         </TextView>
-
-        <Button
-            android:id="@+id/entrySaveButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.57"
-            android:gravity="center"
-            android:padding="@dimen/padding"
-            android:text="@string/data_gathering_save_button"
-            android:textSize="@dimen/small_text_size">
-        </Button>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

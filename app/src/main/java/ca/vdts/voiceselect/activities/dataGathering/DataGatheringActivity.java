@@ -88,9 +88,13 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private Button columnValueCommentButton;
     private Button columnValuePhotoButton;
 
+    private Button entryDeleteButton;
+    private Button entryResetButton;
+    private Button entryRepeatButton;
+    private Button entrySaveButton;
+
     private TextView sessionValue;
     private TextView sessionEntriesValue;
-    private Button entrySaveButton;
 
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
@@ -119,10 +123,20 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         columnValueCommentButton = findViewById(R.id.columnValuesCommentButton);
         columnValuePhotoButton = findViewById(R.id.columnValuesPhotoButton);
 
-        sessionValue = findViewById(R.id.sessionValue);
-        sessionEntriesValue = findViewById(R.id.sessionEntriesValue);
+        entryDeleteButton = findViewById(R.id.entryDeleteButton);
+        entrySaveButton.setOnClickListener(v -> deleteEntryButtonOnClick());
+
+        entryResetButton = findViewById(R.id.entryResetButton);
+        entryResetButton.setOnClickListener(v -> resetEntryButtonOnClick());
+
+        entryRepeatButton = findViewById(R.id.entryRepeatButton);
+        entryRepeatButton.setOnClickListener(v -> repeatEntryButtonOnClick());
+
         entrySaveButton = findViewById(R.id.entrySaveButton);
         entrySaveButton.setOnClickListener(v -> saveEntryButtonOnClick());
+
+        sessionValue = findViewById(R.id.sessionValue);
+        sessionEntriesValue = findViewById(R.id.sessionEntriesValue);
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -172,7 +186,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
                 handler.post(() -> {
                     LocalDate today = LocalDate.now();
-                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
+                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
                     String formattedDate = today.format(datePattern);
                     String currentSessionString = String.format(
                             "%s %s-%o",
@@ -372,6 +386,32 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         }
     };
 
+    //todo adapterselect - select entry
+//    private void entryAdapterSelect(int index) {
+//        if (index >= 0) {
+//            columnValueIndexValue.setText(index);
+//            dataGatheringAdapter.setSelected(index - 1);
+//            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
+//            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
+//            entryValueList.clear();
+//            entryValueList.addAll()
+//        } else {
+//
+//        }
+//    }
+
+    private void deleteEntryButtonOnClick() {
+
+    }
+
+    private void resetEntryButtonOnClick() {
+
+    }
+
+    private void repeatEntryButtonOnClick() {
+
+    }
+
     private void saveEntryButtonOnClick() {
 //        if (selectedEntry != null) {
 //            //Update existing entry
@@ -395,20 +435,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 //            columnValueIndexValue.setText(index + "");
 //        }
     }
-
-    //todo adapterselect - select entry
-//    private void entryAdapterSelect(int index) {
-//        if (index >= 0) {
-//            columnValueIndexValue.setText(index);
-//            dataGatheringAdapter.setSelected(index - 1);
-//            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
-//            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
-//            entryValueList.clear();
-//            entryValueList.addAll()
-//        } else {
-//
-//        }
-//    }
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
@@ -443,7 +469,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            //HUD layout
+            //todo - HUD layout
         }
     }
 }

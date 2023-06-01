@@ -33,6 +33,7 @@
     <dimen name="outline_width">4dp</dimen>
 
 <!--   Fonts   -->
+    <dimen name="xxxs_text_size">12sp</dimen>
     <dimen name="xxs_text_size">14sp</dimen>
     <dimen name="xs_text_size">16sp</dimen>
     <dimen name="small_text_size">18sp</dimen>

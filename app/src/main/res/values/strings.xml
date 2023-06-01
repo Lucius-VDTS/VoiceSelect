@@ -152,13 +152,19 @@
 
     <string name="data_gathering_index_label">#</string>
     <string name="data_gathering_comment_label">CMT</string>
-    <string name="data_gathering_comment_description">Button opens the comment entry dialogue</string>
+    <string name="data_gathering_comment_description">Open comment entry dialogue</string>
     <string name="data_gathering_photo_label">PIC</string>
-    <string name="data_gathering_photo_description">Button opens the camera</string>
+    <string name="data_gathering_photo_description">Open the camera</string>
+
+    <string name="data_gathering_repeat_button">Repeat</string>
+    <string name="data_gathering_delete_button">Del</string>
+    <string name="data_gathering_reset_button">Reset</string>
+    <string name="data_gathering_save_button">Save</string>
 
     <string name="data_gathering_session_label">Session:</string>
+    <string name="data_gathering_session_value">LB 2023/02/09 – 1</string>
     <string name="data_gathering_entries_label">Entries:</string>
-    <string name="data_gathering_save_button">Save</string>
+    <string name="data_gathering_entries_value">1234</string>
 
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>

@@ -15,8 +15,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-import ca.vdts.voiceselect.library.interfaces.VDTSBnfGrammarInterface;
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSBNFGrammarInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 
 /**
  * Entity defines the Users table.
@@ -27,7 +27,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
                 @Index(value = "uid")
         }
 )
-public class VDTSUser implements VDTSIndexedNamedEntityInterface, VDTSBnfGrammarInterface {
+public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterface {
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)

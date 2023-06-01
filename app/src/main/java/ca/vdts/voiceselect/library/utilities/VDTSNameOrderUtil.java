@@ -2,12 +2,12 @@ package ca.vdts.voiceselect.library.utilities;
 
 import java.util.Comparator;
 
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 
 /**
  * Utility used to compare and order two names
  */
-public class VDTSNameOrderUtil implements Comparator<VDTSIndexedNamedEntityInterface> {
+public class VDTSNameOrderUtil implements Comparator<VDTSIndexedNamedInterface> {
     private static VDTSNameOrderUtil instance;
 
     public static VDTSNameOrderUtil getInstance() {
@@ -21,7 +21,7 @@ public class VDTSNameOrderUtil implements Comparator<VDTSIndexedNamedEntityInter
     }
 
     @Override
-    public int compare(VDTSIndexedNamedEntityInterface name1, VDTSIndexedNamedEntityInterface name2) {
+    public int compare(VDTSIndexedNamedInterface name1, VDTSIndexedNamedInterface name2) {
         return name1.name().compareToIgnoreCase(name2.name());
     }
 }

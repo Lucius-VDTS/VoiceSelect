@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 
 /**
  * Entity defines the Columns table.
@@ -39,7 +39,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
                 @Index(value = "userID")
         }
 )
-public class Column implements VDTSIndexedNamedEntityInterface {
+public class Column implements VDTSIndexedNamedInterface {
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)

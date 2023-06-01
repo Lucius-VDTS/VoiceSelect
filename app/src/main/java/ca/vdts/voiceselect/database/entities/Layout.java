@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
+import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedInterface;
 
 /**
  * Entity defines the Layouts table.
@@ -41,7 +41,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSIndexedNamedEntityInterface;
                 @Index(value = "userID")
         }
 )
-public class Layout implements VDTSIndexedNamedEntityInterface {
+public class Layout implements VDTSIndexedNamedInterface {
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)
