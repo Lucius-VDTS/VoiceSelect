@@ -108,6 +108,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         0);
 
                 userPasswordEditText.clearFocus();
+            } else {
+                userPasswordEditText.setInputType(1);
             }
         });
 

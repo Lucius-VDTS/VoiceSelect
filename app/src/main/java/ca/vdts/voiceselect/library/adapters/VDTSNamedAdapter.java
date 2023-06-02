@@ -66,7 +66,7 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
         return getView(position, convertView, parent);
     }
 
-    public int getSelectedEntityIndex(Entity entity) {
+    public int getSelectedEntityIndex() {
         return position;
     }
 

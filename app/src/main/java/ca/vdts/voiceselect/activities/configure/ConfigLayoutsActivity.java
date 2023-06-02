@@ -316,7 +316,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void resetLayoutButtonOnClick() {
-        layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex(selectedLayout));
+        layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex());
         layoutNameEditText.setText(selectedLayout.getName());
         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
         configLayoutsAdapterSelect(configLayoutsAdapter.getSelectedColumnIndex());

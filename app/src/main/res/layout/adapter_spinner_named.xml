@@ -2,8 +2,13 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:maxLines="1"
     android:padding="@dimen/padding"
-    android:textSize="@dimen/xl_text_size">
+    android:textSize="@dimen/large_text_size"
+    app:autoSizeMinTextSize="@dimen/xs_text_size"
+    app:autoSizeMaxTextSize="@dimen/large_text_size"
+    app:autoSizeStepGranularity="2sp"
+    app:autoSizeTextType="uniform">
 </TextView>

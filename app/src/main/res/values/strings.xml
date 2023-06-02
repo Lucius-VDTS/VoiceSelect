@@ -112,15 +112,15 @@
     <string name="column_value_import_button">Import</string>
     <string name="column_value_export_button">Export</string>
 
-    <string name="column_value_name_label">Name</string>
-    <string name="column_value_name_value">Enter column name</string>
+    <string name="column_value_name_label">Value</string>
+    <string name="column_value_name_value">Enter value</string>
     <string name="column_value_name_code_label">Abbreviation</string>
-    <string name="column_value_name_code_value">Enter column abbreviation</string>
+    <string name="column_value_name_code_value">Enter value abbreviation</string>
     <string name="column_value_export_label">Code</string>
     <string name="column_value_export_value">Enter export code</string>
 
     <string name="column_value_spoken_label">Spoken</string>
-    <string name="column_value_spoken_value">Enter column spoken</string>
+    <string name="column_value_spoken_value">Enter value spoken</string>
 
 <!--  Configure Layout Activity  -->
     <string name="config_layout_activity_label">Configure Layout</string>
@@ -155,6 +155,7 @@
     <string name="data_gathering_comment_description">Open comment entry dialogue</string>
     <string name="data_gathering_photo_label">PIC</string>
     <string name="data_gathering_photo_description">Open the camera</string>
+    <string name="data_gathering_end_description">End the session</string>
 
     <string name="data_gathering_repeat_button">Repeat</string>
     <string name="data_gathering_delete_button">Del</string>
@@ -162,9 +163,10 @@
     <string name="data_gathering_save_button">Save</string>
 
     <string name="data_gathering_session_label">Session:</string>
-    <string name="data_gathering_session_value">LB 2023/02/09 – 1</string>
+    <string name="data_gathering_session_value">LB 23/02/09–1</string>
     <string name="data_gathering_entries_label">Entries:</string>
     <string name="data_gathering_entries_value">1234</string>
+    <string name="data_gathering_end_button">End</string>
 
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>

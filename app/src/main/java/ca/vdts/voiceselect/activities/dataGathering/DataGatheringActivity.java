@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -60,18 +61,13 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
     private Session currentSession;
-    private boolean isNewSession = true;
+    private final boolean isNewSession = true;
     private Entry selectedEntry;
     private ColumnValue selectedColumnValue;
 
-
-//    //todo - temp
-//    int index = 1;
-
-
     //Lists
     private final List<Column> columnList = new ArrayList<>();
-    private final HashMap<Integer, TextView> columnTextHashMap = new HashMap<>();
+    private final HashMap<Integer, TextView> columnHashMap = new HashMap<>();
 
     private final List<ColumnValue> columnValueList = new ArrayList<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
@@ -186,7 +182,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
                 handler.post(() -> {
                     LocalDate today = LocalDate.now();
-                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
                     String formattedDate = today.format(datePattern);
                     String currentSessionString = String.format(
                             "%s %s-%o",
@@ -272,25 +268,32 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
             int columnValueMapIndex = 0;
             for (Column column : columnList) {
                 columnValueMap.put(
-                        columnValueMapIndex, vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
+                        columnValueMapIndex,
+                        vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
                 columnValueMapIndex++;
             }
 
             handler.post(() -> {
                 final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
                 final List<Spinner> columnValueSpinners = new ArrayList<>();
-                final HashMap<Integer, VDTSNamedAdapter> columnValueAdapters = new HashMap<>();
+                final HashMap<Integer, ColumnValueSpinnerAdapter> columnValueSpinnerAdapters = new HashMap<>();
                 for (int index = 0; index < columnValueMap.size(); index++) {
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
 
-                    VDTSNamedAdapter<ColumnValue> columnValueAdapter = new VDTSNamedAdapter<>(
-                            this,
-                            R.layout.adapter_spinner_named,
-                            columnValuesByColumn);
-                    columnValueAdapter.setToStringFunction((columnValue, integer) ->
-                            columnValue.getName());
-                    columnValueAdapters.put(index, columnValueAdapter);
+//                    VDTSNamedAdapter<ColumnValue> columnValueAdapter = new VDTSNamedAdapter<>(
+//                            this,
+//                            R.layout.adapter_spinner_named,
+//                            columnValuesByColumn);
+//                    columnValueAdapter.setToStringFunction((columnValue, integer) ->
+//                            columnValue.getName());
+
+                    ColumnValueSpinnerAdapter columnValueSpinnerAdapter =
+                            new ColumnValueSpinnerAdapter(
+                                    this,
+                                    columnValuesByColumn
+                            );
+                    columnValueSpinnerAdapters.put(index, columnValueSpinnerAdapter);
 
                     Spinner columnValueSpinner = new Spinner(this);
                     columnValueSpinner.setId(index);
@@ -298,7 +301,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                     columnValueSpinner.setLayoutParams(layoutParams);
                     columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
                     //columnValueSpinner.setAdapter(columnValueAdapter);
-                    columnValueSpinner.setAdapter(columnValueAdapters.get(index));
+                    columnValueSpinner.setAdapter((SpinnerAdapter) columnValueSpinnerAdapters.get(index));
                     columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
                     columnValueSpinners.add(columnValueSpinner);
 
@@ -469,7 +472,9 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            //todo - HUD layout
+            setContentView(R.layout.activity_data_gathering_hud);
+
+            //HUD Views
         }
     }
 }
