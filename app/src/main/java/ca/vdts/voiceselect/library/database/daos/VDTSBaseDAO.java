@@ -1,9 +1,9 @@
 package ca.vdts.voiceselect.library.database.daos;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.RawQuery;
 import androidx.room.Update;
 import androidx.sqlite.db.SupportSQLiteQuery;
@@ -16,14 +16,10 @@ import java.util.List;
  */
 @Dao
 public interface VDTSBaseDAO<Entity> {
-    @Insert(
-            onConflict = 1
-    )
-    long insert (Entity data);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insert(Entity data);
 
-    @Insert(
-            onConflict = 1
-    )
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Entity[] data);
 
     @Update
