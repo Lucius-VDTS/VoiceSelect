@@ -118,9 +118,9 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     }
 
     private void disableViews() {
-        if (currentUser.getAuthority() <= 0) {
+        /*if (currentUser.getAuthority() <= 0) {
             configUsersActivityButton.setEnabled(false);
-        } else if (currentUser.getUid() == -9001L) {
+        } else*/ if (currentUser.getUid() == -9001L) {
             configFeedbackActivityButton.setEnabled(false);
             configColumnsActivityButton.setEnabled(false);
             configColumnValuesActivityButton.setEnabled(false);

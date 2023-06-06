@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +21,6 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +45,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigUsersActivity.class);
 
     private VDTSApplication vdtsApplication;
+    private VDTSUser currentUser;
 
     //Views
     private Button newUserButton;
@@ -67,7 +68,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     private VSViewModel vsViewModel;
     private VDTSIndexedNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView userRecyclerView;
-    private final List<VDTSUser> userList = new ArrayList<>();
+    private final List<VDTSUser> selectableUserList = new ArrayList<>();
+    private final List<VDTSUser> allUserList = new ArrayList<>();
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -81,6 +83,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         IristickSDK.registerListener(this.getLifecycle(), this);
 
         vdtsApplication = (VDTSApplication) this.getApplication();
+        currentUser = vdtsApplication.getCurrentUser();
 
         //Views
         newUserButton = findViewById(R.id.userNewButton);
@@ -96,11 +99,43 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         deleteUserButton.setOnClickListener(v -> deleteUserButtonOnClick());
 
         userNameEditText = findViewById(R.id.userNameEditText);
+        userNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        vdtsApplication,
+                        "Only an admin user can set a user name",
+                        Toast.LENGTH_SHORT
+                );
+                userNameEditText.clearFocus();
+            }
+        });
+
         userPrefixEditText = findViewById(R.id.userPrefixEditText);
+        userPrefixEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a user session prefix",
+                        Toast.LENGTH_SHORT
+                );
+                userPrefixEditText.clearFocus();
+            }
+        });
+
         userExportCodeEditText = findViewById(R.id.userExportCodeEditText);
+        userExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a user export code",
+                        Toast.LENGTH_SHORT
+                );
+                userExportCodeEditText.clearFocus();
+            }
+        });
+
         userPasswordEditText = findViewById(R.id.userPasswordEditText);
-        userPasswordEditText.setInputType(0);
-        userPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> {
+        /*userPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && !userAdminSwitch.isChecked()) {
                 vdtsApplication.displayToast(
                         vdtsApplication,
@@ -111,10 +146,21 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             } else {
                 userPasswordEditText.setInputType(1);
             }
-        });
+        });*/
 
         userAdminSwitch = findViewById(R.id.userAdminSwitch);
         userAdminSwitch.setOnClickListener(v -> {
+            if (currentUser.getAuthority() < 1) {
+                userAdminSwitch.setChecked(false);
+                userAdminSwitch.clearFocus();
+                vdtsApplication.displayToast(
+                        vdtsApplication,
+                        "Only an admin user can change the admin value",
+                        Toast.LENGTH_SHORT
+                );
+            }
+        });
+        /*userAdminSwitch.setOnClickListener(v -> {
             if (!userAdminSwitch.isChecked()) {
                 userPasswordEditText.setInputType(0);
                 userPasswordEditText.setText("");
@@ -123,12 +169,26 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userPasswordEditText.setInputType(1);
                 userPasswordEditText.requestFocus();
             }
-        });
+        });*/
 
         userPrimarySwitch = findViewById(R.id.userPrimarySwitch);
+        userPrimarySwitch.setOnClickListener(v -> {
+            if (currentUser.getAuthority() < 1) {
+                userPrimarySwitch.setChecked(false);
+                userPrimarySwitch.clearFocus();
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can change the default spoken value",
+                        Toast.LENGTH_SHORT
+                );
+            }
+        });
 
         importButton = findViewById(R.id.userImportButton);
+        importButton.setOnClickListener(v -> importButtonOnClick());
+
         exportButton = findViewById(R.id.userExportButton);
+        exportButton.setOnClickListener(v -> exportButtonClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -137,22 +197,34 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
         //Observe/Update user list
         vsViewModel.findAllActiveUsersLive().observe(this, users -> {
-            userList.clear();
-            userList.addAll(users);
-            userList.remove(VDTSUser.VDTS_USER_NONE);
+            allUserList.clear();
+            allUserList.addAll(users);
+            allUserList.remove(VDTSUser.VDTS_USER_NONE);
+
+            if (currentUser.getAuthority() > 0) {
+                selectableUserList.clear();
+                selectableUserList.addAll(allUserList);
+                userAdapter.setDataset(selectableUserList);
+            }
         });
+
+        if (currentUser.getAuthority() == 0) {
+            selectableUserList.clear();
+            selectableUserList.add(currentUser);
+        }
 
         userRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+                )
+        );
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
                 this,
                 new VDTSClickListenerUtil(this::userAdapterSelect, userRecyclerView),
-                userList
+                selectableUserList
         );
 
         userRecyclerView.setAdapter(userAdapter);
@@ -161,17 +233,21 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     @Override
     protected void onResume() {
         super.onResume();
-        initializeUserList();
+        //initializeUserList();
     }
 
     private void initializeUserList() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            userList.clear();
-            userList.addAll(vsViewModel.findAllActiveUsers());
-            userList.remove(VDTSUser.VDTS_USER_NONE);
-            handler.post(() -> userAdapter.setDataset(userList));
+            selectableUserList.clear();
+            if (currentUser.getAuthority() > 0) {
+                selectableUserList.addAll(vsViewModel.findAllActiveUsers());
+                selectableUserList.remove(VDTSUser.VDTS_USER_NONE);
+            } else {
+                selectableUserList.add(currentUser);
+            }
+            handler.post(() -> userAdapter.setDataset(selectableUserList));
         });
     }
 
@@ -190,7 +266,9 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userNameEditText.setText(selectedUser.getName());
                 userPrefixEditText.setText(selectedUser.getSessionPrefix());
                 userExportCodeEditText.setText(selectedUser.getExportCode());
-                userPasswordEditText.setText(selectedUser.getPassword());
+                userPasswordEditText.setText(
+                        selectedUser.getPassword() != null ? selectedUser.getPassword() : ""
+                );
                 userAdminSwitch.setChecked(isAdmin);
                 userPrimarySwitch.setChecked(isPrimary);
             } else {
@@ -212,19 +290,27 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     public void newUserButtonOnClick() {
-        userAdapterSelect(-1);
-        userNameEditText.requestFocus();
+        if (currentUser.getAuthority() > 0) {
+            userAdapterSelect(-1);
+            userNameEditText.requestFocus();
+        } else {
+            vdtsApplication.displayToast(
+                    vdtsApplication,
+                    "Only an admin user can create a new user",
+                    Toast.LENGTH_SHORT
+            );
+        }
     }
 
     public void resetUserButtonOnClick() {
         userAdapterSelect(userAdapter.getSelectedEntityIndex());
-        userNameEditText.requestFocus();
+        //userNameEditText.requestFocus();
     }
 
     public void saveUserButtonOnClick() {
         VDTSUser selectedUser = userAdapter.getSelectedEntity();
         boolean isPrimary = userPrimarySwitch.isChecked();
-        final VDTSUser primaryUser = userList.stream()
+        final VDTSUser primaryUser = allUserList.stream()
                 .filter(VDTSUser::isPrimary)
                 .findFirst()
                 .orElse(null);
@@ -238,11 +324,12 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 selectedUser.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
                 selectedUser.setPrimary(userPrimarySwitch.isChecked());
 
-                if (!userAdminSwitch.isChecked()) {
+                /*if (!userAdminSwitch.isChecked()) {
                     selectedUser.setPassword("");
-                } else {
-                    selectedUser.setPassword(userPasswordEditText.getText().toString().trim());
-                }
+                } else {*/
+                    final String password = userPasswordEditText.getText().toString().trim();
+                    selectedUser.setPassword(!password.isEmpty() ? password : null);
+                //}
 
                 if (isValidUser(selectedUser)) {
                     if (selectedUser.getUid() == vdtsApplication.getCurrentUser().getUid()) {
@@ -262,7 +349,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         vdtsApplication.displayToast(
                                 this,
                                 "Updated user: " + selectedUser.getName(),
-                                0);
+                                0
+                        );
 
                         handler.post(() -> userAdapter.updateSelectedEntity());
                     });
@@ -273,13 +361,14 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 }
             } else {
                 //Create new user
+                final String password = userPasswordEditText.getText().toString().trim();
                 final VDTSUser vdtsUser = new VDTSUser(
                         userNameEditText.getText().toString().trim(),
                         userExportCodeEditText.getText().toString().trim(),
                         userPrefixEditText.getText().toString().trim(),
                         userAdminSwitch.isChecked() ? 1 : 0,
                         userPrimarySwitch.isChecked(),
-                        userPasswordEditText.getText().toString().trim()
+                        !password.isEmpty() ? password : null
                 );
 
                 if (!userAdminSwitch.isChecked()) {
@@ -354,29 +443,57 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     public void deleteUserButtonOnClick() {
-        VDTSUser selectedUser = userAdapter.getSelectedEntity();
-        if (selectedUser != null) {
-            if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
-                selectedUser.setActive(false);
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
-                executor.execute(() -> {
-                    vsViewModel.updateUser(selectedUser);
-                    handler.post(() -> {
-                        userAdapter.removeSelectedEntity();
-                        newUserButtonOnClick();
-                        vdtsApplication.setUserCount(userAdapter.getItemCount());
+        if (currentUser.getAuthority() > 0) {
+            VDTSUser selectedUser = userAdapter.getSelectedEntity();
+            if (selectedUser != null) {
+                if (!adminPrimaryCheck() || !userPrimarySwitch.isChecked()) {
+                    selectedUser.setActive(false);
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    executor.execute(() -> {
+                        vsViewModel.updateUser(selectedUser);
+                        handler.post(() -> {
+                            userAdapter.removeSelectedEntity();
+                            newUserButtonOnClick();
+                            vdtsApplication.setUserCount(userAdapter.getItemCount());
+                        });
                     });
-                });
-            } else {
-                LOG.info("Delete user failed - admin/default spoken must exist");
-                vdtsApplication.displayToast(
-                        this,
-                        "Delete user failed - admin/default spoken must exist",
-                        0);
+                } else {
+                    LOG.info("Delete user failed - admin/default spoken must exist");
+                    vdtsApplication.displayToast(
+                            this,
+                            "Delete user failed - admin/default spoken must exist",
+                            0);
 
-                resetUserButtonOnClick();
+                    resetUserButtonOnClick();
+                }
             }
+        } else {
+            vdtsApplication.displayToast(
+                    vdtsApplication,
+                    "Only an admin user can delete a user",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void importButtonOnClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can import users",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void exportButtonClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export users",
+                    Toast.LENGTH_SHORT
+            );
         }
     }
 
@@ -391,16 +508,16 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
         if (userAdminSwitch.isChecked()) {
             adminExists = true;
-        } else if (userList.size() > 0) {
-            adminExists = userList.stream()
+        } else if (allUserList.size() > 0) {
+            adminExists = allUserList.stream()
                     .filter(user -> !user.equals(selectedUser))
                     .anyMatch(user -> user.getAuthority() == 1);
         }
 
         if (userPrimarySwitch.isChecked()) {
             primaryExists = true;
-        } else if (userList.size() > 0) {
-            primaryExists = userList.stream()
+        } else if (allUserList.size() > 0) {
+            primaryExists = allUserList.stream()
                     .filter(user -> !user.equals(selectedUser))
                     .anyMatch(VDTSUser::isPrimary);
         }
@@ -417,23 +534,29 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         if (userAdminSwitch.isChecked()) {
             return !vdtsUser.getName().isEmpty() &&
                     !vdtsUser.getExportCode().isEmpty() &&
-                    !vdtsUser.getPassword().isEmpty() &&
-                    userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
-                            (StringUtils.lowerCase(user1.getName())
-                                    .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
-                                    StringUtils.lowerCase(user1.getExportCode())
-                                            .equals(StringUtils.lowerCase(vdtsUser.getExportCode()))));
-
+                    //!vdtsUser.getPassword().isEmpty() &&
+                    allUserList.stream()
+                            .noneMatch(
+                                    user1 -> vdtsUser.getUid() != user1.getUid() && (
+                                            user1.getName().equalsIgnoreCase(vdtsUser.getName()) ||
+                                                    user1.getExportCode().equalsIgnoreCase(
+                                                            vdtsUser.getExportCode()
+                                                    )
+                                    )
+                            );
         } else {
             return !vdtsUser.getName().isEmpty() &&
                     !vdtsUser.getExportCode().isEmpty() &&
-                    userList.stream().noneMatch(user1 -> vdtsUser.getUid() != user1.getUid() &&
-                            (StringUtils.lowerCase(user1.getName())
-                                    .equals(StringUtils.lowerCase(vdtsUser.getName())) ||
-                                    StringUtils.lowerCase(user1.getExportCode())
-                                            .equals(StringUtils.lowerCase(vdtsUser.getExportCode()))));
+                    allUserList.stream()
+                            .noneMatch(
+                                    user1 -> vdtsUser.getUid() != user1.getUid() && (
+                                            user1.getName().equalsIgnoreCase(vdtsUser.getName()) ||
+                                                    user1.getExportCode().equalsIgnoreCase(
+                                                            vdtsUser.getExportCode()
+                                                    )
+                                    )
+                            );
         }
-
     }
 
     @Override
