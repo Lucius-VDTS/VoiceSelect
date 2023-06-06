@@ -1,7 +1,6 @@
 package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
-
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_DATE;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
@@ -18,6 +17,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -160,7 +160,14 @@ public class Session implements VDTSIndexedNamedInterface {
 
     @Override
     public String name() {
-        return null;
+        final DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
+        return String.format(
+                Locale.getDefault(),
+                "%s-%s-%d",
+                this.getSessionPrefix(),
+                datePattern.format(this.getStartDate()),
+                this.getDateIteration()
+        );
     }
 
     @Override

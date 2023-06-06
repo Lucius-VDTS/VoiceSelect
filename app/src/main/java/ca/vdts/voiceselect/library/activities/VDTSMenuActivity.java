@@ -18,8 +18,11 @@ import com.iristick.sdk.IristickSDK;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
-import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
+import ca.vdts.voiceselect.database.VSViewModel;
+import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
+import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
@@ -40,18 +43,20 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private Button changeUserActivityButton;
     private Button aboutActivityButton;
 
+    private TextView footerLayoutValue;
+    private TextView footerSessionValue;
     private TextView footerUserValue;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
     @Nullable
-    private VDTSNotificationUtil errorIristickNotifService;
+    private VDTSNotificationUtil errorIristickNotificationService;
     @Nullable
-    private VDTSNotificationUtil firmwareIristickNotifService;
+    private VDTSNotificationUtil firmwareIristickNotificationService;
     @Nullable
-    private VDTSNotificationUtil connectedIristickNotifService;
+    private VDTSNotificationUtil connectedIristickNotificationService;
     @Nullable
-    private VDTSNotificationUtil disconnectedIristickNotifService;
+    private VDTSNotificationUtil disconnectedIristickNotificationService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,15 +81,24 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         settingsActivityButton = findViewById(R.id.settingsActivityButton);
 
         TextToSpeech textToSpeech = vdtsApplication.getTTSEngine();
-        settingsActivityButton.setOnClickListener(v -> {
-            textToSpeech.speak("Good day " + currentUser.getName(), 0, null, null);
-        });
+        settingsActivityButton.setOnClickListener(
+                v -> textToSpeech.speak(
+                        "Good day " + currentUser.getName(),
+                        0,
+                        null,
+                        null
+                )
+        );
 
         changeUserActivityButton = findViewById(R.id.changeUserActivityButton);
         changeUserActivityButton.setOnClickListener(v -> changeUserActivityButtonOnClick());
 
         aboutActivityButton = findViewById(R.id.aboutActivityButton);
         aboutActivityButton.setVisibility(View.GONE);
+
+        footerLayoutValue = findViewById(R.id.footerLayoutValue);
+
+        footerSessionValue = findViewById(R.id.footerSessionValue);
 
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
@@ -95,6 +109,28 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         super.onResume();
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
+
+        VSViewModel viewModel = new VSViewModel(vdtsApplication);
+
+        final String layoutKey = currentUser.getExportCode().concat("_Layout");
+        final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
+        Layout currentLayout = null;
+        if (layoutID > 0) { currentLayout = viewModel.findLayout(layoutID); }
+        if (currentLayout != null) {
+            footerLayoutValue.setText(currentLayout.getName());
+        } else {
+            footerLayoutValue.setText("");
+        }
+
+        final String sessionKey = currentUser.getExportCode().concat("_Session");
+        final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
+        Session currentSession = null;
+        if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
+        if (currentSession != null) {
+            footerSessionValue.setText(currentSession.name());
+        } else {
+            footerSessionValue.setText("");
+        }
 
         disableViews();
     }
@@ -124,7 +160,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     public void configureActivityButtonOnClick() {
-        Intent configureActivityIntent = new Intent(this, VDTSConfigMenuActivity.class);
+        Intent configureActivityIntent = new Intent(
+                this,
+                VDTSConfigMenuActivity.class
+        );
         startActivity(configureActivityIntent);
     }
 
@@ -164,21 +203,36 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
             VDTSNotificationUtil.init(this);
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Start", this::startActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Start", this::startActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Resume", this::resumeActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Resume", this::resumeActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Configure", this::configureActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Configure", this::configureActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("About Iris Stick", this::aboutActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("About Iris Stick", this::aboutActivityButtonOnClick)
+            );
 
             if (currentUser.getUid() != -9001) {
-                IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                        vc.add("Change User", this::changeUserActivityButtonOnClick));
+                IristickSDK.addVoiceCommands(
+                        this.getLifecycle(),
+                        this,
+                        vc -> vc.add("Change User", this::changeUserActivityButtonOnClick)
+                );
             }
         } else {
             aboutActivityButton.setVisibility(View.GONE);
@@ -192,60 +246,72 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     @Override
     public void onIristickState(@NonNull IRIState state) {
         if (state.isError()) {
-            if (errorIristickNotifService == null) {
-                errorIristickNotifService = new VDTSNotificationUtil(
-                        getApplicationContext(), VDTSNotificationUtil.Channel.ERROR);
+            if (errorIristickNotificationService == null) {
+                errorIristickNotificationService = new VDTSNotificationUtil(
+                        getApplicationContext(),
+                        VDTSNotificationUtil.Channel.ERROR
+                );
             }
-            errorIristickNotifService.setContentTitle("Error: " + state);
-            errorIristickNotifService.show();
+            errorIristickNotificationService.setContentTitle("Error: " + state);
+            errorIristickNotificationService.show();
         } else {
-            if (errorIristickNotifService != null) {
-                errorIristickNotifService.cancel();
-                errorIristickNotifService = null;
+            if (errorIristickNotificationService != null) {
+                errorIristickNotificationService.cancel();
+                errorIristickNotificationService = null;
             }
         }
 
-        if (state == IRIState.SYNCHRONIZING_FIRMWARE) {
-            if (firmwareIristickNotifService == null) {
-                firmwareIristickNotifService = new VDTSNotificationUtil(
-                        getApplicationContext(), VDTSNotificationUtil.Channel.FIRMWARE);
-                firmwareIristickNotifService.setOngoing(true);
-                firmwareIristickNotifService.setContentTitle("Firmware sync in progress");
-                firmwareIristickNotifService.setProgress(100, 0, true);
-                firmwareIristickNotifService.show();
+        if (state.equals(IRIState.SYNCHRONIZING_FIRMWARE)) {
+            if (firmwareIristickNotificationService == null) {
+                firmwareIristickNotificationService = new VDTSNotificationUtil(
+                        getApplicationContext(),
+                        VDTSNotificationUtil.Channel.FIRMWARE
+                );
+                firmwareIristickNotificationService.setOngoing(true);
+                firmwareIristickNotificationService.setContentTitle("Firmware sync in progress");
+                firmwareIristickNotificationService.setProgress(
+                        100,
+                        0,
+                        true
+                );
+                firmwareIristickNotificationService.show();
             }
         } else {
-            if (firmwareIristickNotifService != null) {
-                firmwareIristickNotifService.cancel();
-                firmwareIristickNotifService = null;
+            if (firmwareIristickNotificationService != null) {
+                firmwareIristickNotificationService.cancel();
+                firmwareIristickNotificationService = null;
             }
         }
 
-        if (state == IRIState.HEADSET_CONNECTED) {
-            if (connectedIristickNotifService == null) {
-                connectedIristickNotifService = new VDTSNotificationUtil(
-                        getApplicationContext(), VDTSNotificationUtil.Channel.CONNECTED);
+        if (state.equals(IRIState.HEADSET_CONNECTED)) {
+            if (connectedIristickNotificationService == null) {
+                connectedIristickNotificationService = new VDTSNotificationUtil(
+                        getApplicationContext(),
+                        VDTSNotificationUtil.Channel.CONNECTED
+                );
             }
-            connectedIristickNotifService.setContentTitle("Iristick connected");
-            connectedIristickNotifService.show();
+            connectedIristickNotificationService.setContentTitle("Iristick connected");
+            connectedIristickNotificationService.show();
         } else {
-            if (connectedIristickNotifService != null) {
-                connectedIristickNotifService.cancel();
-                connectedIristickNotifService = null;
+            if (connectedIristickNotificationService != null) {
+                connectedIristickNotificationService.cancel();
+                connectedIristickNotificationService = null;
             }
         }
 
-        if (state == IRIState.DISCONNECTED) {
-            if (disconnectedIristickNotifService == null) {
-                disconnectedIristickNotifService = new VDTSNotificationUtil(
-                        getApplicationContext(), VDTSNotificationUtil.Channel.DISCONNECTED);
+        if (state.equals(IRIState.DISCONNECTED)) {
+            if (disconnectedIristickNotificationService == null) {
+                disconnectedIristickNotificationService = new VDTSNotificationUtil(
+                        getApplicationContext(),
+                        VDTSNotificationUtil.Channel.DISCONNECTED
+                );
             }
-            disconnectedIristickNotifService.setContentTitle("Iristick disconnected");
-            disconnectedIristickNotifService.show();
+            disconnectedIristickNotificationService.setContentTitle("Iristick disconnected");
+            disconnectedIristickNotificationService.show();
         } else {
-            if (disconnectedIristickNotifService != null) {
-                disconnectedIristickNotifService.cancel();
-                disconnectedIristickNotifService = null;
+            if (disconnectedIristickNotificationService != null) {
+                disconnectedIristickNotificationService.cancel();
+                disconnectedIristickNotificationService = null;
             }
         }
     }
@@ -257,10 +323,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     @Override
     public void onFirmwareSyncProgress(float progress) {
         if (isHeadsetAvailable) {
-            if (firmwareIristickNotifService != null) {
-                firmwareIristickNotifService.setProgress(
-                        100, (int) (progress * 100), false);
-                firmwareIristickNotifService.show();
+            if (firmwareIristickNotificationService != null) {
+                firmwareIristickNotificationService.setProgress(
+                        100,
+                        (int) (progress * 100),
+                        false
+                );
+                firmwareIristickNotificationService.show();
             }
         }
     }

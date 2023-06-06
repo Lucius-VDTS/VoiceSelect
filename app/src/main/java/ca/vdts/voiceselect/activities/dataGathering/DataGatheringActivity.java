@@ -30,8 +30,6 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -183,16 +181,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                 LOG.info("Added session: {}", currentSession.getSessionPrefix());
 
                 handler.post(() -> {
-                    LocalDate today = LocalDate.now();
-                    DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
-                    String formattedDate = today.format(datePattern);
-                    String currentSessionString = String.format(
-                            "%s %s-%o",
-                            currentSession.getSessionPrefix(),
-                            formattedDate,
-                            currentSession.getDateIteration()
-                    );
-                    sessionValue.setText(currentSessionString);
+                    sessionValue.setText(currentSession.name());
 
                     initializeColumnsLayout();
                 });

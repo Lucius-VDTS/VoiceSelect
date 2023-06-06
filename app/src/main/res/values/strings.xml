@@ -173,6 +173,8 @@
     <string name="footer_layout_value">Layout Value</string>
     <string name="footer_project_label">Project:</string>
     <string name="footer_project_value">Project Value</string>
+    <string name="footer_session_label">Session:</string>
+    <string name="footer_session_value">Session Value</string>
     <string name="footer_user_label">User:</string>
     <string name="footer_user_value">User Name</string>
     <string name="footer_version_value">Application Version</string>
