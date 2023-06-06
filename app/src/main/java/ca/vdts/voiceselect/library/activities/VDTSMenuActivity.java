@@ -16,6 +16,7 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
 
+import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
@@ -46,6 +47,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private TextView footerLayoutValue;
     private TextView footerSessionValue;
     private TextView footerUserValue;
+    private TextView footerVersionValue;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -102,6 +104,9 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
+
+        footerVersionValue = findViewById(R.id.footerVersionValue);
+        footerVersionValue.setText(BuildConfig.VERSION_NAME);
     }
 
     @Override
