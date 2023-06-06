@@ -33,7 +33,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private Button configUsersActivityButton;
     private Button configFeedbackActivityButton;
     private Button configColumnsActivityButton;
-    private Button configColumnValuessActivityButton;
+    private Button configColumnValuesActivityButton;
     private Button configLayoutsActivityButton;
 
     private TextView footerUserValue;
@@ -55,20 +55,18 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         configUsersActivityButton.setOnClickListener(v -> configUsersActivityButtonOnClick());
 
         configFeedbackActivityButton = findViewById(R.id.configFeedbackActivityButton);
-        configFeedbackActivityButton.setOnClickListener(
-                v -> configFeedbackActivityButtonOnClick());
+        configFeedbackActivityButton.setOnClickListener(v -> configFeedbackActivityButtonOnClick());
 
         configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
-        configColumnsActivityButton.setOnClickListener(
-                v -> configColumnsActivityButtonOnClick());
+        configColumnsActivityButton.setOnClickListener(v -> configColumnsActivityButtonOnClick());
 
-        configColumnValuessActivityButton = findViewById(R.id.configColumnValuesActivityButton);
-        configColumnValuessActivityButton.setOnClickListener(
-                v -> configColumnValuesActivityButtonOnClick());
+        configColumnValuesActivityButton = findViewById(R.id.configColumnValuesActivityButton);
+        configColumnValuesActivityButton.setOnClickListener(
+                v -> configColumnValuesActivityButtonOnClick()
+        );
 
         configLayoutsActivityButton = findViewById(R.id.configLayoutsActivityButton);
-        configLayoutsActivityButton.setOnClickListener(
-                v -> configLayoutsActivityButtonOnClick());
+        configLayoutsActivityButton.setOnClickListener(v -> configLayoutsActivityButtonOnClick());
 
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
@@ -89,12 +87,12 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         } else if (currentUser.getUid() == -9001L) {
             configFeedbackActivityButton.setEnabled(false);
             configColumnsActivityButton.setEnabled(false);
-            configColumnValuessActivityButton.setEnabled(false);
+            configColumnValuesActivityButton.setEnabled(false);
             configLayoutsActivityButton.setEnabled(false);
         } else {
             configFeedbackActivityButton.setEnabled(true);
             configColumnsActivityButton.setEnabled(true);
-            configColumnValuessActivityButton.setEnabled(true);
+            configColumnValuesActivityButton.setEnabled(true);
             configLayoutsActivityButton.setEnabled(true);
         }
     }
@@ -105,7 +103,10 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     }
 
     public void configFeedbackActivityButtonOnClick() {
-        Intent feedbackActivityIntent = new Intent(this, VDTSConfigFeedbackActivity.class);
+        Intent feedbackActivityIntent = new Intent(
+                this,
+                VDTSConfigFeedbackActivity.class
+        );
         startActivity(feedbackActivityIntent);
     }
 
@@ -115,7 +116,10 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     }
 
     public void configColumnValuesActivityButtonOnClick() {
-        Intent columnValuesActivityIntent = new Intent(this, ConfigColumnValuesActivity.class);
+        Intent columnValuesActivityIntent = new Intent(
+                this,
+                ConfigColumnValuesActivity.class
+        );
         startActivity(columnValuesActivityIntent);
     }
 
@@ -143,20 +147,38 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
      */
     private void initializeIristick() {
         if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Users", this::configUsersActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Users", this::configUsersActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Feedback", this::configFeedbackActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Feedback", this::configFeedbackActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Columns", this::configColumnsActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Columns", this::configColumnsActivityButtonOnClick)
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Column Values", this::configColumnValuesActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add(
+                            "Column Values",
+                            this::configColumnValuesActivityButtonOnClick
+                    )
+            );
 
-            IristickSDK.addVoiceCommands(this.getLifecycle(), this, vc ->
-                    vc.add("Layouts", this::configLayoutsActivityButtonOnClick));
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Layouts", this::configLayoutsActivityButtonOnClick)
+            );
         }
     }
 }
