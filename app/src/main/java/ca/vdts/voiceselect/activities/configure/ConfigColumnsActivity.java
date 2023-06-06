@@ -22,7 +22,6 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +146,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-        ));
+                )
+        );
 
         columnAdapter = new VDTSIndexedNamedAdapter<>(
                 this,
@@ -194,7 +194,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private void initializeColumnList() {
         if (selectedUser == null) {
             columnAdapter.setDataset(new ArrayList<>());
-            columnAdapter.notifyDataSetChanged();
             columnAdapterSelect(-1);
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -205,7 +204,6 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 columnList.remove(Column.COLUMN_NONE);
                 handler.post(() -> {
                     columnAdapter.setDataset(columnList);
-                    columnAdapter.notifyDataSetChanged();
                     columnAdapterSelect(-1);
                 });
             });
@@ -238,8 +236,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private final AdapterView.OnItemSelectedListener userSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
+                public void onItemSelected(AdapterView<?> parent, View view, int position,
+                                           long id) {
                     selectedUser = (VDTSUser) parent.getItemAtPosition(position);
                     initializeColumnList();
                 }
@@ -320,7 +318,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                    });
                } else {
                    LOG.info("Invalid column spoken");
-                   vdtsApplication.displayToast(this, "Invalid column spoken", 0);
+                   vdtsApplication.displayToast(
+                           this,
+                           "Invalid column spoken",
+                           0
+                   );
                }
                newColumnButtonOnClick();
             } else {
@@ -364,8 +366,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             selectedColumn.setActive(false);
             new Thread(() -> vsViewModel.updateColumn(selectedColumn)).start();
             new Thread(() -> {
-                final List<ColumnSpoken> spokenList =
-                        vsViewModel.findAllColumnSpokensByColumn(selectedColumn.getUid());
+                final List<ColumnSpoken> spokenList = vsViewModel
+                        .findAllColumnSpokensByColumn(selectedColumn.getUid());
 
                 //Convert list to array for deleteAllColumnSpokens query
                 final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
@@ -388,12 +390,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                !column.getNameCode().isEmpty() &&
                !column.getExportCode().isEmpty() &&
                 columnList.stream().noneMatch(column1 -> column.getUid() != column1.getUid() &&
-                        (StringUtils.lowerCase(column1.getName())
-                                .equals(StringUtils.lowerCase(column.getName())) ||
-                                StringUtils.lowerCase(column1.getNameCode())
-                                        .equals(StringUtils.lowerCase(column.getName())) ||
-                                StringUtils.lowerCase(column1.getExportCode())
-                                        .equals(StringUtils.lowerCase(column.getExportCode()))));
+                        (column1.getName().equalsIgnoreCase(column.getName()) ||
+                                column1.getNameCode().equalsIgnoreCase(column.getName()) ||
+                                column1.getExportCode().equalsIgnoreCase(column.getExportCode())));
     }
 
     /**
@@ -413,7 +412,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                             vdtsApplication.displayToast(
                                     this,
                                     "Column's spokens must be unique",
-                                    0);
+                                    0
+                            );
                             return false;
                         }
 
@@ -423,7 +423,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                                 vdtsApplication.displayToast(
                                         this,
                                         "Column's spokens contain a reserved word",
-                                        0);
+                                        0
+                                );
                                 return false;
                             }
                         }
@@ -436,7 +437,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             vdtsApplication.displayToast(
                     this,
                     "Column must have a spoken term",
-                    0);
+                    0
+            );
             return false;
         }
     }
@@ -479,8 +481,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             //Insert new spokens
             if (selectedUser == null) { selectedUser = currentUser; }
             for (String spoken : spokenList) {
-                if (existingSpokenList.stream()
-                        .noneMatch(oldSpoken -> oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
+                if (existingSpokenList.stream().noneMatch(oldSpoken ->
+                        oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
                     new Thread(
                             () -> vsViewModel.insertColumnSpoken(
                                     new ColumnSpoken(
