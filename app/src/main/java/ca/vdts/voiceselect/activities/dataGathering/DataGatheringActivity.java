@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,7 +50,6 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
-import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 public class DataGatheringActivity extends AppCompatActivity implements IRIListener {
@@ -67,7 +64,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Lists
     private final List<Column> columnList = new ArrayList<>();
-    private final HashMap<Integer, TextView> columnHashMap = new HashMap<>();
+    private final HashMap<Integer, TextView> columnMap = new HashMap<>();
 
     private final List<ColumnValue> columnValueList = new ArrayList<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
@@ -79,8 +76,8 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Views
     private LinearLayout columnLinearLayout;
-    private TextView columnValueIndexValue;
     private LinearLayout columnValueLinearLayout;
+    private TextView columnValueIndexValue;
     private Button columnValueCommentButton;
     private Button columnValuePhotoButton;
 
@@ -91,6 +88,8 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     private TextView sessionValue;
     private TextView sessionEntriesValue;
+    private Button sessionEndButton;
+
 
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
@@ -120,7 +119,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         columnValuePhotoButton = findViewById(R.id.columnValuesPhotoButton);
 
         entryDeleteButton = findViewById(R.id.entryDeleteButton);
-        entrySaveButton.setOnClickListener(v -> deleteEntryButtonOnClick());
+        entryDeleteButton.setOnClickListener(v -> deleteEntryButtonOnClick());
 
         entryResetButton = findViewById(R.id.entryResetButton);
         entryResetButton.setOnClickListener(v -> resetEntryButtonOnClick());
@@ -134,6 +133,9 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         sessionValue = findViewById(R.id.sessionValue);
         sessionEntriesValue = findViewById(R.id.sessionEntriesValue);
 
+        sessionEndButton = findViewById(R.id.sessionEndButton);
+        sessionEndButton.setOnClickListener(v -> endSessionButtonOnClick());
+
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         //Recycler View
@@ -146,6 +148,8 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                         false
                 ));
 
+        entryRecyclerView.setAdapter(dataGatheringAdapter);
+
         dataGatheringAdapter = new DataGatheringAdapter(
                 this,
                 columnList,
@@ -153,8 +157,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                 entryList,
                 entryValueList
         );
-
-        entryRecyclerView.setAdapter(dataGatheringAdapter);
     }
 
     @Override
@@ -249,18 +251,18 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
      * Programmatically generate value spinners based on the current session's columns
      */
     private void initializeColumnValuesLayout() {
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                1
-        );
-        Resources resources = vdtsApplication.getResources();
-        int dimen = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                4,
-                resources.getDisplayMetrics()
-        );
-        layoutParams.setMargins(dimen, 0, dimen, 0);
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+//                0,
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                1
+//        );
+//        Resources resources = vdtsApplication.getResources();
+//        int dimen = (int) TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_DIP,
+//                4,
+//                resources.getDisplayMetrics()
+//        );
+//        layoutParams.setMargins(dimen, 0, dimen, 0);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -275,39 +277,35 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
             handler.post(() -> {
                 final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
-                final List<Spinner> columnValueSpinners = new ArrayList<>();
-                final HashMap<Integer, ColumnValueSpinnerAdapter> columnValueSpinnerAdapters = new HashMap<>();
+//                final HashMap<Integer, ColumnValueSpinner> columnValueSpinnerMap = new HashMap<>();
                 for (int index = 0; index < columnValueMap.size(); index++) {
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
 
-//                    VDTSNamedAdapter<ColumnValue> columnValueAdapter = new VDTSNamedAdapter<>(
-//                            this,
-//                            R.layout.adapter_spinner_named,
-//                            columnValuesByColumn);
-//                    columnValueAdapter.setToStringFunction((columnValue, integer) ->
-//                            columnValue.getName());
-
-                    ColumnValueSpinnerAdapter columnValueSpinnerAdapter =
-                            new ColumnValueSpinnerAdapter(
+                    ColumnValueSpinner columnValueSpinner =
+                            new ColumnValueSpinner(
                                     this,
-                                    columnValuesByColumn
+                                    columnValuesByColumn,
+                                    columnValueSpinnerListener
                             );
-                    columnValueSpinnerAdapters.put(index, columnValueSpinnerAdapter);
+//                    columnValueSpinnerMap.put(index, columnValueSpinner);
 
-                    Spinner columnValueSpinner = new Spinner(this);
-                    columnValueSpinner.setId(index);
-                    columnValueSpinner.setGravity(Gravity.CENTER);
-                    columnValueSpinner.setLayoutParams(layoutParams);
-                    columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
-                    //columnValueSpinner.setAdapter(columnValueAdapter);
-                    columnValueSpinner.setAdapter((SpinnerAdapter) columnValueSpinnerAdapters.get(index));
-                    columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
-                    columnValueSpinners.add(columnValueSpinner);
+//                    VDTSNamedAdapter<ColumnValue> columnValueAdapter =
+//                            Objects.requireNonNull(columnValueSpinnerMap.get(index))
+//                                    .getColumnValueAdapter();
+//
+//                    Spinner columnValueSpinner =
+//                            Objects.requireNonNull(columnValueSpinnerMap.get(index))
+//                                    .getColumnValueSpinner();
+//
+//                    columnValueSpinner.setGravity(Gravity.CENTER);
+//                    columnValueSpinner.setLayoutParams(layoutParams);
+//                    columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
+//                    columnValueSpinner.setAdapter(columnValueAdapter);
+//                    columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
 
-                    columnValueLinearLayout.addView(columnValueSpinners.get(index));
+                    columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
                 }
-
                 initializeEntriesList();
             });
         });
@@ -412,6 +410,10 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     }
 
     private void repeatEntryButtonOnClick() {
+
+    }
+
+    private void endSessionButtonOnClick() {
 
     }
 
