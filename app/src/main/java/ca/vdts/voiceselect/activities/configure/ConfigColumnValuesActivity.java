@@ -22,7 +22,6 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +128,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //Column Spinner
         columnValueColumnSpinner = findViewById(R.id.columnValueColumnSpinner);
 
-        columnAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, columnList);
+        columnAdapter = new VDTSNamedAdapter<>(
+                this,
+                R.layout.adapter_spinner_named,
+                columnList
+        );
         columnAdapter.setToStringFunction((column, integer) -> column.getName());
         columnValueColumnSpinner.setAdapter(columnAdapter);
         columnValueColumnSpinner.setOnItemSelectedListener(columnSpinnerListener);
@@ -162,7 +165,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-        ));
+                )
+        );
 
         columnValueAdapter = new VDTSIndexedNamedAdapter<>(
                 this,
@@ -224,7 +228,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private void initializeColumnValueList() {
         if (selectedColumn == null) {
             columnValueAdapter.setDataset(new ArrayList<>());
-            columnValueAdapter.notifyDataSetChanged();
             columnValueAdapterSelect(-1);
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -232,10 +235,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             executor.execute(() -> {
                 columnValueList.clear();
                 columnValueList.addAll(
-                        vsViewModel.findAllActiveColumnValuesByColumn(selectedColumn.getUid()));
+                        vsViewModel.findAllActiveColumnValuesByColumn(selectedColumn.getUid())
+                );
                 handler.post(() -> {
                     columnValueAdapter.setDataset(columnValueList);
-                    columnValueAdapter.notifyDataSetChanged();
                     columnValueAdapterSelect(-1);
                 });
             });
@@ -271,8 +274,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private final AdapterView.OnItemSelectedListener columnSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
+                public void onItemSelected(AdapterView<?> parent, View view, int position,
+                                           long id) {
                     selectedColumn = (Column) parent.getItemAtPosition(position);
                     initializeColumnValueList();
                 }
@@ -287,8 +290,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private final AdapterView.OnItemSelectedListener userSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
+                public void onItemSelected(AdapterView<?> parent, View view, int position,
+                                           long id) {
                     selectedUser = (VDTSUser) parent.getItemAtPosition(position);
                     initializeColumnList();
                 }
@@ -358,12 +361,13 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
             if (selectedColumnValue != null) {
                 //Update existing column value
-                selectedColumnValue.setName(
-                        columnValueNameEditText.getText().toString().trim());
+                selectedColumnValue.setName(columnValueNameEditText.getText().toString().trim());
                 selectedColumnValue.setNameCode(
-                        columnValueNameCodeEditText.getText().toString().trim());
+                        columnValueNameCodeEditText.getText().toString().trim()
+                );
                 selectedColumnValue.setExportCode(
-                        columnValueExportCodeEditText.getText().toString().trim());
+                        columnValueExportCodeEditText.getText().toString().trim()
+                );
                 selectedColumnValue.setColumnID(selectedColumn.getUid());
                 selectedColumnValue.setUserID(selectedUser.getUid());
 
@@ -383,7 +387,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     vdtsApplication.displayToast(
                             this,
                             "Invalid column value",
-                            0);
+                            0
+                    );
                     resetColumnValueButtonOnClick();
                 }
             } else {
@@ -414,14 +419,17 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     vdtsApplication.displayToast(
                             this,
                             "Invalid column value",
-                            0);
+                            0
+                    );
                 }
             }
         } else {
             LOG.info("Select a column to create values");
-            vdtsApplication.displayToast(this,
+            vdtsApplication.displayToast(
+                    this,
                     "Select a column to create values",
-                    0);
+                    0
+            );
         }
     }
 
@@ -455,12 +463,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 !columnValue.getNameCode().isEmpty() &&
                 !columnValue.getExportCode().isEmpty() &&
                 columnList.stream().noneMatch(column1 -> columnValue.getUid() != column1.getUid() &&
-                        (StringUtils.lowerCase(column1.getName())
-                                .equals(StringUtils.lowerCase(columnValue.getName())) ||
-                                StringUtils.lowerCase(column1.getNameCode())
-                                        .equals(StringUtils.lowerCase(columnValue.getName())) ||
-                                StringUtils.lowerCase(column1.getExportCode())
-                                        .equals(StringUtils.lowerCase(columnValue.getExportCode()))));
+                        (column1.getName().equalsIgnoreCase(columnValue.getName()) ||
+                                column1.getNameCode().equalsIgnoreCase(columnValue.getName()) ||
+                                column1.getExportCode().equalsIgnoreCase(columnValue.getExportCode())
+                        )
+                );
 
     }
 
@@ -481,7 +488,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             vdtsApplication.displayToast(
                                     this,
                                     "Column value's spokens must be unique",
-                                    0);
+                                    0
+                            );
                             return false;
                         }
 
@@ -491,7 +499,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                 vdtsApplication.displayToast(
                                         this,
                                         "Column value's spokens contain a reserved word",
-                                        0);
+                                        0
+                                );
                                 return false;
                             }
                         }
@@ -504,7 +513,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             vdtsApplication.displayToast(
                     this,
                     "Column value must have a spoken term",
-                    0);
+                    0
+            );
             return false;
         }
     }
@@ -536,7 +546,9 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             for (ColumnValueSpoken columnValueSpoken : existingSpokenList) {
                 if (spokenList.stream().noneMatch(spoken ->
                         spoken.equalsIgnoreCase(columnValueSpoken.getSpoken()))) {
-                    new Thread(() -> vsViewModel.deleteColumnValueSpoken(columnValueSpoken)).start();
+                    new Thread(
+                            () -> vsViewModel.deleteColumnValueSpoken(columnValueSpoken)
+                    ).start();
                 }
             }
 
