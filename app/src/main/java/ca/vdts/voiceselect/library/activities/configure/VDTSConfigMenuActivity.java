@@ -17,6 +17,9 @@ import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigLayoutsActivity;
+import ca.vdts.voiceselect.database.VSViewModel;
+import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
@@ -36,6 +39,8 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private Button configColumnValuesActivityButton;
     private Button configLayoutsActivityButton;
 
+    private TextView footerLayoutValue;
+    private TextView footerSessionValue;
     private TextView footerUserValue;
 
     //Iristick Components
@@ -68,6 +73,10 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         configLayoutsActivityButton = findViewById(R.id.configLayoutsActivityButton);
         configLayoutsActivityButton.setOnClickListener(v -> configLayoutsActivityButtonOnClick());
 
+        footerLayoutValue = findViewById(R.id.footerLayoutValue);
+
+        footerSessionValue = findViewById(R.id.footerSessionValue);
+
         footerUserValue = findViewById(R.id.footerUserValue);
         footerUserValue.setText(currentUser.getName());
     }
@@ -77,6 +86,28 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         super.onResume();
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
+
+        VSViewModel viewModel = new VSViewModel(vdtsApplication);
+
+        final String layoutKey = currentUser.getExportCode().concat("_Layout");
+        final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
+        Layout currentLayout = null;
+        if (layoutID > 0) { currentLayout = viewModel.findLayout(layoutID); }
+        if (currentLayout != null) {
+            footerLayoutValue.setText(currentLayout.getName());
+        } else {
+            footerLayoutValue.setText("");
+        }
+
+        final String sessionKey = currentUser.getExportCode().concat("_Session");
+        final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
+        Session currentSession = null;
+        if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
+        if (currentSession != null) {
+            footerSessionValue.setText(currentSession.name());
+        } else {
+            footerSessionValue.setText("");
+        }
 
         disableViews();
     }
