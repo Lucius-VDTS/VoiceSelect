@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <!--  Text  -->
-    <color name="colorContrastText">#FFFFFF</color>
+    <!--  <color name="colorContrastText">#FFFFFF</color>-->
 
 <!--  Recycler View  -->
-    <color name="colorInputArea">#424242</color>
-    <color name="colorOutline">#303F9F</color>
-    <color name="colorBackgroundSelected">#FF018786</color>
-    <color name="colorBackgroundPrimary">#b2c8eb</color>
-    <color name="colorBackgroundSecondary">#9ab6e3</color>
-</resources>
+    <!--   <color name="colorInputArea">#424242</color>-->
+     <!--    <color name="colorOutline">#303F9F</color>-->
+     <!--   <color name="colorBackgroundSelected">#FF018786</color>-->
+    <!--   <color name="colorBackgroundPrimary">#b2c8eb</color>-->
+     <color name="colorBackgroundSecondary">#9ab6e3</color>
+
+
+     <color name="colorPrimary">#3F51B5</color>
+     <color name="colorPrimaryDark">#303F9F</color>
+     <color name="colorAccent">#FF4081</color>
+     <color name="colorInputArea">#424242</color>
+     <color name="colorStepHighlight">#EAE85B</color>
+     <color name="colorBackground">#303030</color>
+     <color name="colorBackgroundSelected">#6FDE89</color>
+     <color name="colorBackgroundCellSelected">#5FDE90</color>
+     <color name="colorBackgroundPrimary">#b2c8eb</color>
+     <color name="colorBackgroundOdd">#9ab6e3</color>
+     <color name="colorBackgroundPrimaryPurple">#E2B2EB</color>
+     <color name="colorBackgroundOddPurple">#D39AE3</color>
+     <color name="colorBackgroundPrimaryGrey">#D9DCE1</color>
+     <color name="colorBackgroundOddGrey">#CAD1DD</color>
+     <color name="colorBackgroundPrimaryRed">#F08080</color>
+     <color name="colorBackgroundOddRed">#CD5C5C</color>
+     <color name="colorBackgroundDelete">#ef726b</color>
+     <color name="colorNewTreeBackground">#fff9fa</color>
+     <color name="colorContrastText">#FFFFFF</color>
+     <color name="colorBar">#303030</color>
+     <color name="colorPrompt">#A00000</color>
+     <color name="colorTransparent">#00FFFFFF</color>
+ </resources>

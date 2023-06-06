@@ -10,12 +10,38 @@
     <color name="white">#FFFFFFFF</color>
 
 <!--  Text  -->
-    <color name="colorContrastText">#303030</color>
+    <!--  <color name="colorContrastText">#303030</color>-->
 
 <!--  Recycler View  -->
-    <color name="colorInputArea">#D9DCE1</color>
-    <color name="colorOutline">#303F9F</color>
-    <color name="colorBackgroundSelected">#FF018786</color>
-    <color name="colorBackgroundPrimary">#d8e7ff</color>
+    <!--  <color name="colorInputArea">#D9DCE1</color>-->
+    <!--  <color name="colorOutline">#303F9F</color>-->
+   <!--   <color name="colorBackgroundSelected">#FF018786</color>-->
+   <!--   <color name="colorBackgroundPrimary">#d8e7ff</color>-->
     <color name="colorBackgroundSecondary">#c4daff</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorInputArea">#D9DCE1</color>
+    <color name="colorStepHighlight">#EAE85B</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorBackgroundSelected">#9FFFBD</color>
+    <color name="colorBackgroundCellSelected">#8FFFBE</color>
+    <color name="colorBackgroundPrimary">#d8e7ff</color>
+    <color name="colorBackgroundOdd">#c4daff</color>
+    <color name="colorBackgroundPrimaryPurple">#F8D8FF</color>
+    <color name="colorBackgroundOddPurple">#F4C4FF</color>
+    <color name="colorBackgroundPrimaryGrey">#c9ccd1</color>
+    <color name="colorBackgroundOddGrey">#CAD1DD</color>
+    <color name="colorBackgroundPrimaryRed">#F08080</color>
+    <color name="colorBackgroundOddRed">#CD5C5C</color>
+    <color name="colorBackgroundDelete">#ef726b</color>
+    <color name="colorNewTreeBackground">#fff9fa</color>
+    <color name="colorContrastText">#303030</color>
+    <color name="colorSelected">#26d1a9</color>
+    <color name="colorBar">#FFFFFF</color>
+    <color name="colorPrompt">#A00000</color>
+    <color name="colorTransparent">#00FFFFFF</color>
+    <color name="colorBackgroundPrimaryFolder">#f1d592</color>
+    <color name="colorBackgroundOddFolder">#e7d19c</color>
 </resources>
