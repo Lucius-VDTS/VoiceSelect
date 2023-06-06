@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.vdts.voiceselect.R;
@@ -16,6 +17,7 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 
 public class ColumnValueSpinner {
+    private final List<ColumnValue> columnValues;
     private final VDTSNamedAdapter<ColumnValue> columnValueAdapter;
     private final Spinner columnValueSpinner;
 
@@ -35,15 +37,15 @@ public class ColumnValueSpinner {
         );
         layoutParams.setMargins(dimen, 0, dimen, 0);
 
+        columnValues = new ArrayList<>(columnValuesByColumn);
 
         columnValueAdapter = new VDTSNamedAdapter<>(
                 context,
                 R.layout.adapter_spinner_named,
-                columnValuesByColumn
+                columnValues
         );
 
-        columnValueAdapter.setToStringFunction((columnValue, integer) ->
-                columnValue.getName());
+        columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
 
         columnValueSpinner = new Spinner(context);
         columnValueSpinner.setAdapter(columnValueAdapter);
@@ -52,6 +54,10 @@ public class ColumnValueSpinner {
         columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
         columnValueSpinner.setAdapter(columnValueAdapter);
         columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
+    }
+
+    public List<ColumnValue> getColumnValues() {
+        return columnValues;
     }
 
     public VDTSNamedAdapter<ColumnValue> getColumnValueAdapter() {
