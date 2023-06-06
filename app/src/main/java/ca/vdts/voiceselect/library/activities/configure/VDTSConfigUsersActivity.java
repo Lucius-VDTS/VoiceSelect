@@ -102,7 +102,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
                 vdtsApplication.displayToast(
-                        vdtsApplication,
+                        this,
                         "Only an admin user can set a user name",
                         Toast.LENGTH_SHORT
                 );
@@ -154,7 +154,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userAdminSwitch.setChecked(false);
                 userAdminSwitch.clearFocus();
                 vdtsApplication.displayToast(
-                        vdtsApplication,
+                        this,
                         "Only an admin user can change the admin value",
                         Toast.LENGTH_SHORT
                 );
@@ -295,7 +295,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             userNameEditText.requestFocus();
         } else {
             vdtsApplication.displayToast(
-                    vdtsApplication,
+                    this,
                     "Only an admin user can create a new user",
                     Toast.LENGTH_SHORT
             );
@@ -349,7 +349,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         vdtsApplication.displayToast(
                                 this,
                                 "Updated user: " + selectedUser.getName(),
-                                0
+                                Toast.LENGTH_SHORT
                         );
 
                         handler.post(() -> userAdapter.updateSelectedEntity());
@@ -357,7 +357,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 } else {
                     LOG.error("Unable to update user");
                     vdtsApplication.displayToast(
-                            this, "Unable to update user", 0);
+                            this,
+                            "Unable to update user",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             } else {
                 //Create new user
@@ -428,7 +431,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 } else {
                     LOG.error("User does not meet requirements");
                     vdtsApplication.displayToast(
-                            this, "User does not meet requirements", 0);
+                            this,
+                            "User does not meet requirements",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             }
         } else {
@@ -436,7 +442,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             vdtsApplication.displayToast(
                     this,
                     "Save user failed - admin/default spoken must exist",
-                    0);
+                    Toast.LENGTH_SHORT
+            );
 
             resetUserButtonOnClick();
         }
@@ -463,7 +470,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     vdtsApplication.displayToast(
                             this,
                             "Delete user failed - admin/default spoken must exist",
-                            0);
+                            Toast.LENGTH_SHORT
+                    );
 
                     resetUserButtonOnClick();
                 }
