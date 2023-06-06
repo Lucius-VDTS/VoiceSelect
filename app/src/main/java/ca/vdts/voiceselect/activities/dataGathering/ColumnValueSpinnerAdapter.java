@@ -11,15 +11,13 @@ import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 public class ColumnValueSpinnerAdapter {
     private final VDTSNamedAdapter<ColumnValue> columnValueAdapter;
 
-    public ColumnValueSpinnerAdapter(Context context,
-                                     List<ColumnValue> columnValuesByColumn) {
+    public ColumnValueSpinnerAdapter(Context context, List<ColumnValue> columnValuesByColumn) {
         columnValueAdapter = new VDTSNamedAdapter<>(
                 context,
                 R.layout.adapter_spinner_named,
                 columnValuesByColumn
         );
 
-        columnValueAdapter.setToStringFunction((columnValue, integer) ->
-                columnValue.getName());
+        columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
     }
 }
