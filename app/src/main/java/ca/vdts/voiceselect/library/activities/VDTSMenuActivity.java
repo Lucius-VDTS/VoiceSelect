@@ -4,26 +4,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
+import ca.vdts.voiceselect.adapters.ConfigLayoutsAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
+import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
@@ -33,10 +41,13 @@ import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     //private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
 
-    VDTSApplication vdtsApplication;
-    VDTSUser currentUser;
+    private VDTSApplication vdtsApplication;
+    private VDTSUser currentUser;
+
+    private Layout selectedLayout;
 
     //Views
+    private Spinner layoutSpinner;
     private Button startActivityButton;
     private Button resumeActivityButton;
     private Button configureActivityButton;
@@ -48,6 +59,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private TextView footerSessionValue;
     private TextView footerUserValue;
     private TextView footerVersionValue;
+
+    //View Model - Adapters
+    private VSViewModel vsViewModel;
+    private VDTSNamedAdapter<Layout> layoutSpinnerAdapter;
+
+    //Lists
+    private final List<Layout> layoutList = new ArrayList<>();
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -69,6 +87,28 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         vdtsApplication = (VDTSApplication) getApplication();
         currentUser = vdtsApplication.getCurrentUser();
+
+        //Layout Spinner
+        layoutSpinner = findViewById(R.id.layoutSpinner);
+
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
+        //Observe/Update layout list
+        vsViewModel.findAllLayoutsLive().observe(this, layouts -> {
+            layoutList.clear();
+            layoutList.addAll(layouts);
+            layoutList.remove(Layout.LAYOUT_NONE);
+            layoutSpinner.setEnabled(layoutList.size() > 1);
+        });
+
+        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
+                this,
+                R.layout.adapter_spinner_named,
+                layoutList);
+        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
+
+        layoutSpinner.setAdapter(layoutSpinnerAdapter);
+        layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
         startActivityButton = findViewById(R.id.startActivityButton);
         startActivityButton.setOnClickListener(v -> startActivityButtonOnClick());
@@ -183,6 +223,26 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public void aboutActivityButtonOnClick() {
         IristickSDK.showAbout(VDTSMenuActivity.this);
     }
+
+    private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,
+                                           int position, long id) {
+                    layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex());
+                    selectedLayout = (Layout) parent.getItemAtPosition(position);
+
+                    if (layoutList.size() <=1) {
+                        layoutSpinner.setEnabled(false);
+                    } else {
+                        layoutSpinner.setEnabled(true);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            };
+
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
