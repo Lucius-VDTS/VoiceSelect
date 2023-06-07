@@ -79,6 +79,7 @@
                 android:id="@+id/columnValueNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textCapWords"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,6 +97,7 @@
                 android:id="@+id/columnValueNameCodeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textCapWords"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,6 +143,7 @@
                 android:id="@+id/columnValueSpokenEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textCapWords"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 

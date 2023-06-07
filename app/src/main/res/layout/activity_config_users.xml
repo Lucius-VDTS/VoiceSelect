@@ -79,6 +79,7 @@
                 android:id="@+id/userNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textCapWords"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,6 +97,7 @@
                 android:id="@+id/userPrefixEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:inputType="textCapWords"
                 android:textSize="@dimen/medium_text_size"/>
         </com.google.android.material.textfield.TextInputLayout>
 
