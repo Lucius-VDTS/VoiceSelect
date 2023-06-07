@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <!--  Text  -->
-    <!--  <color name="colorContrastText">#FFFFFF</color>-->
+    <color name="colorContrastText">#FFFFFF</color>
 
 <!--  Recycler View  -->
-    <!--   <color name="colorInputArea">#424242</color>-->
+     <color name="colorInputArea">#424242</color>-->
      <!--    <color name="colorOutline">#303F9F</color>-->
-     <!--   <color name="colorBackgroundSelected">#FF018786</color>-->
-    <!--   <color name="colorBackgroundPrimary">#b2c8eb</color>-->
+     <color name="colorBackgroundSelected">#FF018786</color>-->
+     <color name="colorBackgroundPrimary">#b2c8eb</color>-->
      <color name="colorBackgroundSecondary">#9ab6e3</color>
 
      <color name="colorPrimary">#3F51B5</color>
      <color name="colorPrimaryDark">#303F9F</color>
      <color name="colorAccent">#FF4081</color>
-     <color name="colorInputArea">#424242</color>
      <color name="colorStepHighlight">#EAE85B</color>
      <color name="colorBackground">#303030</color>
-     <color name="colorBackgroundPrimary">#b2c8eb</color>
-     <color name="colorBackgroundOdd">#9ab6e3</color>
-     <color name="colorContrastText">#FFFFFF</color>
-     <color name="colorBar">#303030</color>
-     <color name="colorPrompt">#A00000</color>
  </resources>

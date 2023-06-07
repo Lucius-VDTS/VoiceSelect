@@ -10,24 +10,18 @@
     <color name="white">#FFFFFFFF</color>
 
 <!--  Text  -->
-    <!--  <color name="colorContrastText">#303030</color>-->
+    <color name="colorContrastText">#303030</color>
 
 <!--  Recycler View  -->
-    <!--  <color name="colorInputArea">#D9DCE1</color>-->
+    <color name="colorInputArea">#D9DCE1</color>
     <!--  <color name="colorOutline">#303F9F</color>-->
-   <!--   <color name="colorBackgroundSelected">#FF018786</color>-->
-   <!--   <color name="colorBackgroundPrimary">#d8e7ff</color>-->
+    <color name="colorBackgroundSelected">#FF018786</color>
+    <color name="colorBackgroundPrimary">#d8e7ff</color>
     <color name="colorBackgroundSecondary">#c4daff</color>
 
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorInputArea">#D9DCE1</color>
     <color name="colorStepHighlight">#EAE85B</color>
     <color name="colorBackground">#FFFFFF</color>
-    <color name="colorBackgroundPrimary">#d8e7ff</color>
-    <color name="colorBackgroundOdd">#c4daff</color>
-    <color name="colorContrastText">#303030</color>
-    <color name="colorBar">#FFFFFF</color>
-    <color name="colorPrompt">#A00000</color>
 </resources>
