@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.text.InputType;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
@@ -60,7 +61,8 @@ public class VDTSLoginActivity extends AppCompatActivity {
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+                )
+        );
 
         userAdapter = new VDTSIndexedNamedAdapter<>(
                 this,
@@ -106,8 +108,12 @@ public class VDTSLoginActivity extends AppCompatActivity {
         VDTSUser currentUser = userAdapter.getSelectedEntity();
 
         if (currentUser != null) {
-            if (currentUser.getAuthority() == 1) {
+            if (currentUser.getPassword() != null && !currentUser.getPassword().isEmpty()) {
                 final EditText passwordText = new EditText(this);
+                passwordText.setInputType(
+                        InputType.TYPE_CLASS_NUMBER |
+                                InputType.TYPE_NUMBER_VARIATION_PASSWORD
+                );
 
                 final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this)
                         .setTitle(R.string.login_password_title)
@@ -118,14 +124,15 @@ public class VDTSLoginActivity extends AppCompatActivity {
                 passwordAlert.setPositiveButton("Submit", (dialog, which) -> {
                     if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
                         vdtsApplication.setCurrentUser(currentUser);
-                        LOG.info("User Password: {}" + " validated", currentUser.getName());
+                        LOG.info("User Password: {} validated", currentUser.getName());
 
                         Intent vdtsMenuActivity = new Intent(
                                 vdtsApplication.getApplicationContext(),
-                                VDTSMenuActivity.class);
+                                VDTSMenuActivity.class
+                        );
                         startActivity(vdtsMenuActivity);
                     } else {
-                        LOG.info("User Password: {}" + " invalid", currentUser.getName());
+                        LOG.info("User Password: {} invalid", currentUser.getName());
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
                                 "User Password: " + currentUser.getName() + " invalid",
