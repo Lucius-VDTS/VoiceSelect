@@ -30,6 +30,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="8"
+            android:paddingStart="@dimen/padding"
+            android:paddingEnd="@dimen/padding"
             android:textSize="@dimen/xxl_text_size"
             android:textStyle="bold" />
     </LinearLayout>

@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toTopOf="@id/entryLayout">
 
         <TextView
-            android:id="@+id/columnsIndexLabel"
+            android:id="@+id/columnIndexLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintHorizontal_weight="2"
@@ -28,21 +28,21 @@
             android:text="@string/data_gathering_index_label"
             android:textSize="@dimen/xxs_text_size"
             app:layout_constraintStart_toStartOf="@id/columnLayout"
-            app:layout_constraintEnd_toStartOf="@id/columnsScrollView">
+            app:layout_constraintEnd_toStartOf="@id/columnScrollView">
         </TextView>
 
         <HorizontalScrollView
-            android:id="@+id/columnsScrollView"
+            android:id="@+id/columnScrollView"
             android:contentDescription="@string/data_gathering_header_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:fillViewport="true"
             app:layout_constraintHorizontal_weight="8"
-            app:layout_constraintStart_toEndOf="@id/columnsIndexLabel"
-            app:layout_constraintEnd_toStartOf="@id/columnsCommentLabel">
+            app:layout_constraintStart_toEndOf="@id/columnIndexLabel"
+            app:layout_constraintEnd_toStartOf="@id/columnCommentLabel">
 
             <LinearLayout
-                android:id="@+id/columnsLinearLayout"
+                android:id="@+id/columnLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -52,7 +52,7 @@
         </HorizontalScrollView>
 
         <TextView
-            android:id="@+id/columnsCommentLabel"
+            android:id="@+id/columnCommentLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintHorizontal_weight="2"
@@ -61,12 +61,12 @@
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_comment_label"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/columnsScrollView"
-            app:layout_constraintEnd_toStartOf="@id/columnsPhotoLabel">
+            app:layout_constraintStart_toEndOf="@id/columnScrollView"
+            app:layout_constraintEnd_toStartOf="@id/columnPhotoLabel">
         </TextView>
 
         <TextView
-            android:id="@+id/columnsPhotoLabel"
+            android:id="@+id/columnPhotoLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintHorizontal_weight="2"
@@ -75,7 +75,7 @@
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_photo_label"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/columnsCommentLabel"
+            app:layout_constraintStart_toEndOf="@id/columnCommentLabel"
             app:layout_constraintEnd_toEndOf="@id/columnLayout">
         </TextView>
     </androidx.constraintlayout.widget.ConstraintLayout>

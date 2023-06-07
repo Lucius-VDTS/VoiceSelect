@@ -1,6 +1,7 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -50,7 +51,7 @@ import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
-public class DataGatheringActivity extends AppCompatActivity implements IRIListener {
+public class DataGatheringActivity extends AppCompatActivity implements IRIListener, ScrollChangeListenerInterface {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);
 
     private VDTSApplication vdtsApplication;
@@ -74,8 +75,11 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Views
     private LinearLayout columnLinearLayout;
-    private LinearLayout columnValueLinearLayout;
+    private ObservableHorizontalScrollView columnScrollView;
+
     private TextView columnValueIndexValue;
+    private LinearLayout columnValueLinearLayout;
+    private ObservableHorizontalScrollView columnValueScrollView;
     private Button columnValueCommentButton;
     private Button columnValuePhotoButton;
 
@@ -88,11 +92,13 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private TextView sessionEntriesValue;
     private Button sessionEndButton;
 
-
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
+
+    //Synchronized Scrolling
+    int scrollX;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -109,12 +115,16 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
 
-        columnLinearLayout = findViewById(R.id.columnsLinearLayout);
+        columnLinearLayout = findViewById(R.id.columnLinearLayout);
+        columnScrollView = findViewById(R.id.columnScrollView);
+        columnScrollView.setScrollChangeListener(this);
 
-        columnValueIndexValue = findViewById(R.id.columnValuesIndexValue);
-        columnValueLinearLayout = findViewById(R.id.columnLayoutLinearLayout);
-        columnValueCommentButton = findViewById(R.id.columnValuesCommentButton);
-        columnValuePhotoButton = findViewById(R.id.columnValuesPhotoButton);
+        columnValueIndexValue = findViewById(R.id.columnValueIndexValue);
+        columnValueLinearLayout = findViewById(R.id.columnValueLinearLayout);
+        columnValueScrollView = findViewById(R.id.columnValueScrollView);
+        columnValueScrollView.setScrollChangeListener(this);
+        columnValueCommentButton = findViewById(R.id.columnValueCommentButton);
+        columnValuePhotoButton = findViewById(R.id.columnValuePhotoButton);
 
         entryDeleteButton = findViewById(R.id.entryDeleteButton);
         entryDeleteButton.setOnClickListener(v -> deleteEntryButtonOnClick());
@@ -202,12 +212,19 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                 1
         );
         Resources resources = vdtsApplication.getResources();
-        int dimen = (int) TypedValue.applyDimension(
+
+        int minWidthDimen = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                4,
+                96,
                 resources.getDisplayMetrics()
         );
-        layoutParams.setMargins(dimen, 0, dimen, 0);
+
+        int marginPaddingDimen = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                2,
+                resources.getDisplayMetrics()
+        );
+        layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -216,19 +233,20 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
             columnList.addAll(vsViewModel.findAllActiveColumns());
             columnList.remove(Column.COLUMN_NONE);
             handler.post(() -> {
-                int index = 0;
                 for (Column column : columnList) {
                     TextView columnText = new TextView(this);
-                    columnText.setId(index);
-                    columnText.setGravity(Gravity.CENTER);
+                    columnText.setMinWidth(minWidthDimen);
                     columnText.setLayoutParams(layoutParams);
-                    columnText.setPadding(dimen, dimen, dimen, dimen);
-                    columnText.setMaxLines(1);        //todo - maybe not a good idea
-                    columnText.setText(column.getNameCode());   //todo - use name instead????
+                    columnText.setPadding(marginPaddingDimen, marginPaddingDimen, marginPaddingDimen, marginPaddingDimen);
+                    columnText.setGravity(Gravity.CENTER);
+                    columnText.setMaxLines(1);
+                    columnText.setText(column.getNameCode());   //todo - use name - based on setting
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
+                    //todo - remove
+                    columnText.setBackgroundColor(Color.parseColor("#f5341c"));
+
                     columnLinearLayout.addView(columnText);
-                    index++;
                 }
 
                 initializeColumnValuesLayout();
@@ -237,22 +255,9 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Programmatically generate value spinners based on the current session's columns
+     * Programmatically generate value spinners based on the current session's layout
      */
     private void initializeColumnValuesLayout() {
-//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                0,
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                1
-//        );
-//        Resources resources = vdtsApplication.getResources();
-//        int dimen = (int) TypedValue.applyDimension(
-//                TypedValue.COMPLEX_UNIT_DIP,
-//                4,
-//                resources.getDisplayMetrics()
-//        );
-//        layoutParams.setMargins(dimen, 0, dimen, 0);
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
@@ -266,7 +271,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
             handler.post(() -> {
                 final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
-//                final HashMap<Integer, ColumnValueSpinner> columnValueSpinnerMap = new HashMap<>();
                 for (int index = 0; index < columnValueMap.size(); index++) {
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
@@ -277,21 +281,6 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                                     columnValuesByColumn,
                                     columnValueSpinnerListener
                             );
-//                    columnValueSpinnerMap.put(index, columnValueSpinner);
-
-//                    VDTSNamedAdapter<ColumnValue> columnValueAdapter =
-//                            Objects.requireNonNull(columnValueSpinnerMap.get(index))
-//                                    .getColumnValueAdapter();
-//
-//                    Spinner columnValueSpinner =
-//                            Objects.requireNonNull(columnValueSpinnerMap.get(index))
-//                                    .getColumnValueSpinner();
-//
-//                    columnValueSpinner.setGravity(Gravity.CENTER);
-//                    columnValueSpinner.setLayoutParams(layoutParams);
-//                    columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
-//                    columnValueSpinner.setAdapter(columnValueAdapter);
-//                    columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
 
                     columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
                 }
@@ -340,6 +329,25 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                 entryList,
                 entryValueList
         );
+    }
+
+    /**
+     * Observe scroll changes in horizontal scroll views and synchronize their positions.
+     * @param observableHorizontalScrollView - The scroll view being observed
+     * @param x - The horizontal position (pixels) that the view will scroll to
+     * @param y - The vertical position (pixels) that the view will scroll to
+     * @param oldx - The original horizontal position (pixels) of the scroll view
+     * @param oldy - The original vertical position (pixels) of the scroll view
+     */
+    @Override
+    public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
+                                int x, int y,
+                                int oldx, int oldy) {
+        if (observableHorizontalScrollView == columnScrollView) {
+            columnValueScrollView.smoothScrollTo(x, y);
+        } else if (observableHorizontalScrollView == columnValueScrollView) {
+            columnScrollView.smoothScrollTo(x, y);
+        }
     }
 
     private final AdapterView.OnItemSelectedListener columnValueSpinnerListener =

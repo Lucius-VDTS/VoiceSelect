@@ -22,7 +22,7 @@
             android:textSize="@dimen/large_text_size">
         </TextView>
 
-        <HorizontalScrollView
+        <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
             android:id="@+id/entryScrollView"
             android:contentDescription="@string/data_gathering_rv_scroll_description"
             android:layout_width="0dp"
@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
             </LinearLayout>
-        </HorizontalScrollView>
+        </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
         <TextView
             android:id="@+id/entryCommentValue"

@@ -6,7 +6,7 @@
 
     <!--  Columns  -->
     <LinearLayout
-        android:id="@+id/columnLinearLayout"
+        android:id="@+id/columnsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -17,58 +17,68 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/columnsIndexLabel"
+            android:id="@+id/columnIndexLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
             android:text="@string/data_gathering_index_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
 
-        <HorizontalScrollView
-            android:id="@+id/columnsScrollView"
+        <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
+            android:id="@+id/columnScrollView"
             android:contentDescription="@string/data_gathering_header_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:layout_weight="4">
+            android:layout_weight="4"
+            android:fillViewport="true">
 
             <LinearLayout
-                android:id="@+id/columnsLinearLayout"
+                android:id="@+id/columnLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/half_margin"
-                android:layout_marginEnd="@dimen/half_margin">
+                android:orientation="horizontal">
             </LinearLayout>
-        </HorizontalScrollView>
+        </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
         <TextView
-            android:id="@+id/columnsCommentLabel"
+            android:id="@+id/columnCommentLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
-            android:padding="@dimen/padding"
+            android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_comment_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
 
         <TextView
-            android:id="@+id/columnsPhotoLabel"
+            android:id="@+id/columnPhotoLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
-            android:padding="@dimen/padding"
+            android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_photo_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
     </LinearLayout>
 
@@ -85,15 +95,15 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/columnLinearLayout"
-        app:layout_constraintBottom_toTopOf="@+id/columnValueLinearLayout"
+        app:layout_constraintTop_toBottomOf="@id/columnsLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/columnValuesLinearLayout"
         android:scrollbars="vertical"
         android:fadeScrollbars="true">
     </androidx.recyclerview.widget.RecyclerView>
 
     <!--  Column Values -->
     <LinearLayout
-        android:id="@+id/columnValueLinearLayout"
+        android:id="@+id/columnValuesLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -104,36 +114,38 @@
         app:layout_constraintBottom_toTopOf="@id/entryButtonsLinearLayout">
 
         <TextView
-            android:id="@+id/columnValuesIndexValue"
+            android:id="@+id/columnValueIndexValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
 
-        <HorizontalScrollView
-            android:id="@+id/columnValuesScrollView"
+        <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
+            android:id="@+id/columnValueScrollView"
             android:contentDescription="@string/data_gathering_entry_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:layout_weight="4">
+            android:layout_weight="4"
+            android:fillViewport="true">
 
             <LinearLayout
-                android:id="@+id/columnLayoutLinearLayout"
+                android:id="@+id/columnValueLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/half_margin"
-                android:layout_marginEnd="@dimen/half_margin">
+                android:orientation="horizontal">
             </LinearLayout>
-        </HorizontalScrollView>
+        </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
         <Button
-            android:id="@+id/columnValuesCommentButton"
+            android:id="@+id/columnValueCommentButton"
             android:contentDescription="@string/data_gathering_comment_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -142,11 +154,15 @@
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_comment_label"
-            android:textSize="@dimen/small_text_size">
+            android:textSize="@dimen/small_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </Button>
 
         <Button
-            android:id="@+id/columnValuesPhotoButton"
+            android:id="@+id/columnValuePhotoButton"
             android:contentDescription="@string/data_gathering_photo_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -154,7 +170,11 @@
             android:layout_marginStart="@dimen/half_margin"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_photo_label"
-            android:textSize="@dimen/small_text_size">
+            android:textSize="@dimen/small_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </Button>
     </LinearLayout>
 
@@ -220,8 +240,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
-
-
 
         <TextView
             android:id="@+id/sessionValue"

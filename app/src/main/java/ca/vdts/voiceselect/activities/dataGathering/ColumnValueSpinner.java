@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -30,12 +31,19 @@ public class ColumnValueSpinner {
                 1
         );
         Resources resources = context.getResources();
-        int dimen = (int) TypedValue.applyDimension(
+
+        int minWidthDimen = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
-                4,
+                96,
                 resources.getDisplayMetrics()
         );
-        layoutParams.setMargins(dimen, 0, dimen, 0);
+
+        int marginPaddingDimen = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                2,
+                resources.getDisplayMetrics()
+        );
+        layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
 
         columnValues = new ArrayList<>(columnValuesByColumn);
 
@@ -44,16 +52,18 @@ public class ColumnValueSpinner {
                 R.layout.adapter_spinner_named,
                 columnValues
         );
-
         columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
 
         columnValueSpinner = new Spinner(context);
         columnValueSpinner.setAdapter(columnValueAdapter);
-        columnValueSpinner.setGravity(Gravity.CENTER);
+        columnValueSpinner.setMinimumWidth(minWidthDimen);
         columnValueSpinner.setLayoutParams(layoutParams);
-        columnValueSpinner.setPadding(dimen, dimen, dimen, dimen);
-        columnValueSpinner.setAdapter(columnValueAdapter);
+        columnValueSpinner.setPadding(marginPaddingDimen, marginPaddingDimen, marginPaddingDimen, marginPaddingDimen);
+        columnValueSpinner.setGravity(Gravity.CENTER);
         columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
+
+        //todo - remove
+        columnValueSpinner.setBackgroundColor(Color.parseColor("#f5341c"));
     }
 
     public List<ColumnValue> getColumnValues() {
