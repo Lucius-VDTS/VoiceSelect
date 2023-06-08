@@ -231,7 +231,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
-                    layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex());
                     selectedLayout = (Layout) parent.getItemAtPosition(position);
 
                     if (layoutList.size() <=1) {
