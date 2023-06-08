@@ -172,8 +172,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         Session currentSession = null;
         if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
         if (currentSession != null) {
+            resumeActivityButton.setEnabled(true);
             footerSessionValue.setText(currentSession.name());
         } else {
+            resumeActivityButton.setEnabled(false);
             footerSessionValue.setText("");
         }
 
@@ -183,12 +185,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private void disableViews() {
         if (currentUser.getUid() == -9001L) {
             startActivityButton.setEnabled(false);
-            resumeActivityButton.setEnabled(false);
+            //resumeActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
         } else {
             startActivityButton.setEnabled(true);
-            resumeActivityButton.setEnabled(true);
+            //resumeActivityButton.setEnabled(true);
             settingsActivityButton.setEnabled(true);
             changeUserActivityButton.setEnabled(true);
         }
