@@ -2,6 +2,8 @@ package ca.vdts.voiceselect.library.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,8 @@ import com.iristick.sdk.IristickSDK;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
@@ -156,28 +160,38 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         footerUserValue.setText(currentUser.getName());
 
         VSViewModel viewModel = new VSViewModel(vdtsApplication);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
+                    final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
+                    Layout currentLayout = null;
+                    if (layoutID > 0) {
+                        currentLayout = viewModel.findLayout(layoutID);
+                    }
+                    if (currentLayout != null) {
+                        final Layout l = currentLayout;
+                        handler.post(() -> { footerLayoutValue.setText(l .getName());
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(l));});
+                    } else {
+                        handler.post(() -> {  footerLayoutValue.setText("");});
+                    }
 
-        final String layoutKey = currentUser.getExportCode().concat("_Layout");
-        final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
-        Layout currentLayout = null;
-        if (layoutID > 0) { currentLayout = viewModel.findLayout(layoutID); }
-        if (currentLayout != null) {
-            footerLayoutValue.setText(currentLayout.getName());
-        } else {
-            footerLayoutValue.setText("");
-        }
-
-        final String sessionKey = currentUser.getExportCode().concat("_Session");
-        final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
-        Session currentSession = null;
-        if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
-        if (currentSession != null) {
-            resumeActivityButton.setEnabled(true);
-            footerSessionValue.setText(currentSession.name());
-        } else {
-            resumeActivityButton.setEnabled(false);
-            footerSessionValue.setText("");
-        }
+                    final String sessionKey = currentUser.getExportCode().concat("_Session");
+                    final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
+                    Session currentSession = null;
+                    if (sessionID > 0) {
+                        currentSession = viewModel.findSessionByID(sessionID);
+                    }
+                    if (currentSession != null) {
+                        final Session c = currentSession;
+                        handler.post(() -> { resumeActivityButton.setEnabled(true);
+                        footerSessionValue.setText(c.name());});
+                    } else {
+                        handler.post(() -> { resumeActivityButton.setEnabled(false);
+                        footerSessionValue.setText("");});
+                    }
+                });
 
         disableViews();
     }
@@ -238,6 +252,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     } else {
                         layoutSpinner.setEnabled(true);
                     }
+                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
+                    vdtsApplication.getPreferences().setLong(layoutKey,selectedLayout.getUid());
                 }
 
                 @Override
