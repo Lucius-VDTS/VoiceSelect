@@ -99,6 +99,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             layoutList.addAll(layouts);
             layoutList.remove(Layout.LAYOUT_NONE);
             layoutSpinner.setEnabled(layoutList.size() > 1);
+            layoutSpinnerAdapter.notifyDataSetChanged();
         });
 
         layoutSpinnerAdapter = new VDTSNamedAdapter<>(
@@ -113,7 +114,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         startActivityButton = findViewById(R.id.startActivityButton);
         startActivityButton.setOnClickListener(v -> startActivityButtonOnClick());
 
-        //todo - disabled if data gathering has not been started
         resumeActivityButton = findViewById(R.id.resumeActivityButton);
         resumeActivityButton.setOnClickListener(v -> resumeActivityButtonOnClick());
 
