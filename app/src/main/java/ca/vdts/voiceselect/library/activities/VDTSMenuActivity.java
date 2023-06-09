@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
-import ca.vdts.voiceselect.adapters.ConfigLayoutsAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.Session;
@@ -164,32 +163,44 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
                     final String layoutKey = currentUser.getExportCode().concat("_Layout");
-                    final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
+                    final long layoutID = vdtsApplication.getPreferences().getLong(
+                            layoutKey,
+                            -1L
+                    );
                     Layout currentLayout = null;
                     if (layoutID > 0) {
                         currentLayout = viewModel.findLayout(layoutID);
                     }
                     if (currentLayout != null) {
                         final Layout l = currentLayout;
-                        handler.post(() -> { footerLayoutValue.setText(l .getName());
-                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(l));});
+                        handler.post(() -> {
+                            footerLayoutValue.setText(l .getName());
+                            layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(l));
+                        });
                     } else {
-                        handler.post(() -> {  footerLayoutValue.setText("");});
+                        handler.post(() -> footerLayoutValue.setText(""));
                     }
 
                     final String sessionKey = currentUser.getExportCode().concat("_Session");
-                    final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
+                    final long sessionID = vdtsApplication.getPreferences().getLong(
+                            sessionKey,
+                            -1L
+                    );
                     Session currentSession = null;
                     if (sessionID > 0) {
                         currentSession = viewModel.findSessionByID(sessionID);
                     }
                     if (currentSession != null) {
                         final Session c = currentSession;
-                        handler.post(() -> { resumeActivityButton.setEnabled(true);
-                        footerSessionValue.setText(c.name());});
+                        handler.post(() -> {
+                            resumeActivityButton.setEnabled(true);
+                            footerSessionValue.setText(c.name());
+                        });
                     } else {
-                        handler.post(() -> { resumeActivityButton.setEnabled(false);
-                        footerSessionValue.setText("");});
+                        handler.post(() -> {
+                            resumeActivityButton.setEnabled(false);
+                            footerSessionValue.setText("");
+                        });
                     }
                 });
 
