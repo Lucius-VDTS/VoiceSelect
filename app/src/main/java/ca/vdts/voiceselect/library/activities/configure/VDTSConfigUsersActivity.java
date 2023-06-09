@@ -318,37 +318,40 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         if (adminPrimaryCheck()) {
             if (selectedUser != null) {
                 //Update existing user
-                selectedUser.setName(userNameEditText.getText().toString().trim());
-                selectedUser.setSessionPrefix(userPrefixEditText.getText().toString().trim());
-                selectedUser.setExportCode(userExportCodeEditText.getText().toString().trim());
-                selectedUser.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
-                selectedUser.setPrimary(userPrimarySwitch.isChecked());
+                final VDTSUser user = new VDTSUser(selectedUser);
+                user.setName(userNameEditText.getText().toString().trim());
+                user.setSessionPrefix(userPrefixEditText.getText().toString().trim());
+                user.setExportCode(userExportCodeEditText.getText().toString().trim());
+                user.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
+                user.setPrimary(userPrimarySwitch.isChecked());
 
                 /*if (!userAdminSwitch.isChecked()) {
                     selectedUser.setPassword("");
                 } else {*/
                     final String password = userPasswordEditText.getText().toString().trim();
-                    selectedUser.setPassword(!password.isEmpty() ? password : null);
+                    user.setPassword(!password.isEmpty() ? password : null);
                 //}
 
-                if (isValidUser(selectedUser)) {
-                    if (selectedUser.getUid() == vdtsApplication.getCurrentUser().getUid()) {
-                        vdtsApplication.setCurrentUser(selectedUser);
+                if (isValidUser(user)) {
+                    if (user.getUid() == vdtsApplication.getCurrentUser().getUid()) {
+                        vdtsApplication.setCurrentUser(user);
                     }
 
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     Handler handler = new Handler(Looper.getMainLooper());
                     executor.execute(() -> {
-                        if (isPrimary && primaryUser != null) {
+                        if (isPrimary &&
+                                primaryUser != null &&
+                                user.getUid() != primaryUser.getUid()) {
                             primaryUser.setPrimary(false);
                             vsViewModel.updateUser(primaryUser);
                         }
 
-                        vsViewModel.updateUser(selectedUser);
-                        LOG.info("Updated user: {}", selectedUser.getName());
+                        vsViewModel.updateUser(user);
+                        LOG.info("Updated user: {}", user.getName());
                         vdtsApplication.displayToast(
                                 this,
-                                "Updated user: " + selectedUser.getName(),
+                                "Updated user: " + user.getName(),
                                 Toast.LENGTH_SHORT
                         );
 
