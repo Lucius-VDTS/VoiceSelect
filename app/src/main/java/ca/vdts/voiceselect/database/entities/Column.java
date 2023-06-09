@@ -111,6 +111,20 @@ public class Column implements VDTSIndexedNamedInterface {
         );
     }
 
+    //Copy constructor
+    @Ignore
+    public Column(Column other) {
+        this(
+                other.getUid(),
+                other.getUserID(),
+                other.getCreatedDate(),
+                other.getName(),
+                other.getNameCode(),
+                other.getExportCode(),
+                other.isActive()
+        );
+    }
+
     public long getUid() {
         return uid;
     }

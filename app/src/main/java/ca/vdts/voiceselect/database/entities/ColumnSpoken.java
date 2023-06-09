@@ -114,7 +114,7 @@ public class ColumnSpoken implements VDTSBNFGrammarInterface {
 
     @Override
     public String toGrammar(Context context) {
-        return null;
+        return spoken;
     }
 
     @Override

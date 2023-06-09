@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import ca.vdts.voiceselect.R;
-import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 /**
  * Generic array adapter for named entities (ex - spinners).
@@ -26,9 +25,7 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
 
     private BiFunction<Entity, Integer, String> toStringFunction;
 
-    public VDTSNamedAdapter(Context context,
-                            int resource,
-                            List<Entity> objects) {
+    public VDTSNamedAdapter(Context context, int resource, List<Entity> objects) {
         super(context, resource, objects);
         this.resource = resource;
     }
@@ -41,7 +38,9 @@ public class VDTSNamedAdapter<Entity> extends ArrayAdapter<Entity> {
     @Override
     @SuppressLint("ViewHolder")
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        final View v = LayoutInflater.from(getContext()).inflate(resource, parent,false);
+        final View v = LayoutInflater
+                .from(getContext())
+                .inflate(resource, parent, false);
         final TextView tv = (TextView)v;
 
         final Entity item = getItem(position);
