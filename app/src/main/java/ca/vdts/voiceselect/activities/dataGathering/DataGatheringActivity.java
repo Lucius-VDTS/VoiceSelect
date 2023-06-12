@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,8 +51,10 @@ import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
+import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
-public class DataGatheringActivity extends AppCompatActivity implements IRIListener, ScrollChangeListenerInterface {
+public class DataGatheringActivity extends AppCompatActivity
+        implements IRIListener, ScrollChangeListenerInterface {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);
 
     private VDTSApplication vdtsApplication;
@@ -67,6 +70,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     private final List<ColumnValue> columnValueList = new ArrayList<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
+    private final List<Spinner> columnValueSpinnerList = new ArrayList<>();
 
     private final List<Entry> entryList = new ArrayList<>();
     private LiveData<List<Entry>> entryListLive;
@@ -75,11 +79,11 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
     //Views
     private LinearLayout columnLinearLayout;
-    private ObservableHorizontalScrollView columnScrollView;
+    public ObservableHorizontalScrollView columnScrollView;
 
     private TextView columnValueIndexValue;
     private LinearLayout columnValueLinearLayout;
-    private ObservableHorizontalScrollView columnValueScrollView;
+    public ObservableHorizontalScrollView columnValueScrollView;
     private Button columnValueCommentButton;
     private Button columnValuePhotoButton;
 
@@ -89,16 +93,14 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     private Button entrySaveButton;
 
     private TextView sessionValue;
-    private TextView sessionEntriesValue;
+    private TextView sessionEntriesCount;
     private Button sessionEndButton;
 
     //Recycler View - Entry Spinners
     private VSViewModel vsViewModel;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
-
-    //Synchronized Scrolling
-    int scrollX;
+    //private ObservableHorizontalScrollView entryValueScrollView;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -139,7 +141,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         entrySaveButton.setOnClickListener(v -> saveEntryButtonOnClick());
 
         sessionValue = findViewById(R.id.sessionValue);
-        sessionEntriesValue = findViewById(R.id.sessionEntriesValue);
+        sessionEntriesCount = findViewById(R.id.sessionEntriesCount);
 
         sessionEndButton = findViewById(R.id.sessionEndButton);
         sessionEndButton.setOnClickListener(v -> endSessionButtonOnClick());
@@ -148,23 +150,12 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
         //Recycler View
         entryRecyclerView = findViewById(R.id.entryRecyclerView);
-
         entryRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
                 ));
-
-        entryRecyclerView.setAdapter(dataGatheringAdapter);
-
-        dataGatheringAdapter = new DataGatheringAdapter(
-                this,
-                columnList,
-                columnValueList,
-                entryList,
-                entryValueList
-        );
     }
 
     @Override
@@ -237,10 +228,11 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                     TextView columnText = new TextView(this);
                     columnText.setMinWidth(minWidthDimen);
                     columnText.setLayoutParams(layoutParams);
-                    columnText.setPadding(marginPaddingDimen, marginPaddingDimen, marginPaddingDimen, marginPaddingDimen);
+                    columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
+                            marginPaddingDimen, marginPaddingDimen);
                     columnText.setGravity(Gravity.CENTER);
                     columnText.setMaxLines(1);
-                    columnText.setText(column.getNameCode());   //todo - use name - based on setting
+                    columnText.setText(column.getNameCode());   //todo - base this on setting?
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
                     //todo - remove
@@ -271,6 +263,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
             handler.post(() -> {
                 final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
+                columnValueSpinnerList.clear();
                 for (int index = 0; index < columnValueMap.size(); index++) {
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
@@ -282,6 +275,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                                     columnValueSpinnerListener
                             );
 
+                    columnValueSpinnerList.add(columnValueSpinner.getColumnValueSpinner());
                     columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
                 }
                 initializeEntriesList();
@@ -298,10 +292,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
 //            entryListLive.removeObservers(this);
             entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
-            handler.post(() -> {
-                entryListLive.observe(this, entryObserver);
-                initializeEntryValuesList();
-            });
+            handler.post(this::initializeEntryValuesList);
         });
     }
 
@@ -314,25 +305,31 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
 
 //            entryValueListLive.removeObservers(this);
             entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
-            handler.post(() -> {
-                entryValueListLive.observe(this, entryValueObserver);
-                initializeDGAdapter();
-            });
+            handler.post(this::initializeDGAdapter);
         });
     }
 
     private void initializeDGAdapter() {
         dataGatheringAdapter = new DataGatheringAdapter(
                 this,
-                columnList,
-                columnValueList,
-                entryList,
-                entryValueList
+                this,
+                new VDTSClickListenerUtil(this::entryAdapterSelect, entryRecyclerView)
         );
+
+        dataGatheringAdapter.setDatasets(
+                columnList,
+                columnValueMap,
+                entryList,
+                entryValueList);
+
+        entryRecyclerView.setAdapter(dataGatheringAdapter);
+
+        entryListLive.observe(this, entryObserver);
+        entryValueListLive.observe(this, entryValueObserver);
     }
 
     /**
-     * Observe scroll changes in horizontal scroll views and synchronize their positions.
+     * Observe scroll changes in horizontal scroll views and synchronize their position.
      * @param observableHorizontalScrollView - The scroll view being observed
      * @param x - The horizontal position (pixels) that the view will scroll to
      * @param y - The vertical position (pixels) that the view will scroll to
@@ -345,8 +342,13 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
                                 int oldx, int oldy) {
         if (observableHorizontalScrollView == columnScrollView) {
             columnValueScrollView.smoothScrollTo(x, y);
+            dataGatheringAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == columnValueScrollView) {
             columnScrollView.smoothScrollTo(x, y);
+            dataGatheringAdapter.setXCord(x);
+        } else if (observableHorizontalScrollView == null) {
+            columnScrollView.smoothScrollTo(x, y);
+            columnValueScrollView.smoothScrollTo(x, y);
         }
     }
 
@@ -368,7 +370,7 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
             if (entries != null) {
                 dataGatheringAdapter.clearEntries();
                 dataGatheringAdapter.addAllEntries(entries);
-                sessionEntriesValue.setText(String.format(
+                sessionEntriesCount.setText(String.format(
                         Locale.getDefault(), "%d", entries.size()));
             }
         }
@@ -378,25 +380,24 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
         @Override
         public void onChanged(List<EntryValue> entryValues) {
             if (entryValues != null) {
-                dataGatheringAdapter.clearValues();
+                dataGatheringAdapter.clearEntryValues();
                 dataGatheringAdapter.addAllEntryValues(entryValues);
             }
         }
     };
 
     //todo adapterselect - select entry
-//    private void entryAdapterSelect(int index) {
-//        if (index >= 0) {
-//            columnValueIndexValue.setText(index);
-//            dataGatheringAdapter.setSelected(index - 1);
-//            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
-//            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
-//            entryValueList.clear();
-//            entryValueList.addAll()
-//        } else {
-//
-//        }
-//    }
+    private void entryAdapterSelect(int index) {
+        if (index >= 0) {
+            columnValueIndexValue.setText(index);
+            dataGatheringAdapter.setSelected(index - 1);
+            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
+            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
+            entryValueList.clear();
+        } else {
+
+        }
+    }
 
     private void deleteEntryButtonOnClick() {
 
@@ -415,27 +416,25 @@ public class DataGatheringActivity extends AppCompatActivity implements IRIListe
     }
 
     private void saveEntryButtonOnClick() {
-//        if (selectedEntry != null) {
-//            //Update existing entry
-//            initializeEntriesList();
-//        } else {
-//            //Create new entry
-//            Entry newEntry = new Entry(currentUser.getUid(), currentSession.getUid());
-//            dataGatheringAdapter.addEntry(newEntry);
-//
-//            List<EntryValue> entryValues = new ArrayList<>();
-//            for (int index = 0; index < spinnerList.size(); index++) {
-//                ColumnValue columnValue = (ColumnValue) spinnerList.get(index).getSelectedItem();
-//
-//                EntryValue newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
-//                entryValues.add(newEntryValue);
-//            }
-//
-//            dataGatheringAdapter.addAllEntryValues(entryValues);
-//
-//            index++;
-//            columnValueIndexValue.setText(index + "");
-//        }
+        if (selectedEntry != null) {
+            //Update existing entry
+            initializeEntriesList();
+        } else {
+            //Create new entry
+            Entry newEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+            entryList.add(newEntry);
+            dataGatheringAdapter.addEntry(newEntry);
+
+            List<EntryValue> entryValues = new ArrayList<>();
+            for (int index = 0; index < columnValueSpinnerList.size(); index++) {
+                ColumnValue columnValue = (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
+
+                EntryValue newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+                entryValues.add(newEntryValue);
+            }
+
+            dataGatheringAdapter.addAllEntryValues(entryValues);
+        }
     }
 
     @Override

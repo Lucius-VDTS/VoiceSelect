@@ -104,11 +104,11 @@
             android:padding="@dimen/half_padding"
             android:textSize="@dimen/xxs_text_size"
             app:layout_constraintStart_toStartOf="@id/entryLayout"
-            app:layout_constraintEnd_toStartOf="@id/entryScrollView">
+            app:layout_constraintEnd_toStartOf="@id/entryValueScrollView">
         </TextView>
 
         <HorizontalScrollView
-            android:id="@+id/entryScrollView"
+            android:id="@+id/entryValueScrollView"
             android:contentDescription="@string/data_gathering_entry_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -136,7 +136,7 @@
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/entryScrollView"
+            app:layout_constraintStart_toEndOf="@id/entryValueScrollView"
             app:layout_constraintEnd_toStartOf="@id/entryPhotoValue">
         </TextView>
 
@@ -204,11 +204,11 @@
             android:text="@string/data_gathering_entries_label"
             android:textSize="@dimen/xxxs_text_size"
             app:layout_constraintStart_toEndOf="@id/sessionValue"
-            app:layout_constraintEnd_toStartOf="@id/sessionEntriesValue">
+            app:layout_constraintEnd_toStartOf="@id/sessionEntriesCount">
         </TextView>
 
         <TextView
-            android:id="@+id/sessionEntriesValue"
+            android:id="@+id/sessionEntriesCount"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             app:layout_constraintHorizontal_weight="0.5"

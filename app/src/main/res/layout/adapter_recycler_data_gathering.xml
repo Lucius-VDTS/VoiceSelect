@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/entryConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/entryLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -16,26 +20,30 @@
             android:id="@+id/entryIndexValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
+            android:layout_weight="1"
             android:gravity="center"
-            android:padding="@dimen/padding"
-            android:textSize="@dimen/large_text_size">
+            android:layout_marginEnd="@dimen/half_margin"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
 
         <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
-            android:id="@+id/entryScrollView"
-            android:contentDescription="@string/data_gathering_rv_scroll_description"
+            android:id="@+id/entryValueScrollView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:layout_weight="4">
+            android:layout_weight="4"
+            android:contentDescription="@string/data_gathering_rv_scroll_description"
+            android:fillViewport="true">
 
             <LinearLayout
-                android:id="@+id/entryLinearLayout"
+                android:id="@+id/entryValueLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
-            </LinearLayout>
+                android:orientation="horizontal"></LinearLayout>
         </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
         <TextView
@@ -44,10 +52,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/padding"
-            android:textSize="@dimen/large_text_size">
+            android:layout_marginStart="@dimen/half_margin"
+            android:layout_marginEnd="@dimen/half_margin"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/large_text_size"
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
 
         <TextView
@@ -56,9 +68,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginStart="@dimen/margin"
-            android:padding="@dimen/padding"
-            android:textSize="@dimen/large_text_size">
+            android:layout_marginStart="@dimen/half_margin"
+            android:padding="@dimen/half_padding"
+            android:textSize="@dimen/large_text_size"
+
+
+
+
+            android:background="@color/colorInputArea">
         </TextView>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
