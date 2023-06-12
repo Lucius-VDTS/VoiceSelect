@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +43,6 @@ import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
-//todo - add toast when non admin user tries to select only admin editable fields
 /**
  * Configure column parameters.
  */
@@ -109,12 +109,48 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         columnDeleteButton.setOnClickListener(v -> deleteColumnButtonOnClick());
 
         columnNameEditText = findViewById(R.id.columnNameEditText);
+        columnNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a column name",
+                        Toast.LENGTH_SHORT
+                );
+                columnNameEditText.clearFocus();
+            }
+        });
+
         columnNameCodeEditText = findViewById(R.id.columnNameCodeEditText);
+        columnNameCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin can set a column abbreviation",
+                        Toast.LENGTH_SHORT
+                );
+                columnNameCodeEditText.clearFocus();
+            }
+        });
+
         columnExportCodeEditText = findViewById(R.id.columnExportCodeEditText);
+        columnExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin can set a column export code",
+                        Toast.LENGTH_SHORT
+                );
+                columnExportCodeEditText.clearFocus();
+            }
+        });
+
         columnSpokenEditText = findViewById(R.id.layoutNameEditText);
 
         columnImportButton = findViewById(R.id.layoutImportButton);
+        columnImportButton.setOnClickListener(v -> importButtonOnClick());
+
         columnExportButton = findViewById(R.id.layoutExportButton);
+        columnExportButton.setOnClickListener(v -> exportButtonOnClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -174,6 +210,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         if (currentUser.getAuthority() <= 0) {
             userList.clear();
             userList.add(currentUser);
+            userAdapter.notifyDataSetChanged();
+            columnUserSpinner.setSelection(0);
             initializeColumnList();
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -200,7 +238,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             Handler handler = new Handler(Looper.getMainLooper());
             executor.execute(() -> {
                 columnList.clear();
-                columnList.addAll(vsViewModel.findAllActiveColumnsByUser(currentUser.getUid()));
+                columnList.addAll(vsViewModel.findAllActiveColumns());
                 columnList.remove(Column.COLUMN_NONE);
                 handler.post(() -> {
                     columnAdapter.setDataset(columnList);
@@ -212,21 +250,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
-            columnNewButton.setEnabled(false);
-            columnDeleteButton.setEnabled(false);
-
-            columnNameEditText.setEnabled(false);
-            columnNameCodeEditText.setEnabled(false);
-            columnExportCodeEditText.setEnabled(false);
             columnUserSpinner.setEnabled(false);
-
-            columnImportButton.setEnabled(false);
-            columnExportButton.setEnabled(false);
-
-            if (columnList.size() == 0) {
-                columnResetButton.setEnabled(false);
-                columnSaveButton.setEnabled(false);
-            }
         }
     }
 
@@ -262,7 +286,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                 final List<ColumnSpoken> spokenList = columnSpokenList.stream()
                         .filter(spoken -> spoken.getColumnID() == selectedColumn.getUid())
-                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())      //todo maybe??????
+                        .filter(spoken -> spoken.getUserID() == selectedUser.getUid())
                         .collect(Collectors.toList());
 
                 String spokens = "";
@@ -289,31 +313,44 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void newColumnButtonOnClick() {
-        columnAdapterSelect(-1);
-        columnNameEditText.requestFocus();
+        if (currentUser.getAuthority() > 0) {
+            columnAdapterSelect(-1);
+            columnNameEditText.requestFocus();
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can create new columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
     }
 
     private void resetColumnButtonOnClick() {
         columnAdapterSelect(columnAdapter.getSelectedEntityIndex());
-        columnNameEditText.requestFocus();
+        //columnNameEditText.requestFocus();
     }
 
     private void saveColumnButtonOnClick() {
         Column selectedColumn = columnAdapter.getSelectedEntity();
+        List<String> spokenList = getFormattedColumnSpokenList(
+                columnSpokenEditText.getText().toString(),
+                columnNameEditText.getText().toString()
+        );
 
         if (selectedColumn != null) {
             //Update existing column
-            selectedColumn.setName(columnNameEditText.getText().toString().trim());
-            selectedColumn.setNameCode(columnNameCodeEditText.getText().toString().trim());
-            selectedColumn.setExportCode(columnExportCodeEditText.getText().toString().trim());
+            Column workColumn = new Column(selectedColumn);
+            workColumn.setName(columnNameEditText.getText().toString().trim());
+            workColumn.setNameCode(columnNameCodeEditText.getText().toString().trim());
+            workColumn.setExportCode(columnExportCodeEditText.getText().toString().trim());
 
-            if (isValidColumn(selectedColumn)) {
-               if (isValidColumnSpoken(selectedColumn)) {
+            if (isValidColumn(workColumn)) {
+               if (isValidColumnSpoken(workColumn, spokenList)) {
                    ExecutorService executor = Executors.newSingleThreadExecutor();
                    Handler handler = new Handler(Looper.getMainLooper());
                    executor.execute(() -> {
-                       vsViewModel.updateColumn(selectedColumn);
-                       updateColumnSpokens(selectedColumn, false);
+                       vsViewModel.updateColumn(workColumn);
+                       updateColumnSpokens(workColumn, spokenList, false);
                        handler.post(() -> columnAdapter.updateSelectedEntity());
                    });
                } else {
@@ -321,13 +358,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                    vdtsApplication.displayToast(
                            this,
                            "Invalid column spoken",
-                           0
+                           Toast.LENGTH_SHORT
                    );
                }
                newColumnButtonOnClick();
             } else {
-                LOG.info("Invalid column");
-                vdtsApplication.displayToast(this, "Invalid column", 0);
                 resetColumnButtonOnClick();
             }
         } else {
@@ -340,42 +375,67 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             );
 
             if (isValidColumn(column)) {
-                if (isValidColumnSpoken(column)) {
+                if (isValidColumnSpoken(column, spokenList)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     Handler handler = new Handler(Looper.getMainLooper());
                     executor.execute(() -> {
                         long uid = vsViewModel.insertColumn(column);
                         column.setUid(uid);
                         LOG.info("Added column: {}", column.getName());
-                        updateColumnSpokens(column, true);
+                        updateColumnSpokens(column, spokenList, true);
 
                         handler.post(() -> columnAdapter.addEntity(column));
                     });
                 }
                 newColumnButtonOnClick();
-            } else {
-                LOG.info("Invalid column");
-                vdtsApplication.displayToast(this, "Invalid column", 0);
             }
         }
     }
 
     private void deleteColumnButtonOnClick() {
-        Column selectedColumn = columnAdapter.getSelectedEntity();
-        if (selectedColumn != null) {
-            selectedColumn.setActive(false);
-            new Thread(() -> vsViewModel.updateColumn(selectedColumn)).start();
-            new Thread(() -> {
-                final List<ColumnSpoken> spokenList = vsViewModel
-                        .findAllColumnSpokensByColumn(selectedColumn.getUid());
+        if (currentUser.getAuthority() > 0) {
+            Column selectedColumn = columnAdapter.getSelectedEntity();
+            if (selectedColumn != null) {
+                selectedColumn.setActive(false);
+                new Thread(() -> vsViewModel.updateColumn(selectedColumn)).start();
+                new Thread(() -> {
+                    final List<ColumnSpoken> spokenList = vsViewModel
+                            .findAllColumnSpokensByColumn(selectedColumn.getUid());
 
-                //Convert list to array for deleteAllColumnSpokens query
-                final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
-                vsViewModel.deleteAllColumnSpokens(spokenArray);
-            }).start();
+                    //Convert list to array for deleteAllColumnSpokens query
+                    final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
+                    vsViewModel.deleteAllColumnSpokens(spokenArray);
+                }).start();
 
-            columnAdapter.removeSelectedEntity();
-            newColumnButtonOnClick();
+                columnAdapter.removeSelectedEntity();
+                newColumnButtonOnClick();
+            }
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can delete columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void importButtonOnClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can import columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void exportButtonOnClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export columns",
+                    Toast.LENGTH_SHORT
+            );
         }
     }
 
@@ -385,25 +445,82 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
      * @return - True if valid.
      */
     private boolean isValidColumn(Column column) {
-        //todo - split up and provide meaningful toast messages to users - similar to isValidColumnSpoken
-        return !column.getName().isEmpty() &&
-               !column.getNameCode().isEmpty() &&
-               !column.getExportCode().isEmpty() &&
-                columnList.stream().noneMatch(column1 -> column.getUid() != column1.getUid() &&
-                        (column1.getName().equalsIgnoreCase(column.getName()) ||
-                                column1.getNameCode().equalsIgnoreCase(column.getName()) ||
-                                column1.getExportCode().equalsIgnoreCase(column.getExportCode())));
+        if (column.getName().isEmpty()) {
+            LOG.info("Invalid column - no name");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have a name",
+                    Toast.LENGTH_SHORT
+            );
+            return false;
+        }
+
+        if (column.getNameCode().isEmpty()) {
+            LOG.info("Invalid column - no name code");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have an abbreviation,",
+                    Toast.LENGTH_SHORT
+            );
+            return false;
+        }
+
+        if (column.getExportCode().isEmpty()) {
+            LOG.info("Invalid column - no export code");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have an export code",
+                    Toast.LENGTH_SHORT
+            );
+        }
+
+        if (columnList.stream()
+                .anyMatch(column1 -> column.getUid() != column1.getUid() &&
+                        column1.getName().equalsIgnoreCase(column.getName()))) {
+            LOG.info("Invalid column - non-unique name");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have a unique name",
+                    Toast.LENGTH_SHORT
+            );
+            return false;
+        }
+
+        if (columnList.stream()
+                .anyMatch(column1 -> column.getUid() != column1.getUid() &&
+                        column1.getNameCode().equalsIgnoreCase(column.getNameCode()))) {
+            LOG.info("Invalid column - non-unique name code");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have a unique abbreviation",
+                    Toast.LENGTH_SHORT
+            );
+            return false;
+        }
+
+        if (columnList.stream()
+                .anyMatch(column1 -> column.getUid() != column1.getUid() &&
+                        column1.getExportCode().equalsIgnoreCase(column.getExportCode()))) {
+            LOG.info("Invalid column - non-unique export code");
+            vdtsApplication.displayToast(
+                    this,
+                    "A column must have a unique export code",
+                    Toast.LENGTH_SHORT
+            );
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Check if the column's spokens exist, are unique, and do not contain reserved words.
      * @param column - The column to be checked.
+     * @param spokenList - The list of spokens to be checked
      * @return - True if valid.
      */
-    private boolean isValidColumnSpoken(Column column) {
-        if (!columnSpokenEditText.getText().toString().isEmpty()) {
-            final List<String> spokenList = getFormattedColumnSpokenList();
-
+    private boolean isValidColumnSpoken(Column column, List<String> spokenList) {
+        if (!spokenList.isEmpty()) {
             for (ColumnSpoken columnSpoken : columnSpokenList) {
                 if (columnSpoken.getColumnID() != column.getUid()) {
                     for (String spoken : spokenList) {
@@ -412,7 +529,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                             vdtsApplication.displayToast(
                                     this,
                                     "Column's spokens must be unique",
-                                    0
+                                    Toast.LENGTH_SHORT
                             );
                             return false;
                         }
@@ -423,7 +540,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                                 vdtsApplication.displayToast(
                                         this,
                                         "Column's spokens contain a reserved word",
-                                        0
+                                        Toast.LENGTH_SHORT
                                 );
                                 return false;
                             }
@@ -437,7 +554,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             vdtsApplication.displayToast(
                     this,
                     "Column must have a spoken term",
-                    0
+                    Toast.LENGTH_SHORT
             );
             return false;
         }
@@ -446,10 +563,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     /**
      * Update the spokens associated with a column that is to be created or updated.
      * @param column - The column to be updated.
+     * @param spokenList - The list spoken to be updated/created
      * @param isNew - Is the column new.
      */
-    private void updateColumnSpokens(Column column, boolean isNew) {
-        final List<String> spokenList = getFormattedColumnSpokenList();
+    private void updateColumnSpokens(Column column, List<String> spokenList, boolean isNew) {
         if (isNew) {
             for (VDTSUser user : userList) {
                 for (String spoken : spokenList) {
@@ -472,8 +589,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
             //Delete spokens that no longer exist
             for (ColumnSpoken columnSpoken : existingSpokenList) {
-                if (spokenList.stream().noneMatch(spoken ->
-                        spoken.equalsIgnoreCase(columnSpoken.getSpoken()))) {
+                if (spokenList.stream()
+                        .noneMatch(spoken -> spoken.equalsIgnoreCase(columnSpoken.getSpoken()))) {
                     new Thread(() -> vsViewModel.deleteColumnSpoken(columnSpoken)).start();
                 }
             }
@@ -481,8 +598,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             //Insert new spokens
             if (selectedUser == null) { selectedUser = currentUser; }
             for (String spoken : spokenList) {
-                if (existingSpokenList.stream().noneMatch(oldSpoken ->
-                        oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
+                if (existingSpokenList.stream()
+                        .noneMatch(oldSpoken -> oldSpoken.getSpoken().equalsIgnoreCase(spoken))) {
                     new Thread(
                             () -> vsViewModel.insertColumnSpoken(
                                     new ColumnSpoken(
@@ -498,18 +615,32 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Create a comma separated list from strings in the spoken text field.
-     * @return - A comma separated list of strings.
+     * Create a list of strings be separating at the commas the value in the spoken edit field
+     * or the name edit field
+     * @param spokenText The string from the spoken edit field
+     * @param nameText The string from the name edit field
+     * @return A list of strings to be used as spoken values
      */
-    private List<String> getFormattedColumnSpokenList() {
-        return Arrays.stream(
-                        columnSpokenEditText.getText().toString()
+    private List<String> getFormattedColumnSpokenList(String spokenText, String nameText) {
+        return !spokenText.isEmpty() ?
+                Arrays.stream(
+                        spokenText
                                 .replaceAll(" ,", ",")
                                 .replaceAll(", ", ",")
                                 .trim()
                                 .split(",")
                 ).distinct()
-                .collect(Collectors.toList());
+                        .filter(spoken -> !spoken.isEmpty())
+                        .collect(Collectors.toList()) :
+                Arrays.stream(
+                        nameText
+                                .replaceAll(" ,", ",")
+                                .replaceAll(", ", ",")
+                                .trim()
+                                .split(",")
+                ).distinct()
+                        .filter(spoken -> !spoken.isEmpty())
+                        .collect(Collectors.toList());
     }
 
     @Override

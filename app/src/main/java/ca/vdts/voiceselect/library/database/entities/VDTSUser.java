@@ -96,8 +96,19 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
 
     //Default super user
     public static final VDTSUser VDTS_USER_NONE = new VDTSUser(
-            -9001L, "SUPER", "", "", "", 9001, true,
-            "", 1, false, 1f, 1f);
+            -9001L,
+            "SUPER",
+            "",
+            "",
+            "",
+            9001,
+            true,
+            "",
+            1,
+            false,
+            1f,
+            1f
+    );
 
     //Default Constructor
     public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
@@ -152,16 +163,26 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     @Ignore
     public VDTSUser(VDTSUser copy) {
         this(
-            copy.getUid(), copy.getName(), copy.getExportCode(), copy.getInitials(), copy.getSessionPrefix(),
-            copy.getAuthority(), copy.isPrimary(), copy.getPassword(), copy.getFeedback(),
-            copy.isFeedbackQueue(), copy.getFeedbackRate(), copy.getFeedbackPitch(), copy.isActive()
+                copy.getUid(),
+                copy.getName(),
+                copy.getExportCode(),
+                copy.getInitials(),
+                copy.getSessionPrefix(),
+                copy.getAuthority(),
+                copy.isPrimary(),
+                copy.getPassword(),
+                copy.getFeedback(),
+                copy.isFeedbackQueue(),
+                copy.getFeedbackRate(),
+                copy.getFeedbackPitch(),
+                copy.isActive()
         );
     }
 
     //Typical Constructor (ex - VoiceSelect) - id is 0 until entity is saved
     @Ignore
-    public VDTSUser(String name, String exportCode, String sessionPrefix, int authority, boolean primary,
-                    String password) {
+    public VDTSUser(String name, String exportCode, String sessionPrefix, int authority,
+                    boolean primary, String password) {
         this.uid = 0L;
         this.name = name;
         this.exportCode = exportCode;

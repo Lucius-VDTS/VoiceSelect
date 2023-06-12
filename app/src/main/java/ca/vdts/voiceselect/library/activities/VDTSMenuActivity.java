@@ -2,19 +2,29 @@ package ca.vdts.voiceselect.library.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
@@ -24,6 +34,7 @@ import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
+import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
@@ -33,10 +44,13 @@ import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     //private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
 
-    VDTSApplication vdtsApplication;
-    VDTSUser currentUser;
+    private VDTSApplication vdtsApplication;
+    private VDTSUser currentUser;
+
+    private Layout selectedLayout;
 
     //Views
+    private Spinner layoutSpinner;
     private Button startActivityButton;
     private Button resumeActivityButton;
     private Button configureActivityButton;
@@ -48,6 +62,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private TextView footerSessionValue;
     private TextView footerUserValue;
     private TextView footerVersionValue;
+
+    //View Model - Adapters
+    private VSViewModel vsViewModel;
+    private VDTSNamedAdapter<Layout> layoutSpinnerAdapter;
+
+    //Lists
+    private final List<Layout> layoutList = new ArrayList<>();
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -70,10 +91,32 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         vdtsApplication = (VDTSApplication) getApplication();
         currentUser = vdtsApplication.getCurrentUser();
 
+        //Layout Spinner
+        layoutSpinner = findViewById(R.id.layoutSpinner);
+
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
+        //Observe/Update layout list
+        vsViewModel.findAllLayoutsLive().observe(this, layouts -> {
+            layoutList.clear();
+            layoutList.addAll(layouts);
+            layoutList.remove(Layout.LAYOUT_NONE);
+            layoutSpinner.setEnabled(layoutList.size() > 1);
+            layoutSpinnerAdapter.notifyDataSetChanged();
+        });
+
+        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
+                this,
+                R.layout.adapter_spinner_named,
+                layoutList);
+        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
+
+        layoutSpinner.setAdapter(layoutSpinnerAdapter);
+        layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
+
         startActivityButton = findViewById(R.id.startActivityButton);
         startActivityButton.setOnClickListener(v -> startActivityButtonOnClick());
 
-        //todo - disabled if data gathering has not been started
         resumeActivityButton = findViewById(R.id.resumeActivityButton);
         resumeActivityButton.setOnClickListener(v -> resumeActivityButtonOnClick());
 
@@ -116,26 +159,50 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         footerUserValue.setText(currentUser.getName());
 
         VSViewModel viewModel = new VSViewModel(vdtsApplication);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
+                    final long layoutID = vdtsApplication.getPreferences().getLong(
+                            layoutKey,
+                            -1L
+                    );
+                    Layout currentLayout = null;
+                    if (layoutID > 0) {
+                        currentLayout = viewModel.findLayout(layoutID);
+                    }
+                    if (currentLayout != null) {
+                        final Layout l = currentLayout;
+                        handler.post(() -> {
+                            footerLayoutValue.setText(l .getName());
+                            layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(l));
+                        });
+                    } else {
+                        handler.post(() -> footerLayoutValue.setText(""));
+                    }
 
-        final String layoutKey = currentUser.getExportCode().concat("_Layout");
-        final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
-        Layout currentLayout = null;
-        if (layoutID > 0) { currentLayout = viewModel.findLayout(layoutID); }
-        if (currentLayout != null) {
-            footerLayoutValue.setText(currentLayout.getName());
-        } else {
-            footerLayoutValue.setText("");
-        }
-
-        final String sessionKey = currentUser.getExportCode().concat("_Session");
-        final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
-        Session currentSession = null;
-        if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
-        if (currentSession != null) {
-            footerSessionValue.setText(currentSession.name());
-        } else {
-            footerSessionValue.setText("");
-        }
+                    final String sessionKey = currentUser.getExportCode().concat("_Session");
+                    final long sessionID = vdtsApplication.getPreferences().getLong(
+                            sessionKey,
+                            -1L
+                    );
+                    Session currentSession = null;
+                    if (sessionID > 0) {
+                        currentSession = viewModel.findSessionByID(sessionID);
+                    }
+                    if (currentSession != null) {
+                        final Session c = currentSession;
+                        handler.post(() -> {
+                            resumeActivityButton.setEnabled(true);
+                            footerSessionValue.setText(c.name());
+                        });
+                    } else {
+                        handler.post(() -> {
+                            resumeActivityButton.setEnabled(false);
+                            footerSessionValue.setText("");
+                        });
+                    }
+                });
 
         disableViews();
     }
@@ -143,12 +210,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private void disableViews() {
         if (currentUser.getUid() == -9001L) {
             startActivityButton.setEnabled(false);
-            resumeActivityButton.setEnabled(false);
+            //resumeActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
         } else {
             startActivityButton.setEnabled(true);
-            resumeActivityButton.setEnabled(true);
+            //resumeActivityButton.setEnabled(true);
             settingsActivityButton.setEnabled(true);
             changeUserActivityButton.setEnabled(true);
         }
@@ -183,6 +250,27 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public void aboutActivityButtonOnClick() {
         IristickSDK.showAbout(VDTSMenuActivity.this);
     }
+
+    private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,
+                                           int position, long id) {
+                    selectedLayout = (Layout) parent.getItemAtPosition(position);
+
+                    if (layoutList.size() <=1) {
+                        layoutSpinner.setEnabled(false);
+                    } else {
+                        layoutSpinner.setEnabled(true);
+                    }
+                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
+                    vdtsApplication.getPreferences().setLong(layoutKey,selectedLayout.getUid());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            };
+
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {

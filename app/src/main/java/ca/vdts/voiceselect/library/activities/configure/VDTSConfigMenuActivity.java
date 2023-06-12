@@ -2,6 +2,8 @@ package ca.vdts.voiceselect.library.activities.configure;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -12,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
@@ -93,26 +98,41 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         footerUserValue.setText(currentUser.getName());
 
         VSViewModel viewModel = new VSViewModel(vdtsApplication);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            final String layoutKey = currentUser.getExportCode().concat("_Layout");
+            final long layoutID = vdtsApplication.getPreferences().getLong(
+                    layoutKey,
+                    -1L
+            );
+            Layout currentLayout = null;
+            if (layoutID > 0) {
+                currentLayout = viewModel.findLayout(layoutID);
+            }
+            if (currentLayout != null) {
+                final Layout l = currentLayout;
+                handler.post(() -> footerLayoutValue.setText(l .getName()));
+            } else {
+                handler.post(() -> footerLayoutValue.setText(""));
+            }
 
-        final String layoutKey = currentUser.getExportCode().concat("_Layout");
-        final long layoutID = vdtsApplication.getPreferences().getLong(layoutKey, -1L);
-        Layout currentLayout = null;
-        if (layoutID > 0) { currentLayout = viewModel.findLayout(layoutID); }
-        if (currentLayout != null) {
-            footerLayoutValue.setText(currentLayout.getName());
-        } else {
-            footerLayoutValue.setText("");
-        }
-
-        final String sessionKey = currentUser.getExportCode().concat("_Session");
-        final long sessionID = vdtsApplication.getPreferences().getLong(sessionKey, -1L);
-        Session currentSession = null;
-        if (sessionID > 0) { currentSession = viewModel.findSessionByID(sessionID); }
-        if (currentSession != null) {
-            footerSessionValue.setText(currentSession.name());
-        } else {
-            footerSessionValue.setText("");
-        }
+            final String sessionKey = currentUser.getExportCode().concat("_Session");
+            final long sessionID = vdtsApplication.getPreferences().getLong(
+                    sessionKey,
+                    -1L
+            );
+            Session currentSession = null;
+            if (sessionID > 0) {
+                currentSession = viewModel.findSessionByID(sessionID);
+            }
+            if (currentSession != null) {
+                final Session c = currentSession;
+                handler.post(() -> footerSessionValue.setText(c.name()));
+            } else {
+                handler.post(() -> footerSessionValue.setText(""));
+            }
+        });
 
         disableViews();
     }

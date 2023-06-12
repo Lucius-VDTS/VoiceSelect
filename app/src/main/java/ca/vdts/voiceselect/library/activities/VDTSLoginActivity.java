@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
@@ -43,6 +45,8 @@ public class VDTSLoginActivity extends AppCompatActivity {
     private VDTSViewModel vdtsViewModel;
     private VDTSIndexedNamedAdapter<VDTSUser> userAdapter;
     private RecyclerView userRecyclerView;
+    private TextView footerUserValue;
+    private TextView footerVersionValue;
     private final List<VDTSUser> userList = new ArrayList<>();
 
     @Override
@@ -71,6 +75,13 @@ public class VDTSLoginActivity extends AppCompatActivity {
         );
 
         userRecyclerView.setAdapter(userAdapter);
+
+        VDTSUser currentUser = vdtsApplication.getCurrentUser();
+        footerUserValue = findViewById(R.id.footerUserValue);
+        footerUserValue.setText(currentUser.getName());
+
+        footerVersionValue = findViewById(R.id.footerVersionValue);
+        footerVersionValue.setText(BuildConfig.VERSION_NAME);
     }
 
     @Override
