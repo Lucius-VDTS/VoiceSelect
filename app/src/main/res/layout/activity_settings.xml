@@ -24,7 +24,7 @@
         android:id="@+id/entryModeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:fillViewport='true'
@@ -36,8 +36,9 @@
 
         <RadioButton
             android:id="@+id/chainedRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -46,8 +47,9 @@
 
         <RadioButton
             android:id="@+id/stepRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -56,8 +58,9 @@
 
         <RadioButton
             android:id="@+id/freeRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -93,8 +96,9 @@
 
         <CheckBox
             android:id="@+id/printNameOnPictureCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -103,8 +107,9 @@
 
         <CheckBox
             android:id="@+id/printTimeOnPictureCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -113,8 +118,9 @@
 
         <CheckBox
             android:id="@+id/printGPSOnPictureCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -146,8 +152,9 @@
 
         <CheckBox
             android:id="@+id/CSVCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -156,8 +163,9 @@
 
         <CheckBox
             android:id="@+id/JSONCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
@@ -166,8 +174,9 @@
 
         <CheckBox
             android:id="@+id/excelCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"

@@ -188,7 +188,7 @@
     <string name="chained_mode">Combined</string>
     <string name="step_mode">Step-By-Step</string>
     <string name="free_mode">Free Form</string>
-    <string name="export_label">Export Session As:</string>
+    <string name="export_label">Export Sessions As:</string>
     <string name="CSV">CSV</string>
     <string name="JSON">JSON</string>
     <string name="Spreadsheet">XLSX</string>
