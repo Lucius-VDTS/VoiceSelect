@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.SettingsMenu"
+    android:id="@+id/optionsMenu">
+
+    <TextView
+        android:id="@+id/entryModeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/entryModeGroup"
+        android:text="@string/entry_mode_label"
+        android:textSize="@dimen/large_text_size"
+        android:labelFor="@id/entryModeGroup" />
+
+    <RadioGroup
+        android:id="@+id/entryModeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/photoGroup"
+        android:fillViewport='true'
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/chainedRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/chained_mode"
+            android:textSize="@dimen/large_text_size"/>
+
+        <RadioButton
+            android:id="@+id/stepRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/step_mode"
+            android:textSize="@dimen/large_text_size" />
+
+        <RadioButton
+            android:id="@+id/freeRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/free_mode"
+            android:textSize="@dimen/large_text_size" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/photoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/photoGroup"
+        android:text="Photos:"
+        android:textSize="@dimen/large_text_size"
+        android:labelFor="@id/photoGroup" />
+
+    <LinearLayout
+        android:id="@+id/photoGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        android:fillViewport='true'
+        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
+        app:layout_constraintBottom_toTopOf="@id/exportOptions"
+        app:layout_constraintStart_toStartOf="parent" >
+
+        <CheckBox
+            android:id="@+id/printNameOnPictureCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/print_name_on_picture"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="nameOnPictureClick" />
+
+        <CheckBox
+            android:id="@+id/printTimeOnPictureCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/print_time_on_picture"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="timeOnPictureClick" />
+
+        <CheckBox
+            android:id="@+id/printGPSOnPictureCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/print_gps_coordinates_on_picture"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="gpsOnPictureClick" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/exportLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:text="@string/export_label"
+        android:textSize="@dimen/large_text_size"
+        android:labelFor="@id/exportOptions"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/exportOptions" />
+
+    <LinearLayout
+        android:id="@+id/exportOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:fillViewport='true'
+        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
+
+        <CheckBox
+            android:id="@+id/CSVCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/CSV"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="csvClick"/>
+
+        <CheckBox
+            android:id="@+id/JSONCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/JSON"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="jsonClick"/>
+
+        <CheckBox
+            android:id="@+id/excelCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/Spreadsheet"
+            android:textSize="@dimen/large_text_size"
+            android:onClick="excelClick"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/prefBottomButtonsLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/prefImportButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/column_import_button"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/prefExportButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/column_export_button"
+            android:textSize="@dimen/large_text_size"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

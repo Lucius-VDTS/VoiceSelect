@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -28,6 +27,7 @@ import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.SettingsMenu;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Layout;
@@ -125,14 +125,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         settingsActivityButton = findViewById(R.id.settingsActivityButton);
 
-        TextToSpeech textToSpeech = vdtsApplication.getTTSEngine();
         settingsActivityButton.setOnClickListener(
-                v -> textToSpeech.speak(
-                        "Good day " + currentUser.getName(),
-                        0,
-                        null,
-                        null
-                )
+                v -> optionsActivityButtonOnClick()
         );
 
         changeUserActivityButton = findViewById(R.id.changeUserActivityButton);
@@ -239,6 +233,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         startActivity(configureActivityIntent);
     }
 
+    private void optionsActivityButtonOnClick() {
+        Intent changeUserActivityIntent = new Intent(this, SettingsMenu.class);
+        startActivity(changeUserActivityIntent);
+    }
+
     public void changeUserActivityButtonOnClick() {
         Intent changeUserActivityIntent = new Intent(this, VDTSLoginActivity.class);
         startActivity(changeUserActivityIntent);
@@ -312,6 +311,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     this.getLifecycle(),
                     this,
                     vc -> vc.add("Configure", this::configureActivityButtonOnClick)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Settings", this::optionsActivityButtonOnClick)
             );
 
             IristickSDK.addVoiceCommands(
