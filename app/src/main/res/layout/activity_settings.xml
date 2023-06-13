@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.SettingsMenu"
     android:id="@+id/optionsMenu">
 
@@ -12,26 +11,35 @@
         android:id="@+id/entryModeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        app:layout_constraintStart_toStartOf="@id/entryModeGroup"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/entryModeGroup"
         android:text="@string/entry_mode_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/entryModeGroup" />
 
     <RadioGroup
         android:id="@+id/entryModeGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@id/entryModeLabel"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/photoGroup"
+        android:fillViewport='true'
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/chainedRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/chained_mode"
             android:textSize="@dimen/large_text_size"/>
 
@@ -39,6 +47,9 @@
             android:id="@+id/stepRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/step_mode"
             android:textSize="@dimen/large_text_size" />
 
@@ -46,6 +57,9 @@
             android:id="@+id/freeRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/free_mode"
             android:textSize="@dimen/large_text_size" />
     </RadioGroup>
@@ -54,25 +68,35 @@
         android:id="@+id/photoLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        app:layout_constraintStart_toStartOf="@id/photoGroup"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/photoGroup"
         android:text="Photos:"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/photoGroup" />
 
     <LinearLayout
         android:id="@+id/photoGroup"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/photoLabel"
-        app:layout_constraintEnd_toEndOf="parent" >
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        android:fillViewport='true'
+        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
+        app:layout_constraintBottom_toTopOf="@id/exportOptions"
+        app:layout_constraintStart_toStartOf="parent" >
 
         <CheckBox
             android:id="@+id/printNameOnPictureCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_name_on_picture"
             android:textSize="@dimen/large_text_size"
             android:onClick="nameOnPictureClick" />
@@ -81,6 +105,9 @@
             android:id="@+id/printTimeOnPictureCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_time_on_picture"
             android:textSize="@dimen/large_text_size"
             android:onClick="timeOnPictureClick" />
@@ -89,6 +116,9 @@
             android:id="@+id/printGPSOnPictureCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_gps_coordinates_on_picture"
             android:textSize="@dimen/large_text_size"
             android:onClick="gpsOnPictureClick" />
@@ -98,6 +128,9 @@
         android:id="@+id/exportLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
         android:text="@string/export_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/exportOptions"
@@ -108,6 +141,10 @@
         android:id="@+id/exportOptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:fillViewport='true'
         app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
 
         <CheckBox
@@ -115,6 +152,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/CSV"
             android:textSize="@dimen/large_text_size"
             android:onClick="csvClick"/>
@@ -124,6 +163,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/JSON"
             android:textSize="@dimen/large_text_size"
             android:onClick="jsonClick"/>
@@ -133,6 +174,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/Spreadsheet"
             android:textSize="@dimen/large_text_size"

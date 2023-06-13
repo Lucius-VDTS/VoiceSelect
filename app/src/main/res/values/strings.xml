@@ -192,7 +192,7 @@
     <string name="Spreadsheet">XLSX</string>
     <string name="print_name_on_picture">Print Name</string>
     <string name="print_time_on_picture">Print Time</string>
-    <string name="print_gps_coordinates_on_picture">Print GPS Coordinates</string>
+    <string name="print_gps_coordinates_on_picture">Print GPS</string>
     <string name="Import">Import</string>
     <string name="Export">Export</string>
     <string name="enter_new_key">Enter Key</string>
