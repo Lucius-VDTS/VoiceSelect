@@ -35,10 +35,11 @@
 
         <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
             android:id="@+id/columnScrollView"
-            android:contentDescription="@string/data_gathering_header_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="4">
+            android:layout_weight="4"
+            android:fillViewport="true"
+            android:contentDescription="@string/data_gathering_header_scroll_description">
 
             <LinearLayout
                 android:id="@+id/columnLinearLayout"
@@ -132,11 +133,11 @@
 
         <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
             android:id="@+id/columnValueScrollView"
-            android:contentDescription="@string/data_gathering_entry_scroll_description"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:contentDescription="@string/data_gathering_entry_scroll_description">
 
             <LinearLayout
                 android:id="@+id/columnValueLinearLayout"

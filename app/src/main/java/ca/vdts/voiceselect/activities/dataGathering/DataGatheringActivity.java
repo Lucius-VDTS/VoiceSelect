@@ -100,7 +100,6 @@ public class DataGatheringActivity extends AppCompatActivity
     private VSViewModel vsViewModel;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
-    //private ObservableHorizontalScrollView entryValueScrollView;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -268,6 +267,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
 
+                    //todo - make it possible to have null value like layout
                     ColumnValueSpinner columnValueSpinner =
                             new ColumnValueSpinner(
                                     this,
@@ -429,7 +429,12 @@ public class DataGatheringActivity extends AppCompatActivity
             for (int index = 0; index < columnValueSpinnerList.size(); index++) {
                 ColumnValue columnValue = (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
 
-                EntryValue newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+                EntryValue newEntryValue;
+                if (columnValue != null) {
+                    newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+                } else {
+                    newEntryValue = new EntryValue(newEntry.getUid());
+                }
                 entryValues.add(newEntryValue);
             }
 

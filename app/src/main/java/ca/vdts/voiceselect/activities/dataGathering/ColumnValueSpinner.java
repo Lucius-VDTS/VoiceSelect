@@ -46,6 +46,7 @@ public class ColumnValueSpinner {
         layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
 
         columnValues = new ArrayList<>(columnValuesByColumn);
+        columnValues.add(0, null);
 
         columnValueAdapter = new VDTSNamedAdapter<>(
                 context,

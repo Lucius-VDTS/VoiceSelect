@@ -18,30 +18,29 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent">
 
-            <Spinner
-                android:id="@+id/layoutSpinner"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="@dimen/eight_x_margin"
-                android:layout_marginEnd="@dimen/double_margin"
-                android:textSize="@dimen/large_text_size"
-                app:layout_constraintEnd_toStartOf="@id/startActivityButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/startActivityButton"
-                app:layout_constraintBottom_toBottomOf="@id/startActivityButton"/>
-
             <Button
                 android:id="@+id/startActivityButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/double_margin"
-                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/eight_x_margin"
+                android:layout_marginEnd="@dimen/double_margin"
                 android:text="@string/menu_start_activity_button"
                 android:textSize="@dimen/large_text_size"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layoutSpinner"
-
+                app:layout_constraintEnd_toStartOf="@id/layoutSpinner"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <Spinner
+                android:id="@+id/layoutSpinner"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/eight_x_margin"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/startActivityButton"
+                app:layout_constraintTop_toTopOf="@id/startActivityButton"
+                app:layout_constraintBottom_toBottomOf="@id/startActivityButton"/>
 
             <Button
                 android:id="@+id/resumeActivityButton"
