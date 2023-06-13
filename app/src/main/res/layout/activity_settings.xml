@@ -24,14 +24,13 @@
         android:id="@+id/entryModeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginTop="@dimen/eight_x_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:fillViewport='true'
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/photoGroup"
        >
 
         <RadioButton
@@ -68,6 +67,31 @@
             android:textSize="@dimen/large_text_size" />
     </RadioGroup>
 
+    <LinearLayout
+        android:id="@+id/voiceExtraGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
+        android:fillViewport='true'
+        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
+        app:layout_constraintStart_toStartOf="parent" >
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/autoSaveCheck"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/double_margin"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/autosave_label"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintEnd_toEndOf="@id/printNameOnPictureCheck" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/photoLabel"
         android:layout_width="wrap_content"
@@ -90,11 +114,11 @@
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
         android:fillViewport='true'
-        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
+        app:layout_constraintTop_toBottomOf="@id/voiceExtraGroup"
         app:layout_constraintBottom_toTopOf="@id/exportOptions"
         app:layout_constraintStart_toStartOf="parent" >
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/printNameOnPictureCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -105,7 +129,7 @@
             android:text="@string/print_name_on_picture"
             android:textSize="@dimen/large_text_size" />
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/printTimeOnPictureCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -116,7 +140,7 @@
             android:text="@string/print_time_on_picture"
             android:textSize="@dimen/large_text_size" />
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/printGPSOnPictureCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -146,11 +170,14 @@
         android:id="@+id/exportOptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:orientation="horizontal"
         android:fillViewport='true'
-        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout"
-        tools:layout_editor_absoluteX="8dp">
+        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/CSVCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -161,7 +188,7 @@
             android:text="@string/CSV"
             android:textSize="@dimen/large_text_size" />
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/JSONCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -172,7 +199,7 @@
             android:text="@string/JSON"
             android:textSize="@dimen/large_text_size" />
 
-        <CheckBox
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/excelCheck"
             android:layout_width="0dp"
             android:layout_height="match_parent"

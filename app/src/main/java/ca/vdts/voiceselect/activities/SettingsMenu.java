@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.activities;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_STEP;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_AUTOSAVE;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ENTRY_METHOD;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
@@ -20,6 +21,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -34,13 +36,15 @@ import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 public class SettingsMenu extends AppCompatActivity implements IRIListener {
     private VDTSApplication vdtsApplication;
 
-    private CheckBox nameOnPhotoCheck;
-    private CheckBox gpsOnPhotoCheck;
-    private CheckBox timeOnPhotoCheck;
+    private SwitchCompat autoCheck;
 
-    private CheckBox csvCheck;
-    private CheckBox jsonCheck;
-    private CheckBox excelCheck;
+    private SwitchCompat nameOnPhotoCheck;
+    private SwitchCompat  gpsOnPhotoCheck;
+    private SwitchCompat  timeOnPhotoCheck;
+
+    private SwitchCompat  csvCheck;
+    private SwitchCompat  jsonCheck;
+    private SwitchCompat excelCheck;
 
     private RadioGroup entryMethodGroup;
 
@@ -54,6 +58,8 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
         setContentView(R.layout.activity_settings);
         vdtsApplication = (VDTSApplication) getApplication();
 
+        autoCheck = findViewById(R.id.autoSaveCheck);
+        autoCheck.setOnClickListener(v -> autosaveClick());
         nameOnPhotoCheck = findViewById(R.id.printNameOnPictureCheck);
         nameOnPhotoCheck.setOnClickListener(v -> nameOnPictureClick());
         gpsOnPhotoCheck = findViewById(R.id.printGPSOnPictureCheck);
@@ -91,6 +97,8 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
     }
 
     private void updateControls() {
+        autoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_AUTOSAVE, false));
+
         nameOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_NAME, false));
         gpsOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_GPS, false));
         timeOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_TIME, false));
@@ -117,6 +125,9 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
         vdtsApplication.getPreferences().setInt(PREF_ENTRY_METHOD, order);
     }
 
+    private void autosaveClick() {
+        vdtsApplication.getPreferences().setBoolean(PREF_AUTOSAVE, autoCheck.isChecked());
+    }
 
     public void nameOnPictureClick() {
         vdtsApplication.getPreferences().setBoolean(PREF_PHOTO_PRINT_NAME, nameOnPhotoCheck.isChecked());

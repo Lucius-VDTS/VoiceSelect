@@ -199,4 +199,5 @@
     <string name="Export">Export</string>
     <string name="enter_new_key">Enter Key</string>
     <string name="photo_label">Photo Settings:</string>
+    <string name="autosave_label">Autosave</string>
 </resources>
