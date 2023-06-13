@@ -182,11 +182,13 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
+
+<!--  Settings Menu  -->
     <string name="entry_mode_label">Voice Entry Mode:</string>
     <string name="chained_mode">Combined</string>
     <string name="step_mode">Step-By-Step</string>
     <string name="free_mode">Free Form</string>
-    <string name="export_label">Export As:</string>
+    <string name="export_label">Export Session As:</string>
     <string name="CSV">CSV</string>
     <string name="JSON">JSON</string>
     <string name="Spreadsheet">XLSX</string>
@@ -196,4 +198,5 @@
     <string name="Import">Import</string>
     <string name="Export">Export</string>
     <string name="enter_new_key">Enter Key</string>
+    <string name="photo_label">Photo Settings:</string>
 </resources>

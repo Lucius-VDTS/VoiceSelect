@@ -55,11 +55,17 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
         vdtsApplication = (VDTSApplication) getApplication();
 
         nameOnPhotoCheck = findViewById(R.id.printNameOnPictureCheck);
+        nameOnPhotoCheck.setOnClickListener(v -> nameOnPictureClick());
         gpsOnPhotoCheck = findViewById(R.id.printGPSOnPictureCheck);
+        gpsOnPhotoCheck.setOnClickListener(v -> gpsOnPictureClick());
         timeOnPhotoCheck = findViewById(R.id.printTimeOnPictureCheck);
+        timeOnPhotoCheck.setOnClickListener(v -> gpsOnPictureClick());
         csvCheck = findViewById(R.id.CSVCheck);
+        csvCheck.setOnClickListener(v -> csvClick());
         jsonCheck = findViewById(R.id.JSONCheck);
+        jsonCheck.setOnClickListener(v -> jsonClick());
         excelCheck = findViewById(R.id.excelCheck);
+        excelCheck.setOnClickListener(v -> excelClick());
         entryMethodGroup = findViewById(R.id.entryModeGroup);
         entryMethodGroup.setOnCheckedChangeListener((group, checkedId) -> {
             View radioButton = entryMethodGroup.findViewById(checkedId);

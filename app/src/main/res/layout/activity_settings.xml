@@ -14,24 +14,25 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/entryModeGroup"
         android:text="@string/entry_mode_label"
         android:textSize="@dimen/large_text_size"
-        android:labelFor="@id/entryModeGroup" />
+        android:labelFor="@id/entryModeGroup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/entryModeGroup"/>
 
     <RadioGroup
         android:id="@+id/entryModeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginTop="@dimen/eight_x_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
+        android:fillViewport='true'
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/photoGroup"
-        android:fillViewport='true'
-        android:orientation="horizontal">
+       >
 
         <RadioButton
             android:id="@+id/chainedRadio"
@@ -73,7 +74,7 @@
         android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/photoGroup"
-        android:text="Photos:"
+        android:text="@string/photo_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/photoGroup" />
 
@@ -98,8 +99,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_name_on_picture"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="nameOnPictureClick" />
+            android:textSize="@dimen/large_text_size" />
 
         <CheckBox
             android:id="@+id/printTimeOnPictureCheck"
@@ -109,8 +109,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_time_on_picture"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="timeOnPictureClick" />
+            android:textSize="@dimen/large_text_size" />
 
         <CheckBox
             android:id="@+id/printGPSOnPictureCheck"
@@ -120,8 +119,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/print_gps_coordinates_on_picture"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="gpsOnPictureClick" />
+            android:textSize="@dimen/large_text_size" />
     </LinearLayout>
 
     <TextView
@@ -137,51 +135,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/exportOptions" />
 
+
     <LinearLayout
         android:id="@+id/exportOptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
         android:fillViewport='true'
-        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
+        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout"
+        tools:layout_editor_absoluteX="8dp">
 
         <CheckBox
             android:id="@+id/CSVCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/CSV"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="csvClick"/>
+            android:textSize="@dimen/large_text_size" />
 
         <CheckBox
             android:id="@+id/JSONCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/JSON"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="jsonClick"/>
+            android:textSize="@dimen/large_text_size" />
 
         <CheckBox
             android:id="@+id/excelCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/Spreadsheet"
-            android:textSize="@dimen/large_text_size"
-            android:onClick="excelClick"/>
+            android:textSize="@dimen/large_text_size" />
     </LinearLayout>
-
-
 
     <LinearLayout
         android:id="@+id/prefBottomButtonsLinearLayout"
