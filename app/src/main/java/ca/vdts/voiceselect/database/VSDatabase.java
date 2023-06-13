@@ -129,6 +129,7 @@ public abstract class VSDatabase extends RoomDatabase {
         final LayoutDAO layoutDAO = dbInstance.layoutDAO();
         final SessionDAO sessionDAO = dbInstance.sessionDAO();
         final SessionLayoutDAO sessionLayoutDAO = dbInstance.sessionLayoutDAO();
+        final EntryValueDAO entryValueDAO = dbInstance.entryValueDAO();
 
         executor.execute(() -> {
             //Users
@@ -153,10 +154,10 @@ public abstract class VSDatabase extends RoomDatabase {
                 columnValueDAO.insert(ColumnValue.COLUMN_VALUE_NONE);
             }
 
+            //todo - cleanup block - potentially apply to all blocks
             //Layouts
             int layoutCount = layoutDAO.findAll(
                     new SimpleSQLiteQuery("SELECT * FROM Layouts")).size();
-
             layoutDAO.insert(Layout.LAYOUT_NONE);
 //            if (option == PopulateOption.DB_CREATE || layoutCount == 0) {
 //                layoutDAO.insert(Layout.LAYOUT_NONE);
