@@ -71,7 +71,6 @@
         android:id="@+id/voiceExtraGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
@@ -109,13 +108,14 @@
         android:id="@+id/photoGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginTop="@dimen/sixteen_x_margin"
+        android:layout_marginBottom="@dimen/sixteen_x_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
         android:fillViewport='true'
         app:layout_constraintTop_toBottomOf="@id/voiceExtraGroup"
-        app:layout_constraintBottom_toTopOf="@id/exportOptions"
+        app:layout_constraintBottom_toTopOf="@id/exportGroup"
         app:layout_constraintStart_toStartOf="parent" >
 
         <androidx.appcompat.widget.SwitchCompat
@@ -161,16 +161,15 @@
         android:layout_marginEnd="@dimen/double_margin"
         android:text="@string/export_label"
         android:textSize="@dimen/large_text_size"
-        android:labelFor="@id/exportOptions"
+        android:labelFor="@id/exportGroup"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/exportOptions" />
-
+        app:layout_constraintBottom_toTopOf="@id/exportGroup" />
 
     <LinearLayout
-        android:id="@+id/exportOptions"
+        android:id="@+id/exportGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginTop="@dimen/sixteen_x_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
