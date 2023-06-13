@@ -148,11 +148,13 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //Recyclerview
         columnValueRecyclerView = findViewById(R.id.columnValueRecyclerView);
 
+        /*
         //Observe/Update column value list
         vsViewModel.findAllColumnValuesLive().observe(this, columnValues -> {
             columnValueList.clear();
             columnValueList.addAll(columnValues);
         });
+         */
 
         //Observe/Update column spoken list
         vsViewModel.findAllColumnValueSpokensLive().observe(this, columnValueSpokens -> {
