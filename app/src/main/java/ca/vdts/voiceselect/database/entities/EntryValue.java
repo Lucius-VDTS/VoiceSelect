@@ -2,6 +2,8 @@ package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -15,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 /**
- * Entity defines the EntryValues table. Entity represents a value within a row in the data
+ * Entity defines the EntryValues table. Entity represents a value within a row in a
  * gathering table.
  */
 @Entity(
@@ -68,6 +70,12 @@ public class EntryValue {
     @Ignore
     public EntryValue(long entryID, long columnValueID) {
         this(0L, entryID, columnValueID);
+    }
+
+    //Null Column Value Constructor
+    @Ignore
+    public EntryValue(long entryID) {
+        this(0L, entryID, DEFAULT_UID);
     }
 
     public long getUid() {

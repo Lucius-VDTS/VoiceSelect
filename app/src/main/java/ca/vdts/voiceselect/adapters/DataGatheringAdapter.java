@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -13,39 +14,47 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
+import ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView;
+import ca.vdts.voiceselect.activities.dataGathering.ScrollChangeListenerInterface;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
+import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdapter.ViewHolder> {
-    private Context context;
+    private final Context context;
+    private final DataGatheringActivity dataGatheringActivity;
+    private final VDTSAdapterClickListenerUtil selectedListener;
+    private final MutableLiveData<Integer> xCord;
     private int selectedIndex = -1;
 
     //Lists - Maps
-    final List<Column> columnList = new ArrayList<>();
-    final List<ColumnValue> columnValueList = new ArrayList<>();
+    final List<Column> columnDataset = new ArrayList<>();
+    private final HashMap<Integer, List<ColumnValue>> columnValueDataset = new HashMap<>();
     final List<Entry> entryDataset = new ArrayList<>();
     final List<EntryValue> entryValueDataset = new ArrayList<>();
 
     public DataGatheringAdapter(Context context,
-                                List<Column> columnList,
-                                List<ColumnValue> columnValueList,
-                                List<Entry> entryList,
-                                List<EntryValue> entryValueList) {
+                                DataGatheringActivity dataGatheringActivity,
+                                VDTSAdapterClickListenerUtil selectedListener) {
         this.context = context;
-        this.columnList.addAll(columnList);
-        this.columnValueList.addAll(columnValueList);
-        this.entryDataset.addAll(entryList);
-        this.entryValueDataset.addAll(entryValueList);
+        this.dataGatheringActivity = dataGatheringActivity;
+        this.selectedListener = selectedListener;
+
+        xCord = new MutableLiveData<>();
     }
 
     @NonNull
@@ -55,36 +64,39 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
                 .from(parent.getContext())
                 .inflate(R.layout.adapter_recycler_data_gathering, parent, false),
                 context,
-                columnList);
+                dataGatheringActivity,
+                xCord,
+                columnDataset);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DataGatheringAdapter.ViewHolder holder, int position) {
-        int size = entryDataset.size();
         final Entry entry = entryDataset.get(position);
+        int size = entryDataset.size();
 
         final List<EntryValue> entryValues = entryValueDataset.stream()
                 .filter(entryValue -> entryValue.getEntryID() == entry.getUid())
                 .collect(Collectors.toList());
 
-        holder.entryIndexValue.setText(position + 1);
+        holder.entryIndexValue.setText(String.valueOf(position + 1));
 
-        for (int i = 0; i <= holder.entryLinearLayout.getChildCount(); i++) {
-            TextView currentEntry = (TextView) holder.entryLinearLayout.getChildAt(i);
+        for (int index = 0; index < holder.entryValueLinearLayout.getChildCount(); index++) {
+            TextView entryValue = (TextView) holder.entryValueLinearLayout.getChildAt(index);
 
-            ColumnValue columnValue = columnValueList.stream().filter(
-                    columnVal -> entryValueDataset.stream()
-                            .anyMatch(
+            List<ColumnValue> columnValueList = new ArrayList<>(
+                    Objects.requireNonNull(columnValueDataset.get(index))
+            );
+
+            ColumnValue columnValue = columnValueList.stream()
+                    .filter(
+                            columnVal -> entryValues.stream()
+                                .anyMatch(
                                     entryVal -> entryVal.getColumnValueID() == columnVal.getUid()
                             )
                     ).findFirst()
                     .orElse(ColumnValue.COLUMN_VALUE_NONE);
 
-            //build hashmap of hashmap with column and with column values and ids
-            //pass into adapter
-            //
-
-            currentEntry.setText(columnValue.getName());
+            entryValue.setText(columnValue.getName());
         }
 
         if (size == 1) {
@@ -97,7 +109,7 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
             holder.entryLinearLayout.setBackgroundResource(R.drawable.recycler_view_middle_item);
         }
 
-        Drawable backgroundResource = holder.entryLinearLayout.getBackground();;
+        Drawable backgroundResource = holder.entryLinearLayout.getBackground();
         int backgroundColor;
         if (position == selectedIndex) {
             backgroundColor = ContextCompat.getColor(context, R.color.colorBackgroundSelected);
@@ -116,6 +128,27 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
     @Override
     public int getItemCount() {
         return entryDataset.size();
+    }
+
+    public void setDatasets(List<Column> columnList,
+                            HashMap<Integer, List<ColumnValue>> columnValueMap,
+                            List<Entry> entryList,
+                            List<EntryValue> entryValueList) {
+        columnDataset.clear();
+        columnDataset.addAll(columnList);
+
+        columnValueDataset.clear();
+        for (int index = 0; index < columnValueMap.size(); index++) {
+            columnValueDataset.put(index, columnValueMap.get(index));
+        }
+
+        entryDataset.clear();
+        entryDataset.addAll(entryList);
+
+        entryValueDataset.clear();
+        entryValueDataset.addAll(entryValueList);
+
+        notifyDataSetChanged();
     }
 
     public void addEntry(Entry entry) {
@@ -140,7 +173,7 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         notifyDataSetChanged();
     }
 
-    public void clearValues() {
+    public void clearEntryValues() {
         entryValueDataset.clear();
         notifyDataSetChanged();
     }
@@ -171,25 +204,43 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         notifyItemChanged(old);
     }
 
+    public void setXCord(int xCord) {
+        this.xCord.setValue(xCord);
+    }
+
 ////VIEW_HOLDER_SUBCLASS////////////////////////////////////////////////////////////////////////////
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder
+        implements ScrollChangeListenerInterface {
         Context context;
+        DataGatheringActivity dataGatheringActivity;
+        MutableLiveData<Integer> xCord;
         List<Column> columnList;
 
-        final TextView entryIndexValue;
         final LinearLayout entryLinearLayout;
+        final TextView entryIndexValue;
+        final ObservableHorizontalScrollView entryValueScrollView;
+        final LinearLayout entryValueLinearLayout;
         final TextView entryCommentValue;
         final TextView entryPhotoValue;
 
-        ViewHolder(View v, Context context, List<Column> columnList) {
+        ViewHolder(View v, Context context, DataGatheringActivity dataGatheringActivity,
+                   MutableLiveData<Integer> xCord, List<Column> columnList) {
             super(v);
             this.context = context;
+            this.dataGatheringActivity = dataGatheringActivity;
+            this.xCord = xCord;
             this.columnList = columnList;
-            entryIndexValue = v.findViewById(R.id.entryIndexValue);
+
             entryLinearLayout = v.findViewById(R.id.entryLinearLayout);
+            entryIndexValue = v.findViewById(R.id.entryIndexValue);
+            entryValueScrollView = v.findViewById(R.id.entryValueScrollView);
+            entryValueScrollView.setScrollChangeListener(this);
+            entryValueLinearLayout = v.findViewById(R.id.entryValueLinearLayout);
             entryCommentValue = v.findViewById(R.id.entryCommentValue);
             entryPhotoValue = v.findViewById(R.id.entryPhotoValue);
+
             initializeEntryValuesLayout();
+            xCord.observe(dataGatheringActivity, this::scrollHorizontally);
         }
 
         private void initializeEntryValuesLayout() {
@@ -199,23 +250,60 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
                     1
             );
             Resources resources = context.getResources();
-            int dimen = (int) TypedValue.applyDimension(
+
+            int minWidthDimen = (int) TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    4,
+                    96,
                     resources.getDisplayMetrics()
             );
-            layoutParams.setMargins(dimen, 0, dimen, 0);
 
-            for (int i = 0; i <= columnList.size(); i++ ) {
+            int marginPaddingDimen = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    2,
+                    resources.getDisplayMetrics()
+            );
+            layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
+
+            for (Column ignored : columnList) {
                 TextView entryValueText = new TextView(context);
-                entryValueText.setId(i);
-                entryValueText.setGravity(Gravity.CENTER);
+                entryValueText.setMinWidth(minWidthDimen);
                 entryValueText.setLayoutParams(layoutParams);
-                entryValueText.setPadding(dimen, dimen, dimen, dimen);
-                entryValueText.setMaxLines(1);        //todo - maybe not a good idea
+                entryValueText.setPadding(marginPaddingDimen, marginPaddingDimen,
+                        marginPaddingDimen, marginPaddingDimen);
+                entryValueText.setGravity(Gravity.CENTER);
+                entryValueText.setMaxLines(1);
                 entryValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-                entryLinearLayout.addView(entryValueText);
+                //todo - remove
+                entryValueText.setBackgroundColor(Color.parseColor("#f5341c"));
+
+
+                entryValueLinearLayout.addView(entryValueText);
+            }
+        }
+
+        /**
+         * Observe scroll changes in horizontal scroll views and synchronize their position.
+         * @param observableHorizontalScrollView - The scroll view being observed
+         * @param x - The horizontal position (pixels) that the view will scroll to
+         * @param y - The vertical position (pixels) that the view will scroll to
+         * @param oldx - The original horizontal position (pixels) of the scroll view
+         * @param oldy - The original vertical position (pixels) of the scroll view
+         */
+        @Override
+        public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
+                                    int x, int y,
+                                    int oldx, int oldy) {
+            dataGatheringActivity.onScrollChanged(
+                    null,
+                    x, y,
+                    oldx, oldy);
+            xCord.setValue(x);
+        }
+
+        private void scrollHorizontally(Integer xCord) {
+            if (xCord != null) {
+                entryValueScrollView.smoothScrollTo(xCord, 0);
             }
         }
     }

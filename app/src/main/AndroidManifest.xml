@@ -50,6 +50,9 @@
         <activity android:name=".library.activities.configure.VDTSConfigMenuActivity"
             android:label="@string/config_activity_label" />
 
+        <activity android:name=".activities.SettingsMenu"
+            android:label="@string/menu_settings_activity_button" />
+
         <activity android:name=".library.activities.configure.VDTSConfigUsersActivity"
             android:label="@string/config_users_activity_label" />
 
