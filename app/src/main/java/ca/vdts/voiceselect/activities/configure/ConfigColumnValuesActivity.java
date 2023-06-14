@@ -185,7 +185,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     protected void onResume() {
         super.onResume();
         initializeUserList();
-        disableViews();
     }
 
     //Initialize user list then column list
@@ -240,6 +239,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 handler.post(() -> {
                     columnValueAdapter.setDataset(columnValueList);
                     columnValueAdapterSelect(-1);
+                    disableViews();
                 });
             });
         }
@@ -354,8 +354,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     private void saveColumnValueButtonOnClick() {
-        final VDTSUser selectedUser = (VDTSUser) columnValueUserSpinner.getSelectedItem();
-
         if (selectedColumn != null) {
             ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
 

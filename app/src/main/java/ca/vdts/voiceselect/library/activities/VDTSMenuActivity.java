@@ -20,6 +20,9 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +30,7 @@ import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
-import ca.vdts.voiceselect.activities.SettingsMenu;
+import ca.vdts.voiceselect.activities.SettingsActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Layout;
@@ -42,12 +45,12 @@ import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
  * VDTS application's main menu.
  */
 public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
-    //private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSMainActivity.class);
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
-
-    private Layout selectedLayout;
+    private Session currentSession;
+    private Layout currentLayout;
 
     //Views
     private Spinner layoutSpinner;
@@ -63,9 +66,9 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private TextView footerUserValue;
     private TextView footerVersionValue;
 
-    //View Model - Adapters
+    //Layout Spinner
     private VSViewModel vsViewModel;
-    private VDTSNamedAdapter<Layout> layoutSpinnerAdapter;
+    private VDTSNamedAdapter<Layout> layoutAdapter;
 
     //Lists
     private final List<Layout> layoutList = new ArrayList<>();
@@ -96,22 +99,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        //Observe/Update layout list
-        vsViewModel.findAllLayoutsLive().observe(this, layouts -> {
-            layoutList.clear();
-            layoutList.addAll(layouts);
-            layoutList.remove(Layout.LAYOUT_NONE);
-            layoutSpinner.setEnabled(layoutList.size() > 1);
-            layoutSpinnerAdapter.notifyDataSetChanged();
-        });
-
-        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
+        layoutAdapter = new VDTSNamedAdapter<>(
                 this,
                 R.layout.adapter_spinner_named,
                 layoutList);
-        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
+        layoutAdapter.setToStringFunction((layout, integer) -> layout.getName());
 
-        layoutSpinner.setAdapter(layoutSpinnerAdapter);
+        layoutSpinner.setAdapter(layoutAdapter);
         layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
         startActivityButton = findViewById(R.id.startActivityButton);
@@ -152,70 +146,172 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
 
-        VSViewModel viewModel = new VSViewModel(vdtsApplication);
+        initializeCurrentSession();
+
+        //todo - very bad code
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        executor.execute(() -> {
+//                    final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
+//                    final long layoutID = vdtsApplication.getPreferences().getLong(
+//                            layoutKey,
+//                            -1L
+//                    );
+//                    Layout currentLayout = null;
+//                    if (layoutID > 0) {
+//                        currentLayout = vsViewModel.findLayout(layoutID);
+//                    }
+//                    if (currentLayout != null) {
+//                        final Layout l = currentLayout;
+//                        handler.post(() -> {
+//                            footerLayoutValue.setText(l .getName());
+//                            layoutSpinner.setSelection(layoutAdapter.getPosition(l));
+//                        });
+//                    } else {
+//                        handler.post(() -> footerLayoutValue.setText(""));
+//                    }
+//
+//                    final String sessionKey = currentUser.getExportCode().concat("_SESSION");
+//                    final long sessionID = vdtsApplication.getPreferences().getLong(
+//                            sessionKey,
+//                            -1L
+//                    );
+//                    Session currentSession = null;
+//                    if (sessionID > 0) {
+//                        currentSession = vsViewModel.findSessionByID(sessionID);
+//                    }
+//                    if (currentSession != null) {
+//                        final Session c = currentSession;
+//                        handler.post(() -> {
+//                            resumeActivityButton.setEnabled(true);
+//                            footerSessionValue.setText(c.name());
+//                        });
+//                    } else {
+//                        handler.post(() -> {
+//                            resumeActivityButton.setEnabled(false);
+//                            footerSessionValue.setText("");
+//                        });
+//                    }
+//                });
+//
+//
+    }
+
+    private void initializeCurrentSession() {
+        String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
+        long currentSessionID = vdtsApplication.getPreferences().getLong(
+                currentSessionKey,
+                -1L);
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
-                    final long layoutID = vdtsApplication.getPreferences().getLong(
-                            layoutKey,
-                            -1L
-                    );
-                    Layout currentLayout = null;
-                    if (layoutID > 0) {
-                        currentLayout = viewModel.findLayout(layoutID);
-                    }
-                    if (currentLayout != null) {
-                        final Layout l = currentLayout;
-                        handler.post(() -> {
-                            footerLayoutValue.setText(l .getName());
-                            layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(l));
-                        });
-                    } else {
-                        handler.post(() -> footerLayoutValue.setText(""));
-                    }
+            currentSession = vsViewModel.findSessionByID(currentSessionID);
+            handler.post(() -> {
+                initializeCurrentLayout();
+            });
+        });
+    }
 
-                    final String sessionKey = currentUser.getExportCode().concat("_Session");
-                    final long sessionID = vdtsApplication.getPreferences().getLong(
-                            sessionKey,
-                            -1L
-                    );
-                    Session currentSession = null;
-                    if (sessionID > 0) {
-                        currentSession = viewModel.findSessionByID(sessionID);
-                    }
-                    if (currentSession != null) {
-                        final Session c = currentSession;
-                        handler.post(() -> {
-                            resumeActivityButton.setEnabled(true);
-                            footerSessionValue.setText(c.name());
-                        });
-                    } else {
-                        handler.post(() -> {
-                            resumeActivityButton.setEnabled(false);
-                            footerSessionValue.setText("");
-                        });
-                    }
-                });
+    private void initializeCurrentLayout() {
+        final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
+        final long layoutID = vdtsApplication.getPreferences().getLong(
+                 layoutKey,
+                -1L
+        );
 
-        disableViews();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            layoutList.clear();
+            layoutList.addAll(vsViewModel.findAllActiveLayouts());
+
+            if (layoutList.size() > 1) {
+                layoutList.remove(Layout.LAYOUT_NONE);
+                currentLayout = vsViewModel.findLayoutByID(layoutID);
+            }
+            handler.post(() -> {
+                layoutAdapter.notifyDataSetChanged();
+
+                if (currentLayout == null) {
+                    layoutSpinner.setSelection(0);
+                } else {
+                    layoutSpinner.setSelection(layoutList.indexOf(currentLayout));
+                }
+
+                if (currentSession != null) {
+                    footerLayoutValue.setText(currentSession.getLayoutName());
+                    footerSessionValue.setText(currentSession.name());
+                } else {
+                    footerLayoutValue.setText("");
+                    footerSessionValue.setText("");
+                }
+
+                disableViews();
+            });
+        });
     }
 
     private void disableViews() {
         if (currentUser.getUid() == -9001L) {
             startActivityButton.setEnabled(false);
-            //resumeActivityButton.setEnabled(false);
+            resumeActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
         } else {
-            startActivityButton.setEnabled(true);
-            //resumeActivityButton.setEnabled(true);
+            if (layoutList.get(0).getUid() == -9001L) {
+                startActivityButton.setEnabled(false);
+                resumeActivityButton.setEnabled(false);
+            } else {
+                startActivityButton.setEnabled(true);
+                resumeActivityButton.setEnabled(currentSession != null);
+            }
+
             settingsActivityButton.setEnabled(true);
             changeUserActivityButton.setEnabled(true);
         }
     }
 
+    private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view,
+                                           int position, long id) {
+                    currentLayout = (Layout) parent.getItemAtPosition(position);
+                    final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
+                    vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            };
+
     public void startActivityButtonOnClick() {
+        //Create new session
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            int dailySessionCount = vsViewModel.countSessionsStartedToday();
+            currentSession = new Session(
+                    currentUser.getUid(),
+                    currentUser.getSessionPrefix(),
+                    currentLayout.getName(),
+                    dailySessionCount + 1);
+            long uid = vsViewModel.insertSession(currentSession);
+            currentSession.setUid(uid);
+            LOG.info("Added session: {}", currentSession.getSessionPrefix());
+
+            handler.post(() -> {
+                //Attach new session to current user
+                vdtsApplication.getPreferences().setLong(
+                        String.format("%s_SESSION", currentUser.getExportCode()),
+                        currentSession.getUid());
+                LOG.info("Attached session to: {}", currentUser.getName());
+
+                //todo - Attach current layout to current session
+            });
+        });
+
         Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
         startActivity(startActivityIntent);
     }
@@ -234,7 +330,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     private void optionsActivityButtonOnClick() {
-        Intent changeUserActivityIntent = new Intent(this, SettingsMenu.class);
+        Intent changeUserActivityIntent = new Intent(this, SettingsActivity.class);
         startActivity(changeUserActivityIntent);
     }
 
@@ -249,27 +345,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public void aboutActivityButtonOnClick() {
         IristickSDK.showAbout(VDTSMenuActivity.this);
     }
-
-    private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
-            new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
-                    selectedLayout = (Layout) parent.getItemAtPosition(position);
-
-                    if (layoutList.size() <=1) {
-                        layoutSpinner.setEnabled(false);
-                    } else {
-                        layoutSpinner.setEnabled(true);
-                    }
-                    final String layoutKey = currentUser.getExportCode().concat("_Layout");
-                    vdtsApplication.getPreferences().setLong(layoutKey,selectedLayout.getUid());
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
-            };
-
 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {

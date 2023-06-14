@@ -17,6 +17,10 @@ import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 
+/**
+ * Class contains programmatically generated column value spinners, which includes the dataset,
+ * adapter, and spinner.
+ */
 public class ColumnValueSpinner {
     private final List<ColumnValue> columnValues;
     private final VDTSNamedAdapter<ColumnValue> columnValueAdapter;

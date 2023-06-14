@@ -60,7 +60,6 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
     private Session currentSession;
-    private final boolean isNewSession = true;
     private Entry selectedEntry;
     private ColumnValue selectedColumnValue;
 
@@ -165,31 +164,18 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void initializeSession() {
-        //todo - update isNewSession
-        if (isNewSession) {
-            //Create new session
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Handler handler = new Handler(Looper.getMainLooper());
-            executor.execute(() -> {
-                int dailySessionCount = vsViewModel.countSessionsStartedToday();
-                currentSession = new Session(
-                        currentUser.getUid(),
-                        currentUser.getSessionPrefix(),
-                        dailySessionCount + 1);
-                long uid = vsViewModel.insertSession(currentSession);
-                currentSession.setUid(uid);
-                LOG.info("Added session: {}", currentSession.getSessionPrefix());
+        String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
+        long currentSessionID = vdtsApplication.getPreferences().getLong(currentSessionKey);
 
-                handler.post(() -> {
-                    sessionValue.setText(currentSession.name());
-
-                    initializeColumnsLayout();
-                });
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            currentSession = vsViewModel.findSessionByID(currentSessionID);
+            handler.post(() -> {
+                sessionValue.setText(currentSession.name());
+                initializeColumnsLayout();
             });
-        } else {
-            //Resume existing session
-            //todo - resume existing session
-        }
+        });
     }
 
     /**

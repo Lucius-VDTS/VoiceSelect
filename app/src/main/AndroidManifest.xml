@@ -50,7 +50,7 @@
         <activity android:name=".library.activities.configure.VDTSConfigMenuActivity"
             android:label="@string/config_activity_label" />
 
-        <activity android:name=".activities.SettingsMenu"
+        <activity android:name=".activities.SettingsActivity"
             android:label="@string/menu_settings_activity_button" />
 
         <activity android:name=".library.activities.configure.VDTSConfigUsersActivity"

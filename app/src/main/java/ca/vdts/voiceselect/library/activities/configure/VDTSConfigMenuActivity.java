@@ -108,7 +108,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
             );
             Layout currentLayout = null;
             if (layoutID > 0) {
-                currentLayout = viewModel.findLayout(layoutID);
+                currentLayout = viewModel.findLayoutByID(layoutID);
             }
             if (currentLayout != null) {
                 final Layout l = currentLayout;

@@ -103,7 +103,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (hasFocus && currentUser.getAuthority() < 1) {
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a user name",
+                        "Must be an admin user to modify",
                         Toast.LENGTH_SHORT
                 );
                 userNameEditText.clearFocus();
@@ -115,7 +115,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (hasFocus && currentUser.getAuthority() < 1) {
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a user session prefix",
+                        "Must be an admin user to modify",
                         Toast.LENGTH_SHORT
                 );
                 userPrefixEditText.clearFocus();
@@ -127,7 +127,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (hasFocus && currentUser.getAuthority() < 1) {
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a user export code",
+                        "Must be an admin user to modify",
                         Toast.LENGTH_SHORT
                 );
                 userExportCodeEditText.clearFocus();
@@ -155,7 +155,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userAdminSwitch.clearFocus();
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can change the admin value",
+                        "Must be an admin user to modify",
                         Toast.LENGTH_SHORT
                 );
             }

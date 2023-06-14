@@ -1,6 +1,7 @@
 package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
+import static ca.vdts.voiceselect.database.entities.Layout.LAYOUT_NONE;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_DATE;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
@@ -58,6 +59,11 @@ public class Session implements VDTSIndexedNamedInterface {
     private String sessionPrefix;
 
     @Expose
+    @SerializedName("layoutName")
+    @ColumnInfo(name = "layoutName")
+    private String layoutName;
+
+    @Expose
     @SerializedName("startDate")
     @ColumnInfo(name = "startDate")
     private LocalDateTime startDate;
@@ -79,17 +85,19 @@ public class Session implements VDTSIndexedNamedInterface {
             DEFAULT_UID,
             VDTS_USER_NONE.getUid(),
             VDTS_USER_NONE.getSessionPrefix(),
+            LAYOUT_NONE.getName(),
             DEFAULT_DATE,
             0,
             DEFAULT_DATE
     );
 
     //Non-Default Constructor
-    public Session(long uid, long userID, String sessionPrefix, LocalDateTime startDate,
-                   int dateIteration, LocalDateTime endDate) {
+    public Session(long uid, long userID, String sessionPrefix, String layoutName,
+                   LocalDateTime startDate, int dateIteration, LocalDateTime endDate) {
         this.uid = uid;
         this.userID = userID;
         this.sessionPrefix = sessionPrefix;
+        this.layoutName = layoutName;
         this.startDate = startDate;
         this.dateIteration = dateIteration;
         this.endDate = endDate;
@@ -97,8 +105,8 @@ public class Session implements VDTSIndexedNamedInterface {
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public Session(long userID, String userPrefix, int dateIteration) {
-        this(0L, userID, userPrefix, LocalDateTime.now(), dateIteration, null);
+    public Session(long userID, String userPrefix, String layoutName, int dateIteration) {
+        this(0L, userID, userPrefix, layoutName,LocalDateTime.now(), dateIteration, null);
     }
 
     public long getUid() {
@@ -123,6 +131,14 @@ public class Session implements VDTSIndexedNamedInterface {
 
     public void setSessionPrefix(String sessionPrefix) {
         this.sessionPrefix = sessionPrefix;
+    }
+
+    public String getLayoutName() {
+        return layoutName;
+    }
+
+    public void setLayoutName(String layoutName) {
+        this.layoutName = layoutName;
     }
 
     public LocalDateTime getStartDate() {
@@ -163,10 +179,10 @@ public class Session implements VDTSIndexedNamedInterface {
         final DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
         return String.format(
                 Locale.getDefault(),
-                "%s%s-%d",
+                "%s %s-%d",
                 this.getSessionPrefix() == null && this.getSessionPrefix().isEmpty() ?
-                        this.getSessionPrefix().concat("-") :
-                        "",
+                        "" :
+                        this.getSessionPrefix(),
                 datePattern.format(this.getStartDate()),
                 this.getDateIteration()
         );

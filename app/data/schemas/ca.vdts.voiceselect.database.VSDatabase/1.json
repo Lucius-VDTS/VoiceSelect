@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bfccabc21c6d50716cec79db458d26b1",
+    "identityHash": "6fab4dc3f34cf498c8016a0eefaec1ea",
     "entities": [
       {
         "tableName": "Users",
@@ -597,7 +597,7 @@
       },
       {
         "tableName": "Sessions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `sessionPrefix` TEXT, `startDate` TEXT, `dateIteration` INTEGER NOT NULL, `endDate` TEXT, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userID` INTEGER NOT NULL, `sessionPrefix` TEXT, `layoutName` TEXT, `startDate` TEXT, `dateIteration` INTEGER NOT NULL, `endDate` TEXT, FOREIGN KEY(`userID`) REFERENCES `Users`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -614,6 +614,12 @@
           {
             "fieldPath": "sessionPrefix",
             "columnName": "sessionPrefix",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "layoutName",
+            "columnName": "layoutName",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -917,7 +923,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bfccabc21c6d50716cec79db458d26b1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6fab4dc3f34cf498c8016a0eefaec1ea')"
     ]
   }
 }

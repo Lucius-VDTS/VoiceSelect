@@ -351,7 +351,7 @@ public class VSViewModel extends VDTSViewModel {
         layoutRepository.deleteAll(layouts);
     }
 
-    public Layout findLayout(long uid) {
+    public Layout findLayoutByID(long uid) {
         return layoutRepository.find(
                 "SELECT * FROM Layouts " +
                         "WHERE uid = " + uid

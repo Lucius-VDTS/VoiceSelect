@@ -157,8 +157,12 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         //User Spinner
         columnUserSpinner = findViewById(R.id.layoutSpinner);
 
-        userAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, userList);
+        userAdapter = new VDTSNamedAdapter<>(
+                this,
+                R.layout.adapter_spinner_named,
+                userList);
         userAdapter.setToStringFunction((user, integer) -> user.getName());
+
         columnUserSpinner.setAdapter(userAdapter);
         columnUserSpinner.setOnItemSelectedListener(userSpinnerListener);
 

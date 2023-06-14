@@ -122,7 +122,7 @@ public class VDTSPrefKeyValue {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPrefKeyValue {} did not return an Boolean: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Boolean: ", key, e);
             return null;
         }
     }
@@ -131,7 +131,7 @@ public class VDTSPrefKeyValue {
         try {
             return Boolean.parseBoolean(getString(key,defaultValue? "True":"False"));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPrefKeyValue {} did not return an Boolean: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a Boolean: ", key, e);
             return null;
         }
     }
@@ -145,7 +145,7 @@ public class VDTSPrefKeyValue {
                 return null;
             }
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPrefKeyValue {} did not return an String Set: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a String Set: ", key, e);
             return null;
         }
     }
@@ -155,7 +155,7 @@ public class VDTSPrefKeyValue {
             String value = defaultValue != null? defaultValue.toString() : null;
             return stringToSet(getString(key,value));
         } catch (NumberFormatException e) {
-            LOG.error("VDTSPrefKeyValue {} did not return an String Set: ", key, e);
+            LOG.error("VDTSPrefKeyValue {} did not return a String Set: ", key, e);
             return null;
         }
     }

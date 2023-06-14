@@ -18,7 +18,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.iristick.sdk.IRIHeadset;
@@ -27,13 +26,12 @@ import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
 import ca.vdts.voiceselect.R;
-import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.library.VDTSApplication;
-import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
-public class SettingsMenu extends AppCompatActivity implements IRIListener {
+public class SettingsActivity extends AppCompatActivity implements IRIListener {
     private VDTSApplication vdtsApplication;
 
+    //Views
     private CheckBox nameOnPhotoCheck;
     private CheckBox gpsOnPhotoCheck;
     private CheckBox timeOnPhotoCheck;
@@ -46,7 +44,7 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
-    private SettingsMenu.IristickHUD iristickHUD;
+    private SettingsActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +209,7 @@ public class SettingsMenu extends AppCompatActivity implements IRIListener {
 
 
             IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new SettingsMenu.IristickHUD();
+                iristickHUD = new SettingsActivity.IristickHUD();
                 return iristickHUD;
             });
         }
