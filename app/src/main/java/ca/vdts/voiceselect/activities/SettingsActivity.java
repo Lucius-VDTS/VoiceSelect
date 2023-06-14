@@ -37,9 +37,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     private VDTSApplication vdtsApplication;
 
     //Views
-    private CheckBox nameOnPhotoCheck;
-    private CheckBox gpsOnPhotoCheck;
-    private CheckBox timeOnPhotoCheck;
     private SwitchCompat autoCheck;
 
     private SwitchCompat nameOnPhotoCheck;
