@@ -76,7 +76,7 @@ public class Layout implements VDTSIndexedNamedInterface {
             DEFAULT_UID,
             VDTS_USER_NONE.getUid(),
             DEFAULT_DATE,
-            "No Layout",
+            "No Layouts",
             "NL",
             true
     );

@@ -147,54 +147,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         footerUserValue.setText(currentUser.getName());
 
         initializeCurrentSession();
-
-        //todo - very bad code
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        Handler handler = new Handler(Looper.getMainLooper());
-//        executor.execute(() -> {
-//                    final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-//                    final long layoutID = vdtsApplication.getPreferences().getLong(
-//                            layoutKey,
-//                            -1L
-//                    );
-//                    Layout currentLayout = null;
-//                    if (layoutID > 0) {
-//                        currentLayout = vsViewModel.findLayout(layoutID);
-//                    }
-//                    if (currentLayout != null) {
-//                        final Layout l = currentLayout;
-//                        handler.post(() -> {
-//                            footerLayoutValue.setText(l .getName());
-//                            layoutSpinner.setSelection(layoutAdapter.getPosition(l));
-//                        });
-//                    } else {
-//                        handler.post(() -> footerLayoutValue.setText(""));
-//                    }
-//
-//                    final String sessionKey = currentUser.getExportCode().concat("_SESSION");
-//                    final long sessionID = vdtsApplication.getPreferences().getLong(
-//                            sessionKey,
-//                            -1L
-//                    );
-//                    Session currentSession = null;
-//                    if (sessionID > 0) {
-//                        currentSession = vsViewModel.findSessionByID(sessionID);
-//                    }
-//                    if (currentSession != null) {
-//                        final Session c = currentSession;
-//                        handler.post(() -> {
-//                            resumeActivityButton.setEnabled(true);
-//                            footerSessionValue.setText(c.name());
-//                        });
-//                    } else {
-//                        handler.post(() -> {
-//                            resumeActivityButton.setEnabled(false);
-//                            footerSessionValue.setText("");
-//                        });
-//                    }
-//                });
-//
-//
     }
 
     private void initializeCurrentSession() {
@@ -207,9 +159,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             currentSession = vsViewModel.findSessionByID(currentSessionID);
-            handler.post(() -> {
-                initializeCurrentLayout();
-            });
+            handler.post(this::initializeCurrentLayout);
         });
     }
 
@@ -258,17 +208,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             resumeActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
-        } else {
-            if (layoutList.get(0).getUid() == -9001L) {
-                startActivityButton.setEnabled(false);
-                resumeActivityButton.setEnabled(false);
-            } else {
-                startActivityButton.setEnabled(true);
-                resumeActivityButton.setEnabled(currentSession != null);
-            }
-
-            settingsActivityButton.setEnabled(true);
-            changeUserActivityButton.setEnabled(true);
         }
     }
 
@@ -278,8 +217,19 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     currentLayout = (Layout) parent.getItemAtPosition(position);
-                    final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-                    vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
+                    if (currentLayout.getUid() == -9001L) {
+                        vdtsApplication.displayToast(
+                                vdtsApplication,
+                                "Create a layout to start a session",
+                                0
+                        );
+
+                        layoutSpinner.setEnabled(false);
+                    } else {
+                        layoutSpinner.setEnabled(true);
+                        final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
+                        vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
+                    }
                 }
 
                 @Override
@@ -287,38 +237,50 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             };
 
     public void startActivityButtonOnClick() {
-        //Create new session
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            int dailySessionCount = vsViewModel.countSessionsStartedToday();
-            currentSession = new Session(
-                    currentUser.getUid(),
-                    currentUser.getSessionPrefix(),
-                    currentLayout.getName(),
-                    dailySessionCount + 1);
-            long uid = vsViewModel.insertSession(currentSession);
-            currentSession.setUid(uid);
-            LOG.info("Added session: {}", currentSession.getSessionPrefix());
+        if (currentLayout.getUid() == -9001L) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Select a layout to start a session",
+                    0);
+        } else {
+            //Create new session
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            executor.execute(() -> {
+                int dailySessionCount = vsViewModel.countSessionsStartedToday();
+                currentSession = new Session(
+                        currentUser.getUid(),
+                        currentUser.getSessionPrefix(),
+                        currentLayout.getName(),
+                        dailySessionCount + 1);
+                long uid = vsViewModel.insertSession(currentSession);
+                currentSession.setUid(uid);
+                LOG.info("Added session: {}", currentSession.getSessionPrefix());
 
-            handler.post(() -> {
-                //Attach new session to current user
-                vdtsApplication.getPreferences().setLong(
-                        String.format("%s_SESSION", currentUser.getExportCode()),
-                        currentSession.getUid());
-                LOG.info("Attached session to: {}", currentUser.getName());
-
-                //todo - Attach current layout to current session
+                handler.post(() -> {
+                    //Attach new session to current user
+                    vdtsApplication.getPreferences().setLong(
+                            String.format("%s_SESSION", currentUser.getExportCode()),
+                            currentSession.getUid());
+                    LOG.info("Attached session to: {}", currentUser.getName());
+                });
             });
-        });
 
-        Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
-        startActivity(startActivityIntent);
+            Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
+            startActivity(startActivityIntent);
+        }
     }
 
     public void resumeActivityButtonOnClick() {
-        Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
-        startActivity(resumeActivityIntent);
+        if (currentSession == null) {
+            vdtsApplication.displayToast(
+                    this,
+                    "A session has not been started",
+                    0);
+        } else {
+            Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
+            startActivity(resumeActivityIntent);
+        }
     }
 
     public void configureActivityButtonOnClick() {

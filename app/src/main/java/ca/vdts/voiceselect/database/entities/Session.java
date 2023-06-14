@@ -179,10 +179,10 @@ public class Session implements VDTSIndexedNamedInterface {
         final DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yy/MM/dd");
         return String.format(
                 Locale.getDefault(),
-                "%s %s-%d",
+                "%s%s-%d",
                 this.getSessionPrefix() == null && this.getSessionPrefix().isEmpty() ?
                         "" :
-                        this.getSessionPrefix(),
+                        this.getSessionPrefix().concat("-"),
                 datePattern.format(this.getStartDate()),
                 this.getDateIteration()
         );

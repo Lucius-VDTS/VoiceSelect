@@ -126,15 +126,17 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         vsViewModel.findAllLayoutsLive().observe(this, layouts -> {
             layoutList.clear();
             layoutList.addAll(layouts);
+            layoutList.get(0).setName("");
+            layoutList.get(0).setExportCode("");
         });
 
-        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
-                this,
-                R.layout.adapter_spinner_named,
-                layoutList);
-        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
-
-        layoutSpinner.setAdapter(layoutSpinnerAdapter);
+//        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
+//                this,
+//                R.layout.adapter_spinner_named,
+//                layoutList);
+//        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
+//
+//        layoutSpinner.setAdapter(layoutSpinnerAdapter);
         layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
         //Recycler View
@@ -170,7 +172,16 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
             handler.post(() -> {
-                layoutSpinnerAdapter.notifyDataSetChanged();
+//                layoutList.get(0).setName("");
+//                layoutList.get(0).setExportCode("");
+                layoutSpinnerAdapter = new VDTSNamedAdapter<>(
+                        this,
+                        R.layout.adapter_spinner_named,
+                        layoutList);
+                layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
+
+                layoutSpinner.setAdapter(layoutSpinnerAdapter);
+//                layoutSpinnerAdapter.notifyDataSetChanged();
                 initializeColumnList();
             });
         });
@@ -238,24 +249,32 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     selectedLayout = (Layout) parent.getItemAtPosition(position);
-                    layoutNameEditText.setText(selectedLayout.getName());
-                    layoutExportCodeEditText.setText(selectedLayout.getExportCode());
                     selectedLayoutPosition = position;
 
-                    if (layoutList.size() == 1) {
-                        layoutSpinner.setEnabled(false);
+                    if (layoutList.size() <= 1) {
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
                                 "A layout must be created before it can be customized",
-                                0);
+                                0
+                        );
+
+//                        layoutNameEditText.setText("");
+//                        layoutExportCodeEditText.setText("");
                     } else {
-                        layoutSpinner.setEnabled(true);
+                        layoutNameEditText.setText(selectedLayout.getName());
+                        layoutExportCodeEditText.setText(selectedLayout.getExportCode());
                     }
+//                    else {
+//                        if (selectedLayout.getUid() == -9001L) {
+//                            layoutNameEditText.setText("");
+//                            layoutExportCodeEditText.setText("");
+//                        } else {
+//                            layoutNameEditText.setText(selectedLayout.getName());
+//                            layoutExportCodeEditText.setText(selectedLayout.getExportCode());
+//                        }
+//                    }
 
                     initializeLayoutColumnList(selectedLayout);
-                    if (configLayoutsAdapter != null) {
-                        configLayoutsAdapterSelect(-1);
-                    }
                 }
 
                 @Override
@@ -299,7 +318,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 }
             }
         } else {
-            configLayoutsAdapter.clearSelected();
+            if (configLayoutsAdapter != null) {
+                configLayoutsAdapter.clearSelected();
+            }
+
             columnEnabledSwitch.setEnabled(false);
             columnEnabledSwitch.setChecked(false);
             columnPositionSlider.setEnabled(false);
@@ -308,15 +330,23 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void newLayoutButtonOnClick() {
-        layoutNameEditText.setText("");
-        layoutExportCodeEditText.setText("");
         layoutSpinner.setSelection(0);
+//        layoutNameEditText.setText("");
+//        layoutExportCodeEditText.setText("");
         configLayoutsAdapterSelect(-1);
         layoutNameEditText.requestFocus();
     }
 
     private void resetLayoutButtonOnClick() {
         layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex());
+//        if (selectedLayout.getUid() == -9001L) {
+//            layoutNameEditText.setText("");
+//            layoutExportCodeEditText.setText("");
+//        } else {
+//            layoutNameEditText.setText(selectedLayout.getName());
+//            layoutExportCodeEditText.setText(selectedLayout.getExportCode());
+//        }
+
         layoutNameEditText.setText(selectedLayout.getName());
         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
         configLayoutsAdapterSelect(configLayoutsAdapter.getSelectedColumnIndex());
@@ -331,7 +361,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             LOG.info(message);
             vdtsApplication.displayToast(this, message, 0);
         } else if (!layoutNameEditText.getText().toString().isEmpty() &&
-                !layoutExportCodeEditText.getText().toString().isEmpty()) {
+                   !layoutExportCodeEditText.getText().toString().isEmpty()) {
             if (selectedLayout.getUid() >= 1) {
                 //Update existing layout
                 selectedLayout.setName(layoutNameEditText.getText().toString().trim());
@@ -385,16 +415,18 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                             });
                         } else {
                             //Remove existing layout column
-                            ExecutorService removeLayoutColumnExecutor =
-                                    Executors.newSingleThreadExecutor();
-                            Handler removeLayoutColumnHandler =
-                                    new Handler(Looper.getMainLooper());
-                            removeLayoutColumnExecutor.execute(() -> {
-                                vsViewModel.deleteLayoutColumn(selectedLayoutColumn);
-                                removeLayoutColumnHandler.post(() -> {
-                                    configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn);
+                            if (selectedLayoutColumn != null) {
+                                ExecutorService removeLayoutColumnExecutor =
+                                        Executors.newSingleThreadExecutor();
+                                Handler removeLayoutColumnHandler =
+                                        new Handler(Looper.getMainLooper());
+                                removeLayoutColumnExecutor.execute(() -> {
+                                    vsViewModel.deleteLayoutColumn(selectedLayoutColumn);
+                                    removeLayoutColumnHandler.post(() -> {
+                                        configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn);
+                                    });
                                 });
-                            });
+                            }
                         }
                     });
                 });
