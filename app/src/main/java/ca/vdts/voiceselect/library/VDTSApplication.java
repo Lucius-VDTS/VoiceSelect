@@ -30,6 +30,8 @@ public class VDTSApplication extends Application {
     public static final String SHARED_PREFERENCES = "SHARED_PREFERENCES";
 
     public static final String PREF_ENTRY_METHOD = "PREF_ENTRY_METHOD";
+
+    public static final String PREF_AUTOSAVE = "PREF_AUTOSAVE ";
     public static final String PREF_PHOTO_PRINT_NAME = "PREF_PHOTO_PRINT_NAME";
     public static final String PREF_PHOTO_PRINT_GPS = "PREF_PHOTO_PRINT_GPS";
     public static final String PREF_PHOTO_PRINT_TIME = "PREF_PHOTO_PRINT_TIME";
