@@ -165,6 +165,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
             handler.post(() -> {
+                //todo - do in every other config editor????
                 layoutSpinnerAdapter = new VDTSNamedAdapter<>(
                         this,
                         R.layout.adapter_spinner_named,
