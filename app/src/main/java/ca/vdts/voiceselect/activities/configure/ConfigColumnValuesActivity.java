@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -116,12 +117,44 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueDeleteButton.setOnClickListener(v -> deleteColumnValueButtonOnClick());
 
         columnValueNameEditText = findViewById(R.id.columnValueNameEditText);
+        columnValueNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a value name",
+                        Toast.LENGTH_SHORT
+                );
+                columnValueNameEditText.clearFocus();
+            }
+        });
         columnValueNameCodeEditText = findViewById(R.id.columnValueNameCodeEditText);
+        columnValueNameCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a value abbreviation",
+                        Toast.LENGTH_SHORT
+                );
+                columnValueNameCodeEditText.clearFocus();
+            }
+        });
         columnValueExportCodeEditText = findViewById(R.id.columnValueExportCodeEditText);
+        columnValueExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && currentUser.getAuthority() < 1) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Only an admin user can set a value export code",
+                        Toast.LENGTH_SHORT
+                );
+                columnValueExportCodeEditText.clearFocus();
+            }
+        });
         columnValueSpokenEditText = findViewById(R.id.columnValueSpokenEditText);
 
         columnValueImportButton = findViewById(R.id.columnValueImportButton);
+        columnValueImportButton.setOnClickListener(v -> importButtonOnClick());
         columnValueExportButton = findViewById(R.id.columnValueExportButton);
+        columnValueExportButton.setOnClickListener(v -> exportButtonOnClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -194,6 +227,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         if (currentUser.getAuthority() <= 0) {
             userList.clear();
             userList.add(currentUser);
+            userAdapter.notifyDataSetChanged();
+            columnValueUserSpinner.setSelection(0);
             initializeColumnList();
         } else {
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -252,21 +287,21 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
      */
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
-            columnValueNewButton.setEnabled(false);
-            columnValueDeleteButton.setEnabled(false);
+            //columnValueNewButton.setEnabled(false);
+            //columnValueDeleteButton.setEnabled(false);
 
-            columnValueNameEditText.setEnabled(false);
-            columnValueNameCodeEditText.setEnabled(false);
-            columnValueExportCodeEditText.setEnabled(false);
+            //columnValueNameEditText.setEnabled(false);
+            //columnValueNameCodeEditText.setEnabled(false);
+            //columnValueExportCodeEditText.setEnabled(false);
             columnValueUserSpinner.setEnabled(false);
 
-            columnValueImportButton.setEnabled(false);
-            columnValueExportButton.setEnabled(false);
+            //columnValueImportButton.setEnabled(false);
+            //columnValueExportButton.setEnabled(false);
 
-            if (columnList.size() == 0) {
+            /*if (columnList.size() == 0) {
                 columnValueResetButton.setEnabled(false);
                 columnValueSaveButton.setEnabled(false);
-            }
+            }*/
         }
     }
 
@@ -346,8 +381,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     private void newColumnValueButtonOnClick() {
-        columnValueAdapterSelect(-1);
-        columnValueNameEditText.requestFocus();
+        if (currentUser.getAuthority() > 0) {
+            columnValueAdapterSelect(-1);
+            columnValueNameEditText.requestFocus();
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can create new columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
     }
 
     private void resetColumnValueButtonOnClick() {
@@ -434,21 +477,49 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     private void deleteColumnValueButtonOnClick() {
-        ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
-        if (selectedColumnValue != null) {
-            selectedColumnValue.setActive(false);
-            new Thread(() -> vsViewModel.updateColumnValue(selectedColumnValue)).start();
-            new Thread(() -> {
-                final List<ColumnSpoken> spokenList =
-                        vsViewModel.findAllColumnSpokensByColumn(selectedColumnValue.getUid());
+        if (currentUser.getAuthority() > 0) {
+            ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
+            if (selectedColumnValue != null) {
+                selectedColumnValue.setActive(false);
+                new Thread(() -> vsViewModel.updateColumnValue(selectedColumnValue)).start();
+                new Thread(() -> {
+                    final List<ColumnSpoken> spokenList =
+                            vsViewModel.findAllColumnSpokensByColumn(selectedColumnValue.getUid());
 
-                //Convert list to array for deleteAllColumnSpokens query
-                final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
-                vsViewModel.deleteAllColumnSpokens(spokenArray);
-            }).start();
+                    //Convert list to array for deleteAllColumnSpokens query
+                    final ColumnSpoken[] spokenArray = spokenList.toArray(new ColumnSpoken[0]);
+                    vsViewModel.deleteAllColumnSpokens(spokenArray);
+                }).start();
 
-            columnValueAdapter.removeSelectedEntity();
-            newColumnValueButtonOnClick();
+                columnValueAdapter.removeSelectedEntity();
+                newColumnValueButtonOnClick();
+            }
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can delete columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void importButtonOnClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can import columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    public void exportButtonOnClick() {
+        if (currentUser.getAuthority() < 1) {
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export columns",
+                    Toast.LENGTH_SHORT
+            );
         }
     }
 
