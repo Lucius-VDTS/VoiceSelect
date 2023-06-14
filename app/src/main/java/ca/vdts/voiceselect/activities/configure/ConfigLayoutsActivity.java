@@ -130,13 +130,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.get(0).setExportCode("");
         });
 
-//        layoutSpinnerAdapter = new VDTSNamedAdapter<>(
-//                this,
-//                R.layout.adapter_spinner_named,
-//                layoutList);
-//        layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
-//
-//        layoutSpinner.setAdapter(layoutSpinnerAdapter);
         layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
         //Recycler View
@@ -172,8 +165,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
             handler.post(() -> {
-//                layoutList.get(0).setName("");
-//                layoutList.get(0).setExportCode("");
                 layoutSpinnerAdapter = new VDTSNamedAdapter<>(
                         this,
                         R.layout.adapter_spinner_named,
@@ -181,7 +172,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
 
                 layoutSpinner.setAdapter(layoutSpinnerAdapter);
-//                layoutSpinnerAdapter.notifyDataSetChanged();
                 initializeColumnList();
             });
         });
@@ -257,22 +247,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                 "A layout must be created before it can be customized",
                                 0
                         );
-
-//                        layoutNameEditText.setText("");
-//                        layoutExportCodeEditText.setText("");
                     } else {
                         layoutNameEditText.setText(selectedLayout.getName());
                         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
                     }
-//                    else {
-//                        if (selectedLayout.getUid() == -9001L) {
-//                            layoutNameEditText.setText("");
-//                            layoutExportCodeEditText.setText("");
-//                        } else {
-//                            layoutNameEditText.setText(selectedLayout.getName());
-//                            layoutExportCodeEditText.setText(selectedLayout.getExportCode());
-//                        }
-//                    }
 
                     initializeLayoutColumnList(selectedLayout);
                 }
@@ -331,21 +309,12 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     private void newLayoutButtonOnClick() {
         layoutSpinner.setSelection(0);
-//        layoutNameEditText.setText("");
-//        layoutExportCodeEditText.setText("");
         configLayoutsAdapterSelect(-1);
         layoutNameEditText.requestFocus();
     }
 
     private void resetLayoutButtonOnClick() {
         layoutSpinner.setSelection(layoutSpinnerAdapter.getSelectedEntityIndex());
-//        if (selectedLayout.getUid() == -9001L) {
-//            layoutNameEditText.setText("");
-//            layoutExportCodeEditText.setText("");
-//        } else {
-//            layoutNameEditText.setText(selectedLayout.getName());
-//            layoutExportCodeEditText.setText(selectedLayout.getExportCode());
-//        }
 
         layoutNameEditText.setText(selectedLayout.getName());
         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
@@ -393,9 +362,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                             Handler insertLayoutColumnHandler = new Handler(Looper.getMainLooper());
                             insertLayoutColumnExecutor.execute(() -> {
                                 vsViewModel.insertLayoutColumn(selectedLayoutColumn);
-                                insertLayoutColumnHandler.post(() -> {
-                                    configLayoutsAdapter.addLayoutColumn(selectedLayoutColumn);
-                                });
+                                insertLayoutColumnHandler.post(() ->
+                                        configLayoutsAdapter.addLayoutColumn(selectedLayoutColumn));
                             });
                         } else if (columnEnabledSwitch.isChecked()) {
                             //Update existing layout column
@@ -409,9 +377,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                     new Handler(Looper.getMainLooper());
                             updateLayoutColumnExecutor.execute(() -> {
                                 vsViewModel.updateLayoutColumn(selectedLayoutColumn);
-                                updateLayoutColumnHandler.post(() -> {
-                                    configLayoutsAdapter.updateLayoutColumn(selectedLayoutColumn);
-                                });
+                                updateLayoutColumnHandler.post(() ->
+                                        configLayoutsAdapter.updateLayoutColumn(selectedLayoutColumn));
                             });
                         } else {
                             //Remove existing layout column
@@ -422,9 +389,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                         new Handler(Looper.getMainLooper());
                                 removeLayoutColumnExecutor.execute(() -> {
                                     vsViewModel.deleteLayoutColumn(selectedLayoutColumn);
-                                    removeLayoutColumnHandler.post(() -> {
-                                        configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn);
-                                    });
+                                    removeLayoutColumnHandler.post(() ->
+                                            configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn));
                                 });
                             }
                         }
