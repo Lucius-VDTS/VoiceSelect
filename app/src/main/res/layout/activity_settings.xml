@@ -6,6 +6,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.SettingsActivity"
     android:id="@+id/optionsMenu">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
 
     <TextView
         android:id="@+id/entryModeLabel"
@@ -83,8 +94,8 @@
         android:id="@+id/photoGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sixteen_x_margin"
-        android:layout_marginBottom="@dimen/sixteen_x_margin"
+        android:layout_marginTop="@dimen/eight_x_margin"
+        android:layout_marginBottom="@dimen/eight_x_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
@@ -149,7 +160,7 @@
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
         android:fillViewport='true'
-        app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/CSVCheck"
@@ -184,6 +195,8 @@
             android:text="@string/settings_excel"
             android:textSize="@dimen/large_text_size" />
     </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/prefBottomButtonsLinearLayout"
