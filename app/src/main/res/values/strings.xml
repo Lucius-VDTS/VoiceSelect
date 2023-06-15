@@ -66,7 +66,7 @@
 
     <string name="feedback_user_label">User:</string>
 
-    <string name="feedback_enabled_label">Audible Feedback</string>
+    <string name="feedback_enabled_label">Feedback</string>
     <string name="feedback_enabled_label_content_description">Enable Feedback</string>
     <string name="feedback_queue_label">Flush Queue</string>
     <string name="feedback_queue_label_content_description">Flush Queue</string>

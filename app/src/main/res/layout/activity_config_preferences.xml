@@ -136,7 +136,8 @@
                 android:paddingStart="@dimen/double_padding"
                 android:paddingEnd="@dimen/padding"
                 android:contentDescription="@string/feedback_queue_label_content_description"
-                app:layout_constraintStart_toEndOf="@id/userFlushLabel"/>
+                app:layout_constraintStart_toEndOf="@id/userFlushLabel"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
