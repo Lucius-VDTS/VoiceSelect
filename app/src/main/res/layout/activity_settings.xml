@@ -67,30 +67,6 @@
             android:textSize="@dimen/large_text_size" />
     </RadioGroup>
 
-    <LinearLayout
-        android:id="@+id/voiceExtraGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        android:fillViewport='true'
-        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
-        app:layout_constraintStart_toStartOf="parent" >
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/autoSaveCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/autosave_label"
-            android:textSize="@dimen/large_text_size"
-            app:layout_constraintEnd_toEndOf="@id/printNameOnPictureCheck" />
-    </LinearLayout>
-
     <TextView
         android:id="@+id/photoLabel"
         android:layout_width="wrap_content"
@@ -114,7 +90,7 @@
         android:layout_marginEnd="@dimen/double_margin"
         android:orientation="horizontal"
         android:fillViewport='true'
-        app:layout_constraintTop_toBottomOf="@id/voiceExtraGroup"
+        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
         app:layout_constraintBottom_toTopOf="@id/exportGroup"
         app:layout_constraintStart_toStartOf="parent" >
 

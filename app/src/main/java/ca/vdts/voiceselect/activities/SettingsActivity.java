@@ -37,8 +37,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     private VDTSApplication vdtsApplication;
 
     //Views
-    private SwitchCompat autoCheck;
-
     private SwitchCompat nameOnPhotoCheck;
     private SwitchCompat  gpsOnPhotoCheck;
     private SwitchCompat  timeOnPhotoCheck;
@@ -59,8 +57,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         setContentView(R.layout.activity_settings);
         vdtsApplication = (VDTSApplication) getApplication();
 
-        autoCheck = findViewById(R.id.autoSaveCheck);
-        autoCheck.setOnClickListener(v -> autosaveClick());
         nameOnPhotoCheck = findViewById(R.id.printNameOnPictureCheck);
         nameOnPhotoCheck.setOnClickListener(v -> nameOnPictureClick());
         gpsOnPhotoCheck = findViewById(R.id.printGPSOnPictureCheck);
@@ -98,8 +94,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     private void updateControls() {
-        autoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_AUTOSAVE, false));
-
         nameOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_NAME, false));
         gpsOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_GPS, false));
         timeOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_TIME, false));
@@ -124,10 +118,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
     private void setEntryMethod(int order) {
         vdtsApplication.getPreferences().setInt(PREF_ENTRY_METHOD, order);
-    }
-
-    private void autosaveClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_AUTOSAVE, autoCheck.isChecked());
     }
 
     public void nameOnPictureClick() {
