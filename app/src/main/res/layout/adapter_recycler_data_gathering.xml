@@ -24,11 +24,7 @@
             android:gravity="center"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:textSize="@dimen/large_text_size"
-
-
-
-            android:background="@color/colorInputArea">
+            android:textSize="@dimen/large_text_size">
         </TextView>
 
         <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
@@ -37,13 +33,15 @@
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:fillViewport="true"
-            android:contentDescription="@string/data_gathering_rv_scroll_description">
+            android:contentDescription="@string/data_gathering_rv_scroll_description"
+            android:scrollbars="none"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:id="@+id/entryValueLinearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal" />
+                android:orientation="horizontal"/>
         </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
         <TextView
@@ -55,11 +53,7 @@
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:textSize="@dimen/large_text_size"
-
-
-
-            android:background="@color/colorInputArea">
+            android:textSize="@dimen/large_text_size">
         </TextView>
 
         <TextView
@@ -70,12 +64,7 @@
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:textSize="@dimen/large_text_size"
-
-
-
-
-            android:background="@color/colorInputArea">
+            android:textSize="@dimen/large_text_size">
         </TextView>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

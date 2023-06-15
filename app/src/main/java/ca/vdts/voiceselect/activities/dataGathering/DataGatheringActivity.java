@@ -1,7 +1,6 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,7 +38,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.IntFunction;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
@@ -220,10 +218,6 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnText.setMaxLines(1);
                     columnText.setText(column.getNameCode());   //todo - base this on setting?
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-
-                    //todo - remove
-                    columnText.setBackgroundColor(Color.parseColor("#f5341c"));
-
                     columnLinearLayout.addView(columnText);
                 }
 
@@ -254,7 +248,6 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnValuesByColumn.clear();
                     columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
 
-                    //todo - make it possible to have null value like layout
                     ColumnValueSpinner columnValueSpinner =
                             new ColumnValueSpinner(
                                     this,
@@ -436,33 +429,11 @@ public class DataGatheringActivity extends AppCompatActivity
                     entryValueList.toArray(entryValues);
 
                     ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
-                    Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
                     createEntryValuesExecutor.execute(() -> {
                         vsViewModel.insertAllEntryValues(entryValues);
-                        createEntryValuesHandler.post(() -> {
-//                            dataGatheringAdapter.addAllEntryValues(entryValueList);
-                        });
                     });
                 });
             });
-
-//            List<EntryValue> entryValues = new ArrayList<>();
-//            entryValueList.clear();
-//            for (int index = 0; index < columnValueSpinnerList.size(); index++) {
-//                ColumnValue columnValue = (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
-//
-//                EntryValue newEntryValue;
-//                if (columnValue != null) {
-//                    newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
-//                } else {
-//                    newEntryValue = new EntryValue(newEntry.getUid());
-//                }
-////                entryValues.add(newEntryValue);
-//                entryValueList.add(index, newEntryValue);
-//            }
-
-
-//            dataGatheringAdapter.addAllEntryValues(entryValues);
         }
     }
 

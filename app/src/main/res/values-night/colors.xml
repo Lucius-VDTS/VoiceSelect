@@ -5,13 +5,13 @@
 
 <!--  Recycler View  -->
      <color name="colorInputArea">#424242</color>-->
-     <!--    <color name="colorOutline">#303F9F</color>-->
+     <color name="colorOutline">#303F9F</color>
      <color name="colorBackgroundSelected">#FF018786</color>-->
      <color name="colorBackgroundPrimary">#b2c8eb</color>-->
      <color name="colorBackgroundSecondary">#9ab6e3</color>
 
-     <color name="colorPrimary">#3F51B5</color>
-     <color name="colorPrimaryDark">#303F9F</color>
+     <color name="colorPrimary">#7287fc</color>
+     <color name="colorPrimaryDark">#6378ff</color>
      <color name="colorAccent">#FF4081</color>
      <color name="colorStepHighlight">#EAE85B</color>
      <color name="colorBackground">#303030</color>

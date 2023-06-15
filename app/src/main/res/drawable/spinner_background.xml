@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Recycler View Background -->
+<!-- Spinner View Background -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/colorInputArea"/>
-    <stroke android:width="@dimen/outline_width" android:color="@color/colorOutline"/>
+    <solid android:color="@color/colorStepHighlight"/>
     <corners android:radius="@dimen/corner_radius"/>
 </shape>

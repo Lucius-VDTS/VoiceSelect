@@ -2,13 +2,14 @@ package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +64,12 @@ public class ColumnValueSpinner {
         columnValueSpinner.setAdapter(columnValueAdapter);
         columnValueSpinner.setMinimumWidth(minWidthDimen);
         columnValueSpinner.setLayoutParams(layoutParams);
-        columnValueSpinner.setPadding(marginPaddingDimen, marginPaddingDimen, marginPaddingDimen, marginPaddingDimen);
+        columnValueSpinner.setPadding(
+                marginPaddingDimen, marginPaddingDimen, marginPaddingDimen, marginPaddingDimen);
         columnValueSpinner.setGravity(Gravity.CENTER);
+        columnValueSpinner.setBackground(
+                ContextCompat.getDrawable(context, R.drawable.spinner_background));
         columnValueSpinner.setOnItemSelectedListener(columnValueSpinnerListener);
-
-        //todo - remove
-        columnValueSpinner.setBackgroundColor(Color.parseColor("#f5341c"));
     }
 
     public List<ColumnValue> getColumnValues() {

@@ -274,10 +274,6 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
                 entryValueText.setMaxLines(1);
                 entryValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-                //todo - remove
-                entryValueText.setBackgroundColor(Color.parseColor("#f5341c"));
-
-
                 entryValueLinearLayout.addView(entryValueText);
             }
         }
