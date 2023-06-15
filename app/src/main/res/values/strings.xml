@@ -34,7 +34,7 @@
     <string name="config_activity_label">Configure</string>
 
     <string name="config_users_activity_button">Users</string>
-    <string name="config_feedback_activity_button">Feedback</string>
+    <string name="config_preferences_activity_button">Preferences</string>
     <string name="config_columns_activity_button">Columns</string>
     <string name="config_column_values_activity_button">Values</string>
     <string name="config_layouts_activity_button">Layouts</string>
@@ -62,11 +62,11 @@
     <string name="user_primary_Label">Default\nSpoken</string>
 
 <!--  Configure Feedback Activity  -->
-    <string name="config_feedback_activity_label">Configure Feedback</string>
+    <string name="config_preferences_activity_label">Configure Preferences</string>
 
     <string name="feedback_user_label">User:</string>
 
-    <string name="feedback_enabled_label">Enable</string>
+    <string name="feedback_enabled_label">Feedback</string>
     <string name="feedback_enabled_label_content_description">Enable Feedback</string>
     <string name="feedback_queue_label">Flush Queue</string>
     <string name="feedback_queue_label_content_description">Flush Queue</string>
@@ -174,7 +174,7 @@
     <string name="settings_step_mode">Step-By-Step</string>
     <string name="settings_free_mode">Free Form</string>
 
-    <string name="settings_autosave_label">Autosave</string>
+    <string name="preferences_autosave_label">Autosave</string>
 
     <string name="settings_photo_label">Photo Settings:</string>
     <string name="settings_print_name_on_picture">Print Name</string>

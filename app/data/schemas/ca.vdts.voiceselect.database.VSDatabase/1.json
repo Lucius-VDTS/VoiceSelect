@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6fab4dc3f34cf498c8016a0eefaec1ea",
+    "identityHash": "091b74fd6615a86d416f1777ceefab99",
     "entities": [
       {
         "tableName": "Users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `exportCode` TEXT, `initials` TEXT, `sessionPrefix` TEXT, `authority` INTEGER NOT NULL, `primary` INTEGER NOT NULL, `password` TEXT, `feedback` INTEGER NOT NULL, `feedbackQueue` INTEGER NOT NULL, `feedbackRate` REAL NOT NULL, `feedbackPitch` REAL NOT NULL, `active` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `exportCode` TEXT, `initials` TEXT, `sessionPrefix` TEXT, `authority` INTEGER NOT NULL, `primary` INTEGER NOT NULL, `password` TEXT, `autosave` INTEGER NOT NULL, `feedback` INTEGER NOT NULL, `feedbackQueue` INTEGER NOT NULL, `feedbackRate` REAL NOT NULL, `feedbackPitch` REAL NOT NULL, `active` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -55,6 +55,12 @@
             "columnName": "password",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "autosave",
+            "columnName": "autosave",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "feedback",
@@ -923,7 +929,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6fab4dc3f34cf498c8016a0eefaec1ea')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '091b74fd6615a86d416f1777ceefab99')"
     ]
   }
 }

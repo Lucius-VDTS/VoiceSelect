@@ -40,7 +40,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
 
     //Views
     private Button configUsersActivityButton;
-    private Button configFeedbackActivityButton;
+    private Button configPreferencesActivityButton;
     private Button configColumnsActivityButton;
     private Button configColumnValuesActivityButton;
     private Button configLayoutsActivityButton;
@@ -66,8 +66,8 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         configUsersActivityButton = findViewById(R.id.configUsersActivityButton);
         configUsersActivityButton.setOnClickListener(v -> configUsersActivityButtonOnClick());
 
-        configFeedbackActivityButton = findViewById(R.id.configFeedbackActivityButton);
-        configFeedbackActivityButton.setOnClickListener(v -> configFeedbackActivityButtonOnClick());
+        configPreferencesActivityButton = findViewById(R.id.configPreferencesActivityButton);
+        configPreferencesActivityButton.setOnClickListener(v -> configFeedbackActivityButtonOnClick());
 
         configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
         configColumnsActivityButton.setOnClickListener(v -> configColumnsActivityButtonOnClick());
@@ -141,12 +141,12 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         /*if (currentUser.getAuthority() <= 0) {
             configUsersActivityButton.setEnabled(false);
         } else*/ if (currentUser.getUid() == -9001L) {
-            configFeedbackActivityButton.setEnabled(false);
+            configPreferencesActivityButton.setEnabled(false);
             configColumnsActivityButton.setEnabled(false);
             configColumnValuesActivityButton.setEnabled(false);
             configLayoutsActivityButton.setEnabled(false);
         } else {
-            configFeedbackActivityButton.setEnabled(true);
+            configPreferencesActivityButton.setEnabled(true);
             configColumnsActivityButton.setEnabled(true);
             configColumnValuesActivityButton.setEnabled(true);
             configLayoutsActivityButton.setEnabled(true);
@@ -161,7 +161,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     public void configFeedbackActivityButtonOnClick() {
         Intent feedbackActivityIntent = new Intent(
                 this,
-                VDTSConfigFeedbackActivity.class
+                VDTSConfigPreferencesActivity.class
         );
         startActivity(feedbackActivityIntent);
     }

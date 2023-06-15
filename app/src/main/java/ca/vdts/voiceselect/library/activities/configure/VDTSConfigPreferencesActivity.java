@@ -37,8 +37,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 /**
  * Config user's feedback params.
  */
-public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRIListener {
-    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigFeedbackActivity.class);
+public class VDTSConfigPreferencesActivity extends AppCompatActivity implements IRIListener {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigPreferencesActivity.class);
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
@@ -49,6 +49,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
     //Views
     private TextView userText;
 
+    private SwitchCompat autosaveSwitch;
     private SwitchCompat enabledSwitch;
     private SwitchCompat flushQueueSwitch;
     private SeekBar rateSeekBar;
@@ -62,12 +63,12 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
 
     //Iristick components
     private boolean isHeadsetAvailable = false;
-    private VDTSConfigFeedbackActivity.IristickHUD iristickHUD;
+    private VDTSConfigPreferencesActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_config_feedback);
+        setContentView(R.layout.activity_config_preferences);
 
         IristickSDK.registerListener(this.getLifecycle(), this);
 
@@ -80,6 +81,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
 
         userText = findViewById(R.id.userText);
 
+        autosaveSwitch = findViewById(R.id.userAutosaveSwitch);
         enabledSwitch = findViewById(R.id.userAdminSwitch);
         flushQueueSwitch = findViewById(R.id.userPrimarySwitch);
         rateSeekBar = findViewById(R.id.rateSeekBar);
@@ -106,7 +108,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
         resetFeedbackButton.setOnClickListener(v -> resetFeedbackButtonOnClick());
 
         defaultFeedbackButton = findViewById(R.id.defaultFeedbackButton);
-        defaultFeedbackButton.setOnClickListener(v -> defaultFeedbackButtonOnClick());
+        defaultFeedbackButton.setOnClickListener(v -> defaultButtonOnClick());
 
         saveFeedbackButton = findViewById(R.id.saveFeedbackButton);
         saveFeedbackButton.setOnClickListener(v -> saveFeedbackButtonOnClick());
@@ -126,6 +128,7 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
      */
     private void initializeUserSettings() {
         userText.setText(currentUser.getName());
+        autosaveSwitch.setChecked(currentUser.getAutosave() == 1);
         enabledSwitch.setChecked(currentUser.getFeedback() == 1);
         flushQueueSwitch.setChecked(currentUser.isFeedbackQueue());
         rateSeekBar.setProgress((int) (currentUser.getFeedbackRate() * 50));
@@ -160,7 +163,8 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
         initializeUserSettings();
     }
 
-    private void defaultFeedbackButtonOnClick() {
+    private void defaultButtonOnClick() {
+        autosaveSwitch.setChecked(true);
         enabledSwitch.setChecked(true);
         flushQueueSwitch.setChecked(false);
         rateSeekBar.setProgress(50);
@@ -169,6 +173,12 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
 
     private void saveFeedbackButtonOnClick() {
         try {
+            if (autosaveSwitch.isChecked()) {
+                currentUser.setAutosave(1);
+            } else {
+                currentUser.setAutosave(0);
+            }
+
             if (enabledSwitch.isChecked()) {
                 currentUser.setFeedback(1);
             } else {
