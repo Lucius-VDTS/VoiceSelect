@@ -382,8 +382,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
     private void newColumnValueButtonOnClick() {
         if (currentUser.getAuthority() > 0) {
-            columnValueAdapterSelect(-1);
-            columnValueNameEditText.requestFocus();
+            clearSelection();
         } else {
             vdtsApplication.displayToast(
                     this,
@@ -391,6 +390,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     Toast.LENGTH_SHORT
             );
         }
+    }
+
+    private void clearSelection(){
+        columnValueAdapterSelect(-1);
+        columnValueNameEditText.requestFocus();
     }
 
     private void resetColumnValueButtonOnClick() {
@@ -424,7 +428,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             handler.post(() -> columnValueAdapter.updateSelectedEntity());
                         });
                     }
-                    newColumnValueButtonOnClick();
+                    clearSelection();
                 } else {
                     LOG.info("Invalid column value");
                     vdtsApplication.displayToast(
@@ -456,7 +460,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             handler.post(() -> columnValueAdapter.addEntity(columnValue));
                         });
                     }
-                    newColumnValueButtonOnClick();
+                    clearSelection();
                 } else {
                     LOG.info("Invalid column value");
                     vdtsApplication.displayToast(
@@ -492,7 +496,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 }).start();
 
                 columnValueAdapter.removeSelectedEntity();
-                newColumnValueButtonOnClick();
+                clearSelection();
             }
         } else {
             vdtsApplication.displayToast(

@@ -318,8 +318,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
     private void newColumnButtonOnClick() {
         if (currentUser.getAuthority() > 0) {
-            columnAdapterSelect(-1);
-            columnNameEditText.requestFocus();
+            clearSelection();
         } else {
             vdtsApplication.displayToast(
                     this,
@@ -327,6 +326,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     Toast.LENGTH_SHORT
             );
         }
+    }
+
+    private void clearSelection(){
+        columnAdapterSelect(-1);
+        columnNameEditText.requestFocus();
     }
 
     private void resetColumnButtonOnClick() {
@@ -365,7 +369,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                            Toast.LENGTH_SHORT
                    );
                }
-               newColumnButtonOnClick();
+                clearSelection();
             } else {
                 resetColumnButtonOnClick();
             }
@@ -391,7 +395,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         handler.post(() -> columnAdapter.addEntity(column));
                     });
                 }
-                newColumnButtonOnClick();
+                clearSelection();
             }
         }
     }
@@ -412,7 +416,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 }).start();
 
                 columnAdapter.removeSelectedEntity();
-                newColumnButtonOnClick();
+                clearSelection();
             }
         } else {
             vdtsApplication.displayToast(
