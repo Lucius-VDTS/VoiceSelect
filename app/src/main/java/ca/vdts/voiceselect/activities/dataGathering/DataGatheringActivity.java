@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.IntFunction;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
@@ -404,27 +405,64 @@ public class DataGatheringActivity extends AppCompatActivity
     private void saveEntryButtonOnClick() {
         if (selectedEntry != null) {
             //Update existing entry
-            initializeEntriesList();
         } else {
             //Create new entry
-            Entry newEntry = new Entry(currentUser.getUid(), currentSession.getUid());
-            entryList.add(newEntry);
-            dataGatheringAdapter.addEntry(newEntry);
+            Entry newEntry = new Entry(
+                    currentUser.getUid(),
+                    currentSession.getUid()
+            );
 
-            List<EntryValue> entryValues = new ArrayList<>();
-            for (int index = 0; index < columnValueSpinnerList.size(); index++) {
-                ColumnValue columnValue = (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
+            ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
+            Handler createEntryHandler = new Handler(Looper.getMainLooper());
+            createEntryExecutor.execute(() -> {
+                long uid = vsViewModel.insertEntry(newEntry);
+                newEntry.setUid(uid);
+                createEntryHandler.post(() -> {
+                    entryValueList.clear();
+                    for (int index = 0; index < columnValueSpinnerList.size(); index++) {
+                        ColumnValue columnValue =
+                                (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
 
-                EntryValue newEntryValue;
-                if (columnValue != null) {
-                    newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
-                } else {
-                    newEntryValue = new EntryValue(newEntry.getUid());
-                }
-                entryValues.add(newEntryValue);
-            }
+                        EntryValue newEntryValue;
+                        if (columnValue != null) {
+                            newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+                        } else {
+                            newEntryValue = new EntryValue(newEntry.getUid());
+                        }
+                        entryValueList.add(index, newEntryValue);
+                    }
 
-            dataGatheringAdapter.addAllEntryValues(entryValues);
+                    EntryValue[] entryValues = new EntryValue[entryValueList.size()];
+                    entryValueList.toArray(entryValues);
+
+                    ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
+                    Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
+                    createEntryValuesExecutor.execute(() -> {
+                        vsViewModel.insertAllEntryValues(entryValues);
+                        createEntryValuesHandler.post(() -> {
+//                            dataGatheringAdapter.addAllEntryValues(entryValueList);
+                        });
+                    });
+                });
+            });
+
+//            List<EntryValue> entryValues = new ArrayList<>();
+//            entryValueList.clear();
+//            for (int index = 0; index < columnValueSpinnerList.size(); index++) {
+//                ColumnValue columnValue = (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
+//
+//                EntryValue newEntryValue;
+//                if (columnValue != null) {
+//                    newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
+//                } else {
+//                    newEntryValue = new EntryValue(newEntry.getUid());
+//                }
+////                entryValues.add(newEntryValue);
+//                entryValueList.add(index, newEntryValue);
+//            }
+
+
+//            dataGatheringAdapter.addAllEntryValues(entryValues);
         }
     }
 

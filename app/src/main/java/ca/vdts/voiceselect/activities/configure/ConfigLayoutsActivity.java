@@ -342,7 +342,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 updateLayoutExecutor.execute(() -> {
                     vsViewModel.updateLayout(selectedLayout);
                     updateLayoutHandler.post(() -> {
-                        //todo - move
                         String message = "Updated layout: " + selectedLayout.getName();
                         LOG.info(message);
                         vdtsApplication.displayToast(this, message, 0);
@@ -399,7 +398,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 });
             } else {
                 //Create new layout
-                Layout layout = new Layout(
+                Layout newLayout = new Layout(
                         currentUser.getUid(),
                         layoutNameEditText.getText().toString(),
                         layoutExportCodeEditText.getText().toString()
@@ -408,17 +407,17 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 ExecutorService createLayoutExecutor = Executors.newSingleThreadExecutor();
                 Handler createLayoutHandler = new Handler(Looper.getMainLooper());
                 createLayoutExecutor.execute(() -> {
-                    long uid = vsViewModel.insertLayout(layout);
-                    layout.setUid(uid);
+                    long uid = vsViewModel.insertLayout(newLayout);
+                    newLayout.setUid(uid);
                     createLayoutHandler.post(() -> {
-                        layoutSpinnerAdapter.remove(layout);
-                        layoutSpinnerAdapter.add(layout);
+//                        layoutSpinnerAdapter.remove(newLayout);        //todo - redundant
+                        layoutSpinnerAdapter.add(newLayout);
 
-                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(layout));
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
                         layoutNameEditText.clearFocus();
                         layoutExportCodeEditText.clearFocus();
 
-                        String message = "Created layout: " + layout.getName();
+                        String message = "Created layout: " + newLayout.getName();
                         LOG.info(message);
                         vdtsApplication.displayToast(this, message, 0);
                     });

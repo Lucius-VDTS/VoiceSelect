@@ -227,7 +227,7 @@
             android:id="@+id/entrySaveButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.9"
+            android:layout_weight="0.85"
             android:layout_marginStart="@dimen/margin"
             android:text="@string/data_gathering_save_button"
             android:textSize="@dimen/small_text_size"/>

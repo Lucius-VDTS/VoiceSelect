@@ -168,6 +168,27 @@
     <string name="data_gathering_entries_value">1234</string>
     <string name="data_gathering_end_button">End</string>
 
+<!--  Settings Menu  -->
+    <string name="settings_entry_mode_label">Voice Entry Mode:</string>
+    <string name="settings_chained_mode">Combined</string>
+    <string name="settings_step_mode">Step-By-Step</string>
+    <string name="settings_free_mode">Free Form</string>
+
+    <string name="settings_autosave_label">Autosave</string>
+
+    <string name="settings_photo_label">Photo Settings:</string>
+    <string name="settings_print_name_on_picture">Print Name</string>
+    <string name="settings_print_time_on_picture">Print Time</string>
+    <string name="settings_print_gps_coordinates_on_picture">Print GPS</string>
+
+    <string name="settings_export_label">Export Sessions As:</string>
+    <string name="settings_csv">CSV</string>
+    <string name="settings_json">JSON</string>
+    <string name="settings_excel">XLSX</string>
+
+    <string name="settings_import">Import</string>
+    <string name="settings_export">Export</string>
+
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>
     <string name="footer_layout_value">Layout Value</string>
@@ -182,22 +203,4 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
-
-<!--  Settings Menu  -->
-    <string name="entry_mode_label">Voice Entry Mode:</string>
-    <string name="chained_mode">Combined</string>
-    <string name="step_mode">Step-By-Step</string>
-    <string name="free_mode">Free Form</string>
-    <string name="export_label">Export Sessions As:</string>
-    <string name="CSV">CSV</string>
-    <string name="JSON">JSON</string>
-    <string name="Spreadsheet">XLSX</string>
-    <string name="print_name_on_picture">Print Name</string>
-    <string name="print_time_on_picture">Print Time</string>
-    <string name="print_gps_coordinates_on_picture">Print GPS</string>
-    <string name="Import">Import</string>
-    <string name="Export">Export</string>
-    <string name="enter_new_key">Enter Key</string>
-    <string name="photo_label">Photo Settings:</string>
-    <string name="autosave_label">Autosave</string>
 </resources>

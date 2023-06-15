@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:text="@string/entry_mode_label"
+        android:text="@string/settings_entry_mode_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/entryModeGroup"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,8 +30,7 @@
         android:fillViewport='true'
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-       >
+        app:layout_constraintTop_toTopOf="parent">
 
         <RadioButton
             android:id="@+id/chainedRadio"
@@ -41,7 +40,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/chained_mode"
+            android:text="@string/settings_chained_mode"
             android:textSize="@dimen/large_text_size"/>
 
         <RadioButton
@@ -52,7 +51,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/step_mode"
+            android:text="@string/settings_step_mode"
             android:textSize="@dimen/large_text_size" />
 
         <RadioButton
@@ -63,7 +62,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/free_mode"
+            android:text="@string/settings_free_mode"
             android:textSize="@dimen/large_text_size" />
     </RadioGroup>
 
@@ -86,7 +85,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/autosave_label"
+            android:text="@string/settings_autosave_label"
             android:textSize="@dimen/large_text_size"
             app:layout_constraintEnd_toEndOf="@id/printNameOnPictureCheck" />
     </LinearLayout>
@@ -100,7 +99,7 @@
         android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/photoGroup"
-        android:text="@string/photo_label"
+        android:text="@string/settings_photo_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/photoGroup" />
 
@@ -126,7 +125,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/print_name_on_picture"
+            android:text="@string/settings_print_name_on_picture"
             android:textSize="@dimen/large_text_size" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -137,7 +136,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/print_time_on_picture"
+            android:text="@string/settings_print_time_on_picture"
             android:textSize="@dimen/large_text_size" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -148,7 +147,7 @@
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/print_gps_coordinates_on_picture"
+            android:text="@string/settings_print_gps_coordinates_on_picture"
             android:textSize="@dimen/large_text_size" />
     </LinearLayout>
 
@@ -159,7 +158,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:text="@string/export_label"
+        android:text="@string/settings_export_label"
         android:textSize="@dimen/large_text_size"
         android:labelFor="@id/exportGroup"
         app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +183,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/CSV"
+            android:text="@string/settings_csv"
             android:textSize="@dimen/large_text_size" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -195,7 +194,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/JSON"
+            android:text="@string/settings_json"
             android:textSize="@dimen/large_text_size" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -206,7 +205,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginTop="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/Spreadsheet"
+            android:text="@string/settings_excel"
             android:textSize="@dimen/large_text_size" />
     </LinearLayout>
 
@@ -226,7 +225,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/margin"
-            android:text="@string/column_import_button"
+            android:text="@string/settings_import"
             android:textSize="@dimen/large_text_size"/>
 
         <Button
@@ -236,7 +235,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/column_export_button"
+            android:text="@string/settings_export"
             android:textSize="@dimen/large_text_size"/>
     </LinearLayout>
 
