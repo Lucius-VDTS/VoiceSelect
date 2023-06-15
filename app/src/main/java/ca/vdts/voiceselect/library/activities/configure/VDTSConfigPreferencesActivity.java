@@ -37,8 +37,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 /**
  * Config user's feedback params.
  */
-public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRIListener {
-    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigFeedbackActivity.class);
+public class VDTSConfigPreferencesActivity extends AppCompatActivity implements IRIListener {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigPreferencesActivity.class);
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
@@ -62,12 +62,12 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
 
     //Iristick components
     private boolean isHeadsetAvailable = false;
-    private VDTSConfigFeedbackActivity.IristickHUD iristickHUD;
+    private VDTSConfigPreferencesActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_config_feedback);
+        setContentView(R.layout.activity_config_preferences);
 
         IristickSDK.registerListener(this.getLifecycle(), this);
 

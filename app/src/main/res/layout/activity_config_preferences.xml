@@ -4,6 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/feedbackBottomButtonsLinearLayout">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
     <LinearLayout
         android:id="@+id/userLinearLayout"
         android:layout_width="0dp"
@@ -189,6 +201,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sampleLinearLayout" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
 
     <LinearLayout
         android:id="@+id/feedbackBottomButtonsLinearLayout"
