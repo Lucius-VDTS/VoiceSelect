@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.library.activities;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +150,10 @@ public class VDTSLoginActivity extends AppCompatActivity {
                         startActivity(vdtsMenuActivity);
                     } else {
                         LOG.info("User Password: {} invalid", currentUser.getName());
+                        YoYo.with(Techniques.Shake)
+                                .duration(SHAKE_DURATION)
+                                .repeat(SHAKE_REPEAT)
+                                .playOn(userRecyclerView);
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
                                 "User Password: " + currentUser.getName() + " invalid",

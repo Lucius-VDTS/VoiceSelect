@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.library.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
@@ -13,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.textfield.TextInputEditText;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -191,6 +196,10 @@ public class VDTSConfigFeedbackActivity extends AppCompatActivity implements IRI
                     "Feedback settings saved for: " + currentUser.getName(),
                     0);
         } catch (Exception e) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(saveFeedbackButton);
             vdtsApplication.displayToast(
                     this,
                     "Unable to save feedback settings for: " + currentUser.getName(),
