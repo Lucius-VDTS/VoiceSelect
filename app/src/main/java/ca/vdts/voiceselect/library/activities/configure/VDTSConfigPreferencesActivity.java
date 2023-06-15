@@ -49,6 +49,7 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
     //Views
     private TextView userText;
 
+    private SwitchCompat autosaveSwitch;
     private SwitchCompat enabledSwitch;
     private SwitchCompat flushQueueSwitch;
     private SeekBar rateSeekBar;
@@ -80,6 +81,7 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
 
         userText = findViewById(R.id.userText);
 
+        autosaveSwitch = findViewById(R.id.userAutosaveSwitch);
         enabledSwitch = findViewById(R.id.userAdminSwitch);
         flushQueueSwitch = findViewById(R.id.userPrimarySwitch);
         rateSeekBar = findViewById(R.id.rateSeekBar);
@@ -106,7 +108,7 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
         resetFeedbackButton.setOnClickListener(v -> resetFeedbackButtonOnClick());
 
         defaultFeedbackButton = findViewById(R.id.defaultFeedbackButton);
-        defaultFeedbackButton.setOnClickListener(v -> defaultFeedbackButtonOnClick());
+        defaultFeedbackButton.setOnClickListener(v -> defaultButtonOnClick());
 
         saveFeedbackButton = findViewById(R.id.saveFeedbackButton);
         saveFeedbackButton.setOnClickListener(v -> saveFeedbackButtonOnClick());
@@ -126,6 +128,7 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
      */
     private void initializeUserSettings() {
         userText.setText(currentUser.getName());
+        autosaveSwitch.setChecked(currentUser.getAutosave() == 1);
         enabledSwitch.setChecked(currentUser.getFeedback() == 1);
         flushQueueSwitch.setChecked(currentUser.isFeedbackQueue());
         rateSeekBar.setProgress((int) (currentUser.getFeedbackRate() * 50));
@@ -160,7 +163,8 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
         initializeUserSettings();
     }
 
-    private void defaultFeedbackButtonOnClick() {
+    private void defaultButtonOnClick() {
+        autosaveSwitch.setChecked(true);
         enabledSwitch.setChecked(true);
         flushQueueSwitch.setChecked(false);
         rateSeekBar.setProgress(50);
@@ -169,6 +173,12 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
 
     private void saveFeedbackButtonOnClick() {
         try {
+            if (autosaveSwitch.isChecked()) {
+                currentUser.setAutosave(1);
+            } else {
+                currentUser.setAutosave(0);
+            }
+
             if (enabledSwitch.isChecked()) {
                 currentUser.setFeedback(1);
             } else {

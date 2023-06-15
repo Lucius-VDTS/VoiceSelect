@@ -57,7 +57,7 @@
             android:label="@string/config_users_activity_label" />
 
         <activity android:name=".library.activities.configure.VDTSConfigPreferencesActivity"
-            android:label="@string/config_feedback_activity_label" />
+            android:label="@string/config_preferences_activity_label" />
 
         <activity android:name=".activities.configure.ConfigColumnsActivity"
             android:label="@string/config_columns_activity_label" />

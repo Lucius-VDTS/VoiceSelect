@@ -62,7 +62,7 @@
     <string name="user_primary_Label">Default\nSpoken</string>
 
 <!--  Configure Feedback Activity  -->
-    <string name="config_feedback_activity_label">Configure Feedback</string>
+    <string name="config_preferences_activity_label">Configure Preferences</string>
 
     <string name="feedback_user_label">User:</string>
 
@@ -174,7 +174,7 @@
     <string name="settings_step_mode">Step-By-Step</string>
     <string name="settings_free_mode">Free Form</string>
 
-    <string name="settings_autosave_label">Autosave</string>
+    <string name="preferences_autosave_label">Autosave</string>
 
     <string name="settings_photo_label">Photo Settings:</string>
     <string name="settings_print_name_on_picture">Print Name</string>

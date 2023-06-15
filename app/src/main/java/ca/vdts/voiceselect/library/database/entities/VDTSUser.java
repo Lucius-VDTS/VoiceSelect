@@ -70,6 +70,11 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     private String password;
 
     @Expose
+    @SerializedName("autosave")
+    @ColumnInfo(name = "autosave")
+    private int autosave;
+
+    @Expose
     @SerializedName("feedback")
     @ColumnInfo(name = "feedback")
     private int feedback;
@@ -104,6 +109,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
             9001,
             true,
             "",
+            0,
             1,
             false,
             1f,
@@ -112,7 +118,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
 
     //Default Constructor
     public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
-                    int authority, boolean primary, String password, int feedback,
+                    int authority, boolean primary, String password, int autosave, int feedback,
                     boolean feedbackQueue, float feedbackRate, float feedbackPitch) {
         this.uid = uid;
         this.name = name;
@@ -122,6 +128,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.authority = authority;
         this.primary = primary;
         this.password = password;
+        this.autosave = autosave;
         this.feedback = feedback;
         this.feedbackQueue = feedbackQueue;
         this.feedbackRate = feedbackRate;
@@ -132,7 +139,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     //Non-Default Constructor
     @Ignore
     public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
-                    int authority, boolean primary, String password, int feedback,
+                    int authority, boolean primary, String password, int autosave,int feedback,
                     boolean feedbackQueue, float feedbackRate, float feedbackPitch,
                     boolean active) {
         this.uid = uid;
@@ -143,6 +150,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.authority = authority;
         this.primary = primary;
         this.password = password;
+        this.autosave = autosave;
         this.feedback = feedback;
         this.feedbackQueue = feedbackQueue;
         this.feedbackRate = feedbackRate;
@@ -171,6 +179,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
                 copy.getAuthority(),
                 copy.isPrimary(),
                 copy.getPassword(),
+                copy.getAutosave(),
                 copy.getFeedback(),
                 copy.isFeedbackQueue(),
                 copy.getFeedbackRate(),
@@ -190,6 +199,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.authority = authority;
         this.primary = primary;
         this.password = password;
+        this.autosave = 0;
         this.feedback = 1;
         this.feedbackQueue = false;
         this.feedbackRate = 1f;
@@ -259,6 +269,14 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getAutosave() {
+        return autosave;
+    }
+
+    public void setAutosave(int autosave) {
+        this.autosave = autosave;
     }
 
     public int getFeedback() {
