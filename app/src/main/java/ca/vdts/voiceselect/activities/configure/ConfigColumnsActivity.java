@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
@@ -111,6 +116,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         columnNameEditText = findViewById(R.id.columnNameEditText);
         columnNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(columnNameEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin user can set a column name",
@@ -123,6 +132,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         columnNameCodeEditText = findViewById(R.id.columnNameCodeEditText);
         columnNameCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(columnNameCodeEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin can set a column abbreviation",
@@ -135,6 +148,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         columnExportCodeEditText = findViewById(R.id.columnExportCodeEditText);
         columnExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(columnExportCodeEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin can set a column export code",
@@ -332,6 +349,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         if (currentUser.getAuthority() > 0) {
             clearSelection();
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnNewButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can create new columns",
@@ -370,6 +391,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                    });
                } else {
                    LOG.info("Invalid column spoken");
+                   YoYo.with(Techniques.Shake)
+                           .duration(SHAKE_DURATION)
+                           .repeat(SHAKE_REPEAT)
+                           .playOn(columnSaveButton);
                    vdtsApplication.displayToast(
                            this,
                            "Invalid column spoken",
@@ -426,6 +451,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 clearSelection();
             }
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnDeleteButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can delete columns",
@@ -436,6 +465,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
     public void importButtonOnClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnImportButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can import columns",
@@ -446,6 +479,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
     public void exportButtonOnClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnExportButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can export columns",
@@ -462,6 +499,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private boolean isValidColumn(Column column) {
         if (column.getName().isEmpty()) {
             LOG.info("Invalid column - no name");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnNameEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have a name",
@@ -472,6 +513,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         if (column.getNameCode().isEmpty()) {
             LOG.info("Invalid column - no name code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnNameCodeEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have an abbreviation,",
@@ -482,6 +527,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         if (column.getExportCode().isEmpty()) {
             LOG.info("Invalid column - no export code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnExportCodeEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have an export code",
@@ -493,6 +542,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 .anyMatch(column1 -> column.getUid() != column1.getUid() &&
                         column1.getName().equalsIgnoreCase(column.getName()))) {
             LOG.info("Invalid column - non-unique name");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnNameEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have a unique name",
@@ -505,6 +558,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 .anyMatch(column1 -> column.getUid() != column1.getUid() &&
                         column1.getNameCode().equalsIgnoreCase(column.getNameCode()))) {
             LOG.info("Invalid column - non-unique name code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnNameCodeEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have a unique abbreviation",
@@ -517,6 +574,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 .anyMatch(column1 -> column.getUid() != column1.getUid() &&
                         column1.getExportCode().equalsIgnoreCase(column.getExportCode()))) {
             LOG.info("Invalid column - non-unique export code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnExportCodeEditText);
             vdtsApplication.displayToast(
                     this,
                     "A column must have a unique export code",
@@ -541,6 +602,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     for (String spoken : spokenList) {
                         if (columnSpoken.getSpoken().equalsIgnoreCase(spoken)) {
                             LOG.info("Column's spokens must be unique");
+                            YoYo.with(Techniques.Shake)
+                                    .duration(SHAKE_DURATION)
+                                    .repeat(SHAKE_REPEAT)
+                                    .playOn(columnSpokenEditText);
                             vdtsApplication.displayToast(
                                     this,
                                     "Column's spokens must be unique",
@@ -552,6 +617,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         for (String reserved : reservedWords) {
                             if (spoken.toLowerCase().contains(reserved.toLowerCase())) {
                                 LOG.info("Column's spokens contain a reserved word");
+                                YoYo.with(Techniques.Shake)
+                                        .duration(SHAKE_DURATION)
+                                        .repeat(SHAKE_REPEAT)
+                                        .playOn(columnSpokenEditText);
                                 vdtsApplication.displayToast(
                                         this,
                                         "Column's spokens contain a reserved word",
@@ -566,6 +635,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             return true;
         } else {
             LOG.info("Column must have a spoken term");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnSpokenEditText);
             vdtsApplication.displayToast(
                     this,
                     "Column must have a spoken term",

@@ -63,6 +63,11 @@ public class VDTSApplication extends Application {
     private VDTSFeedbackUtil vdtsFeedbackUtil;
     private TextToSpeech ttsEngine;
 
+    //Shake settings
+    public static final int SHAKE_DURATION = 200;
+
+    public static final int SHAKE_REPEAT = 2;
+
     @Override
     public void onCreate() {
         super.onCreate();

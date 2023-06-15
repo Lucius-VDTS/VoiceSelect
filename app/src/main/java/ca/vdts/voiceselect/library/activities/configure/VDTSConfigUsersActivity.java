@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.library.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
@@ -101,6 +106,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userNameEditText = findViewById(R.id.userNameEditText);
         userNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(userNameEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Must be an admin user to modify",
@@ -113,6 +122,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userPrefixEditText = findViewById(R.id.userPrefixEditText);
         userPrefixEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(userPrefixEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Must be an admin user to modify",
@@ -125,6 +138,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userExportCodeEditText = findViewById(R.id.userExportCodeEditText);
         userExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(userExportCodeEditText);
                 vdtsApplication.displayToast(
                         this,
                         "Must be an admin user to modify",
@@ -153,6 +170,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (currentUser.getAuthority() < 1) {
                 userAdminSwitch.setChecked(false);
                 userAdminSwitch.clearFocus();
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(userAdminSwitch);
                 vdtsApplication.displayToast(
                         this,
                         "Must be an admin user to modify",
@@ -176,6 +197,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (currentUser.getAuthority() < 1) {
                 userPrimarySwitch.setChecked(false);
                 userPrimarySwitch.clearFocus();
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(userPrimarySwitch);
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin user can change the default spoken value",
@@ -294,6 +319,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             userAdapterSelect(-1);
             userNameEditText.requestFocus();
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(newUserButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can create a new user",
@@ -359,6 +388,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     });
                 } else {
                     LOG.error("Unable to update user");
+                    YoYo.with(Techniques.Shake)
+                            .duration(SHAKE_DURATION)
+                            .repeat(SHAKE_REPEAT)
+                            .playOn(saveUserButton);
                     vdtsApplication.displayToast(
                             this,
                             "Unable to update user",
@@ -433,6 +466,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     newUserButtonOnClick();
                 } else {
                     LOG.error("User does not meet requirements");
+                    YoYo.with(Techniques.Shake)
+                            .duration(SHAKE_DURATION)
+                            .repeat(SHAKE_REPEAT)
+                            .playOn(saveUserButton);
                     vdtsApplication.displayToast(
                             this,
                             "User does not meet requirements",
@@ -442,6 +479,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             }
         } else {
             LOG.error("Save user failed - admin/default spoken must exist");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(saveUserButton);
             vdtsApplication.displayToast(
                     this,
                     "Save user failed - admin/default spoken must exist",
@@ -470,6 +511,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     });
                 } else {
                     LOG.info("Delete user failed - admin/default spoken must exist");
+                    YoYo.with(Techniques.Shake)
+                            .duration(SHAKE_DURATION)
+                            .repeat(SHAKE_REPEAT)
+                            .playOn(deleteUserButton);
                     vdtsApplication.displayToast(
                             this,
                             "Delete user failed - admin/default spoken must exist",
@@ -480,6 +525,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 }
             }
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(deleteUserButton);
             vdtsApplication.displayToast(
                     vdtsApplication,
                     "Only an admin user can delete a user",
@@ -490,6 +539,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
     public void importButtonOnClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(importButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can import users",
@@ -500,6 +553,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
     public void exportButtonClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(exportButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can export users",

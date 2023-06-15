@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.library.activities;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
@@ -218,6 +223,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                                            int position, long id) {
                     currentLayout = (Layout) parent.getItemAtPosition(position);
                     if (currentLayout.getUid() == -9001L) {
+                        YoYo.with(Techniques.Shake)
+                                .duration(SHAKE_DURATION)
+                                .repeat(SHAKE_REPEAT)
+                                .playOn(configureActivityButton);
                         vdtsApplication.displayToast(
                                 vdtsApplication,
                                 "Create a layout to start a session",
@@ -238,6 +247,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
     public void startActivityButtonOnClick() {
         if (currentLayout.getUid() == -9001L) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(startActivityButton);
             vdtsApplication.displayToast(
                     this,
                     "Select a layout to start a session",
@@ -273,6 +286,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
     public void resumeActivityButtonOnClick() {
         if (currentSession == null) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(resumeActivityButton);
             vdtsApplication.displayToast(
                     this,
                     "A session has not been started",

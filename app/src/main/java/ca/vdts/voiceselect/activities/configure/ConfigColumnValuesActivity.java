@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
@@ -119,6 +124,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueNameEditText = findViewById(R.id.columnValueNameEditText);
         columnValueNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(findViewById(R.id.columnValueNameEditText));
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin user can set a value name",
@@ -130,6 +139,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueNameCodeEditText = findViewById(R.id.columnValueNameCodeEditText);
         columnValueNameCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(findViewById(R.id.columnValueNameCodeEditText));
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin user can set a value abbreviation",
@@ -141,6 +154,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueExportCodeEditText = findViewById(R.id.columnValueExportCodeEditText);
         columnValueExportCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && currentUser.getAuthority() < 1) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(findViewById(R.id.columnValueExportCodeEditText));
                 vdtsApplication.displayToast(
                         this,
                         "Only an admin user can set a value export code",
@@ -396,6 +413,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         if (currentUser.getAuthority() > 0) {
             clearSelection();
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueNewButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can create new columns",
@@ -440,6 +461,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     clearSelection();
                 } else {
                     LOG.info("Invalid column value");
+                    YoYo.with(Techniques.Shake)
+                            .duration(SHAKE_DURATION)
+                            .repeat(SHAKE_REPEAT)
+                            .playOn(columnValueSaveButton);
                     vdtsApplication.displayToast(
                             this,
                             "Invalid column value",
@@ -472,6 +497,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     clearSelection();
                 } else {
                     LOG.info("Invalid column value");
+                    YoYo.with(Techniques.Shake)
+                            .duration(SHAKE_DURATION)
+                            .repeat(SHAKE_REPEAT)
+                            .playOn(columnValueSaveButton);
                     vdtsApplication.displayToast(
                             this,
                             "Invalid column value",
@@ -481,6 +510,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             }
         } else {
             LOG.info("Select a column to create values");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueSaveButton);
             vdtsApplication.displayToast(
                     this,
                     "Select a column to create values",
@@ -508,6 +541,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 clearSelection();
             }
         } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueDeleteButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can delete columns",
@@ -518,6 +555,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
     public void importButtonOnClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueImportButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can import columns",
@@ -528,6 +569,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
     public void exportButtonOnClick() {
         if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueExportButton);
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can export columns",
@@ -569,6 +614,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     for (String spoken: spokenList) {
                         if (columnValueSpoken.getSpoken().equalsIgnoreCase(spoken)) {
                             LOG.info("Column value's spokens must be unique");
+                            YoYo.with(Techniques.Shake)
+                                    .duration(SHAKE_DURATION)
+                                    .repeat(SHAKE_REPEAT)
+                                    .playOn(columnValueSpokenEditText);
                             vdtsApplication.displayToast(
                                     this,
                                     "Column value's spokens must be unique",
@@ -580,6 +629,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         for (String reserved : reservedWords) {
                             if (spoken.toLowerCase().contains(reserved.toLowerCase())) {
                                 LOG.info("Column value's spokens contain a reserved word");
+                                YoYo.with(Techniques.Shake)
+                                        .duration(SHAKE_DURATION)
+                                        .repeat(SHAKE_REPEAT)
+                                        .playOn(columnValueSpokenEditText);
                                 vdtsApplication.displayToast(
                                         this,
                                         "Column value's spokens contain a reserved word",
@@ -594,6 +647,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             return true;
         } else {
             LOG.info("Column value must have a spoken term");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueSpokenEditText);
             vdtsApplication.displayToast(
                     this,
                     "Column value must have a spoken term",

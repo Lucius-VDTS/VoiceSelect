@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.slider.Slider;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -243,6 +248,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     selectedLayoutPosition = position;
 
                     if (layoutList.size() <= 1) {
+                        YoYo.with(Techniques.Shake)
+                                .duration(SHAKE_DURATION)
+                                .repeat(SHAKE_REPEAT)
+                                .playOn(layoutSpinner);
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
                                 "A layout must be created before it can be customized",
@@ -329,6 +338,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         layoutExportCodeEditText.getText().toString().isEmpty()) {
             String message = "Create or select a layout";
             LOG.info(message);
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutSaveButton);
             vdtsApplication.displayToast(this, message, 0);
         } else if (!layoutNameEditText.getText().toString().isEmpty() &&
                    !layoutExportCodeEditText.getText().toString().isEmpty()) {
@@ -427,6 +440,14 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         } else {
             String message = "Layout must have a name and export code";
             LOG.info(message);
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutNameEditText);
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutExportCodeEditText);
             vdtsApplication.displayToast(this, message, 0);
         }
     }
