@@ -316,6 +316,18 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         }
     }
 
+    private void clearSelection(){
+        columnAdapterSelect(-1);
+        resetFocus();
+    }
+    private void resetFocus(){
+        if (currentUser.getAuthority() < 1){
+            columnSpokenEditText.requestFocus();
+        } else {
+            columnNameEditText.requestFocus();
+        }
+    }
+
     private void newColumnButtonOnClick() {
         if (currentUser.getAuthority() > 0) {
             clearSelection();
@@ -328,14 +340,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         }
     }
 
-    private void clearSelection(){
-        columnAdapterSelect(-1);
-        columnNameEditText.requestFocus();
-    }
-
     private void resetColumnButtonOnClick() {
         columnAdapterSelect(columnAdapter.getSelectedEntityIndex());
-        //columnNameEditText.requestFocus();
+        resetFocus();
     }
 
     private void saveColumnButtonOnClick() {

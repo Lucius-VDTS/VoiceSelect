@@ -380,6 +380,18 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         }
     }
 
+    private void clearSelection(){
+        columnValueAdapterSelect(-1);
+        resetFocus();
+    }
+    private void resetFocus(){
+        if (currentUser.getAuthority() < 1){
+            columnValueSpokenEditText.requestFocus();
+        } else {
+            columnValueNameEditText.requestFocus();
+        }
+    }
+
     private void newColumnValueButtonOnClick() {
         if (currentUser.getAuthority() > 0) {
             clearSelection();
@@ -392,14 +404,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         }
     }
 
-    private void clearSelection(){
-        columnValueAdapterSelect(-1);
-        columnValueNameEditText.requestFocus();
-    }
+
 
     private void resetColumnValueButtonOnClick() {
         columnValueAdapterSelect(columnValueAdapter.getSelectedEntityIndex());
-        columnValueNameEditText.requestFocus();
+        resetFocus();
     }
 
     private void saveColumnValueButtonOnClick() {
