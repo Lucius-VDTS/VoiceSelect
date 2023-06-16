@@ -56,6 +56,10 @@ public class VDTSViewModel extends AndroidViewModel {
         return userRepository.findUserByID(uid);
     }
 
+    public List<VDTSUser> findAllUsers() {
+        return userRepository.findAll("SELECT * FROM Users");
+    }
+
     public List<VDTSUser> findAllActiveUsers() {
         return userRepository.findAllActiveUsers();
     }
