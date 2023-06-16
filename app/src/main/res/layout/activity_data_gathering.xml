@@ -12,6 +12,7 @@
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
+        android:paddingBottom="@dimen/half_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -25,6 +26,7 @@
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
             android:text="@string/data_gathering_index_label"
             android:textSize="@dimen/large_text_size">
         </TextView>
@@ -56,6 +58,7 @@
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
             android:text="@string/data_gathering_comment_label"
             android:textSize="@dimen/large_text_size">
         </TextView>
@@ -69,6 +72,7 @@
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
             android:text="@string/data_gathering_photo_label"
             android:textSize="@dimen/large_text_size">
         </TextView>
@@ -101,6 +105,7 @@
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
+        android:paddingTop="@dimen/half_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/entryButtonsLinearLayout">
@@ -114,6 +119,7 @@
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/large_text_size">
         </TextView>
 

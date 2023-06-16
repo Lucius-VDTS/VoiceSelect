@@ -1,6 +1,7 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -216,6 +219,8 @@ public class DataGatheringActivity extends AppCompatActivity
                             marginPaddingDimen, marginPaddingDimen);
                     columnText.setGravity(Gravity.CENTER);
                     columnText.setMaxLines(1);
+                    columnText.setBackground(
+                            ContextCompat.getDrawable(this, R.drawable.text_background));
                     columnText.setText(column.getNameCode());   //todo - base this on setting?
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                     columnLinearLayout.addView(columnText);
