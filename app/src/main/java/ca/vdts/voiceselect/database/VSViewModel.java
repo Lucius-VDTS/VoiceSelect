@@ -221,12 +221,21 @@ public class VSViewModel extends VDTSViewModel {
         columnValueRepository.deleteAll(columnValues);
     }
 
+    public List<ColumnValue> findAllColumnValues() {
+        return columnValueRepository.findAll(
+                "SELECT * FROM ColumnValues " +
+                        "WHERE uid <> " + DEFAULT_UID
+        );
+    }
+
     public List<ColumnValue> findAllActiveColumnValues() {
         return columnValueRepository.findAll(
                 "SELECT * FROM ColumnValues " +
                         "WHERE active = 1"
         );
     }
+
+
 
     public LiveData<List<ColumnValue>> findAllColumnValuesLive() {
         return columnValueRepository.findAllColumnValuesLive();

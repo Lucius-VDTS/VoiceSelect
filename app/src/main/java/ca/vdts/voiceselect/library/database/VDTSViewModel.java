@@ -56,6 +56,15 @@ public class VDTSViewModel extends AndroidViewModel {
         return userRepository.findUserByID(uid);
     }
 
+    public VDTSUser findPrimaryUser() {
+        List<VDTSUser> users =  userRepository.findAll("SELECT * FROM Users WHERE primary = " + true + "");
+        if (users.size()>0){
+            return users.get(0);
+        } else {
+            return VDTSUser.VDTS_USER_NONE;
+        }
+    }
+
     public List<VDTSUser> findAllUsers() {
         return userRepository.findAll("SELECT * FROM Users");
     }
