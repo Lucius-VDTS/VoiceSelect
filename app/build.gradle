@@ -68,5 +68,9 @@ dependencies {
     //StringUtils
     implementation 'org.apache.commons:commons-lang3:3.12.0'                        //Original - 'org.apache.commons:commons-lang3:3.12.0'
 
+    //Screen shake
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    //Excell
+    implementation "com.github.SUPERCILEX.poi-android:poi:3.17"
 }

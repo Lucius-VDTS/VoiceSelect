@@ -52,7 +52,7 @@
     <string name="user_name_label">Name</string>
     <string name="user_name_value">Enter user name</string>
     <string name="user_prefix_label">Session Prefix</string>
-    <string name="user_prefix_value">Enter session prefix</string>
+    <string name="user_prefix_value">Enter totalSession prefix</string>
     <string name="user_export_code_label">Code</string>
     <string name="user_export_code_value">Enter export code</string>
 
@@ -155,7 +155,7 @@
     <string name="data_gathering_comment_description">Open comment entry dialogue</string>
     <string name="data_gathering_photo_label">PIC</string>
     <string name="data_gathering_photo_description">Open the camera</string>
-    <string name="data_gathering_end_description">End the session</string>
+    <string name="data_gathering_end_description">End the totalSession</string>
 
     <string name="data_gathering_repeat_button">Repeat</string>
     <string name="data_gathering_delete_button">Del</string>
