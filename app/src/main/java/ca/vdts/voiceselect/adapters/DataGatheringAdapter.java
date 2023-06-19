@@ -298,8 +298,12 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         }
 
         private void scrollHorizontally(Integer xCord) {
+//            if (xCord != null) {
+//                entryValueScrollView.smoothScrollTo(xCord, 0);
+//            }
+
             if (xCord != null) {
-                entryValueScrollView.smoothScrollTo(xCord, 0);
+                entryValueScrollView.scrollTo(xCord, 0);
             }
         }
     }

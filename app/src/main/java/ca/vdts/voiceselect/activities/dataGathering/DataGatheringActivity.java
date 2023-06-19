@@ -311,6 +311,11 @@ public class DataGatheringActivity extends AppCompatActivity
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
+
+        columnValueIndexValue.setText(String.format(
+                Locale.getDefault(),
+                "%d",
+                dataGatheringAdapter.getItemCount() + 1));
     }
 
     /**
@@ -325,14 +330,25 @@ public class DataGatheringActivity extends AppCompatActivity
     public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
                                 int x, int y,
                                 int oldx, int oldy) {
+//        if (observableHorizontalScrollView == columnScrollView) {
+//            columnValueScrollView.smoothScrollTo(x, y);
+//            dataGatheringAdapter.setXCord(x);
+//        } else if (observableHorizontalScrollView == columnValueScrollView) {
+//            columnScrollView.smoothScrollTo(x, y);
+//            dataGatheringAdapter.setXCord(x);
+//        } else if (observableHorizontalScrollView == null) {
+//            columnScrollView.smoothScrollTo(x, y);
+//            columnValueScrollView.smoothScrollTo(x, y);
+//        }
+
         if (observableHorizontalScrollView == columnScrollView) {
-            columnValueScrollView.smoothScrollTo(x, y);
+            columnValueScrollView.scrollTo(x, y);
             dataGatheringAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == columnValueScrollView) {
-            columnScrollView.smoothScrollTo(x, y);
+            columnScrollView.scrollTo(x, y);
             dataGatheringAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == null) {
-            columnScrollView.smoothScrollTo(x, y);
+            columnScrollView.scrollTo(x, y);
             columnValueScrollView.smoothScrollTo(x, y);
         }
     }
@@ -434,8 +450,27 @@ public class DataGatheringActivity extends AppCompatActivity
                     entryValueList.toArray(entryValues);
 
                     ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
+                    Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
                     createEntryValuesExecutor.execute(() -> {
                         vsViewModel.insertAllEntryValues(entryValues);
+                        createEntryValuesHandler.post(() -> {
+                            columnValueIndexValue.setText(String.format(
+                                    Locale.getDefault(),
+                                    "%d",
+                                    dataGatheringAdapter.getItemCount() + 1)
+                            );
+
+//                            dataGatheringAdapter.setXCord(0);
+//                            columnValueScrollView.smoothScrollTo(0, 0);
+//                            columnScrollView.smoothScrollTo(0, 0);
+
+//                            columnScrollView.smoothScrollTo(0, 0);
+
+//                            dataGatheringAdapter.setXCord(0);
+
+                            columnScrollView.setScrollX(0);
+//                            columnScrollView.smoothScrollTo(0, 0);
+                        });
                     });
                 });
             });
