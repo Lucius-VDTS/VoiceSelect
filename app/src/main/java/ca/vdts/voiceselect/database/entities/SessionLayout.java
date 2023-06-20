@@ -47,6 +47,7 @@ import java.util.Objects;
         }
 )
 public class SessionLayout {
+
     @Expose
     @SerializedName("uid")
     @PrimaryKey(autoGenerate = true)
@@ -86,6 +87,10 @@ public class SessionLayout {
     @Ignore
     public SessionLayout(long sessionID, long columnID, int columnPosition) {
         this(0L, sessionID, columnID, columnPosition);
+    }
+
+    public SessionLayout (SessionLayout sessionLayout) {
+        this(sessionLayout.getUid(),sessionLayout.getSessionID(),sessionLayout.getColumnID(), sessionLayout.getColumnPosition());
     }
 
     public long getUid() {
