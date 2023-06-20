@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--  Columns  -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/columnLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,66 +22,74 @@
             android:id="@+id/columnIndexLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
+            android:layout_weight="0.6"
             android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_index_label"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toStartOf="@id/columnLayout"
-            app:layout_constraintEnd_toStartOf="@id/columnScrollView">
+            android:textStyle="bold"
+            android:text="@string/data_gathering_index_label">
         </TextView>
 
-        <HorizontalScrollView
-            android:id="@+id/columnScrollView"
-            android:contentDescription="@string/data_gathering_header_scroll_description"
+        <TextView
+            android:id="@+id/columnLastLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            app:layout_constraintHorizontal_weight="8"
-            app:layout_constraintStart_toEndOf="@id/columnIndexLabel"
-            app:layout_constraintEnd_toStartOf="@id/columnCommentLabel">
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
+            android:text="@string/data_gathering_last_column">
+        </TextView>
 
-            <LinearLayout
-                android:id="@+id/columnLinearLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/half_margin"
-                android:layout_marginEnd="@dimen/half_margin">
-            </LinearLayout>
-        </HorizontalScrollView>
+        <TextView
+            android:id="@+id/columnNextLabel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
+            android:text="@string/data_gathering_next_column">
+        </TextView>
 
         <TextView
             android:id="@+id/columnCommentLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
+            android:layout_weight="0.6"
             android:gravity="center"
-            android:layout_marginEnd="@dimen/half_margin"
+            android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_comment_label"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/columnScrollView"
-            app:layout_constraintEnd_toStartOf="@id/columnPhotoLabel">
+            android:textStyle="bold"
+            android:text="@string/data_gathering_comment_label">
         </TextView>
 
         <TextView
             android:id="@+id/columnPhotoLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
-            android:layout_weight="1"
+            android:layout_weight="0.6"
             android:gravity="center"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_photo_label"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/columnCommentLabel"
-            app:layout_constraintEnd_toEndOf="@id/columnLayout">
+            android:textStyle="bold"
+            android:text="@string/data_gathering_photo_label">
         </TextView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <!--  Entries  -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/entryLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -99,59 +107,68 @@
             android:id="@+id/entryIndexValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
+            android:layout_weight="0.6"
             android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toStartOf="@id/entryLayout"
-            app:layout_constraintEnd_toStartOf="@id/entryValueScrollView">
-        </TextView>
-
-        <HorizontalScrollView
-            android:id="@+id/entryValueScrollView"
-            android:contentDescription="@string/data_gathering_entry_scroll_description"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            app:layout_constraintHorizontal_weight="8"
-            app:layout_constraintStart_toEndOf="@id/entryIndexValue"
-            app:layout_constraintEnd_toStartOf="@id/entryCommentValue">
-
-            <LinearLayout
-                android:id="@+id/entryValuesLinearLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/half_margin"
-                android:layout_marginEnd="@dimen/half_margin">
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/entryCommentValue"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/half_margin"
-            android:padding="@dimen/half_padding"
-            android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/entryValueScrollView"
-            app:layout_constraintEnd_toStartOf="@id/entryPhotoValue">
+            android:text="1234">
         </TextView>
 
         <TextView
-            android:id="@+id/entryPhotoValue"
+            android:id="@+id/entryValueLast"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:background="@drawable/spinner_background"
+            android:textSize="@dimen/xxs_text_size"
+            android:textColor="@color/black"
+            android:text="@string/data_gathering_last_value">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entryValueNext"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:background="@drawable/spinner_background"
+            android:textSize="@dimen/xxs_text_size"
+            android:textColor="@color/black"
+            android:text="@string/data_gathering_next_value">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entryValueComment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:layout_marginEnd="@dimen/margin"
+            android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
+            android:textSize="@dimen/xxs_text_size"
+            android:text="@string/data_gathering_comment_value">
+        </TextView>
+
+        <TextView
+            android:id="@+id/entryValuePhoto"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
             android:gravity="center"
             android:padding="@dimen/half_padding"
+            android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            app:layout_constraintStart_toEndOf="@id/entryCommentValue"
-            app:layout_constraintEnd_toEndOf="@id/entryLayout">
+            android:text="@string/data_gathering_photo_value">
         </TextView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <!--  Session Footer  -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -171,11 +188,12 @@
             android:id="@+id/sessionLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="0.8"
+            app:layout_constraintHorizontal_weight="1"
             android:gravity="center_vertical"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_session_label"
-            android:textSize="@dimen/xxxs_text_size"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/sessionLayout"
             app:layout_constraintEnd_toStartOf="@id/sessionValue">
         </TextView>
@@ -189,7 +207,8 @@
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_session_value"
-            android:textSize="@dimen/xxxs_text_size"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/sessionLabel"
             app:layout_constraintEnd_toStartOf="@id/sessionEntriesLabel">
         </TextView>
@@ -198,11 +217,12 @@
             android:id="@+id/sessionEntriesLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintHorizontal_weight="0.9"
             android:gravity="center_vertical|end"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_entries_label"
-            android:textSize="@dimen/xxxs_text_size"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/sessionValue"
             app:layout_constraintEnd_toStartOf="@id/sessionEntriesCount">
         </TextView>
@@ -211,11 +231,12 @@
             android:id="@+id/sessionEntriesCount"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="0.5"
+            app:layout_constraintHorizontal_weight="0.6"
             android:gravity="center_vertical|end"
             android:padding="@dimen/half_padding"
             android:text="@string/data_gathering_entries_value"
-            android:textSize="@dimen/xxxs_text_size"
+            android:textSize="@dimen/xxs_text_size"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/sessionEntriesLabel"
             app:layout_constraintEnd_toEndOf="parent">
         </TextView>

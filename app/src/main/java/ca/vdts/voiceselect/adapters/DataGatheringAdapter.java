@@ -2,7 +2,6 @@ package ca.vdts.voiceselect.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -236,8 +235,8 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
             entryValueScrollView = v.findViewById(R.id.entryValueScrollView);
             entryValueScrollView.setScrollChangeListener(this);
             entryValueLinearLayout = v.findViewById(R.id.entryValueLinearLayout);
-            entryCommentValue = v.findViewById(R.id.entryCommentValue);
-            entryPhotoValue = v.findViewById(R.id.entryPhotoValue);
+            entryCommentValue = v.findViewById(R.id.entryValueComment);
+            entryPhotoValue = v.findViewById(R.id.entryValuePhoto);
 
             initializeEntryValuesLayout();
             xCord.observe(dataGatheringActivity, this::scrollHorizontally);
@@ -257,19 +256,32 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
                     resources.getDisplayMetrics()
             );
 
-            int marginPaddingDimen = (int) TypedValue.applyDimension(
+            int marginDimen = (int) TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     2,
                     resources.getDisplayMetrics()
             );
-            layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
+
+            int paddingLRDimen = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    4,
+                    resources.getDisplayMetrics()
+            );
+
+            int paddingTBDimen = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    8,
+                    resources.getDisplayMetrics()
+            );
+
+            layoutParams.setMargins(marginDimen, 0, marginDimen, 0);
 
             for (Column ignored : columnList) {
                 TextView entryValueText = new TextView(context);
                 entryValueText.setMinWidth(minWidthDimen);
                 entryValueText.setLayoutParams(layoutParams);
-                entryValueText.setPadding(marginPaddingDimen, marginPaddingDimen,
-                        marginPaddingDimen, marginPaddingDimen);
+                entryValueText.setPadding(paddingLRDimen, paddingTBDimen,
+                        paddingLRDimen, paddingTBDimen);
                 entryValueText.setGravity(Gravity.CENTER);
                 entryValueText.setMaxLines(1);
                 entryValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
@@ -298,10 +310,6 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
         }
 
         private void scrollHorizontally(Integer xCord) {
-//            if (xCord != null) {
-//                entryValueScrollView.smoothScrollTo(xCord, 0);
-//            }
-
             if (xCord != null) {
                 entryValueScrollView.scrollTo(xCord, 0);
             }

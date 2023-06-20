@@ -69,7 +69,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:text="@string/preferences_autosave_label"
+                android:text="@string/preferences_auto_save_label"
                 android:textSize="@dimen/large_text_size"
                 app:layout_constraintStart_toStartOf="parent"/>
 

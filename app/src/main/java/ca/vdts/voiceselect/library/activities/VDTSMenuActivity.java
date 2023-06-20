@@ -107,7 +107,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         layoutAdapter = new VDTSNamedAdapter<>(
                 this,
                 R.layout.adapter_spinner_named,
-                layoutList);
+                layoutList
+        );
         layoutAdapter.setToStringFunction((layout, integer) -> layout.getName());
 
         layoutSpinner.setAdapter(layoutAdapter);

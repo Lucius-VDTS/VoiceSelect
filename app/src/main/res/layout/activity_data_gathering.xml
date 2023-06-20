@@ -25,10 +25,14 @@
             android:gravity="center"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/half_margin"
-            android:padding="@dimen/half_padding"
+            android:paddingStart="@dimen/half_padding"
+            android:paddingEnd="@dimen/half_padding"
+            android:paddingTop="@dimen/padding"
+            android:paddingBottom="@dimen/padding"
             android:background="@drawable/text_background"
-            android:text="@string/data_gathering_index_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold"
+            android:text="@string/data_gathering_index_label">
         </TextView>
 
         <ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView
@@ -57,10 +61,14 @@
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
-            android:padding="@dimen/half_padding"
+            android:paddingStart="@dimen/half_padding"
+            android:paddingEnd="@dimen/half_padding"
+            android:paddingTop="@dimen/padding"
+            android:paddingBottom="@dimen/padding"
             android:background="@drawable/text_background"
-            android:text="@string/data_gathering_comment_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold"
+            android:text="@string/data_gathering_comment_label">
         </TextView>
 
         <TextView
@@ -71,10 +79,14 @@
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
+            android:paddingStart="@dimen/half_padding"
+            android:paddingEnd="@dimen/half_padding"
+            android:paddingTop="@dimen/padding"
+            android:paddingBottom="@dimen/padding"
             android:background="@drawable/text_background"
-            android:text="@string/data_gathering_photo_label"
-            android:textSize="@dimen/large_text_size">
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="bold"
+            android:text="@string/data_gathering_photo_label">
         </TextView>
     </LinearLayout>
 
@@ -181,7 +193,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/sessionLinearLayout">
+        app:layout_constraintBottom_toTopOf="@id/sessionLayout">
 
         <Button
             android:id="@+id/entryDeleteButton"
@@ -224,14 +236,14 @@
 
     <!--  Session Footer  -->
     <LinearLayout
-        android:id="@+id/sessionLinearLayout"
+        android:id="@+id/sessionLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView

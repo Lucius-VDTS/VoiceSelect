@@ -177,7 +177,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         userAdapter = new VDTSNamedAdapter<>(
                 this,
                 R.layout.adapter_spinner_named,
-                userList);
+                userList
+        );
         userAdapter.setToStringFunction((user, integer) -> user.getName());
 
         columnUserSpinner.setAdapter(userAdapter);

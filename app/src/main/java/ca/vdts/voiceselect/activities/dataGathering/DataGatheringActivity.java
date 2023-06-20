@@ -1,7 +1,7 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -63,7 +62,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSUser currentUser;
     private Session currentSession;
     private Entry selectedEntry;
-    private ColumnValue selectedColumnValue;
+    private Column lastColumn;
+    private ColumnValue lastColumnValue;
 
     //Lists
     private final List<Column> columnList = new ArrayList<>();
@@ -97,7 +97,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private TextView sessionEntriesCount;
     private Button sessionEndButton;
 
-    //Recycler View - Entry Spinners
+    //Recycler View
     private VSViewModel vsViewModel;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
@@ -159,8 +159,27 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = true;
+        initializeIristick();
+    }
+
+    @Override
+    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = false;
+        initializeSession();
+    }
+
+    /**
+     * Initialize Iristick when connected.
+     */
+    private void initializeIristick() {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new DataGatheringActivity.IristickHUD();
+            return iristickHUD;
+        });
 
         initializeSession();
     }
@@ -175,6 +194,10 @@ public class DataGatheringActivity extends AppCompatActivity
             currentSession = vsViewModel.findSessionByID(currentSessionID);
             handler.post(() -> {
                 sessionValue.setText(currentSession.name());
+                if (isHeadsetAvailable) {
+                    iristickHUD.sessionValue.setText(sessionValue.getText());
+                }
+
                 initializeColumnsLayout();
             });
         });
@@ -316,6 +339,9 @@ public class DataGatheringActivity extends AppCompatActivity
                 Locale.getDefault(),
                 "%d",
                 dataGatheringAdapter.getItemCount() + 1));
+        if (isHeadsetAvailable) {
+            iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
+        }
     }
 
     /**
@@ -330,17 +356,6 @@ public class DataGatheringActivity extends AppCompatActivity
     public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
                                 int x, int y,
                                 int oldx, int oldy) {
-//        if (observableHorizontalScrollView == columnScrollView) {
-//            columnValueScrollView.smoothScrollTo(x, y);
-//            dataGatheringAdapter.setXCord(x);
-//        } else if (observableHorizontalScrollView == columnValueScrollView) {
-//            columnScrollView.smoothScrollTo(x, y);
-//            dataGatheringAdapter.setXCord(x);
-//        } else if (observableHorizontalScrollView == null) {
-//            columnScrollView.smoothScrollTo(x, y);
-//            columnValueScrollView.smoothScrollTo(x, y);
-//        }
-
         if (observableHorizontalScrollView == columnScrollView) {
             columnValueScrollView.scrollTo(x, y);
             dataGatheringAdapter.setXCord(x);
@@ -358,7 +373,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
-                    selectedColumnValue = (ColumnValue) parent.getItemAtPosition(position);
+                    lastColumnValue = (ColumnValue) parent.getItemAtPosition(position);
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
                 }
 
                 @Override
@@ -373,6 +389,10 @@ public class DataGatheringActivity extends AppCompatActivity
                 dataGatheringAdapter.addAllEntries(entries);
                 sessionEntriesCount.setText(String.format(
                         Locale.getDefault(), "%d", entries.size()));
+
+                if (isHeadsetAvailable) {
+                    iristickHUD.sessionEntriesCount.setText(sessionEntriesCount.getText());
+                }
             }
         }
     };
@@ -444,6 +464,8 @@ public class DataGatheringActivity extends AppCompatActivity
                             newEntryValue = new EntryValue(newEntry.getUid());
                         }
                         entryValueList.add(index, newEntryValue);
+
+                        columnValueSpinnerList.get(index).setSelection(0);
                     }
 
                     EntryValue[] entryValues = new EntryValue[entryValueList.size()];
@@ -460,16 +482,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     dataGatheringAdapter.getItemCount() + 1)
                             );
 
-//                            dataGatheringAdapter.setXCord(0);
-//                            columnValueScrollView.smoothScrollTo(0, 0);
-//                            columnScrollView.smoothScrollTo(0, 0);
-
-//                            columnScrollView.smoothScrollTo(0, 0);
-
-//                            dataGatheringAdapter.setXCord(0);
-
                             columnScrollView.setScrollX(0);
-//                            columnScrollView.smoothScrollTo(0, 0);
                         });
                     });
                 });
@@ -477,35 +490,20 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-        initializeIristick();
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
-        initializeIristick();
-    }
-
-    /**
-     * Initialize elements based on Iristick connection.
-     */
-    private void initializeIristick() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new DataGatheringActivity.IristickHUD();
-                return iristickHUD;
-            });
-        }
-    }
-
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
         //HUD Views
+        private TextView columnLastLabel;
+        private TextView columnNextLabel;
+
+        private TextView entryIndexValue;
+        private TextView entryLastValue;
+        private TextView entryNextValue;
+        private TextView entryCommentValue;
+        private TextView entryPhotoValue;
+
+        private TextView sessionValue;
+        private TextView sessionEntriesCount;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -513,6 +511,17 @@ public class DataGatheringActivity extends AppCompatActivity
             setContentView(R.layout.activity_data_gathering_hud);
 
             //HUD Views
+            columnLastLabel = findViewById(R.id.columnLastLabel);
+            columnNextLabel = findViewById(R.id.columnNextLabel);
+
+            entryIndexValue = findViewById(R.id.entryIndexValue);
+            entryLastValue = findViewById(R.id.entryValueLast);
+            entryNextValue = findViewById(R.id.entryValueNext);
+            entryCommentValue = findViewById(R.id.entryValueComment);
+            entryPhotoValue = findViewById(R.id.entryValuePhoto);
+
+            sessionValue = findViewById(R.id.sessionValue);
+            sessionEntriesCount = findViewById(R.id.sessionEntriesCount);
         }
     }
 }

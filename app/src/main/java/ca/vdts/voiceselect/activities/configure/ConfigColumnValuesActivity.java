@@ -190,7 +190,11 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //User Spinner
         columnValueUserSpinner = findViewById(R.id.columnValueUserSpinner);
 
-        userAdapter = new VDTSNamedAdapter<>(this, R.layout.adapter_spinner_named, userList);
+        userAdapter = new VDTSNamedAdapter<>(
+                this,
+                R.layout.adapter_spinner_named,
+                userList
+        );
         userAdapter.setToStringFunction((user, integer) -> user.getName());
         columnValueUserSpinner.setAdapter(userAdapter);
         columnValueUserSpinner.setOnItemSelectedListener(userSpinnerListener);

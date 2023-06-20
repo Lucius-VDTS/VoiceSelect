@@ -174,7 +174,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layoutSpinnerAdapter = new VDTSNamedAdapter<>(
                         this,
                         R.layout.adapter_spinner_named,
-                        layoutList);
+                        layoutList
+                );
                 layoutSpinnerAdapter.setToStringFunction((layout, integer) -> layout.getName());
 
                 layoutSpinner.setAdapter(layoutSpinnerAdapter);
