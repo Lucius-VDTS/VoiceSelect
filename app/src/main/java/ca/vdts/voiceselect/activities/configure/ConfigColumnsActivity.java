@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
@@ -7,6 +8,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -486,7 +488,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             Uri uri = FileProvider.getUriForFile(
                     this,
                     "ca.vdts.voiceselect",
-                    new File(EXPORT_FILE_USERS
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "/Documents/VoiceSelect"+EXPORT_FILE_SETUP
                             .concat(FILE_EXTENSION_VDTS))
             );
             if (uri != null && uri.getPath() != null) {

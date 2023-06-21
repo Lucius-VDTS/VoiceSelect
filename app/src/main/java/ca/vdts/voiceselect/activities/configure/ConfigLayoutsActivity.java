@@ -1,10 +1,15 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -19,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +40,7 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -47,6 +54,7 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -515,7 +523,29 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     Toast.LENGTH_SHORT
             );
         } else {
-            //TODO: Actually do something
+            Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "ca.vdts.voiceselect",
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "/Documents/VoiceSelect"+EXPORT_FILE_LAYOUT
+                            .concat(FILE_EXTENSION_VDTS))
+            );
+            if (uri != null && uri.getPath() != null) {
+                final Importer importer = new Importer(
+                        vsViewModel,
+                        this,
+                        vdtsApplication
+                );
+                if (importer.importColumnLayout(uri)) {
+                    // adapterSelect(-1);
+
+                    vdtsApplication.displayToast(this,"Layouts imported successfully",Toast.LENGTH_SHORT);
+                } else {
+                    vdtsApplication.displayToast(this,"Error importing layouts",Toast.LENGTH_SHORT);
+                }
+            } else {
+                vdtsApplication.displayToast(this,"Error importing layouts",Toast.LENGTH_SHORT);
+            }
         }
     }
 

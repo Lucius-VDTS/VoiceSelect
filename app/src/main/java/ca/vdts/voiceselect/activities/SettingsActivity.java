@@ -1,5 +1,8 @@
 package ca.vdts.voiceselect.activities;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_STEP;
@@ -14,7 +17,9 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_TIME;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -35,10 +41,13 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
+import java.io.File;
+
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
@@ -172,7 +181,30 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     Toast.LENGTH_SHORT
             );
         } else {
-            //TODO: Actually do something
+           Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "ca.vdts.voiceselect",
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "/Documents/VoiceSelect"+EXPORT_FILE_OPTIONS
+                            .concat(FILE_EXTENSION_VDTS))
+            );
+            if (uri != null && uri.getPath() != null) {
+                final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
+                final Importer importer = new Importer(
+                        viewModel,
+                        this,
+                        vdtsApplication
+                );
+                if (importer.importOptions(uri)) {
+                    // adapterSelect(-1);
+
+                    vdtsApplication.displayToast(this,"Settings imported successfully",Toast.LENGTH_SHORT);
+                } else {
+                    vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+                }
+            } else {
+                vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+            }
         }
     }
 
