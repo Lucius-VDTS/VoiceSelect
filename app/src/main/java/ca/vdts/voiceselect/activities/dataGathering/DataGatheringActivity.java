@@ -527,8 +527,10 @@ public class DataGatheringActivity extends AppCompatActivity
                     } else {
                         iristickHUD.columnNextLabel.setText(
                                 R.string.data_gathering_hud_end_of_row);
-                        iristickHUD.entryNextValue.setText(
-                                R.string.data_gathering_hud_end_of_row);
+                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
+                                this,
+                                R.drawable.text_background)
+                        );
                     }
                 }
                 iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
