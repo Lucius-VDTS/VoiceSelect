@@ -16,7 +16,7 @@ import java.util.List;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
-import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
+import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 
 /**
  * Class contains programmatically generated column value spinners, which includes the dataset,
@@ -24,12 +24,13 @@ import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
  */
 public class ColumnValueSpinner {
     private final List<ColumnValue> columnValues;
-    private final VDTSNamedAdapter<ColumnValue> columnValueAdapter;
+    private final VDTSNamedPositionedAdapter<ColumnValue> columnValueAdapter;
     private final Spinner columnValueSpinner;
 
     public ColumnValueSpinner(Context context,
                               List<ColumnValue> columnValuesByColumn,
-                              AdapterView.OnItemSelectedListener columnValueSpinnerListener) {
+                              AdapterView.OnItemSelectedListener columnValueSpinnerListener,
+                              int spinnerPosition) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -53,10 +54,11 @@ public class ColumnValueSpinner {
         columnValues = new ArrayList<>(columnValuesByColumn);
         columnValues.add(0, null);
 
-        columnValueAdapter = new VDTSNamedAdapter<>(
+        columnValueAdapter = new VDTSNamedPositionedAdapter<>(
                 context,
                 R.layout.adapter_spinner_named,
-                columnValues
+                columnValues,
+                spinnerPosition
         );
         columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
 
@@ -76,7 +78,7 @@ public class ColumnValueSpinner {
         return columnValues;
     }
 
-    public VDTSNamedAdapter<ColumnValue> getColumnValueAdapter() {
+    public VDTSNamedPositionedAdapter<ColumnValue> getColumnValueAdapter() {
         return columnValueAdapter;
     }
 

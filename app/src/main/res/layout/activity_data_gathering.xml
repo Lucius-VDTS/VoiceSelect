@@ -254,7 +254,6 @@
             android:gravity="center_vertical"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_session_value"
             android:textSize="@dimen/medium_text_size"
             android:textStyle="bold">
         </TextView>
@@ -280,7 +279,6 @@
             android:gravity="center_vertical"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_entries_value"
             android:textSize="@dimen/medium_text_size"
             android:textStyle="bold">
         </TextView>

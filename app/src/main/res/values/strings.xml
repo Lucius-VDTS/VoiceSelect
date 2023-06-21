@@ -163,18 +163,10 @@
     <string name="data_gathering_save_button">Save</string>
 
     <string name="data_gathering_session_label">Session:</string>
-    <string name="data_gathering_session_value">LB-23/02/09–1</string>
     <string name="data_gathering_entries_label">Entries:</string>
-    <string name="data_gathering_entries_value">1234</string>
     <string name="data_gathering_end_button">End</string>
 
-    <!--  HUD  -->
-    <string name="data_gathering_last_column">C1</string>
-    <string name="data_gathering_next_column">C2</string>
-    <string name="data_gathering_last_value">Green</string>
-    <string name="data_gathering_next_value">15</string>
-    <string name="data_gathering_comment_value">Yes</string>
-    <string name="data_gathering_photo_value">0</string>
+    <string name="data_gathering_hud_end_of_row">END</string>
 
 <!--  Settings Activity  -->
     <string name="settings_entry_mode_label">Voice Entry Mode:</string>

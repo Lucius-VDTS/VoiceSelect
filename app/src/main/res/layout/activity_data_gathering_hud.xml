@@ -42,8 +42,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:text="@string/data_gathering_last_column">
+            android:textStyle="bold">
         </TextView>
 
         <TextView
@@ -56,8 +55,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:text="@string/data_gathering_next_column">
+            android:textStyle="bold">
         </TextView>
 
         <TextView
@@ -112,8 +110,7 @@
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:text="1234">
+            android:textSize="@dimen/xxs_text_size">
         </TextView>
 
         <TextView
@@ -124,10 +121,8 @@
             android:gravity="center"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
-            android:background="@drawable/spinner_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black"
-            android:text="@string/data_gathering_last_value">
+            android:background="@drawable/text_background"
+            android:textSize="@dimen/xxs_text_size">
         </TextView>
 
         <TextView
@@ -140,8 +135,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/spinner_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black"
-            android:text="@string/data_gathering_next_value">
+            android:textColor="@color/black">
         </TextView>
 
         <TextView
@@ -153,8 +147,7 @@
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:text="@string/data_gathering_comment_value">
+            android:textSize="@dimen/xxs_text_size">
         </TextView>
 
         <TextView
@@ -165,8 +158,7 @@
             android:gravity="center"
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:text="@string/data_gathering_photo_value">
+            android:textSize="@dimen/xxs_text_size">
         </TextView>
     </LinearLayout>
 
@@ -206,7 +198,6 @@
             android:gravity="center_vertical"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_session_value"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/sessionLabel"
@@ -234,7 +225,6 @@
             app:layout_constraintHorizontal_weight="0.6"
             android:gravity="center_vertical|end"
             android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_entries_value"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/sessionEntriesLabel"
