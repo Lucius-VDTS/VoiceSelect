@@ -41,7 +41,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -70,6 +73,7 @@ import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.LocalDateTimeSerializer;
+import ca.vdts.voiceselect.library.utilities.VDTSToolUtil;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class Exporter {
@@ -587,7 +591,7 @@ public class Exporter {
         String exportDir = Environment.getExternalStorageDirectory().toString() +
                 "/Documents/VoiceSelect"+localExportPath;
 
-        final File directory = new File(localExportPath);
+        final File directory = new File(exportDir);
         if (!directory.exists()) {
             boolean mkDirResult = directory.mkdirs();
             LOG.info("Created directory: {}",mkDirResult);
@@ -597,7 +601,7 @@ public class Exporter {
         }
 
         try {
-            writeToFile(localExportPath.concat(fileName), fileContent);
+            writeToFile(exportDir.concat(localExportPath).concat(fileName), fileContent);
         } catch (IOException e) {
             LOG.error("Export file write failed: ", e);
             return false;
@@ -654,12 +658,60 @@ public class Exporter {
     private void writeToFile(String filePath, String json) throws IOException {
         LOG.debug("Writing file {}", filePath);
         File file = new File(filePath);
+
+        if (file.exists()) {
+            boolean deleteResult = file.delete();
+            if (deleteResult) {
+                LOG.info("Deleted existing file(s): {}", file);
+            } else {
+                LOG.info("Failed to delete existing file: {}", file);
+            }
+        }
+
+        //Create placeholder file for backup
+        if (!file.exists()) {
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(file);
+                fos.write(json.getBytes());
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*try {
+            int bufferSize = 8192;
+            byte[] buffer = new byte[bufferSize];
+            int bytesRead;
+
+            InputStream dbInput = Files.newInputStream(db.toPath());
+            OutputStream dbOutput = Files.newOutputStream(file.toPath());
+
+            while ((bytesRead = dbInput.read(buffer, 0, bufferSize)) > 0) {
+                dbOutput.write(buffer, 0, bytesRead);
+            }
+
+            dbOutput.flush();
+            dbOutput.close();
+            dbInput.close();
+
+            backupSharedPreferences.edit().putLong(
+                    "LAST_BACKUP",
+                    VDTSToolUtil.getTimeStamp().getTime()).apply();
+
+            LOG.info("Backup saved to {}", dbBackupDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Backup error: ", e);
+        }*/
+
         //noinspection ResultOfMethodCallIgnored
-        file.createNewFile();
+        /*file.createNewFile();
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(json);
-        writer.close();
+        writer.close();*/
     }
 
     private void writeToFile(String filePath, Workbook workbook) throws IOException {
