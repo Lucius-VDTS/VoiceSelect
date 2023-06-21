@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -128,7 +130,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         layoutSpinner = findViewById(R.id.layoutSpinner);
 
         //Observe/Update layout list
-        vsViewModel.findAllLayoutsLive().observe(this, layouts -> {
+        vsViewModel.findAllActiveLayoutsLive().observe(this, layouts -> {
             layoutList.clear();
             layoutList.addAll(layouts);
             layoutList.get(0).setName("");
@@ -424,7 +426,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     long uid = vsViewModel.insertLayout(newLayout);
                     newLayout.setUid(uid);
                     createLayoutHandler.post(() -> {
-//                        layoutSpinnerAdapter.remove(newLayout);        //todo - redundant
                         layoutSpinnerAdapter.add(newLayout);
 
                         layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
@@ -453,6 +454,42 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void deleteLayoutButtonOnClick() {
+        if (currentUser.getAuthority() > 0) {
+            if (selectedLayout != null) {
+                selectedLayout.setActive(false);
+                layoutSpinnerAdapter.remove(selectedLayout);
+
+                Executor executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+                executor.execute(() -> {
+                    vsViewModel.updateLayout(selectedLayout);
+
+                    handler.post(() -> {
+                        List<LayoutColumn> removeLayoutColumnList = new ArrayList<>();
+                        for (LayoutColumn layoutColumn : layoutColumnList) {
+                            if (selectedLayout.getUid() == layoutColumn.getLayoutID()) {
+                                removeLayoutColumnList.add(layoutColumn);
+                            }
+                        }
+                        final LayoutColumn[] removeLayoutColumnArray =
+                                removeLayoutColumnList.toArray(new LayoutColumn[0]);
+
+                        new Thread(() -> vsViewModel.deleteAllLayoutColumns(
+                                removeLayoutColumnArray)).start();
+                    });
+                });
+            }
+        } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutDeleteButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can delete columns",
+                    Toast.LENGTH_SHORT
+            );
+        }
     }
 
     @Override

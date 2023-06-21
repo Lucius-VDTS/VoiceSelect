@@ -429,8 +429,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         }
     }
 
-
-
     private void resetColumnValueButtonOnClick() {
         columnValueAdapterSelect(columnValueAdapter.getSelectedEntityIndex());
         resetFocus();

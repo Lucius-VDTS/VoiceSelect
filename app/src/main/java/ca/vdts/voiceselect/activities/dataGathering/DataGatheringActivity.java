@@ -51,6 +51,7 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
+import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
@@ -63,19 +64,18 @@ public class DataGatheringActivity extends AppCompatActivity
     private Session currentSession;
     private Entry selectedEntry;
     private Column lastColumn;
-    private ColumnValue lastColumnValue;
+    private ColumnValue selectedColumnValue;
 
     //Lists
     private final List<Column> columnList = new ArrayList<>();
-    private final HashMap<Integer, TextView> columnMap = new HashMap<>();
-
-    private final List<ColumnValue> columnValueList = new ArrayList<>();
+    private final HashMap<Integer, Column> columnMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
     private final List<Spinner> columnValueSpinnerList = new ArrayList<>();
 
     private final List<Entry> entryList = new ArrayList<>();
     private LiveData<List<Entry>> entryListLive;
     private final List<EntryValue> entryValueList = new ArrayList<>();
+    private final HashMap<Integer, ColumnValue> entryValueMap = new HashMap<>();
     private LiveData<List<EntryValue>> entryValueListLive;
 
     //Views
@@ -97,10 +97,11 @@ public class DataGatheringActivity extends AppCompatActivity
     private TextView sessionEntriesCount;
     private Button sessionEndButton;
 
-    //Recycler View
+    //Recycler View - Spinners
     private VSViewModel vsViewModel;
     private DataGatheringAdapter dataGatheringAdapter;
     private RecyclerView entryRecyclerView;
+    private VDTSNamedPositionedAdapter vdtsNamedPositionedAdapter;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -159,22 +160,12 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @Override
-    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
+    protected void onResume() {
+        super.onResume();
         initializeIristick();
+//        initializeSession();
     }
 
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
-        initializeSession();
-    }
-
-    /**
-     * Initialize Iristick when connected.
-     */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new DataGatheringActivity.IristickHUD();
@@ -194,10 +185,6 @@ public class DataGatheringActivity extends AppCompatActivity
             currentSession = vsViewModel.findSessionByID(currentSessionID);
             handler.post(() -> {
                 sessionValue.setText(currentSession.name());
-                if (isHeadsetAvailable) {
-                    iristickHUD.sessionValue.setText(sessionValue.getText());
-                }
-
                 initializeColumnsLayout();
             });
         });
@@ -234,7 +221,12 @@ public class DataGatheringActivity extends AppCompatActivity
             columnList.addAll(vsViewModel.findAllActiveColumns());
             columnList.remove(Column.COLUMN_NONE);
             handler.post(() -> {
+                columnMap.clear();
+                int index = 0;
                 for (Column column : columnList) {
+                    columnMap.put(index, column);       //todo put in order of layout position
+                    index++;
+
                     TextView columnText = new TextView(this);
                     columnText.setMinWidth(minWidthDimen);
                     columnText.setLayoutParams(layoutParams);
@@ -244,7 +236,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnText.setMaxLines(1);
                     columnText.setBackground(
                             ContextCompat.getDrawable(this, R.drawable.text_background));
-                    columnText.setText(column.getNameCode());   //todo - base this on setting?
+                    columnText.setText(column.getNameCode());   //todo - base this on setting
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                     columnLinearLayout.addView(columnText);
                 }
@@ -261,9 +253,10 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            columnValueMap.clear();
             int columnValueMapIndex = 0;
             for (Column column : columnList) {
-                columnValueMap.put(
+                columnValueMap.put(                     //todo put in order of layout position
                         columnValueMapIndex,
                         vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
                 columnValueMapIndex++;
@@ -280,7 +273,8 @@ public class DataGatheringActivity extends AppCompatActivity
                             new ColumnValueSpinner(
                                     this,
                                     columnValuesByColumn,
-                                    columnValueSpinnerListener
+                                    columnValueSpinnerListener,
+                                    index
                             );
 
                     columnValueSpinnerList.add(columnValueSpinner.getColumnValueSpinner());
@@ -300,7 +294,13 @@ public class DataGatheringActivity extends AppCompatActivity
 
 //            entryListLive.removeObservers(this);
             entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
-            handler.post(this::initializeEntryValuesList);
+            handler.post(() -> {
+//                if (isHeadsetAvailable) {
+//                    initializeIristick();
+//                }
+
+                initializeEntryValuesList();
+            });
         });
     }
 
@@ -308,10 +308,6 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            entryValueList.clear();
-            entryValueList.addAll(vsViewModel.findAllEntryValuesBySession(currentSession.getUid()));
-
-//            entryValueListLive.removeObservers(this);
             entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
             handler.post(this::initializeDGAdapter);
         });
@@ -339,7 +335,9 @@ public class DataGatheringActivity extends AppCompatActivity
                 Locale.getDefault(),
                 "%d",
                 dataGatheringAdapter.getItemCount() + 1));
+
         if (isHeadsetAvailable) {
+            iristickHUD.sessionValue.setText(sessionValue.getText());
             iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
         }
     }
@@ -364,7 +362,7 @@ public class DataGatheringActivity extends AppCompatActivity
             dataGatheringAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == null) {
             columnScrollView.scrollTo(x, y);
-            columnValueScrollView.smoothScrollTo(x, y);
+            columnValueScrollView.scrollTo(x, y);
         }
     }
 
@@ -373,8 +371,13 @@ public class DataGatheringActivity extends AppCompatActivity
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
-                    lastColumnValue = (ColumnValue) parent.getItemAtPosition(position);
+                    selectedColumnValue = (ColumnValue) parent.getItemAtPosition(position);
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+
+                    vdtsNamedPositionedAdapter =
+                            (VDTSNamedPositionedAdapter) parent.getAdapter();
+
+                    updateIristickHUD();
                 }
 
                 @Override
@@ -483,10 +486,65 @@ public class DataGatheringActivity extends AppCompatActivity
                             );
 
                             columnScrollView.setScrollX(0);
+
+                            selectedColumnValue = null;
+                            entryValueMap.clear();
+                            if (isHeadsetAvailable) {
+                                iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
+                                updateIristickHUD();
+                            }
                         });
                     });
                 });
             });
+        }
+    }
+
+    @Override
+    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = true;
+    }
+
+    @Override
+    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = false;
+    }
+
+    private void updateIristickHUD() {
+        if (iristickHUD != null) {
+            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
+
+            if (selectedColumnValue != null) {
+                entryValueMap.put(spinnerPosition, selectedColumnValue);
+                if (columnMap.size() > 0) {
+                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
+                            columnMap.get(spinnerPosition)).getName());
+                    if (columnMap.size() != spinnerPosition + 1) {
+                        iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                                columnMap.get(spinnerPosition + 1)).getName());
+                    } else {
+                        iristickHUD.columnNextLabel.setText(
+                                R.string.data_gathering_hud_end_of_row);
+                        iristickHUD.entryNextValue.setText(
+                                R.string.data_gathering_hud_end_of_row);
+                    }
+                }
+                iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
+                if (entryValueMap.get(spinnerPosition + 1) != null ) {
+                    iristickHUD.entryNextValue.setText(Objects.requireNonNull(
+                            entryValueMap.get(spinnerPosition + 1)).getName());
+                } else {
+                    iristickHUD.entryNextValue.setText("");
+                }
+            } else {
+                iristickHUD.columnLastLabel.setText("");
+                iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                        columnMap.get(0)).getName());
+                iristickHUD.entryLastValue.setText("");
+                iristickHUD.entryNextValue.setText("");
+            }
         }
     }
 
