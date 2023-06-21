@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.activities.configure;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +45,7 @@ import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -81,6 +84,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     private SwitchCompat columnEnabledSwitch;
     private Slider columnPositionSlider;
+
+    private Button layoutImportButton;
+    private Button layoutExportButton;
+
 
     //View Model - Adapters
     private VSViewModel vsViewModel;
@@ -121,6 +128,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
         columnPositionSlider = findViewById(R.id.columnPositionSlider);
         columnPositionSlider.setEnabled(false);
+
+        layoutImportButton = findViewById(R.id.layoutImportButton);
+        layoutImportButton.setOnClickListener(v -> onImportClick());
+        layoutExportButton = findViewById(R.id.layoutExportButton);
+        layoutExportButton.setOnClickListener(v -> onExportClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -453,6 +465,50 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     private void deleteLayoutButtonOnClick() {
+        //TODO: Actually do something
+    }
+
+    public void onImportClick() {
+        if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutImportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can import layouts",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+            //TODO: Actually do something
+        }
+    }
+
+    public void onExportClick() {
+        if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutExportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export layouts",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+            //saver = Saver.createSaver(ONEDRIVE_APP_ID);
+            final Exporter exporter = new Exporter(
+                    vsViewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportColumnLayout()) {
+                vdtsApplication.displayToast(this,"Column layout exported successfully",0);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting column layout",0);
+            }
+        }
     }
 
     @Override

@@ -44,6 +44,7 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
@@ -568,6 +569,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     "Only an admin user can import columns",
                     Toast.LENGTH_SHORT
             );
+        }else {
+            //TODO: Actually do something
         }
     }
 
@@ -582,6 +585,19 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     "Only an admin user can export columns",
                     Toast.LENGTH_SHORT
             );
+        } else {
+            LOG.debug("Starting export");
+            final Exporter exporter = new Exporter(
+                    vsViewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportSetup()) {
+                vdtsApplication.displayToast(this,"Columns exported successfully",Toast.LENGTH_SHORT);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting columns",Toast.LENGTH_SHORT);
+            }
         }
     }
 
