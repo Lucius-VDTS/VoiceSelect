@@ -501,7 +501,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     Toast.LENGTH_SHORT
             );
         }
-        //TODO: Actually do something
     }
 
     public void onImportClick() {
