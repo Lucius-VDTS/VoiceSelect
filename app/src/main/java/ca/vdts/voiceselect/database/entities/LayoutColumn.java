@@ -63,6 +63,12 @@ public class LayoutColumn {
         this.columnPosition = columnPosition;
     }
 
+    public LayoutColumn(LayoutColumn layoutColumn) {
+        this.layoutID = layoutColumn.getLayoutID();
+        this.columnID = layoutColumn.getColumnID();
+        this.columnPosition = layoutColumn.getColumnPosition();
+    }
+
     public long getLayoutID() {
         return layoutID;
     }
