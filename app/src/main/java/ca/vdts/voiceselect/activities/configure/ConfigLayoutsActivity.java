@@ -539,9 +539,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     //saver
             );
             if (exporter.exportColumnLayout()) {
-                vdtsApplication.displayToast(this,"Column layout exported successfully",0);
+                vdtsApplication.displayToast(this,"Column layout exported successfully",Toast.LENGTH_SHORT);
             } else {
-                vdtsApplication.displayToast(this,"Error exporting column layout",0);
+                vdtsApplication.displayToast(this,"Error exporting column layout",Toast.LENGTH_SHORT);
             }
         }
     }

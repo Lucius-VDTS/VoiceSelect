@@ -12,17 +12,15 @@ import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_JSON;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_XLSX;
-import static ca.vdts.voiceselect.library.VDTSApplication.LAYOUTS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.OPTIONS_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.SESSIONS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.SETUPS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.USERS_DIRECTORY;
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.isNumeric;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -151,10 +149,9 @@ public class Exporter {
         );
         final String json = gson.toJson(users);
         final String fileName = EXPORT_FILE_USERS
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, USERS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportSetup() {
@@ -193,10 +190,9 @@ public class Exporter {
         );
         final String json = gson.toJson(setup);
         final String fileName = EXPORT_FILE_SETUP
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, SETUPS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportColumnLayout() {
@@ -221,10 +217,9 @@ public class Exporter {
         final JSONColumnLayout JSONColumnLayout = new JSONColumnLayout(layouts,layoutColumns,columns,users);
         final String json = gson.toJson(JSONColumnLayout);
         final String fileName = EXPORT_FILE_LAYOUT
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, LAYOUTS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportOptions() {
@@ -232,10 +227,9 @@ public class Exporter {
         final Options options = new Options(application);
         final String json = gson.toJson(options);
         final String fileName = EXPORT_FILE_OPTIONS
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, OPTIONS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportSessionJSON(Session session) {
@@ -590,9 +584,17 @@ public class Exporter {
     private boolean exportFile(String fileContent, String localExportPath, String fileName,
                                boolean isSession) {
         LOG.debug("Exporting file {}", fileName);
+        String exportDir = Environment.getExternalStorageDirectory().toString() +
+                "/Documents/VoiceSelect"+localExportPath;
+
         final File directory = new File(localExportPath);
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
+        if (!directory.exists()) {
+            boolean mkDirResult = directory.mkdirs();
+            LOG.info("Created directory: {}",mkDirResult);
+            if (!mkDirResult) {
+                LOG.info("Failed to create directory: {}", directory);
+            }
+        }
 
         try {
             writeToFile(localExportPath.concat(fileName), fileContent);

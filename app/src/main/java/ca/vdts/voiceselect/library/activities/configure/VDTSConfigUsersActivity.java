@@ -38,6 +38,7 @@ import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -548,6 +549,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     "Only an admin user can import users",
                     Toast.LENGTH_SHORT
             );
+        }else {
+            //TODO: Actually do something
         }
     }
 
@@ -562,6 +565,19 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     "Only an admin user can export users",
                     Toast.LENGTH_SHORT
             );
+        }else {
+            //saver = Saver.createSaver(ONEDRIVE_APP_ID);
+            final Exporter exporter = new Exporter(
+                    vsViewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportUsers()) {
+                vdtsApplication.displayToast(this,"Users exported successfully",Toast.LENGTH_SHORT);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting users",Toast.LENGTH_SHORT);
+            }
         }
     }
 
