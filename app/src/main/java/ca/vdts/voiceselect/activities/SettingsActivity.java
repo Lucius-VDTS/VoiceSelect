@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.activities;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
@@ -17,6 +18,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_TIME;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +27,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,9 +44,13 @@ import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.files.Exporter;
@@ -52,6 +59,8 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
 public class SettingsActivity extends AppCompatActivity implements IRIListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
     private VDTSApplication vdtsApplication;
 
     //Views
@@ -181,7 +190,28 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     Toast.LENGTH_SHORT
             );
         } else {
-           Uri uri = FileProvider.getUriForFile(
+           showImportDialog();
+        }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Settings");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            Uri uri = FileProvider.getUriForFile(
                     this,
                     "ca.vdts.voiceselect",
                     new File(Environment.getExternalStorageDirectory().toString() +
@@ -205,7 +235,11 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
             } else {
                 vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
             }
-        }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
     }
 
     public void onExportClick() {

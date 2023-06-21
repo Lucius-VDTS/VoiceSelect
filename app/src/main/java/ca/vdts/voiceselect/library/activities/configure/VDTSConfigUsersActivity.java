@@ -1,16 +1,17 @@
 package ca.vdts.voiceselect.library.activities.configure;
 
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -558,6 +559,27 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     Toast.LENGTH_SHORT
             );
         }else {
+            showImportDialog();
+        }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Users");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
             Uri uri = FileProvider.getUriForFile(
                     this,
                     "ca.vdts.voiceselect",
@@ -581,7 +603,11 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             } else {
                 vdtsApplication.displayToast(this,"Error importing users",Toast.LENGTH_SHORT);
             }
-        }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
     }
 
     public void exportButtonClick() {

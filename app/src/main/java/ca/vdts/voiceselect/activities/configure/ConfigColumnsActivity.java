@@ -6,6 +6,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -485,6 +486,27 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     Toast.LENGTH_SHORT
             );
         }else {
+            showImportDialog();
+        }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Columns and Values");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
             Uri uri = FileProvider.getUriForFile(
                     this,
                     "ca.vdts.voiceselect",
@@ -499,7 +521,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         vdtsApplication
                 );
                 if (importer.importSetup(uri)) {
-                   // adapterSelect(-1);
+                    // adapterSelect(-1);
 
                     vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
                 } else {
@@ -508,7 +530,11 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             } else {
                 vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
             }
-        }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
     }
 
     public void exportButtonOnClick() {
