@@ -107,7 +107,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
             "",
             "",
             9001,
-            true,
+            false,
             "",
             0,
             1,

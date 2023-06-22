@@ -1,7 +1,6 @@
 package ca.vdts.voiceselect.database.repositories;
 
 import androidx.lifecycle.LiveData;
-import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import java.util.List;
 
@@ -12,6 +11,10 @@ import ca.vdts.voiceselect.library.database.repositories.VDTSBaseRepository;
 public class LayoutRepository extends VDTSBaseRepository<Layout> {
     public LayoutRepository(LayoutDAO dao) {
         super(dao);
+    }
+
+    public Layout findLayoutByName(String name) {
+        return ((LayoutDAO) dao).findLayoutByName(name);
     }
 
     public LiveData<List<Layout>> findAllLayoutsLive() {

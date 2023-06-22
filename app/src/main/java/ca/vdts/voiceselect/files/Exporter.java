@@ -162,7 +162,7 @@ public class Exporter {
             LOG.debug("Starting db thread");
             users.addAll(viewModel.findAllUsers());
             columns.addAll(viewModel.findAllColumns());
-            final VDTSUser primary = viewModel.findPrimaryUser();
+            final VDTSUser primary = viewModel.findUserByPrimary();
             columnSpoken.addAll(
                     viewModel.findAllColumnSpokensByUser(primary != null ? primary.getUid(): DEFAULT_UID)
             );

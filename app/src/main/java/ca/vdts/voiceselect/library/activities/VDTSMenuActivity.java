@@ -15,11 +15,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.iristick.sdk.Experimental;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -154,6 +157,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
 
+        initializeIristickHUD();
         initializeCurrentSession();
     }
 
@@ -178,23 +182,29 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 -1L
         );
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
+        ExecutorService layoutListExecutor = Executors.newSingleThreadExecutor();
+        Handler layoutListHandler = new Handler(Looper.getMainLooper());
+        layoutListExecutor.execute(() -> {
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
-
-            if (layoutList.size() > 1) {
-                layoutList.remove(Layout.LAYOUT_NONE);
-                currentLayout = vsViewModel.findLayoutByID(layoutID);
-            }
-            handler.post(() -> {
+            layoutListHandler.post(() -> {
                 layoutAdapter.notifyDataSetChanged();
 
-                if (currentLayout == null) {
-                    layoutSpinner.setSelection(0);
-                } else {
-                    layoutSpinner.setSelection(layoutList.indexOf(currentLayout));
+                if (layoutList.size() > 1) {
+                    layoutList.remove(Layout.LAYOUT_NONE);
+
+                    Executor currentLayoutExecutor = Executors.newSingleThreadExecutor();
+                    Handler currentLayoutHandler = new Handler(Looper.getMainLooper());
+                    currentLayoutExecutor.execute(() -> {
+                        currentLayout = vsViewModel.findLayoutByID(layoutID);
+                        currentLayoutHandler.post(() -> {
+                            if (currentLayout == null) {
+                                layoutSpinner.setSelection(0);
+                            } else {
+                                layoutSpinner.setSelection(layoutList.indexOf(currentLayout));
+                            }
+                        });
+                    });
                 }
 
                 if (currentSession != null) {
@@ -206,6 +216,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 }
 
                 disableViews();
+                initializeIristick();
             });
         });
     }
@@ -332,29 +343,65 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
         isHeadsetAvailable = true;
-        initializeIristick();
     }
 
     @Override
     public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
         isHeadsetAvailable = false;
-        initializeIristick();
+    }
+
+    private void initializeIristickHUD() {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new IristickHUD();
+            return iristickHUD;
+        });
     }
 
     /**
      * Initialize elements based on Iristick connection.
      */
+    @OptIn(markerClass = Experimental.class)
     private void initializeIristick() {
         if (isHeadsetAvailable) {
+            VDTSNotificationUtil.init(this);
+
             aboutActivityButton.setVisibility(View.VISIBLE);
             aboutActivityButton.setOnClickListener(v -> aboutActivityButtonOnClick());
 
-            VDTSNotificationUtil.init(this);
+            if (layoutList.size() > 0) {
+                if (currentLayout != null) {
+                    iristickHUD.layoutValue.setText(currentLayout.getName());
+                } else {
+                    iristickHUD.layoutValue.setText("");
+                }
+            } else {
+                iristickHUD.layoutValue.setText(R.string.menu_layout_value);
+            }
 
-            IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new IristickHUD();
-                return iristickHUD;
+            IristickSDK.addVoiceGrammar(getLifecycle(), this, ac -> {
+                ac.addAlternativeGroup(ag -> {
+                    for (Layout layout : layoutList) {
+                        ag.addToken(layout.getName());
+                    }
+                });
+
+                ac.setListener((recognizer, tokens, tags) -> {
+                    final String[] layoutName = {""};
+                    for (String token : tokens) {
+                        layoutName[0] = layoutName[0].concat(token);
+                    }
+
+                    iristickHUD.layoutValue.setText(layoutName[0]);
+
+                    Executor executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    executor.execute(() -> {
+                        currentLayout = vsViewModel.findLayoutByName(layoutName[0]);
+                        handler.post(() ->
+                                layoutSpinner.setSelection(layoutList.indexOf(currentLayout)));
+                    });
+                });
             });
 
             IristickSDK.addVoiceCommands(
@@ -497,11 +544,14 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
         //HUD Views
+        private TextView layoutValue;
 
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_login_hud);
+            setContentView(R.layout.activity_menu_hud);
+
+            layoutValue = findViewById(R.id.layoutValue);
         }
     }
 }

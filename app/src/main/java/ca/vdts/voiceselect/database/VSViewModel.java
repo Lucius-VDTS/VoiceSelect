@@ -367,6 +367,8 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
+    public Layout findLayoutByName(String name) { return layoutRepository.findLayoutByName(name); }
+
     public List<Layout> findAllLayouts() {
         return layoutRepository.findAll("SELECT * FROM Layouts");
     }

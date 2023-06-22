@@ -21,7 +21,7 @@
             android:id="@+id/layoutLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.65"
+            android:layout_weight="0.7"
             android:textSize="@dimen/xxs_text_size"
             android:textColor="#ffffff"
             android:text="@string/menu_layout_label">
@@ -41,8 +41,7 @@
             app:autoSizeMaxTextSize="@dimen/xxs_text_size"
             app:autoSizeStepGranularity="2sp"
             app:autoSizeTextType="uniform"
-            android:textColor="#ffffff"
-            android:text="@string/menu_layout_value">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView

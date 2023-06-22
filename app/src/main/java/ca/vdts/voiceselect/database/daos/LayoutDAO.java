@@ -6,12 +6,14 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.library.database.daos.VDTSBaseDAO;
 
 @Dao
 public interface LayoutDAO extends VDTSBaseDAO<Layout> {
+    @Query("SELECT * FROM Layouts WHERE name = :name")
+    Layout findLayoutByName(String name);
+
     @Query("SELECT * FROM Layouts")
     LiveData<List<Layout>> findAllLayoutsLive();
 

@@ -413,6 +413,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueAdapterSelect(-1);
         resetFocus();
     }
+
     private void resetFocus(){
         if (currentUser.getAuthority() < 1){
             columnValueSpokenEditText.requestFocus();
@@ -585,7 +586,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Columns and Values");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText("Current settings may be lost.");
@@ -596,8 +600,9 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_SETUP
+            File file = new File(Environment.getExternalStorageDirectory().toString() +
+                    File.separator+"Documents"+File.separator+"VoiceSelect"+File.separator+
+                    CONFIG_DIRECTORY + EXPORT_FILE_SETUP
                     .concat(FILE_EXTENSION_VDTS));
             if (file.exists()) {
                 final Importer importer = new Importer(
@@ -608,12 +613,24 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 if (importer.importSetup(file)) {
                     columnValueAdapterSelect(-1);
 
-                    vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Setup imported successfully",
+                            Toast.LENGTH_SHORT
+                    );
                 } else {
-                    vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Error importing Setup",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             } else {
-                vdtsApplication.displayToast(this,"Setup file not found",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Setup file not found",
+                        Toast.LENGTH_SHORT
+                );
             }
         });
 
@@ -639,12 +656,19 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     vsViewModel,
                     vdtsApplication,
                     this
-                    //saver
             );
             if (exporter.exportSetup()) {
-                vdtsApplication.displayToast(this,"Columns exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Columns exported successfully",
+                        Toast.LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting columns",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting columns",
+                        Toast.LENGTH_SHORT
+                );
             }
         }
     }

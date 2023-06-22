@@ -31,7 +31,7 @@
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
             android:text="@string/data_gathering_index_label"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -45,7 +45,7 @@
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -59,7 +59,7 @@
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -73,7 +73,7 @@
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="#ffffff"
             android:text="@string/data_gathering_comment_label">
         </TextView>
 
@@ -87,7 +87,7 @@
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="#ffffff"
             android:text="@string/data_gathering_photo_label">
         </TextView>
     </LinearLayout>
@@ -117,7 +117,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -130,7 +130,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -156,7 +156,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
 
         <TextView
@@ -168,7 +168,7 @@
             android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
             android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black">
+            android:textColor="#ffffff">
         </TextView>
     </LinearLayout>
 
