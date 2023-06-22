@@ -126,7 +126,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         settingsActivityButton = findViewById(R.id.settingsActivityButton);
 
         settingsActivityButton.setOnClickListener(
-                v -> optionsActivityButtonOnClick()
+                v -> settingsActivityButtonOnClick()
         );
 
         changeUserActivityButton = findViewById(R.id.changeUserActivityButton);
@@ -309,7 +309,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         startActivity(configureActivityIntent);
     }
 
-    private void optionsActivityButtonOnClick() {
+    private void settingsActivityButtonOnClick() {
         Intent changeUserActivityIntent = new Intent(this, SettingsActivity.class);
         startActivity(changeUserActivityIntent);
     }
@@ -371,13 +371,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             IristickSDK.addVoiceCommands(
                     this.getLifecycle(),
                     this,
-                    vc -> vc.add("Settings", this::optionsActivityButtonOnClick)
-            );
-
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("About Iris Stick", this::aboutActivityButtonOnClick)
+                    vc -> vc.add("Settings", this::settingsActivityButtonOnClick)
             );
 
             if (currentUser.getUid() != -9001) {
@@ -387,6 +381,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                         vc -> vc.add("Change User", this::changeUserActivityButtonOnClick)
                 );
             }
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("About Iris Stick", this::aboutActivityButtonOnClick)
+            );
         } else {
             aboutActivityButton.setVisibility(View.GONE);
         }

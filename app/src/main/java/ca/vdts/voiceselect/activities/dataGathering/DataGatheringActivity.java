@@ -55,6 +55,9 @@ import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 
+/**
+ * Gather data for a particular session and its corresponding layout.
+ */
 public class DataGatheringActivity extends AppCompatActivity
         implements IRIListener, ScrollChangeListenerInterface {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);

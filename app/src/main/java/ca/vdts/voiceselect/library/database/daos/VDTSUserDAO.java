@@ -16,6 +16,9 @@ public interface VDTSUserDAO extends VDTSBaseDAO<VDTSUser> {
     @Query("SELECT * FROM Users WHERE uid = :uid")
     VDTSUser findUserByID(long uid);
 
+    @Query("SELECT * FROM Users WHERE name = :name")
+    VDTSUser findUserByName(String name);
+
     @Query("SELECT * FROM Users WHERE exportCode = :exportCode")
     VDTSUser findUserByCode(String exportCode);
 

@@ -20,6 +20,12 @@
 
     <string name="login_password_title">Enter Password</string>
 
+    <!--  HUD  -->
+    <string name="select_user_prompt">Say your user name or use your connected device to login.</string>
+    <string name="user_label">User:</string>
+    <string name="enter_pin_prompt">Say your PIN then \'enter\' to continue.</string>
+    <string name="enter_pin_label">PIN:</string>
+
 <!--  Menu Activity  -->
     <string name="menu_activity_label">Menu</string>
 
@@ -52,7 +58,7 @@
     <string name="user_name_label">Name</string>
     <string name="user_name_value">Enter user name</string>
     <string name="user_prefix_label">Session Prefix</string>
-    <string name="user_prefix_value">Enter totalSession prefix</string>
+    <string name="user_prefix_value">Enter session prefix</string>
     <string name="user_export_code_label">Code</string>
     <string name="user_export_code_value">Enter export code</string>
 

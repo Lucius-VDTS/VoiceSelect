@@ -3,6 +3,9 @@ package ca.vdts.voiceselect.activities.dataGathering;
 import android.content.Context;
 import android.util.AttributeSet;
 
+/**
+ * Custom horizontal scroll views whose position can be observed when a scroll change listener is set
+ */
 public class ObservableHorizontalScrollView extends android.widget.HorizontalScrollView {
     private ScrollChangeListenerInterface scrollChangeListenerInterface;
 

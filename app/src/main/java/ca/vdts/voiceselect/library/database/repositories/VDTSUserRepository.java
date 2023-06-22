@@ -20,6 +20,10 @@ public class VDTSUserRepository extends VDTSBaseRepository<VDTSUser> {
         return ((VDTSUserDAO)this.dao).findUserByID(uid);
     }
 
+    public VDTSUser findUserByName(String name) {
+        return ((VDTSUserDAO)this.dao).findUserByName(name);
+    }
+
     public VDTSUser findUserByExportCode(String exportCode) {
         return ((VDTSUserDAO)this.dao).findUserByCode(exportCode);
     }
