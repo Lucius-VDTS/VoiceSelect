@@ -24,6 +24,7 @@ import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IRIState;
 import com.iristick.sdk.IristickSDK;
+import com.iristick.sdk.display.IRIWindow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private VDTSNotificationUtil connectedIristickNotificationService;
     @Nullable
     private VDTSNotificationUtil disconnectedIristickNotificationService;
+    private VDTSMenuActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -350,6 +352,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
             VDTSNotificationUtil.init(this);
 
+            IristickSDK.addWindow(this.getLifecycle(), () -> {
+                iristickHUD = new IristickHUD();
+                return iristickHUD;
+            });
+
             IristickSDK.addVoiceCommands(
                     this.getLifecycle(),
                     this,
@@ -484,6 +491,17 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 );
                 firmwareIristickNotificationService.show();
             }
+        }
+    }
+
+////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
+    public static class IristickHUD extends IRIWindow {
+        //HUD Views
+
+        @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_login_hud);
         }
     }
 }

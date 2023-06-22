@@ -12,7 +12,7 @@
         android:gravity="center"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="@string/select_user_prompt"
+        android:text="@string/login_select_user_prompt"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
                 android:gravity="center"
                 android:textSize="@dimen/xxs_text_size"
                 android:textColor="#ffffff"
-                android:text="@string/user_label">
+                android:text="@string/login_user_label">
             </TextView>
 
             <TextView
@@ -57,7 +57,7 @@
         android:gravity="center"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="@string/enter_pin_prompt"
+        android:text="@string/login_enter_pin_prompt"
         app:layout_constraintTop_toBottomOf="@id/userLinearLayout"
         app:layout_constraintBottom_toTopOf="@id/pinLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,7 +82,7 @@
             android:gravity="center"
             android:textSize="@dimen/xxs_text_size"
             android:textColor="#ffffff"
-            android:text="@string/enter_pin_label">
+            android:text="@string/login_enter_pin_label">
         </TextView>
 
         <TextView

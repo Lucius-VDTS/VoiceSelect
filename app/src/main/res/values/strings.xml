@@ -21,10 +21,10 @@
     <string name="login_password_title">Enter Password</string>
 
     <!--  HUD  -->
-    <string name="select_user_prompt">Say your user name or use your connected device to login.</string>
-    <string name="user_label">User:</string>
-    <string name="enter_pin_prompt">Say your PIN then \'enter\' to continue.</string>
-    <string name="enter_pin_label">PIN:</string>
+    <string name="login_select_user_prompt">Say your user name or use your connected device to login.</string>
+    <string name="login_user_label">User:</string>
+    <string name="login_enter_pin_prompt">Say your PIN then \'enter\' to continue.</string>
+    <string name="login_enter_pin_label">PIN:</string>
 
 <!--  Menu Activity  -->
     <string name="menu_activity_label">Menu</string>
@@ -35,6 +35,10 @@
     <string name="menu_settings_activity_button">Settings</string>
     <string name="menu_change_user_activity_button">Change User</string>
     <string name="menu_about_activity_button">About Iristick</string>
+
+    <!--  HUD  -->
+    <string name="menu_layout_label">Layout:</string>
+    <string name="menu_layout_value">No Layouts</string>
 
 <!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>

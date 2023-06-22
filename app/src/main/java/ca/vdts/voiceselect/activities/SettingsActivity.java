@@ -1,13 +1,11 @@
 package ca.vdts.voiceselect.activities;
 
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_STEP;
-import static ca.vdts.voiceselect.library.VDTSApplication.PREF_AUTOSAVE;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ENTRY_METHOD;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
@@ -19,22 +17,18 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -50,13 +44,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 import ca.vdts.voiceselect.R;
-import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
-import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
-import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
 public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
@@ -92,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         gpsOnPhotoCheck = findViewById(R.id.printGPSOnPictureCheck);
         gpsOnPhotoCheck.setOnClickListener(v -> gpsOnPictureClick());
         timeOnPhotoCheck = findViewById(R.id.printTimeOnPictureCheck);
-        timeOnPhotoCheck.setOnClickListener(v -> gpsOnPictureClick());
+        timeOnPhotoCheck.setOnClickListener(v -> timeOnPictureClick());
         csvCheck = findViewById(R.id.CSVCheck);
         csvCheck.setOnClickListener(v -> csvClick());
         jsonCheck = findViewById(R.id.JSONCheck);
@@ -211,29 +202,25 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            Uri uri = FileProvider.getUriForFile(
-                    this,
-                    "ca.vdts.voiceselect",
-                    new File(Environment.getExternalStorageDirectory().toString() +
-                            "/Documents/VoiceSelect"+EXPORT_FILE_OPTIONS
-                            .concat(FILE_EXTENSION_VDTS))
-            );
-            if (uri != null && uri.getPath() != null) {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
+                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_OPTIONS
+                    .concat(FILE_EXTENSION_VDTS));
+            if (file.exists()) {
                 final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
                 final Importer importer = new Importer(
                         viewModel,
                         this,
                         vdtsApplication
                 );
-                if (importer.importOptions(uri)) {
-                    // adapterSelect(-1);
+                if (importer.importOptions(file)) {
+                    updateControls();
 
                     vdtsApplication.displayToast(this,"Settings imported successfully",Toast.LENGTH_SHORT);
                 } else {
                     vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
                 }
             } else {
-                vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(this,"Setting file not found",Toast.LENGTH_SHORT);
             }
         });
 

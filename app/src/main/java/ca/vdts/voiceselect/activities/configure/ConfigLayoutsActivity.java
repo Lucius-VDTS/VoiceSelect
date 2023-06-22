@@ -1,13 +1,13 @@
 package ca.vdts.voiceselect.activities.configure;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -598,22 +597,16 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            Uri uri = FileProvider.getUriForFile(
-                    this,
-                    "ca.vdts.voiceselect",
-                    new File(
-                            Environment.getExternalStorageDirectory().toString() +
-                            "VoiceSelect"+EXPORT_FILE_LAYOUT
-                            .concat(FILE_EXTENSION_VDTS)
-                    )
-            );
-            if (uri != null && uri.getPath() != null) {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
+                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_LAYOUT
+                    .concat(FILE_EXTENSION_VDTS));
+            if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
                         this,
                         vdtsApplication
                 );
-                if (importer.importColumnLayout(uri)) {
+                if (importer.importColumnLayout(file)) {
                     configLayoutsAdapterSelect(-1);
 
                     vdtsApplication.displayToast(
@@ -629,11 +622,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     );
                 }
             } else {
-                vdtsApplication.displayToast(
-                        this,
-                        "Error importing layouts",
-                        LENGTH_SHORT
-                );
+                vdtsApplication.displayToast(this, "Layout file not found", LENGTH_SHORT);
             }
         });
 

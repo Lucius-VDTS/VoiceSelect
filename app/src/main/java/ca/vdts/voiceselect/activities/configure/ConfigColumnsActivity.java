@@ -1,12 +1,12 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -22,7 +22,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -506,20 +505,16 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            Uri uri = FileProvider.getUriForFile(
-                    this,
-                    "ca.vdts.voiceselect",
-                    new File(Environment.getExternalStorageDirectory().toString() +
-                            "/Documents/VoiceSelect"+EXPORT_FILE_SETUP
-                            .concat(FILE_EXTENSION_VDTS))
-            );
-            if (uri != null && uri.getPath() != null) {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
+                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_SETUP
+                    .concat(FILE_EXTENSION_VDTS));
+            if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
                         this,
                         vdtsApplication
                 );
-                if (importer.importSetup(uri)) {
+                if (importer.importSetup(file)) {
                     columnAdapterSelect(-1);
 
                     vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
@@ -527,7 +522,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
                 }
             } else {
-                vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(this,"Setup file not found",Toast.LENGTH_SHORT);
             }
         });
 
