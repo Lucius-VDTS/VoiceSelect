@@ -316,21 +316,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
      */
     private void disableViews() {
         if (currentUser.getAuthority() <= 0) {
-            //columnValueNewButton.setEnabled(false);
-            //columnValueDeleteButton.setEnabled(false);
-
-            //columnValueNameEditText.setEnabled(false);
-            //columnValueNameCodeEditText.setEnabled(false);
-            //columnValueExportCodeEditText.setEnabled(false);
             columnValueUserSpinner.setEnabled(false);
-
-            //columnValueImportButton.setEnabled(false);
-            //columnValueExportButton.setEnabled(false);
-
-            /*if (columnList.size() == 0) {
-                columnValueResetButton.setEnabled(false);
-                columnValueSaveButton.setEnabled(false);
-            }*/
         }
     }
 
@@ -683,7 +669,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         return !columnValue.getName().isEmpty() &&
                 !columnValue.getNameCode().isEmpty() &&
                 !columnValue.getExportCode().isEmpty() &&
-                columnList.stream().noneMatch(column1 -> columnValue.getUid() != column1.getUid() &&
+                columnValueList.stream().noneMatch(column1 -> columnValue.getUid() != column1.getUid() &&
                         (column1.getName().equalsIgnoreCase(columnValue.getName()) ||
                                 column1.getNameCode().equalsIgnoreCase(columnValue.getName()) ||
                                 column1.getExportCode().equalsIgnoreCase(columnValue.getExportCode())

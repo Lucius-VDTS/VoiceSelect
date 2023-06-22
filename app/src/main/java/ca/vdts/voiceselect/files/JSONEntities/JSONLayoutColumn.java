@@ -17,7 +17,7 @@ public class JSONLayoutColumn {
     @SerializedName("columnPosition")
     private long columnPosition;
 
-    public JSONLayoutColumn(String columnId, long columnPosition) {
+    public JSONLayoutColumn(String columnCode, long columnPosition) {
         this.columnCode = columnCode;
         this.columnPosition = columnPosition;
     }

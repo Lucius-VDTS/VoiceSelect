@@ -2,7 +2,6 @@ package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
 import static androidx.room.ForeignKey.SET_NULL;
-
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_DATE;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
@@ -68,6 +67,16 @@ public class Layout implements VDTSIndexedNamedInterface {
     private String exportCode;
 
     @Expose
+    @SerializedName("commentRequired")
+    @ColumnInfo(name = "commentRequired")
+    private boolean commentRequired;
+
+    @Expose
+    @SerializedName("pictureRequired")
+    @ColumnInfo(name = "pictureRequired")
+    private boolean pictureRequired;
+
+    @Expose
     @SerializedName("active")
     @ColumnInfo(name = "active")
     private boolean active;
@@ -78,17 +87,21 @@ public class Layout implements VDTSIndexedNamedInterface {
             DEFAULT_DATE,
             "No Layouts",
             "NL",
+            false,
+            false,
             true
     );
 
     //Non-Default Constructor
     public Layout(long uid, long userID, LocalDateTime createdDate, String name, String exportCode,
-                  boolean active) {
+                  boolean commentRequired, boolean pictureRequired, boolean active) {
         this.uid = uid;
         this.userID = userID;
         this.createdDate = createdDate;
         this.name = name;
         this.exportCode = exportCode;
+        this.commentRequired = commentRequired;
+        this.pictureRequired = pictureRequired;
         this.active = active;
     }
 
@@ -101,6 +114,8 @@ public class Layout implements VDTSIndexedNamedInterface {
                 LocalDateTime.now(),
                 name,
                 exportCode,
+                false,
+                false,
                 true
         );
     }
@@ -143,6 +158,22 @@ public class Layout implements VDTSIndexedNamedInterface {
 
     public void setExportCode(String exportCode) {
         this.exportCode = exportCode;
+    }
+
+    public boolean isCommentRequired() {
+        return commentRequired;
+    }
+
+    public void setCommentRequired(boolean commentRequired) {
+        this.commentRequired = commentRequired;
+    }
+
+    public boolean isPictureRequired() {
+        return pictureRequired;
+    }
+
+    public void setPictureRequired(boolean pictureRequired) {
+        this.pictureRequired = pictureRequired;
     }
 
     public boolean isActive() {

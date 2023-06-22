@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
@@ -17,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,6 +70,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private int selectedLayoutPosition;
     private Column selectedColumn;
     private LayoutColumn selectedLayoutColumn;
+    private Long currentPosition;
 
     //Lists
     private final List<Layout> layoutList = new ArrayList<>();
@@ -94,7 +95,6 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     private Button layoutImportButton;
     private Button layoutExportButton;
-
 
     //View Model - Adapters
     private VSViewModel vsViewModel;
@@ -132,9 +132,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
         columnEnabledSwitch = findViewById(R.id.columnEnableSwitch);
         columnEnabledSwitch.setEnabled(false);
+        columnEnabledSwitch.setOnClickListener(v -> enableOnClick());
 
         columnPositionSlider = findViewById(R.id.columnPositionSlider);
         columnPositionSlider.setEnabled(false);
+        columnPositionSlider.addOnChangeListener(positionChangeListener);
 
         layoutImportButton = findViewById(R.id.layoutImportButton);
         layoutImportButton.setOnClickListener(v -> onImportClick());
@@ -147,12 +149,15 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         layoutSpinner = findViewById(R.id.layoutSpinner);
 
         //Observe/Update layout list
-        vsViewModel.findAllActiveLayoutsLive().observe(this, layouts -> {
-            layoutList.clear();
-            layoutList.addAll(layouts);
-            layoutList.get(0).setName("");
-            layoutList.get(0).setExportCode("");
-        });
+        vsViewModel.findAllActiveLayoutsLive().observe(
+                this,
+                layouts -> {
+                    layoutList.clear();
+                    layoutList.addAll(layouts);
+                    layoutList.get(0).setName("");
+                    layoutList.get(0).setExportCode("");
+                }
+        );
 
         layoutSpinner.setOnItemSelectedListener(layoutSpinnerListener);
 
@@ -162,10 +167,12 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         //Observe/Update layoutColumn list
         if (selectedLayout != null) {
             vsViewModel.findAllLayoutColumnsByLayoutLive(selectedLayout.getUid()).observe(
-                    this, layoutColumns -> {
+                    this,
+                    layoutColumns -> {
                         layoutColumnList.clear();
                         layoutColumnList.addAll(layoutColumns);
-                    });
+                    }
+            );
         }
 
         layoutColumnRecyclerView.setLayoutManager(
@@ -173,7 +180,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+                )
+        );
     }
 
     @Override
@@ -234,8 +242,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 if (selectedLayoutPosition >= 1) {
                     configLayoutsAdapter = new ConfigLayoutsAdapter(
                             this,
-                            new VDTSClickListenerUtil(this::configLayoutsAdapterSelect,
-                                    layoutColumnRecyclerView),
+                            new VDTSClickListenerUtil(
+                                    this::configLayoutsAdapterSelect,
+                                    layoutColumnRecyclerView
+                            ),
                             columnList,
                             layoutColumnList
                     );
@@ -244,8 +254,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     List<LayoutColumn> emptyLayoutColumnList = new ArrayList<>();
                     configLayoutsAdapter = new ConfigLayoutsAdapter(
                             this,
-                            new VDTSClickListenerUtil(this::configLayoutsAdapterSelect,
-                                    layoutColumnRecyclerView),
+                            new VDTSClickListenerUtil(
+                                    this::configLayoutsAdapterSelect,
+                                    layoutColumnRecyclerView
+                            ),
                             emptyColumnList,
                             emptyLayoutColumnList
                     );
@@ -262,8 +274,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private final AdapterView.OnItemSelectedListener layoutSpinnerListener =
             new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     selectedLayout = (Layout) parent.getItemAtPosition(position);
                     selectedLayoutPosition = position;
 
@@ -315,13 +326,16 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         selectedLayoutColumn = columnLayoutColumnPair.second;
 
                         columnEnabledSwitch.setChecked(
-                                selectedColumn.getUid() == selectedLayoutColumn.getColumnID());
+                                selectedColumn.getUid() == selectedLayoutColumn.getColumnID()
+                        );
 
                         columnPositionSlider.setValue(selectedLayoutColumn.getColumnPosition());
+                        currentPosition = selectedLayoutColumn.getColumnPosition();
                     } else {
                         selectedLayoutColumn = null;
                         columnEnabledSwitch.setChecked(false);
                         columnPositionSlider.setValue(1);
+                        currentPosition = null;
                     }
                 }
             }
@@ -336,6 +350,46 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             columnPositionSlider.setValue(1);
         }
     }
+
+    private void enableOnClick() {
+        if (columnEnabledSwitch.isChecked()) {
+            if (selectedLayoutColumn == null) {
+                final long position = configLayoutsAdapter.lastPosition() + 1;
+                currentPosition = null;
+                selectedLayoutColumn = new LayoutColumn(
+                        selectedLayout.getUid(),
+                        selectedColumn.getUid(),
+                        position
+                );
+                configLayoutsAdapter.addLayoutColumn(selectedLayoutColumn);
+                columnPositionSlider.setValue(position);
+            }
+        } else {
+            if (selectedLayoutColumn != null) {
+                configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn);
+                currentPosition = null;
+                selectedLayoutColumn = null;
+                columnPositionSlider.setValue(1);
+            }
+        }
+    }
+
+    private final Slider.OnChangeListener positionChangeListener = new Slider.OnChangeListener() {
+        @Override
+        public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+            if (selectedLayoutColumn != null) {
+                if (selectedLayoutColumn.getColumnPosition() != (long) value) {
+                    if (value > configLayoutsAdapter.lastPosition()) {
+                        columnPositionSlider.setValue(configLayoutsAdapter.lastPosition());
+                    } else {
+                        selectedLayoutColumn.setColumnPosition((long) value);
+                        configLayoutsAdapter.adjustPositions(selectedLayoutColumn, currentPosition);
+                        currentPosition = selectedLayoutColumn.getColumnPosition();
+                    }
+                }
+            }
+        }
+    };
 
     private void newLayoutButtonOnClick() {
         layoutSpinner.setSelection(0);
@@ -355,7 +409,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private void saveLayoutButtonOnClick() {
         if (selectedLayout.getUid() == -9001L &&
                 layoutNameEditText.getText().toString().isEmpty() &&
-                        layoutExportCodeEditText.getText().toString().isEmpty()) {
+                layoutExportCodeEditText.getText().toString().isEmpty()) {
             String message = "Create or select a layout";
             LOG.info(message);
             YoYo.with(Techniques.Shake)
@@ -380,53 +434,50 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         vdtsApplication.displayToast(this, message, 0);
                         layoutSpinnerAdapter.notifyDataSetChanged();
 
-                        //Update layout columns
-                        if (columnEnabledSwitch.isChecked() &&
-                                selectedLayoutColumn == null) {
-                            //Create new layout column
-                            selectedLayoutColumn = new LayoutColumn(
-                                    selectedLayout.getUid(),
-                                    selectedColumn.getUid(),
-                                    (long) columnPositionSlider.getValue()
-                            );
-
-                            ExecutorService insertLayoutColumnExecutor =
-                                    Executors.newSingleThreadExecutor();
-                            Handler insertLayoutColumnHandler = new Handler(Looper.getMainLooper());
-                            insertLayoutColumnExecutor.execute(() -> {
-                                vsViewModel.insertLayoutColumn(selectedLayoutColumn);
-                                insertLayoutColumnHandler.post(() ->
-                                        configLayoutsAdapter.addLayoutColumn(selectedLayoutColumn));
-                            });
-                        } else if (columnEnabledSwitch.isChecked()) {
-                            //Update existing layout column
-                            selectedLayoutColumn.setColumnID(selectedColumn.getUid());
-                            selectedLayoutColumn.setColumnPosition(
-                                    (long) columnPositionSlider.getValue());
-
-                            ExecutorService updateLayoutColumnExecutor =
-                                    Executors.newSingleThreadExecutor();
-                            Handler updateLayoutColumnHandler =
-                                    new Handler(Looper.getMainLooper());
-                            updateLayoutColumnExecutor.execute(() -> {
-                                vsViewModel.updateLayoutColumn(selectedLayoutColumn);
-                                updateLayoutColumnHandler.post(() ->
-                                        configLayoutsAdapter.updateLayoutColumn(selectedLayoutColumn));
-                            });
-                        } else {
-                            //Remove existing layout column
-                            if (selectedLayoutColumn != null) {
-                                ExecutorService removeLayoutColumnExecutor =
+                        ExecutorService getCurrentLayoutColumnsExecutor =
+                                Executors.newSingleThreadExecutor();
+                        Handler getCurrentLayoutColumnsHandler = new Handler(
+                                Looper.getMainLooper()
+                        );
+                        getCurrentLayoutColumnsExecutor.execute(() -> {
+                            List<LayoutColumn> currentLayoutColumns =
+                                    vsViewModel.findAllLayoutColumnsByLayout(selectedLayout);
+                            getCurrentLayoutColumnsHandler.post(() -> {
+                                ExecutorService deleteCurrentLayoutColumnsExecutor =
                                         Executors.newSingleThreadExecutor();
-                                Handler removeLayoutColumnHandler =
-                                        new Handler(Looper.getMainLooper());
-                                removeLayoutColumnExecutor.execute(() -> {
-                                    vsViewModel.deleteLayoutColumn(selectedLayoutColumn);
-                                    removeLayoutColumnHandler.post(() ->
-                                            configLayoutsAdapter.removeLayoutColumn(selectedLayoutColumn));
+                                Handler deleteCurrentLayoutColumnsHandler = new Handler(
+                                        Looper.getMainLooper()
+                                );
+                                deleteCurrentLayoutColumnsExecutor.execute(() -> {
+                                    currentLayoutColumns.forEach(lc -> {
+                                        if (!configLayoutsAdapter.getLayoutColumnDataset().contains(lc)) {
+                                            vsViewModel.deleteLayoutColumn(lc);
+                                        }
+                                    });
+                                    deleteCurrentLayoutColumnsHandler.post(() -> {
+                                        LOG.debug("Layout Columns deleted");
+                                    });
                                 });
-                            }
-                        }
+
+                                ExecutorService saveLayoutColumnsExecutor =
+                                        Executors.newSingleThreadExecutor();
+                                Handler saveLayoutColumnsHandler = new Handler(
+                                        Looper.getMainLooper()
+                                );
+                                saveLayoutColumnsExecutor.execute(() -> {
+                                    configLayoutsAdapter.getLayoutColumnDataset().forEach(lc -> {
+                                        if (currentLayoutColumns.contains(lc)) {
+                                            vsViewModel.updateLayoutColumn(lc);
+                                        } else {
+                                            vsViewModel.insertLayoutColumn(lc);
+                                        }
+                                    });
+                                    saveLayoutColumnsHandler.post(() -> {
+                                        LOG.debug("Layout Columns saved.");
+                                    });
+                                });
+                            });
+                        });
                     });
                 });
             } else {
@@ -491,8 +542,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         final LayoutColumn[] removeLayoutColumnArray =
                                 removeLayoutColumnList.toArray(new LayoutColumn[0]);
 
-                        new Thread(() -> vsViewModel.deleteAllLayoutColumns(
-                                removeLayoutColumnArray)).start();
+                        new Thread(
+                                () -> vsViewModel.deleteAllLayoutColumns(removeLayoutColumnArray)
+                        ).start();
                     });
                 });
             }
@@ -504,7 +556,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can delete columns",
-                    Toast.LENGTH_SHORT
+                    LENGTH_SHORT
             );
         }
     }
@@ -518,7 +570,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can import layouts",
-                    Toast.LENGTH_SHORT
+                    LENGTH_SHORT
             );
         } else {
             showImportDialog();
@@ -531,7 +583,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Layouts");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText("Current settings may be lost.");
@@ -554,18 +609,24 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 if (importer.importColumnLayout(file)) {
                     configLayoutsAdapterSelect(-1);
 
-                    vdtsApplication.displayToast(this,"Layouts imported successfully",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Layouts imported successfully",
+                            LENGTH_SHORT
+                    );
                 } else {
-                    vdtsApplication.displayToast(this,"Error importing layouts",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Error importing layouts",
+                            LENGTH_SHORT
+                    );
                 }
             } else {
-                vdtsApplication.displayToast(this,"Layout file not found",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(this, "Layout file not found", LENGTH_SHORT);
             }
         });
 
-        noButton.setOnClickListener(v -> {
-            finalDialog.dismiss();
-        });
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
     public void onExportClick() {
@@ -577,7 +638,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             vdtsApplication.displayToast(
                     this,
                     "Only an admin user can export layouts",
-                    Toast.LENGTH_SHORT
+                    LENGTH_SHORT
             );
         } else {
             //saver = Saver.createSaver(ONEDRIVE_APP_ID);
@@ -588,9 +649,17 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     //saver
             );
             if (exporter.exportColumnLayout()) {
-                vdtsApplication.displayToast(this,"Column layout exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Column layout exported successfully",
+                        LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting column layout",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting column layout",
+                        LENGTH_SHORT
+                );
             }
         }
     }

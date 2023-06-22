@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
@@ -80,7 +81,9 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
                         String.format(
                                 Locale.getDefault(),
                                 "%d",
-                                enabledLayoutColumn.getColumnPosition()));
+                                enabledLayoutColumn.getColumnPosition()
+                        )
+                );
             }
         } else {
             holder.columnNameTextView.setText("");
@@ -119,13 +122,84 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
     public void setColumnDataset(List<Column> columnDataset) {
         this.columnDataset.clear();
         this.columnDataset.addAll(columnDataset);
-        //sortDataset(columnDataset); //todo - fix
-        notifyDataSetChanged();
+        sortColumns();
     }
 
     public void sortColumnDataset(List<LayoutColumn> layoutColumnDataset) {
         layoutColumnDataset.sort((layoutColumn1, layoutColumn2) ->
                 (int) (layoutColumn1.getColumnPosition() - layoutColumn2.getColumnPosition()));
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void sortColumns() {
+        final Column selectedColumn = selectedIndex >= 0 ? columnDataset.get(selectedIndex) : null;
+
+        columnDataset.sort(
+                (c1, c2) -> {
+                    LayoutColumn lc1 = layoutColumnDataset.stream()
+                            .filter(column -> column.getColumnID() == c1.getUid())
+                            .findFirst()
+                            .orElse(null);
+                    LayoutColumn lc2 = layoutColumnDataset.stream()
+                            .filter(column -> column.getColumnID() == c2.getUid())
+                            .findFirst()
+                            .orElse(null);
+                    if (lc1 != null && lc2 != null) {
+                        return Long.compare(lc1.getColumnPosition(), lc2.getColumnPosition());
+                    } else if (lc1 != null) {
+                        return -1;
+                    } else if (lc2 != null) {
+                        return 1;
+                    } else {
+                        return c1.getName().compareTo(c2.getName());
+                    }
+                }
+        );
+
+        if (selectedColumn != null) {
+            selectedIndex = columnDataset.indexOf(selectedColumn);
+        } else {
+            selectedIndex = -1;
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void adjustPositions(LayoutColumn selectedLayoutColumn, Long currentPosition) {
+        if (currentPosition == null || currentPosition <= 0) {
+            layoutColumnDataset.stream()
+                    .filter(lc -> !lc.equals(selectedLayoutColumn))
+                    .filter(lc -> lc.getColumnPosition() >= selectedLayoutColumn.getColumnPosition())
+                    .forEach(lc -> lc.setColumnPosition(lc.getColumnPosition() + 1));
+        } else if (selectedLayoutColumn.getColumnPosition() < currentPosition) {
+            layoutColumnDataset.stream()
+                    .filter(lc -> !lc.equals(selectedLayoutColumn))
+                    .filter(lc -> lc.getColumnPosition() >= selectedLayoutColumn.getColumnPosition())
+                    .filter(lc -> lc.getColumnPosition() < currentPosition)
+                    .forEach(lc -> lc.setColumnPosition(lc.getColumnPosition() + 1));
+        } else if (selectedLayoutColumn.getColumnPosition() > currentPosition) {
+            layoutColumnDataset.stream()
+                    .filter(lc -> !lc.equals(selectedLayoutColumn))
+                    .filter(lc -> lc.getColumnPosition() <= selectedLayoutColumn.getColumnPosition())
+                    .filter(lc -> lc.getColumnPosition() > currentPosition)
+                    .forEach(lc -> lc.setColumnPosition(lc.getColumnPosition() - 1));
+        }
+
+        columnDataset.stream()
+                .filter(column -> column.getUid() == selectedLayoutColumn.getColumnID())
+                .findFirst()
+                .ifPresent(
+                        selectedColumn -> selectedIndex = columnDataset.indexOf(selectedColumn)
+                );
+
+        sortColumns();
+    }
+
+    public long lastPosition() {
+        return layoutColumnDataset.stream()
+                .mapToLong(LayoutColumn::getColumnPosition)
+                .max()
+                .orElse(0L);
     }
 
     public void addAllColumns(List<Column> columnList) {
@@ -168,27 +242,43 @@ public class ConfigLayoutsAdapter extends RecyclerView.Adapter<ConfigLayoutsAdap
     public void setLayoutColumnDataset(List<LayoutColumn> layoutColumnDataset) {
         this.layoutColumnDataset.clear();
         this.layoutColumnDataset.addAll(layoutColumnDataset);
-        //sortDataset(columnDataset); //todo - fix
-        notifyDataSetChanged();
+        sortColumns();
+    }
+
+    public List<LayoutColumn> getLayoutColumnDataset() {
+        return layoutColumnDataset;
     }
 
     public void addLayoutColumn(LayoutColumn layoutColumn) {
         layoutColumnDataset.add(layoutColumn);
-        notifyDataSetChanged();
+        columnDataset.stream()
+                .filter(column -> column.getUid() == layoutColumn.getColumnID())
+                .findFirst()
+                .ifPresent(
+                        selectedColumn -> selectedIndex = columnDataset.indexOf(selectedColumn)
+                );
+        sortColumns();
     }
 
     public void updateLayoutColumn(LayoutColumn layoutColumn) {
         int index = layoutColumnDataset.indexOf(layoutColumn);
         layoutColumnDataset.remove(layoutColumn);
         layoutColumnDataset.add(index, layoutColumn);
-        //notifyItemChanged(index);
-        notifyDataSetChanged();
+        sortColumns();
     }
 
     public void removeLayoutColumn(LayoutColumn layoutColumn) {
-        int index = layoutColumnDataset.indexOf(layoutColumn);
         layoutColumnDataset.remove(layoutColumn);
-        notifyItemChanged(index);
+        layoutColumnDataset.stream()
+                .filter(lc -> lc.getColumnPosition() > layoutColumn.getColumnPosition())
+                .forEach(lc -> lc.setColumnPosition(lc.getColumnPosition() - 1));
+        columnDataset.stream()
+                .filter(column -> column.getUid() == layoutColumn.getColumnID())
+                .findFirst()
+                .ifPresent(
+                        selectedColumn -> selectedIndex = columnDataset.indexOf(selectedColumn)
+                );
+        sortColumns();
     }
 
     public Pair<Column, LayoutColumn> getSelectedColumnLayoutColumn() {
