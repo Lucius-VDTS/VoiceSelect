@@ -1,5 +1,9 @@
 package ca.vdts.voiceselect.activities;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_STEP;
@@ -11,29 +15,52 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_GPS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_NAME;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_TIME;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
+import ca.vdts.voiceselect.database.VSViewModel;
+import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.utilities.VDTSNotificationUtil;
 
 public class SettingsActivity extends AppCompatActivity implements IRIListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
     private VDTSApplication vdtsApplication;
 
     //Views
@@ -46,6 +73,9 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     private SwitchCompat excelCheck;
 
     private RadioGroup entryMethodGroup;
+
+    private Button settingsImportButton;
+    private Button settingsExportButton;
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
@@ -85,6 +115,10 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     break;
             }
         });
+        settingsImportButton = findViewById(R.id.prefImportButton);
+        settingsImportButton.setOnClickListener(v -> onImportClick());
+        settingsExportButton = findViewById(R.id.prefExportButton);
+        settingsExportButton.setOnClickListener(v -> onExportClick());
     }
 
     @Override
@@ -142,6 +176,98 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
     public void excelClick() {
         vdtsApplication.getPreferences().setBoolean(PREF_EXPORT_XLSX, excelCheck.isChecked());
+    }
+
+    public void onImportClick() {
+        if (vdtsApplication.getCurrentUser().getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(settingsImportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export columns",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+           showImportDialog();
+        }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Settings");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "ca.vdts.voiceselect",
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "/Documents/VoiceSelect"+EXPORT_FILE_OPTIONS
+                            .concat(FILE_EXTENSION_VDTS))
+            );
+            if (uri != null && uri.getPath() != null) {
+                final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
+                final Importer importer = new Importer(
+                        viewModel,
+                        this,
+                        vdtsApplication
+                );
+                if (importer.importOptions(uri)) {
+                    // adapterSelect(-1);
+
+                    vdtsApplication.displayToast(this,"Settings imported successfully",Toast.LENGTH_SHORT);
+                } else {
+                    vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+                }
+            } else {
+                vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+            }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
+    }
+
+    public void onExportClick() {
+        if (vdtsApplication.getCurrentUser().getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(settingsExportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export columns",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+            final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
+            //saver = Saver.createSaver(ONEDRIVE_APP_ID);
+            final Exporter exporter = new Exporter(
+                    viewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportOptions()) {
+                vdtsApplication.displayToast(this,"Options exported successfully",Toast.LENGTH_SHORT);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting options",Toast.LENGTH_SHORT);
+            }
+        }
     }
 
     @Override

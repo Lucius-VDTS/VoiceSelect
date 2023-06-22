@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -69,10 +70,10 @@ public class VDTSApplication extends Application {
     public static final int SHAKE_REPEAT = 2;
 
     //Strings
-    public static final String EXPORT_FILE_USERS = "users - ";
-    public static final String EXPORT_FILE_SETUP = "setup - ";
-    public static final String EXPORT_FILE_LAYOUT = "layout - ";
-    public static final String EXPORT_FILE_OPTIONS = "options - ";
+    public static final String EXPORT_FILE_USERS = "Users";
+    public static final String EXPORT_FILE_SETUP = "Setup";
+    public static final String EXPORT_FILE_LAYOUT = "Layout";
+    public static final String EXPORT_FILE_OPTIONS = "Settings";
     public static final String FILE_EXTENSION_VDTS = ".vdts";
     public static final String FILE_EXTENSION_JSON = ".json";
     public static final String FILE_EXTENSION_CSV = ".csv";
@@ -81,11 +82,8 @@ public class VDTSApplication extends Application {
     public static final String FILE_EXTENSION_MP4 = ".mp4";
 
     //Directory
-    public static String USERS_DIRECTORY;
-    public static String SETUPS_DIRECTORY;
-    public static String LAYOUTS_DIRECTORY;
-    public static String OPTIONS_DIRECTORY;
-    public static String SESSIONS_DIRECTORY;
+    public static final String CONFIG_DIRECTORY = "Configuration"+ File.separator;
+    public static final String SESSIONS_DIRECTORY = "Sessions"+ File.separator;
 
 
     @Override

@@ -1,9 +1,14 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -18,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +39,7 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -45,6 +52,8 @@ import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -83,6 +92,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
     private SwitchCompat columnEnabledSwitch;
     private Slider columnPositionSlider;
+
+    private Button layoutImportButton;
+    private Button layoutExportButton;
+
 
     //View Model - Adapters
     private VSViewModel vsViewModel;
@@ -123,6 +136,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
         columnPositionSlider = findViewById(R.id.columnPositionSlider);
         columnPositionSlider.setEnabled(false);
+
+        layoutImportButton = findViewById(R.id.layoutImportButton);
+        layoutImportButton.setOnClickListener(v -> onImportClick());
+        layoutExportButton = findViewById(R.id.layoutExportButton);
+        layoutExportButton.setOnClickListener(v -> onExportClick());
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
@@ -489,6 +507,96 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     "Only an admin user can delete columns",
                     Toast.LENGTH_SHORT
             );
+        }
+    }
+
+    public void onImportClick() {
+        if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutImportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can import layouts",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+            showImportDialog();
+        }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Layouts");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "ca.vdts.voiceselect",
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "VoiceSelect"+EXPORT_FILE_LAYOUT
+                            .concat(FILE_EXTENSION_VDTS))
+            );
+            if (uri != null && uri.getPath() != null) {
+                final Importer importer = new Importer(
+                        vsViewModel,
+                        this,
+                        vdtsApplication
+                );
+                if (importer.importColumnLayout(uri)) {
+                    configLayoutsAdapterSelect(-1);
+
+                    vdtsApplication.displayToast(this,"Layouts imported successfully",Toast.LENGTH_SHORT);
+                } else {
+                    vdtsApplication.displayToast(this,"Error importing layouts",Toast.LENGTH_SHORT);
+                }
+            } else {
+                vdtsApplication.displayToast(this,"Error importing layouts",Toast.LENGTH_SHORT);
+            }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
+    }
+
+    public void onExportClick() {
+        if (currentUser.getAuthority() < 1) {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutExportButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can export layouts",
+                    Toast.LENGTH_SHORT
+            );
+        } else {
+            //saver = Saver.createSaver(ONEDRIVE_APP_ID);
+            final Exporter exporter = new Exporter(
+                    vsViewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportColumnLayout()) {
+                vdtsApplication.displayToast(this,"Column layout exported successfully",Toast.LENGTH_SHORT);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting column layout",Toast.LENGTH_SHORT);
+            }
         }
     }
 

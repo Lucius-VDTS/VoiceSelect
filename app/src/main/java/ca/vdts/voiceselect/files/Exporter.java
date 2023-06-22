@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.files;
 
 import static ca.vdts.voiceselect.database.entities.ColumnValue.COLUMN_VALUE_NONE;
 import static ca.vdts.voiceselect.database.entities.SessionLayout.SESSION_LAYOUT_NONE;
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
@@ -12,17 +13,14 @@ import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_JSON;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_XLSX;
-import static ca.vdts.voiceselect.library.VDTSApplication.LAYOUTS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.OPTIONS_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.SESSIONS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.SETUPS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.USERS_DIRECTORY;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.isNumeric;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,11 +35,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.time.LocalDateTime;
@@ -51,7 +47,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
@@ -66,8 +61,8 @@ import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.Options;
-import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Setup;
+import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -151,10 +146,9 @@ public class Exporter {
         );
         final String json = gson.toJson(users);
         final String fileName = EXPORT_FILE_USERS
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, USERS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportSetup() {
@@ -193,10 +187,9 @@ public class Exporter {
         );
         final String json = gson.toJson(setup);
         final String fileName = EXPORT_FILE_SETUP
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, SETUPS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportColumnLayout() {
@@ -221,10 +214,9 @@ public class Exporter {
         final JSONColumnLayout JSONColumnLayout = new JSONColumnLayout(layouts,layoutColumns,columns,users);
         final String json = gson.toJson(JSONColumnLayout);
         final String fileName = EXPORT_FILE_LAYOUT
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, LAYOUTS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportOptions() {
@@ -232,10 +224,9 @@ public class Exporter {
         final Options options = new Options(application);
         final String json = gson.toJson(options);
         final String fileName = EXPORT_FILE_OPTIONS
-                .concat(LocalDateTime.now().format(fileDateFormatter))
                 .concat(FILE_EXTENSION_VDTS);
 
-        return exportFile(json, OPTIONS_DIRECTORY, fileName, false);
+        return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
 
     public boolean exportSessionJSON(Session session) {
@@ -590,12 +581,20 @@ public class Exporter {
     private boolean exportFile(String fileContent, String localExportPath, String fileName,
                                boolean isSession) {
         LOG.debug("Exporting file {}", fileName);
-        final File directory = new File(localExportPath);
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
+        String exportDir = Environment.getExternalStorageDirectory().toString() + File.separator +
+                "Documents"+File.separator+"VoiceSelect"+File.separator+localExportPath;
+
+        final File directory = new File(exportDir);
+        if (!directory.exists()) {
+            boolean mkDirResult = directory.mkdirs();
+            LOG.info("Created directory: {}",mkDirResult);
+            if (!mkDirResult) {
+                LOG.info("Failed to create directory: {}", directory);
+            }
+        }
 
         try {
-            writeToFile(localExportPath.concat(fileName), fileContent);
+            writeToFile(exportDir.concat(fileName), fileContent);
         } catch (IOException e) {
             LOG.error("Export file write failed: ", e);
             return false;
@@ -620,9 +619,18 @@ public class Exporter {
     }
 
     private boolean exportFile(Workbook workbook, String localExportPath, String fileName) {
-        final File directory = new File(localExportPath);
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
+        LOG.debug("Exporting file {}", fileName);
+        String exportDir = Environment.getExternalStorageDirectory().toString() + File.separator +
+                "Documents"+File.separator+"VoiceSelect"+File.separator+localExportPath;
+
+        final File directory = new File(exportDir);
+        if (!directory.exists()) {
+            boolean mkDirResult = directory.mkdirs();
+            LOG.info("Created directory: {}",mkDirResult);
+            if (!mkDirResult) {
+                LOG.info("Failed to create directory: {}", directory);
+            }
+        }
 
         try {
             writeToFile(localExportPath.concat(fileName), workbook);
@@ -652,12 +660,60 @@ public class Exporter {
     private void writeToFile(String filePath, String json) throws IOException {
         LOG.debug("Writing file {}", filePath);
         File file = new File(filePath);
+
+        if (file.exists()) {
+            boolean deleteResult = file.delete();
+            if (deleteResult) {
+                LOG.info("Deleted existing file(s): {}", file);
+            } else {
+                LOG.info("Failed to delete existing file: {}", file);
+            }
+        }
+
+        //Create placeholder file for backup
+        if (!file.exists()) {
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(file);
+                fos.write(json.getBytes());
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*try {
+            int bufferSize = 8192;
+            byte[] buffer = new byte[bufferSize];
+            int bytesRead;
+
+            InputStream dbInput = Files.newInputStream(db.toPath());
+            OutputStream dbOutput = Files.newOutputStream(file.toPath());
+
+            while ((bytesRead = dbInput.read(buffer, 0, bufferSize)) > 0) {
+                dbOutput.write(buffer, 0, bytesRead);
+            }
+
+            dbOutput.flush();
+            dbOutput.close();
+            dbInput.close();
+
+            backupSharedPreferences.edit().putLong(
+                    "LAST_BACKUP",
+                    VDTSToolUtil.getTimeStamp().getTime()).apply();
+
+            LOG.info("Backup saved to {}", dbBackupDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Backup error: ", e);
+        }*/
+
         //noinspection ResultOfMethodCallIgnored
-        file.createNewFile();
+        /*file.createNewFile();
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(json);
-        writer.close();
+        writer.close();*/
     }
 
     private void writeToFile(String filePath, Workbook workbook) throws IOException {

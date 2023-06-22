@@ -1,9 +1,14 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
+import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -17,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +37,7 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +51,8 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
+import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
@@ -566,7 +575,56 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     "Only an admin user can import columns",
                     Toast.LENGTH_SHORT
             );
+        }else {
+            showImportDialog();
         }
+    }
+
+    private void showImportDialog() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Import Columns and Values");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Current settings may be lost.");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            Uri uri = FileProvider.getUriForFile(
+                    this,
+                    "ca.vdts.voiceselect",
+                    new File(Environment.getExternalStorageDirectory().toString() +
+                            "/Documents/VoiceSelect"+EXPORT_FILE_SETUP
+                            .concat(FILE_EXTENSION_VDTS))
+            );
+            if (uri != null && uri.getPath() != null) {
+                final Importer importer = new Importer(
+                        vsViewModel,
+                        this,
+                        vdtsApplication
+                );
+                if (importer.importSetup(uri)) {
+                    columnValueAdapterSelect(-1);
+
+                    vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
+                } else {
+                    vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
+                }
+            } else {
+                vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
+            }
+        });
+
+        noButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+        });
     }
 
     public void exportButtonOnClick() {
@@ -580,6 +638,19 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     "Only an admin user can export columns",
                     Toast.LENGTH_SHORT
             );
+        } else {
+            LOG.debug("Starting export");
+            final Exporter exporter = new Exporter(
+                    vsViewModel,
+                    vdtsApplication,
+                    this
+                    //saver
+            );
+            if (exporter.exportSetup()) {
+                vdtsApplication.displayToast(this,"Columns exported successfully",Toast.LENGTH_SHORT);
+            } else {
+                vdtsApplication.displayToast(this,"Error exporting columns",Toast.LENGTH_SHORT);
+            }
         }
     }
 
