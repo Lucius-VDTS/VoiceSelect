@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.files;
 
 import static ca.vdts.voiceselect.database.entities.ColumnValue.COLUMN_VALUE_NONE;
 import static ca.vdts.voiceselect.database.entities.SessionLayout.SESSION_LAYOUT_NONE;
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
@@ -13,7 +14,6 @@ import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_JSON;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.SESSIONS_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.isNumeric;
 
@@ -35,16 +35,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,7 +47,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
 
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
@@ -67,13 +61,12 @@ import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.Options;
-import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Setup;
+import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.LocalDateTimeSerializer;
-import ca.vdts.voiceselect.library.utilities.VDTSToolUtil;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class Exporter {
@@ -588,8 +581,8 @@ public class Exporter {
     private boolean exportFile(String fileContent, String localExportPath, String fileName,
                                boolean isSession) {
         LOG.debug("Exporting file {}", fileName);
-        String exportDir = Environment.getExternalStorageDirectory().toString() +
-                "/Documents/VoiceSelect"+localExportPath;
+        String exportDir = Environment.getExternalStorageDirectory().toString() + File.separator +
+                "Documents"+File.separator+"VoiceSelect"+File.separator+localExportPath;
 
         final File directory = new File(exportDir);
         if (!directory.exists()) {
@@ -601,7 +594,7 @@ public class Exporter {
         }
 
         try {
-            writeToFile(exportDir.concat(localExportPath).concat(fileName), fileContent);
+            writeToFile(exportDir.concat(fileName), fileContent);
         } catch (IOException e) {
             LOG.error("Export file write failed: ", e);
             return false;
@@ -626,9 +619,18 @@ public class Exporter {
     }
 
     private boolean exportFile(Workbook workbook, String localExportPath, String fileName) {
-        final File directory = new File(localExportPath);
-        //noinspection ResultOfMethodCallIgnored
-        directory.mkdirs();
+        LOG.debug("Exporting file {}", fileName);
+        String exportDir = Environment.getExternalStorageDirectory().toString() + File.separator +
+                "Documents"+File.separator+"VoiceSelect"+File.separator+localExportPath;
+
+        final File directory = new File(exportDir);
+        if (!directory.exists()) {
+            boolean mkDirResult = directory.mkdirs();
+            LOG.info("Created directory: {}",mkDirResult);
+            if (!mkDirResult) {
+                LOG.info("Failed to create directory: {}", directory);
+            }
+        }
 
         try {
             writeToFile(localExportPath.concat(fileName), workbook);

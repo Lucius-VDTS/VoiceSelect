@@ -1,7 +1,6 @@
 package ca.vdts.voiceselect.activities.configure;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
@@ -612,7 +611,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         vdtsApplication
                 );
                 if (importer.importSetup(uri)) {
-                    // adapterSelect(-1);
+                    columnValueAdapterSelect(-1);
 
                     vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
                 } else {

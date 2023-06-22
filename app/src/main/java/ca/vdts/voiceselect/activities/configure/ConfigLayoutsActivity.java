@@ -1,13 +1,11 @@
 package ca.vdts.voiceselect.activities.configure;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -549,7 +547,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     this,
                     "ca.vdts.voiceselect",
                     new File(Environment.getExternalStorageDirectory().toString() +
-                            "/Documents/VoiceSelect"+EXPORT_FILE_LAYOUT
+                            "VoiceSelect"+EXPORT_FILE_LAYOUT
                             .concat(FILE_EXTENSION_VDTS))
             );
             if (uri != null && uri.getPath() != null) {
@@ -559,7 +557,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         vdtsApplication
                 );
                 if (importer.importColumnLayout(uri)) {
-                    // adapterSelect(-1);
+                    configLayoutsAdapterSelect(-1);
 
                     vdtsApplication.displayToast(this,"Layouts imported successfully",Toast.LENGTH_SHORT);
                 } else {

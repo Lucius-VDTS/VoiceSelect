@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -81,8 +82,8 @@ public class VDTSApplication extends Application {
     public static final String FILE_EXTENSION_MP4 = ".mp4";
 
     //Directory
-    public static final String CONFIG_DIRECTORY = "/Configuration";
-    public static final String SESSIONS_DIRECTORY = "/Sessions";
+    public static final String CONFIG_DIRECTORY = "Configuration"+ File.separator;
+    public static final String SESSIONS_DIRECTORY = "Sessions"+ File.separator;
 
 
     @Override

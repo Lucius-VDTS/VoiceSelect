@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.library.activities.configure;
 
+import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
@@ -584,7 +585,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     this,
                     "ca.vdts.voiceselect",
                     new File(Environment.getExternalStorageDirectory().toString() +
-                            "/Documents/VoiceSelect"+EXPORT_FILE_USERS
+                            " VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_USERS
                             .concat(FILE_EXTENSION_VDTS))
             );
             if (uri != null && uri.getPath() != null) {
@@ -594,7 +595,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         vdtsApplication
                 );
                 if (importer.importUsers(uri)) {
-                    // adapterSelect(-1);
+                    userAdapter.setSelectedEntity(-1);
 
                     vdtsApplication.displayToast(this,"Users imported successfully",Toast.LENGTH_SHORT);
                 } else {
