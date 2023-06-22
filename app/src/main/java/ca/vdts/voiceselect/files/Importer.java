@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.database.VSViewModel;
@@ -34,8 +33,8 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
-import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.ColumnWords;
+import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONLayoutColumn;
 import ca.vdts.voiceselect.files.JSONEntities.Options;
@@ -44,7 +43,7 @@ import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.files.JSONEntities.ValueWords;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.utilities.LocalDateTimeSerializer;
+import ca.vdts.voiceselect.library.utilities.VDTSLocalDateTimeSerializerUtil;
 
 public class Importer {
     private static final Logger LOG = LoggerFactory.getLogger(Importer.class);
@@ -60,7 +59,7 @@ public class Importer {
         this.activity = activity;
         gson = new GsonBuilder()
                 .setLongSerializationPolicy(LongSerializationPolicy.STRING)
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                .registerTypeAdapter(LocalDateTime.class, new VDTSLocalDateTimeSerializerUtil())
                 .create();
     }
 

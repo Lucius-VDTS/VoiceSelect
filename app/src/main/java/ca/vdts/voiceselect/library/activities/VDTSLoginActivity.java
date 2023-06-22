@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
@@ -25,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.iristick.sdk.Experimental;
-import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.display.IRIWindow;
@@ -56,7 +54,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
-    private String[] userName = {""};
+    private final String[] userName = {""};
     private TextToSpeech ttsEngine;
 
     private EditText passwordText;
@@ -70,7 +68,6 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     private final List<VDTSUser> userList = new ArrayList<>();
 
     //Iristick Components
-    private boolean isHeadsetAvailable = false;
     private VDTSLoginActivity.IristickHUD iristickHUD;
 
     @Override
@@ -162,9 +159,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                         .setCancelable(false)
                         .setView(passwordText);
 
-                passwordAlert.setPositiveButton("Submit", (dialog, which) -> {
-                    enterPIN();
-                });
+                passwordAlert.setPositiveButton("Submit", (dialog, which) -> enterPIN());
 
                 passwordAlert.setNegativeButton("Cancel", (dialog, which) -> {
                     userAdapterSelect(-1);
@@ -226,18 +221,6 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
             );
             startActivity(vdtsMenuActivity);
         }
-    }
-
-    @Override
-    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
     }
 
     private void initializeIristickHUD() {
@@ -322,7 +305,6 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                 this.getLifecycle(),
                 this,
                 vc -> vc.add("Clear", () -> {
-                    String empty[] = {""};
                     pin[0] = "";
                     iristickHUD.enterPINValue.setText("");
                 })

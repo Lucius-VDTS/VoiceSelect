@@ -15,12 +15,12 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateTimeSerializer implements JsonDeserializer<LocalDateTime>, JsonSerializer<LocalDateTime> {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalDateTimeSerializer.class);
+public class VDTSLocalDateTimeSerializerUtil implements JsonDeserializer<LocalDateTime>, JsonSerializer<LocalDateTime> {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSLocalDateTimeSerializerUtil.class);
     private final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
     private final DateTimeFormatter dateTimeWithoutSeconds = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
-    public LocalDateTimeSerializer() {
+    public VDTSLocalDateTimeSerializerUtil() {
     }
 
     public LocalDateTime deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {

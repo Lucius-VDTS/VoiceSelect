@@ -29,7 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VoiceSelectGeneral"
         tools:replace="android:theme,android:icon">
-      >
+
         <activity
             android:name=".library.activities.VDTSMainActivity"
             android:label="@string/main_activity_label"

@@ -66,7 +66,7 @@ import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.utilities.LocalDateTimeSerializer;
+import ca.vdts.voiceselect.library.utilities.VDTSLocalDateTimeSerializerUtil;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class Exporter {
@@ -96,7 +96,7 @@ public class Exporter {
         //this.saver = saver;
         gson = new GsonBuilder()
                 .setLongSerializationPolicy(LongSerializationPolicy.STRING)
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                .registerTypeAdapter(LocalDateTime.class, new VDTSLocalDateTimeSerializerUtil())
                 .create();
     }
 
