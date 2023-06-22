@@ -6,7 +6,6 @@ import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 
 import android.app.Activity;
-import android.net.Uri;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,14 +16,15 @@ import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.database.VSViewModel;
@@ -34,8 +34,8 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
-import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.ColumnWords;
+import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONLayout;
 import ca.vdts.voiceselect.files.JSONEntities.JSONLayoutColumn;
 import ca.vdts.voiceselect.files.JSONEntities.Options;
@@ -80,9 +80,9 @@ public class Importer {
         return gson;
     }
 
-    public boolean importUsers(Uri uri) {
+    public boolean importUsers(File file) {
         LOG.debug("Starting users import");
-        final String jsonString = getJsonString(uri);
+        final String jsonString = getJsonString(file);
         final Type type = new TypeToken<Users>() {}.getType();
         if (jsonString != null) {
             if (jsonString.contains("Users")) {
@@ -292,7 +292,7 @@ public class Importer {
         return true;
     }
 
-    public boolean importSetup(Uri uri) {
+    public boolean importSetup(File uri) {
         LOG.debug("Starting Setups import");
         final String jsonString = getJsonString(uri);
         final Type type = new TypeToken<Setup>() {}.getType();
@@ -488,7 +488,7 @@ public class Importer {
         return true;
     }
 
-    public boolean importColumnLayout(Uri uri) {
+    public boolean importColumnLayout(File uri) {
         LOG.debug("Starting column layout import");
         final String jsonString = getJsonString(uri);
         final Type type = new TypeToken<JSONColumnLayout>() {}.getType();
@@ -594,7 +594,7 @@ public class Importer {
         return true;
     }
 
-    public boolean importOptions(Uri uri) {
+    public boolean importOptions(File uri) {
         LOG.debug("Starting options import");
         final String jsonString = getJsonString(uri);
         final Type type = new TypeToken<Options>() {}.getType();
@@ -626,10 +626,10 @@ public class Importer {
         return true;
     }
 
-    public String getJsonString(Uri uri) {
+    public String getJsonString(File file) {
         String jsonString;
         try {
-            InputStream is = activity.getContentResolver().openInputStream(uri);
+            InputStream is = Files.newInputStream(file.toPath());
             int size = is.available();
             byte[] buffer = new byte[size];
             //noinspection ResultOfMethodCallIgnored
