@@ -659,7 +659,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         return !columnValue.getName().isEmpty() &&
                 !columnValue.getNameCode().isEmpty() &&
                 !columnValue.getExportCode().isEmpty() &&
-                columnList.stream().noneMatch(column1 -> columnValue.getUid() != column1.getUid() &&
+                columnValueList.stream().noneMatch(column1 -> columnValue.getUid() != column1.getUid() &&
                         (column1.getName().equalsIgnoreCase(columnValue.getName()) ||
                                 column1.getNameCode().equalsIgnoreCase(columnValue.getName()) ||
                                 column1.getExportCode().equalsIgnoreCase(columnValue.getExportCode())
