@@ -6,6 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * JSON version of option setting
+ */
 public class Option {
     private static final Logger LOG = LoggerFactory.getLogger(Option.class);
 

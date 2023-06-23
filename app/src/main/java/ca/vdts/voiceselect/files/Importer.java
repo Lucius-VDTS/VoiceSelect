@@ -736,7 +736,10 @@ public class Importer {
                 }
                 if (options != null) {
                     options.getOptions().forEach(
-                            option -> application.getPreferences().setPref(option.getKey(), option.getValue())
+                            option -> application.getPreferences().setPref(
+                                    option.getKey(),
+                                    option.getValue()
+                            )
                     );
                 } else {
                     LOG.error("options is null");
