@@ -219,4 +219,13 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
+    <string name="letter_range">Letter Range</string>
+    <string name="num_range">Number Range</string>
+    <string name="Min_Label">Min:</string>
+    <string name="Max_Label">Max:</string>
+    <string name="Multi_Label">Multiple Of:</string>
+    <string name="LBL_INT_OPTIONS">Create Number Range</string>
+    <string name="Enter">Enter</string>
+    <string name="Cancel">Cancel</string>
+    <string name="LBL_STRING_OPTIONS">Create Letter Range</string>
 </resources>

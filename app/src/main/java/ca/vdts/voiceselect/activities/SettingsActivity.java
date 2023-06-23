@@ -117,13 +117,25 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     private void updateControls() {
-        nameOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_NAME, false));
-        gpsOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_GPS, false));
-        timeOnPhotoCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_TIME, false));
+        nameOnPhotoCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_NAME, false)
+        );
+        gpsOnPhotoCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_GPS, false)
+        );
+        timeOnPhotoCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_TIME, false)
+        );
 
-        csvCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV, false));
-        jsonCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false));
-        excelCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, false));
+        csvCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV, false)
+        );
+        jsonCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)
+        );
+        excelCheck.setChecked(
+                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, false)
+        );
 
         switch (vdtsApplication.getPreferences().getInt(PREF_ENTRY_METHOD, -1)) {
             case METHOD_CHAINED:
@@ -144,15 +156,24 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     public void nameOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_PHOTO_PRINT_NAME, nameOnPhotoCheck.isChecked());
+        vdtsApplication.getPreferences().setBoolean(
+                PREF_PHOTO_PRINT_NAME,
+                nameOnPhotoCheck.isChecked()
+        );
     }
 
     public void gpsOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_PHOTO_PRINT_GPS, gpsOnPhotoCheck.isChecked());
+        vdtsApplication.getPreferences().setBoolean(
+                PREF_PHOTO_PRINT_GPS,
+                gpsOnPhotoCheck.isChecked()
+        );
     }
 
     public void timeOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_PHOTO_PRINT_TIME, timeOnPhotoCheck.isChecked());
+        vdtsApplication.getPreferences().setBoolean(
+                PREF_PHOTO_PRINT_TIME,
+                timeOnPhotoCheck.isChecked()
+        );
     }
 
     public void csvClick() {
@@ -189,7 +210,10 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Settings");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText(R.string.import_dialogue_label);
@@ -200,11 +224,20 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_OPTIONS
-                    .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY)
+                            .concat(EXPORT_FILE_OPTIONS)
+                            .concat(FILE_EXTENSION_VDTS));
             if (file.exists()) {
-                final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
+                final VSViewModel viewModel = new ViewModelProvider(this).get(
+                        VSViewModel.class
+                );
                 final Importer importer = new Importer(
                         viewModel,
                         this,
@@ -213,12 +246,24 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                 if (importer.importOptions(file)) {
                     updateControls();
 
-                    vdtsApplication.displayToast(this,"Settings imported successfully",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Settings imported successfully",
+                            Toast.LENGTH_SHORT
+                    );
                 } else {
-                    vdtsApplication.displayToast(this,"Error importing settings",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Error importing settings",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             } else {
-                vdtsApplication.displayToast(this,"Setting file not found",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Setting file not found",
+                        Toast.LENGTH_SHORT
+                );
             }
         });
 
@@ -246,9 +291,17 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     //saver
             );
             if (exporter.exportOptions()) {
-                vdtsApplication.displayToast(this,"Options exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Options exported successfully",
+                        Toast.LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting options",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting options",
+                        Toast.LENGTH_SHORT
+                );
             }
         }
     }

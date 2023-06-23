@@ -1,10 +1,13 @@
 package ca.vdts.voiceselect.activities.configure;
 
+import static org.apache.poi.ss.util.CellReference.convertColStringToIndex;
+import static org.apache.poi.ss.util.CellReference.convertNumToColString;
 import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+import static ca.vdts.voiceselect.library.utilities.VDTSBNFUtil.toPhonetic;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -40,6 +43,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -81,6 +85,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private Button columnValueResetButton;
     private Button columnValueSaveButton;
     private Button columnValueDeleteButton;
+    private Button numRangeButton;
+    private Button letterRangeButton;
 
     private EditText columnValueNameEditText;
     private EditText columnValueNameCodeEditText;
@@ -123,10 +129,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueResetButton.setOnClickListener(v -> resetColumnValueButtonOnClick());
 
         columnValueSaveButton = findViewById(R.id.columnValueSaveButton);
-        columnValueSaveButton.setOnClickListener(v -> saveColumnValueButtonOnClick());
+        columnValueSaveButton.setOnClickListener(v -> saveColumnValueButtonOnClick(false));
 
         columnValueDeleteButton = findViewById(R.id.columnValueDeleteButton);
         columnValueDeleteButton.setOnClickListener(v -> deleteColumnValueButtonOnClick());
+
+        numRangeButton = findViewById(R.id.valueNumRangeButton);
+        numRangeButton.setOnClickListener(v -> onValueNumRangeClick());
+
+        letterRangeButton = findViewById(R.id.valueLetterRangeButton);
+        letterRangeButton.setOnClickListener(v -> onValueLetterRangeClick());
 
         columnValueNameEditText = findViewById(R.id.columnValueNameEditText);
         columnValueNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -409,7 +421,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueNewButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create new columns",
+                    "Only an admin user can create new Values",
                     Toast.LENGTH_SHORT
             );
         }
@@ -420,7 +432,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         resetFocus();
     }
 
-    private void saveColumnValueButtonOnClick() {
+    private void saveColumnValueButtonOnClick(boolean automated) {
         if (selectedColumn != null) {
             ColumnValue selectedColumnValue = columnValueAdapter.getSelectedEntity();
 
@@ -437,7 +449,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 selectedColumnValue.setUserID(selectedUser.getUid());
 
                 if (isValidColumnValue(selectedColumnValue)) {
-                    if (isValidColumnValueSpoken(selectedColumnValue)) {
+                    if (isValidColumnValueSpoken(selectedColumnValue,automated)) {
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         Handler handler = new Handler(Looper.getMainLooper());
                         executor.execute(() -> {
@@ -449,16 +461,18 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     clearSelection();
                 } else {
                     LOG.info("Invalid column value");
-                    YoYo.with(Techniques.Shake)
-                            .duration(SHAKE_DURATION)
-                            .repeat(SHAKE_REPEAT)
-                            .playOn(columnValueSaveButton);
-                    vdtsApplication.displayToast(
-                            this,
-                            "Invalid column value",
-                            0
-                    );
-                    resetColumnValueButtonOnClick();
+                    if (!automated) {
+                        YoYo.with(Techniques.Shake)
+                                .duration(SHAKE_DURATION)
+                                .repeat(SHAKE_REPEAT)
+                                .playOn(columnValueSaveButton);
+                        vdtsApplication.displayToast(
+                                this,
+                                "Invalid column value",
+                                0
+                        );
+                        resetColumnValueButtonOnClick();
+                    }
                 }
             } else {
                 //Create new column value
@@ -471,7 +485,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 );
 
                 if (isValidColumnValue(columnValue)) {
-                    if (isValidColumnValueSpoken(columnValue)) {
+                    if (isValidColumnValueSpoken(columnValue,automated)) {
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         Handler handler = new Handler(Looper.getMainLooper());
                         executor.execute(() -> {
@@ -485,15 +499,17 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     clearSelection();
                 } else {
                     LOG.info("Invalid column value");
-                    YoYo.with(Techniques.Shake)
-                            .duration(SHAKE_DURATION)
-                            .repeat(SHAKE_REPEAT)
-                            .playOn(columnValueSaveButton);
-                    vdtsApplication.displayToast(
-                            this,
-                            "Invalid column value",
-                            0
-                    );
+                    if (!automated) {
+                        YoYo.with(Techniques.Shake)
+                                .duration(SHAKE_DURATION)
+                                .repeat(SHAKE_REPEAT)
+                                .playOn(columnValueSaveButton);
+                        vdtsApplication.displayToast(
+                                this,
+                                "Invalid column value",
+                                0
+                        );
+                    }
                 }
             }
         } else {
@@ -577,10 +593,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() +
-                    File.separator+"Documents"+File.separator+"VoiceSelect"+File.separator+
-                    CONFIG_DIRECTORY + EXPORT_FILE_SETUP
-                    .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_SETUP)
+                            .concat(FILE_EXTENSION_VDTS)
+            );
             if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
@@ -595,6 +617,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             "Setup imported successfully",
                             Toast.LENGTH_SHORT
                     );
+
+                    initializeColumnList();
                 } else {
                     vdtsApplication.displayToast(
                             this,
@@ -671,7 +695,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
      * @param columnValue - The column value to be checked.
      * @return - True if valid.
      */
-    private boolean isValidColumnValueSpoken(ColumnValue columnValue) {
+    private boolean isValidColumnValueSpoken(ColumnValue columnValue,boolean automated) {
         if (!columnValueSpokenEditText.getText().toString().isEmpty()) {
             final List<String> spokenList = getFormattedColumnValueSpokenList();
 
@@ -680,30 +704,34 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     for (String spoken: spokenList) {
                         if (columnValueSpoken.getSpoken().equalsIgnoreCase(spoken)) {
                             LOG.info("Column value's spokens must be unique");
-                            YoYo.with(Techniques.Shake)
-                                    .duration(SHAKE_DURATION)
-                                    .repeat(SHAKE_REPEAT)
-                                    .playOn(columnValueSpokenEditText);
-                            vdtsApplication.displayToast(
-                                    this,
-                                    "Column value's spokens must be unique",
-                                    0
-                            );
-                            return false;
-                        }
-
-                        for (String reserved : reservedWords) {
-                            if (spoken.toLowerCase().contains(reserved.toLowerCase())) {
-                                LOG.info("Column value's spokens contain a reserved word");
+                            if (!automated) {
                                 YoYo.with(Techniques.Shake)
                                         .duration(SHAKE_DURATION)
                                         .repeat(SHAKE_REPEAT)
                                         .playOn(columnValueSpokenEditText);
                                 vdtsApplication.displayToast(
                                         this,
-                                        "Column value's spokens contain a reserved word",
+                                        "Column value's spokens must be unique",
                                         0
                                 );
+                            }
+                            return false;
+                        }
+
+                        for (String reserved : reservedWords) {
+                            if (spoken.toLowerCase().contains(reserved.toLowerCase())) {
+                                LOG.info("Column value's spokens contain a reserved word");
+                                if (!automated) {
+                                    YoYo.with(Techniques.Shake)
+                                            .duration(SHAKE_DURATION)
+                                            .repeat(SHAKE_REPEAT)
+                                            .playOn(columnValueSpokenEditText);
+                                    vdtsApplication.displayToast(
+                                            this,
+                                            "Column value's spokens contain a reserved word",
+                                            0
+                                    );
+                                }
                                 return false;
                             }
                         }
@@ -775,6 +803,171 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     ).start();
                 }
             }
+        }
+    }
+
+    public void onValueNumRangeClick() {
+        if (currentUser.getAuthority() > 0) {
+            if (selectedColumn != null) {
+                showIntegerDialog();
+            } else {
+                LOG.info("Select a column to create values");
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(columnValueSaveButton);
+                vdtsApplication.displayToast(
+                        this,
+                        "Select a column to create values",
+                        0
+                );
+            }
+        } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueNewButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can create new Values",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    private void showIntegerDialog() {
+        LOG.info("Showing Number Dialog");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(vdtsApplication.getResources().getString(R.string.LBL_INT_OPTIONS));
+        final View customLayout = getLayoutInflater()
+                .inflate(R.layout.dialogue_fragment_spec_integer, null);
+        builder.setView(customLayout);
+
+        EditText minView  = customLayout.findViewById(R.id.minValue);
+
+        EditText maxView = customLayout.findViewById(R.id.maxValue);
+
+        EditText multiView = customLayout.findViewById(R.id.multipleValue);
+
+        minView.setText(String.valueOf(1));
+        maxView.setText(String.valueOf(10));
+        multiView.setText(String.valueOf(1));
+
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+            saveNumberRange(minView.getText().toString(),maxView.getText().toString(),multiView.getText().toString());
+        });
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+
+        });
+
+        AlertDialog dialog = builder.create();
+        assert dialog.getWindow() != null;
+        dialog.show();
+    }
+
+    private void saveNumberRange(String min, String max, String multiple){
+        if (!min.isEmpty() && !max.isEmpty() && !multiple.isEmpty()){
+
+            int start = Integer.parseInt(min);
+            int end = Integer.parseInt(max);
+            if (start > end){
+                int temp = start;
+                start = end;
+                end = temp;
+            }
+            int multi = Integer.parseInt(multiple);
+
+            for (int i = start; i <= end ; i = i+multi){
+                columnValueAdapterSelect(-1);
+                columnValueNameEditText.setText(String.format(Locale.ROOT,"%d",i));
+                columnValueNameCodeEditText.setText(String.format(Locale.ROOT,"%d",i));
+                columnValueExportCodeEditText.setText(String.format(Locale.ROOT,"%d",i));
+                columnValueSpokenEditText.setText(String.format(Locale.ROOT,"%d",i));
+                saveColumnValueButtonOnClick(true);
+            }
+            columnValueAdapterSelect(-1);
+        } else {
+            vdtsApplication.displayToast(this,"Invalid number range",0);
+        }
+    }
+
+    public void onValueLetterRangeClick() {
+        if (currentUser.getAuthority() > 0) {
+            if (selectedColumn != null) {
+                showLetterDialog();
+            }
+        } else {
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(columnValueNewButton);
+            vdtsApplication.displayToast(
+                    this,
+                    "Only an admin user can create new Values",
+                    Toast.LENGTH_SHORT
+            );
+        }
+    }
+
+    private void showLetterDialog() {
+        LOG.info("Showing Number Dialog");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle( vdtsApplication.getResources().getString(R.string.LBL_STRING_OPTIONS));
+        final View customLayout = getLayoutInflater()
+                .inflate(R.layout.dialogue_fragment_spec_letter, null);
+        builder.setView(customLayout);
+
+        EditText minView  = customLayout.findViewById(R.id.minValue);
+
+        EditText maxView = customLayout.findViewById(R.id.maxValue);
+
+        minView.setText("A");
+        maxView.setText("Z");
+
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+            saveLetterRange(minView.getText().toString(),maxView.getText().toString());
+        });
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+
+        });
+
+        AlertDialog dialog = builder.create();
+        assert dialog.getWindow() != null;
+        dialog.show();
+    }
+
+    private void saveLetterRange(String min, String max){
+        if (!min.isEmpty() && !max.isEmpty()){
+
+            int start = convertColStringToIndex(min);
+            int end = convertColStringToIndex(max);
+            if (start > end){
+                int temp = start;
+                start = end;
+                end = temp;
+            }
+
+            for (int i = start; i <= end ; i++){
+                columnValueAdapterSelect(-1);
+                String value = convertNumToColString(i);
+                columnValueNameEditText.setText(value);
+                columnValueNameCodeEditText.setText(value);
+                columnValueExportCodeEditText.setText(value);
+
+                char[] chars = value.toCharArray();
+                String spacedValue = "";
+                for (char aChar : chars) {
+                    spacedValue = spacedValue.concat(toPhonetic(Character.toString(aChar), this).concat(" "));
+                }
+                spacedValue = spacedValue.trim();
+                columnValueSpokenEditText.setText(spacedValue);
+                saveColumnValueButtonOnClick(true);
+            }
+            columnValueAdapterSelect(-1);
+        } else {
+            vdtsApplication.displayToast(this,"Invalid letter range",0);
         }
     }
 
