@@ -86,6 +86,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private TextView layoutNameEditText;
     private TextView layoutExportCodeEditText;
 
+    private SwitchCompat commentRequiredSwitch;
+    private SwitchCompat pictureRequireSwitch;
+
     private Spinner layoutSpinner;
 
     private RecyclerView layoutColumnRecyclerView;
@@ -129,6 +132,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
         layoutNameEditText = findViewById(R.id.layoutNameEditText);
         layoutExportCodeEditText = findViewById((R.id.layoutExportCodeEditText));
+
+        commentRequiredSwitch = findViewById(R.id.commentRequiredSwitch);
+        pictureRequireSwitch = findViewById(R.id.pictureRequiredSwitch);
 
         columnEnabledSwitch = findViewById(R.id.columnEnableSwitch);
         columnEnabledSwitch.setEnabled(false);
@@ -291,6 +297,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     } else {
                         layoutNameEditText.setText(selectedLayout.getName());
                         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
+                        commentRequiredSwitch.setChecked(selectedLayout.isCommentRequired());
+                        pictureRequireSwitch.setChecked(selectedLayout.isPictureRequired());
                     }
 
                     initializeLayoutColumnList(selectedLayout);
@@ -423,6 +431,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 //Update existing layout
                 selectedLayout.setName(layoutNameEditText.getText().toString().trim());
                 selectedLayout.setExportCode(layoutExportCodeEditText.getText().toString().trim());
+                selectedLayout.setCommentRequired(commentRequiredSwitch.isChecked());
+                selectedLayout.setPictureRequired(pictureRequireSwitch.isChecked());
 
                 ExecutorService updateLayoutExecutor = Executors.newSingleThreadExecutor();
                 Handler updateLayoutHandler = new Handler(Looper.getMainLooper());
@@ -485,7 +495,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 Layout newLayout = new Layout(
                         currentUser.getUid(),
                         layoutNameEditText.getText().toString(),
-                        layoutExportCodeEditText.getText().toString()
+                        layoutExportCodeEditText.getText().toString(),
+                        commentRequiredSwitch.isChecked(),
+                        pictureRequireSwitch.isChecked()
                 );
 
                 ExecutorService createLayoutExecutor = Executors.newSingleThreadExecutor();

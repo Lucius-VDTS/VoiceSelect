@@ -376,7 +376,8 @@ public class VSViewModel extends VDTSViewModel {
     public List<Layout> findAllActiveLayouts() {
         return layoutRepository.findAll(
                 "SELECT * FROM Layouts " +
-                        "WHERE active = 1"
+                        "WHERE active = 1 " +
+                        "ORDER BY name"
         );
     }
 
