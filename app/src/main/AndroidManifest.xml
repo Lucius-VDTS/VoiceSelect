@@ -47,11 +47,11 @@
         <activity android:name=".library.activities.VDTSMenuActivity"
             android:label="@string/menu_activity_label" />
 
+        <activity android:name=".activities.dataGathering.DataGatheringActivity"
+            android:label="@string/data_gathering_activity_label" />
+
         <activity android:name=".library.activities.configure.VDTSConfigMenuActivity"
             android:label="@string/config_activity_label" />
-
-        <activity android:name=".activities.SettingsActivity"
-            android:label="@string/menu_settings_activity_button" />
 
         <activity android:name=".library.activities.configure.VDTSConfigUsersActivity"
             android:label="@string/config_users_activity_label" />
@@ -68,8 +68,8 @@
         <activity android:name=".activities.configure.ConfigLayoutsActivity"
             android:label="@string/config_layout_activity_label" />
 
-        <activity android:name=".activities.dataGathering.DataGatheringActivity"
-            android:label="@string/data_gathering_activity_label" />
+        <activity android:name=".activities.SettingsActivity"
+            android:label="@string/menu_settings_activity_button" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="ca.vdts.voiceselect"

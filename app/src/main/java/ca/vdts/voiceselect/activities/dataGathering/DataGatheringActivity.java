@@ -165,11 +165,13 @@ public class DataGatheringActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        initializeIristick();
-//        initializeSession();
+        initializeIristickHUD();
     }
 
-    private void initializeIristick() {
+    /**
+     * Initialize Iristick HUD.
+     */
+    private void initializeIristickHUD() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new DataGatheringActivity.IristickHUD();
             return iristickHUD;
@@ -298,9 +300,6 @@ public class DataGatheringActivity extends AppCompatActivity
 //            entryListLive.removeObservers(this);
             entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
             handler.post(() -> {
-//                if (isHeadsetAvailable) {
-//                    initializeIristick();
-//                }
 
                 initializeEntryValuesList();
             });
@@ -340,6 +339,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 dataGatheringAdapter.getItemCount() + 1));
 
         if (isHeadsetAvailable) {
+            initializeIristickVoiceCommands();
+
             iristickHUD.sessionValue.setText(sessionValue.getText());
             iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
         }
@@ -513,6 +514,16 @@ public class DataGatheringActivity extends AppCompatActivity
     public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
         isHeadsetAvailable = false;
+    }
+
+    private void initializeIristickVoiceCommands() {
+        if (isHeadsetAvailable) {
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Navigate Back", this::finish)
+            );
+        }
     }
 
     private void updateIristickHUD() {

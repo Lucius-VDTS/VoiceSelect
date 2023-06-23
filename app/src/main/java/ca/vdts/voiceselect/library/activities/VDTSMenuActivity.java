@@ -161,6 +161,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         initializeCurrentSession();
     }
 
+    private void initializeIristickHUD() {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new IristickHUD();
+            return iristickHUD;
+        });
+    }
+
     private void initializeCurrentSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
         long currentSessionID = vdtsApplication.getPreferences().getLong(
@@ -356,13 +363,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         isHeadsetAvailable = false;
     }
 
-    private void initializeIristickHUD() {
-        IristickSDK.addWindow(this.getLifecycle(), () -> {
-            iristickHUD = new IristickHUD();
-            return iristickHUD;
-        });
-    }
-
     /**
      * Initialize Iristick state notifications and voice commands when connected.
      */
@@ -445,6 +445,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     this.getLifecycle(),
                     this,
                     vc -> vc.add("About Iris Stick", this::aboutActivityButtonOnClick)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Navigate Back", this::finish)
             );
         } else {
             aboutActivityButton.setVisibility(View.GONE);

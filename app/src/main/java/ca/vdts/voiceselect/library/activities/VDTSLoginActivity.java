@@ -127,7 +127,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                     userAdapter.setDataset(userList);
                     userAdapterSelect(-1);
 
-                    initializeIristickHUD();
+                    initializeIristick();
                 }
             });
         });
@@ -223,15 +223,27 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         }
     }
 
-    private void initializeIristickHUD() {
+    /**
+     * Initialize Iristick HUD and global voice commands when connected.
+     */
+    private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new IristickHUD();
             return iristickHUD;
         });
 
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
+
         initializeIristickSelectUser();
     }
 
+    /**
+     * Initialize Iristick HUD and voice commands used to select a user.
+     */
     @OptIn(markerClass = Experimental.class)
     private void  initializeIristickSelectUser() {
         IristickSDK.addVoiceGrammar(getLifecycle(), this, ac -> {
@@ -269,6 +281,9 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         });
     }
 
+    /**
+     * Initialize Iristick HUD and voice commands used to enter a PIN and login.
+     */
     @OptIn(markerClass = Experimental.class)
     private void initializeIristickInputPIN() {
         iristickHUD.userNameLabel.setVisibility(View.VISIBLE);

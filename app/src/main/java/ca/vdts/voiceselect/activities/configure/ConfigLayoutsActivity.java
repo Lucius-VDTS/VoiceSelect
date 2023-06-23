@@ -483,9 +483,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                             vsViewModel.deleteLayoutColumn(lc);
                                         }
                                     });
-                                    deleteCurrentLayoutColumnsHandler.post(() -> {
-                                        LOG.debug("Layout Columns deleted");
-                                    });
+                                    deleteCurrentLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns deleted"));
                                 });
 
                                 ExecutorService saveLayoutColumnsExecutor =
@@ -501,9 +499,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                             vsViewModel.insertLayoutColumn(lc);
                                         }
                                     });
-                                    saveLayoutColumnsHandler.post(() -> {
-                                        LOG.debug("Layout Columns saved.");
-                                    });
+                                    saveLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns saved."));
                                 });
                             });
                         });
@@ -624,7 +620,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Current settings may be lost.");
+        label.setText(R.string.import_dialogue_label);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
         dialog = builder.create();
@@ -717,13 +713,19 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Initialize Iristick HUD when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new ConfigLayoutsActivity.IristickHUD();
             return iristickHUD;
         });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

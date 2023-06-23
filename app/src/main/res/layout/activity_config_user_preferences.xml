@@ -74,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/userAutosaveSwitch"
+                android:id="@+id/userAutoSaveSwitch"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:paddingStart="@dimen/double_padding"

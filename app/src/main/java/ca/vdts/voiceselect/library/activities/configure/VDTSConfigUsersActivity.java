@@ -160,18 +160,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         });
 
         userPasswordEditText = findViewById(R.id.userPasswordEditText);
-        /*userPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && !userAdminSwitch.isChecked()) {
-                vdtsApplication.displayToast(
-                        vdtsApplication,
-                        "User must be an admin to set password",
-                        0);
-
-                userPasswordEditText.clearFocus();
-            } else {
-                userPasswordEditText.setInputType(1);
-            }
-        });*/
 
         userAdminSwitch = findViewById(R.id.userAdminSwitch);
         userAdminSwitch.setOnClickListener(v -> {
@@ -189,16 +177,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 );
             }
         });
-        /*userAdminSwitch.setOnClickListener(v -> {
-            if (!userAdminSwitch.isChecked()) {
-                userPasswordEditText.setInputType(0);
-                userPasswordEditText.setText("");
-                userPasswordEditText.clearFocus();
-            } else {
-                userPasswordEditText.setInputType(1);
-                userPasswordEditText.requestFocus();
-            }
-        });*/
 
         userPrimarySwitch = findViewById(R.id.userPrimarySwitch);
         userPrimarySwitch.setOnClickListener(v -> {
@@ -266,22 +244,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     @Override
     protected void onResume() {
         super.onResume();
-        //initializeUserList();
-    }
-
-    private void initializeUserList() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            selectableUserList.clear();
-            if (currentUser.getAuthority() > 0) {
-                selectableUserList.addAll(vsViewModel.findAllActiveUsers());
-                selectableUserList.remove(VDTSUser.VDTS_USER_NONE);
-            } else {
-                selectableUserList.add(currentUser);
-            }
-            handler.post(() -> userAdapter.setDataset(selectableUserList));
-        });
     }
 
     /**
@@ -573,7 +535,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Current settings may be lost.");
+        label.setText(R.string.import_dialogue_label);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
         dialog = builder.create();
@@ -621,9 +583,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             }
         });
 
-        noButton.setOnClickListener(v -> {
-            finalDialog.dismiss();
-        });
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
     public void exportButtonClick() {
@@ -730,13 +690,19 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     /**
-     * Initialize Iristick HUD when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new VDTSConfigUsersActivity.IristickHUD();
             return iristickHUD;
         });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
