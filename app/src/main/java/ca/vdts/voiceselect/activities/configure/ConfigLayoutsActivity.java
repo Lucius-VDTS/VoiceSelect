@@ -159,7 +159,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layouts -> {
                     layoutList.clear();
                     layoutList.addAll(layouts);
-                    
+
                     layoutList.remove(Layout.LAYOUT_NONE);
                     final Layout newLayout = Layout.LAYOUT_NONE;
                     newLayout.setName("");
@@ -167,7 +167,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     layoutList.add(0, newLayout);
 
                     if (selectedLayout != null) {
-                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
+                        layoutSpinner.setSelection(
+                                layoutSpinnerAdapter.getPosition(selectedLayout)
+                        );
                     } else {
                         layoutSpinner.setSelection(0);
                     }
@@ -362,14 +364,15 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 }
             }
         } else {
-            if (configLayoutsAdapter != null) {
+            /*if (configLayoutsAdapter != null) {
                 configLayoutsAdapter.clearSelected();
             }
 
             columnEnabledSwitch.setEnabled(false);
             columnEnabledSwitch.setChecked(false);
             columnPositionSlider.setEnabled(false);
-            columnPositionSlider.setValue(1);
+            columnPositionSlider.setValue(1);*/
+            layoutSpinner.setSelection(0);
         }
     }
 
@@ -625,9 +628,16 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_LAYOUT
-                    .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_LAYOUT)
+                            .concat(FILE_EXTENSION_VDTS)
+            );
             if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
@@ -650,7 +660,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     );
                 }
             } else {
-                vdtsApplication.displayToast(this, "Layout file not found", LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Layout file not found",
+                        LENGTH_SHORT
+                );
             }
         });
 

@@ -1,7 +1,5 @@
 package ca.vdts.voiceselect.files.JSONEntities;
 
-import androidx.room.ColumnInfo;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -18,6 +16,10 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
+/**
+ * JSON version of a single user,
+ * with that user's preferences and spoken terms
+ */
 public class User {
     private static final Logger LOG = LoggerFactory.getLogger(User.class);
 
@@ -81,9 +83,8 @@ public class User {
     @SerializedName("Spoken Values")
     private List<ValueWords> valueWords;
 
-    public User(VDTSUser user, List<Column> columns,
-                List<ColumnSpoken> columnSpoken, List<ColumnValue> values,
-                List<ColumnValueSpoken> valueSpoken) {
+    public User(VDTSUser user, List<Column> columns, List<ColumnSpoken> columnSpoken,
+                List<ColumnValue> values, List<ColumnValueSpoken> valueSpoken) {
         LOG.debug("Creating User entity for user {}", user.getUid());
         name = user.getName();
         exportCode = user.getExportCode();
@@ -113,7 +114,6 @@ public class User {
             valueWords.add(new ValueWords(value, columns, spokenList));
         });
     }
-
 
     public String getName() {
         return name;

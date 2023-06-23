@@ -107,21 +107,6 @@ public class Layout implements VDTSIndexedNamedInterface {
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public Layout(long userID, String name, String exportCode) {
-        this(
-                0L,
-                userID,
-                LocalDateTime.now(),
-                name,
-                exportCode,
-                false,
-                false,
-                true
-        );
-    }
-
-    //Place holder constructor - entity has id 0 until saved to database
-    @Ignore
     public Layout(long userID, String name, String exportCode, boolean commentRequired,
                   boolean pictureRequired) {
         this(

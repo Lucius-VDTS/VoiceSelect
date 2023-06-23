@@ -1,6 +1,5 @@
 package ca.vdts.voiceselect.files.JSONEntities;
 
-
 import static ca.vdts.voiceselect.database.entities.Column.COLUMN_NONE;
 
 import com.google.gson.annotations.Expose;
@@ -16,12 +15,14 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 
-
+/**
+ * JSON version of a user's column values spoken terms
+ */
 public class ValueWords {
     private static final Logger LOG = LoggerFactory.getLogger(ValueWords.class);
 
     @Expose
-    @SerializedName("ColumnCode")
+    @SerializedName("Column Code")
     private String columnCode;
 
     @Expose
@@ -32,7 +33,8 @@ public class ValueWords {
     @SerializedName("Words")
     private List<Word> words;
 
-    public ValueWords(ColumnValue value, List<Column> columns, List<ColumnValueSpoken> valueSpoken) {
+    public ValueWords(ColumnValue value, List<Column> columns,
+                      List<ColumnValueSpoken> valueSpoken) {
         LOG.debug("Creating ValueWords entity for ColumnValue {}", value.getUid());
         columnCode = columns.stream()
                 .filter(column -> column.getUid() == value.getColumnID())

@@ -1,6 +1,5 @@
 package ca.vdts.voiceselect.files;
 
-
 import static ca.vdts.voiceselect.database.entities.ColumnValue.COLUMN_VALUE_NONE;
 import static ca.vdts.voiceselect.database.entities.SessionLayout.SESSION_LAYOUT_NONE;
 import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
@@ -145,8 +144,7 @@ public class Exporter {
                 valueSpoken
         );
         final String json = gson.toJson(users);
-        final String fileName = EXPORT_FILE_USERS
-                .concat(FILE_EXTENSION_VDTS);
+        final String fileName = EXPORT_FILE_USERS.concat(FILE_EXTENSION_VDTS);
 
         return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
@@ -164,13 +162,16 @@ public class Exporter {
             columns.addAll(viewModel.findAllColumns());
             final VDTSUser primary = viewModel.findUserByPrimary();
             columnSpoken.addAll(
-                    viewModel.findAllColumnSpokensByUser(primary != null ? primary.getUid(): DEFAULT_UID)
+                    viewModel.findAllColumnSpokensByUser(
+                            primary != null ? primary.getUid(): DEFAULT_UID
+                    )
             );
             values.addAll(viewModel.findAllColumnValues());
             valueSpoken.addAll(
-                    viewModel.findAllColumnValueSpokensByUser(primary != null ? primary.getUid() : DEFAULT_UID)
+                    viewModel.findAllColumnValueSpokensByUser(
+                            primary != null ? primary.getUid() : DEFAULT_UID
+                    )
             );
-
         });
         gatherThread.start();
         try {
@@ -178,6 +179,7 @@ public class Exporter {
         } catch (InterruptedException e) {
             LOG.error("exportSetup interrupted: ", e);
         }
+
         final Setup setup = new Setup(
                 users,
                 columns,
@@ -186,8 +188,7 @@ public class Exporter {
                 valueSpoken
         );
         final String json = gson.toJson(setup);
-        final String fileName = EXPORT_FILE_SETUP
-                .concat(FILE_EXTENSION_VDTS);
+        final String fileName = EXPORT_FILE_SETUP.concat(FILE_EXTENSION_VDTS);
 
         return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
@@ -211,10 +212,14 @@ public class Exporter {
         } catch (InterruptedException e) {
             LOG.error("exportColumnLayout interrupted: ", e);
         }
-        final JSONColumnLayout JSONColumnLayout = new JSONColumnLayout(layouts,layoutColumns,columns,users);
+        final JSONColumnLayout JSONColumnLayout = new JSONColumnLayout(
+                layouts,
+                layoutColumns,
+                columns,
+                users
+        );
         final String json = gson.toJson(JSONColumnLayout);
-        final String fileName = EXPORT_FILE_LAYOUT
-                .concat(FILE_EXTENSION_VDTS);
+        final String fileName = EXPORT_FILE_LAYOUT.concat(FILE_EXTENSION_VDTS);
 
         return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }
@@ -223,8 +228,7 @@ public class Exporter {
         LOG.debug("Starting options export");
         final Options options = new Options(application);
         final String json = gson.toJson(options);
-        final String fileName = EXPORT_FILE_OPTIONS
-                .concat(FILE_EXTENSION_VDTS);
+        final String fileName = EXPORT_FILE_OPTIONS.concat(FILE_EXTENSION_VDTS);
 
         return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }

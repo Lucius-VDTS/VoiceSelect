@@ -529,7 +529,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Users");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText(R.string.import_dialogue_label);
@@ -540,9 +543,16 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-                            "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_USERS
-                            .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_USERS)
+                            .concat(FILE_EXTENSION_VDTS)
+            );
             if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
@@ -552,12 +562,24 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 if (importer.importUsers(file)) {
                     userAdapter.setSelectedEntity(-1);
 
-                    vdtsApplication.displayToast(this,"Users imported successfully",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Users imported successfully",
+                            Toast.LENGTH_SHORT
+                    );
                 } else {
-                    vdtsApplication.displayToast(this,"Error importing users",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Error importing users",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             } else {
-                vdtsApplication.displayToast(this,"User file not found",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "User file not found",
+                        Toast.LENGTH_SHORT
+                );
             }
         });
 
@@ -584,9 +606,17 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     //saver
             );
             if (exporter.exportUsers()) {
-                vdtsApplication.displayToast(this,"Users exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Users exported successfully",
+                        Toast.LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting users",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting users",
+                        Toast.LENGTH_SHORT
+                );
             }
         }
     }
