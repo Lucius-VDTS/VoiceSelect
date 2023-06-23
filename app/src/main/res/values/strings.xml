@@ -40,6 +40,35 @@
     <string name="menu_layout_label">Layout:</string>
     <string name="menu_layout_value">No Layouts</string>
 
+<!--  Data Gathering Activity  -->
+    <string name="data_gathering_activity_label">Data Gathering</string>
+
+    <string name="data_gathering_header_scroll_description">Scroll horizontally through columns</string>
+    <string name="data_gathering_rv_scroll_description">Scroll horizontally through entered data</string>
+    <string name="data_gathering_entry_scroll_description">Scroll horizontally through
+        values that can be added to a row</string>
+
+    <string name="data_gathering_index_label">#</string>
+    <string name="data_gathering_comment_label">CMT</string>
+    <string name="data_gathering_comment_description">Open comment entry dialogue</string>
+    <string name="data_gathering_photo_label">PIC</string>
+    <string name="data_gathering_photo_description">Open the camera</string>
+    <string name="data_gathering_end_description">End the totalSession</string>
+
+    <string name="data_gathering_repeat_button">Repeat</string>
+    <string name="data_gathering_delete_button">Del</string>
+    <string name="data_gathering_reset_button">Reset</string>
+    <string name="data_gathering_save_button">Save</string>
+
+    <string name="data_gathering_session_label">Session:</string>
+    <string name="data_gathering_entries_label">Entries:</string>
+    <string name="data_gathering_end_button">End</string>
+
+    <string name="data_gathering_hud_end_of_row">END</string>
+
+<!--  Iristick Camera Activity  -->
+    <string name="iristick_camera_activity_label">Iristick Camera</string>
+
 <!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>
 
@@ -132,6 +161,16 @@
     <string name="column_value_spoken_label">Spoken</string>
     <string name="column_value_spoken_value">Enter value spoken</string>
 
+    <string name="column_value_letters_button">Letters</string>
+    <string name="column_value_numbers_button">Numbers</string>
+    <string name="column_value_number_range_label">Create Number Range</string>
+    <string name="column_value_letter_range_label">Create Letter Range</string>
+    <string name="column_values_min_label">Min:</string>
+    <string name="column_values_max_Label">Max:</string>
+    <string name="column_values_multiples_label">Multiple Of:</string>
+    <string name="column_values_enter_label">Enter</string>
+    <string name="column_values_cancel_label">Cancel</string>
+
 <!--  Configure Layout Activity  -->
     <string name="config_layout_activity_label">Configure Layout</string>
 
@@ -151,32 +190,6 @@
 
 <!--  Configure HUD  -->
     <string name="config_hud_text">Use your connected device to complete configuration.</string>
-
-<!--  Data Gathering Activity  -->
-    <string name="data_gathering_activity_label">Data Gathering</string>
-
-    <string name="data_gathering_header_scroll_description">Scroll horizontally through columns</string>
-    <string name="data_gathering_rv_scroll_description">Scroll horizontally through entered data</string>
-    <string name="data_gathering_entry_scroll_description">Scroll horizontally through
-        values that can be added to a row</string>
-
-    <string name="data_gathering_index_label">#</string>
-    <string name="data_gathering_comment_label">CMT</string>
-    <string name="data_gathering_comment_description">Open comment entry dialogue</string>
-    <string name="data_gathering_photo_label">PIC</string>
-    <string name="data_gathering_photo_description">Open the camera</string>
-    <string name="data_gathering_end_description">End the totalSession</string>
-
-    <string name="data_gathering_repeat_button">Repeat</string>
-    <string name="data_gathering_delete_button">Del</string>
-    <string name="data_gathering_reset_button">Reset</string>
-    <string name="data_gathering_save_button">Save</string>
-
-    <string name="data_gathering_session_label">Session:</string>
-    <string name="data_gathering_entries_label">Entries:</string>
-    <string name="data_gathering_end_button">End</string>
-
-    <string name="data_gathering_hud_end_of_row">END</string>
 
 <!--  Settings Activity  -->
     <string name="settings_entry_mode_label">Voice Entry Mode:</string>
@@ -219,13 +232,4 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
-    <string name="letter_range">Letter Range</string>
-    <string name="num_range">Number Range</string>
-    <string name="Min_Label">Min:</string>
-    <string name="Max_Label">Max:</string>
-    <string name="Multi_Label">Multiple Of:</string>
-    <string name="LBL_INT_OPTIONS">Create Number Range</string>
-    <string name="Enter">Enter</string>
-    <string name="Cancel">Cancel</string>
-    <string name="LBL_STRING_OPTIONS">Create Letter Range</string>
 </resources>

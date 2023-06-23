@@ -839,7 +839,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         LOG.info("Showing Number Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(vdtsApplication.getResources().getString(R.string.LBL_INT_OPTIONS));
+        builder.setTitle(vdtsApplication.getResources().getString(R.string.column_value_number_range_label));
         final View customLayout = getLayoutInflater()
                 .inflate(R.layout.dialogue_fragment_spec_integer, null);
         builder.setView(customLayout);
@@ -854,10 +854,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         maxView.setText(String.valueOf(10));
         multiView.setText(String.valueOf(1));
 
-        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.column_values_enter_label), (dialogInterface, i) -> {
             saveNumberRange(minView.getText().toString(),maxView.getText().toString(),multiView.getText().toString());
         });
-        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.column_values_cancel_label), (dialogInterface, i) -> {
 
         });
 
@@ -914,7 +914,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         LOG.info("Showing Number Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle( vdtsApplication.getResources().getString(R.string.LBL_STRING_OPTIONS));
+        builder.setTitle( vdtsApplication.getResources().getString(R.string.column_value_letter_range_label));
         final View customLayout = getLayoutInflater()
                 .inflate(R.layout.dialogue_fragment_spec_letter, null);
         builder.setView(customLayout);
@@ -926,10 +926,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         minView.setText("A");
         maxView.setText("Z");
 
-        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.column_values_enter_label), (dialogInterface, i) -> {
             saveLetterRange(minView.getText().toString(),maxView.getText().toString());
         });
-        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.column_values_cancel_label), (dialogInterface, i) -> {
 
         });
 

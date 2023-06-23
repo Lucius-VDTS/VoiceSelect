@@ -222,8 +222,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     footerSessionValue.setText("");
                 }
 
-                initializeIristick();
                 disableViews();
+                initializeIristick();
             });
         });
     }
