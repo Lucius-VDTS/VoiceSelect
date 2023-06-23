@@ -550,9 +550,17 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     //saver
             );
             if (exporter.exportSetup()) {
-                vdtsApplication.displayToast(this,"Columns exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Columns exported successfully",
+                        Toast.LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting columns",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting columns",
+                        Toast.LENGTH_SHORT
+                );
             }
         }
     }

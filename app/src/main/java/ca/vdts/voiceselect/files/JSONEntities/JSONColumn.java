@@ -1,6 +1,5 @@
 package ca.vdts.voiceselect.files.JSONEntities;
 
-
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 
 import com.google.gson.annotations.Expose;
@@ -17,7 +16,9 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
-
+/**
+ * JSON version of a column
+ */
 public class JSONColumn {
     private static final Logger LOG = LoggerFactory.getLogger(JSONColumn.class);
 

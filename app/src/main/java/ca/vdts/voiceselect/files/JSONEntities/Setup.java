@@ -16,6 +16,9 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
+/**
+ * JSON version of columns and their values
+ */
 public class Setup {
     private static final Logger LOG = LoggerFactory.getLogger(Setup.class);
 

@@ -18,7 +18,9 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
-
+/**
+ * JSON version of a column value
+ */
 public class JSONValue {
     private static final Logger LOG = LoggerFactory.getLogger(JSONValue.class);
 
