@@ -144,8 +144,7 @@ public class Exporter {
                 valueSpoken
         );
         final String json = gson.toJson(users);
-        final String fileName = EXPORT_FILE_USERS
-                .concat(FILE_EXTENSION_VDTS);
+        final String fileName = EXPORT_FILE_USERS.concat(FILE_EXTENSION_VDTS);
 
         return exportFile(json, CONFIG_DIRECTORY, fileName, false);
     }

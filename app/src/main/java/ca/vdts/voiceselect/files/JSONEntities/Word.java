@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 
+/**
+ * JSON version of a spoken term
+ */
 public class Word {
     private static final Logger LOG = LoggerFactory.getLogger(Word.class);
 

@@ -16,6 +16,9 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
+/**
+ * JSON version of the user list
+ */
 public class Users {
     private static final Logger LOG = LoggerFactory.getLogger(Users.class);
 
@@ -23,9 +26,8 @@ public class Users {
     @SerializedName("Users")
     private List<User> users;
 
-    public Users(List<VDTSUser> users,  List<Column> columns,
-                 List<ColumnSpoken> columnSpoken, List<ColumnValue> values,
-                 List<ColumnValueSpoken> valueSpoken) {
+    public Users(List<VDTSUser> users,  List<Column> columns, List<ColumnSpoken> columnSpoken,
+                 List<ColumnValue> values, List<ColumnValueSpoken> valueSpoken) {
         LOG.debug("Creating Users entity");
         this.users = new ArrayList<>();
         users.forEach(user -> {

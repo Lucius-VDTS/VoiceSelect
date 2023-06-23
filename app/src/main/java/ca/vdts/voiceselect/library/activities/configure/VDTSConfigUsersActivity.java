@@ -624,9 +624,17 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     //saver
             );
             if (exporter.exportUsers()) {
-                vdtsApplication.displayToast(this,"Users exported successfully",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Users exported successfully",
+                        Toast.LENGTH_SHORT
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting users",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting users",
+                        Toast.LENGTH_SHORT
+                );
             }
         }
     }

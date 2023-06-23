@@ -12,6 +12,9 @@ import java.util.List;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 
+/**
+ * JSON version of a user's columns spoken terms
+ */
 public class ColumnWords {
     private static final Logger LOG = LoggerFactory.getLogger(ColumnWords.class);
 
