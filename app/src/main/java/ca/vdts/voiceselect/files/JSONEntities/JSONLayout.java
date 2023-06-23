@@ -42,6 +42,14 @@ public class JSONLayout {
     private String exportCode;
 
     @Expose
+    @SerializedName("Comment Required")
+    private boolean commentRequired;
+
+    @Expose
+    @SerializedName("Picture Required")
+    private boolean pictureRequired;
+
+    @Expose
     @SerializedName("Layout Columns")
     private List<JSONLayoutColumn> layoutColumns;
 
@@ -60,6 +68,8 @@ public class JSONLayout {
         createDate = layout.getCreatedDate();
         displayName = layout.getName();
         exportCode = layout.getExportCode();
+        commentRequired = layout.isCommentRequired();
+        pictureRequired = layout.isPictureRequired();
         active = layout.isActive();
 
         this.layoutColumns = new ArrayList<>();
@@ -112,6 +122,22 @@ public class JSONLayout {
 
     public void setExportCode(String exportCode) {
         this.exportCode = exportCode;
+    }
+
+    public boolean isCommentRequired() {
+        return commentRequired;
+    }
+
+    public void setCommentRequired(boolean commentRequired) {
+        this.commentRequired = commentRequired;
+    }
+
+    public boolean isPictureRequired() {
+        return pictureRequired;
+    }
+
+    public void setPictureRequired(boolean pictureRequired) {
+        this.pictureRequired = pictureRequired;
     }
 
     public List<JSONLayoutColumn> getLayoutColumns() {

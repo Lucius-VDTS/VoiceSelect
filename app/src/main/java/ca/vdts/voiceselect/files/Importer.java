@@ -501,7 +501,7 @@ public class Importer {
                     LOG.error("unable to parse jsonString: ", e);
                     return false;
                 }
-                if (JSONColumnLayout != null && JSONColumnLayout.getLayouts().size()>0) {
+                if (JSONColumnLayout != null && JSONColumnLayout.getLayouts().size() > 0) {
                     final List<Layout> currentLayouts = new ArrayList<>();
                     final List<Column> currentColumns = new ArrayList<>();
                     final List<VDTSUser> currentUsers = new ArrayList<>();
@@ -520,15 +520,37 @@ public class Importer {
                     }
 
                     for (JSONLayout layout : JSONColumnLayout.getLayouts()) {
-                        Layout currentLayout = currentLayouts.stream().filter(l -> l.getExportCode().equalsIgnoreCase(layout.getExportCode())).findFirst().orElse(null);
-                        VDTSUser currentUser = currentUsers.stream().filter(l -> l.getExportCode().equalsIgnoreCase(layout.getUserCode())).findFirst().orElse(null);
-                        if (currentLayout == null){
-                            LOG.debug("Found new layout with export code {}", layout.getExportCode());
+                        Layout currentLayout = currentLayouts.stream()
+                                .filter(
+                                        l -> l.getExportCode()
+                                                .equalsIgnoreCase(layout.getExportCode())
+                                ).findFirst()
+                                .orElse(null);
+                        VDTSUser currentUser = currentUsers.stream()
+                                .filter(
+                                        l -> l.getExportCode().equalsIgnoreCase(
+                                                layout.getUserCode()
+                                        )
+                                ).findFirst()
+                                .orElse(null);
+                        if (currentLayout == null) {
+                            LOG.debug(
+                                    "Found new layout with export code {}",
+                                    layout.getExportCode()
+                            );
                             final long[] currentLayoutID = new long[1];
-                            currentLayout = new Layout (currentUser !=null? currentUser.getUid() : DEFAULT_UID,layout.getDisplayName(),layout.getExportCode());
+                            currentLayout = new Layout(
+                                    currentUser != null ? currentUser.getUid() : DEFAULT_UID,
+                                    layout.getDisplayName(),
+                                    layout.getExportCode(),
+                                    layout.isCommentRequired(),
+                                    layout.isPictureRequired()
+                            );
                             Layout finalCurrentLayout1 = currentLayout;
                             final Thread userInsertThread = new Thread(
-                                    () -> currentLayoutID[0] = viewModel.insertLayout(finalCurrentLayout1)
+                                    () -> currentLayoutID[0] = viewModel.insertLayout(
+                                            finalCurrentLayout1
+                                    )
                             );
                             userInsertThread .start();
                             try {
@@ -538,15 +560,22 @@ public class Importer {
                             }
                             currentLayout.setUid(currentLayoutID[0]);
                         } else {
-                            LOG.debug("Found existing layout export code {}", layout.getExportCode());
-                            currentLayout.setUserID(currentUser !=null? currentUser.getUid() : DEFAULT_UID);
+                            LOG.debug(
+                                    "Found existing layout export code {}",
+                                    layout.getExportCode()
+                            );
+                            currentLayout.setUserID(
+                                    currentUser != null ? currentUser.getUid() : DEFAULT_UID
+                            );
                             currentLayout.setName(layout.getDisplayName());
-                            //currentLayout.setNameCode(layout.getDisplayCode());
+                            currentLayout.setCommentRequired(layout.isCommentRequired());
+                            currentLayout.setPictureRequired(layout.isPictureRequired());
                             Layout finalCurrentLayout = currentLayout;
                             final Thread lcPurgeThread = new Thread(() -> {
                                 LOG.debug("Removing existing layout columns on new thread");
-                                List<LayoutColumn> layoutColumns = viewModel.findAllLayoutColumnsByLayout(finalCurrentLayout);
-                                for (LayoutColumn oldLayoutColumn : layoutColumns){
+                                List<LayoutColumn> layoutColumns = viewModel
+                                        .findAllLayoutColumnsByLayout(finalCurrentLayout);
+                                for (LayoutColumn oldLayoutColumn : layoutColumns) {
                                     viewModel.deleteLayoutColumn(oldLayoutColumn);
                                 }
                             });
@@ -558,27 +587,45 @@ public class Importer {
                                 return false;
                             }
                             Layout finalLayout = currentLayout;
-                            new Thread(()-> viewModel.updateLayout(finalLayout)).start();
+                            new Thread(() -> viewModel.updateLayout(finalLayout)).start();
                         }
 
                         List<JSONLayoutColumn> jsonLayoutColumns = layout.getLayoutColumns();
-                        for (JSONLayoutColumn newLayoutColumn : jsonLayoutColumns){
+                        for (JSONLayoutColumn newLayoutColumn : jsonLayoutColumns) {
                             Column foundColumn = currentColumns.stream()
-                                    .filter(column -> column.getExportCode().equalsIgnoreCase(newLayoutColumn.getColumnCode()))
-                                    .findFirst()
+                                    .filter(
+                                            column -> column.getExportCode().equalsIgnoreCase(
+                                                    newLayoutColumn.getColumnCode()
+                                            )
+                                    ).findFirst()
                                     .orElse(null);
-                            if (foundColumn!=null){
+                            if (foundColumn != null) {
                                 Layout finalCurrentLayout2 = currentLayout;
-                                new Thread(()-> viewModel.insertLayoutColumn(new LayoutColumn(finalCurrentLayout2.getUid(), foundColumn.getUid(), newLayoutColumn.getColumnPosition()))).start();
-                                LOG.debug("Column found for {}, adding to layout", newLayoutColumn.getColumnCode());
+                                new Thread(
+                                        () -> viewModel.insertLayoutColumn(
+                                                new LayoutColumn(
+                                                        finalCurrentLayout2.getUid(),
+                                                        foundColumn.getUid(),
+                                                        newLayoutColumn.getColumnPosition()
+                                                )
+                                        )
+                                ).start();
+                                LOG.debug(
+                                        "Column found for {}, adding to layout",
+                                        newLayoutColumn.getColumnCode()
+                                );
                             } else {
-                                LOG.error("No column found for {} at position {}, aborting", newLayoutColumn.getColumnCode(),newLayoutColumn.getColumnPosition());
+                                LOG.error(
+                                        "No column found for {} at position {}, aborting",
+                                        newLayoutColumn.getColumnCode(),
+                                        newLayoutColumn.getColumnPosition()
+                                );
                                 return false;
                             }
                         }
-                        LOG.debug("Import successful, saving updated layout");
-                        return true;
                     }
+                    LOG.debug("Import successful, saving updated layout");
+                    return true;
                 } else {
                     LOG.error("No layouts found");
                     return false;
@@ -591,7 +638,6 @@ public class Importer {
             LOG.error("jsonString is null");
             return false;
         }
-        return true;
     }
 
     public boolean importOptions(File uri) {
