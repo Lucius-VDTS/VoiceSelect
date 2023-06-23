@@ -102,7 +102,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private VDTSIndexedNamedAdapter<ColumnValue> columnValueAdapter;
 
     //Iristick Components
-    private boolean isHeadsetAvailable = false;
     private ConfigColumnValuesActivity.IristickHUD iristickHUD;
 
     @Override
@@ -675,7 +674,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                 column1.getExportCode().equalsIgnoreCase(columnValue.getExportCode())
                         )
                 );
-
     }
 
     /**
@@ -808,41 +806,25 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-        initializeIristick();
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
         initializeIristick();
     }
 
     /**
-     * Initialize elements based on Iristick connection.
+     * Initialize Iristick HUD when connected.
      */
     private void initializeIristick() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new ConfigColumnValuesActivity.IristickHUD();
-                return iristickHUD;
-            });
-        }
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new ConfigColumnValuesActivity.IristickHUD();
+            return iristickHUD;
+        });
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
-        private TextView configOnDeviceText;
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_config_hud);
-
-            configOnDeviceText = findViewById(R.id.configHUDText);
-            assert configOnDeviceText != null;
-            configOnDeviceText.setText(R.string.config_hud_text);
         }
     }
 }

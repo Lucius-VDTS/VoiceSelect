@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <TextView
+        android:id="@+id/usersLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/four_x_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/config_users_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <TextView
+        android:id="@+id/userPreferencesLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/config_user_preferences_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/usersLabel">
+    </TextView>
+
+    <TextView
+        android:id="@+id/columnsLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/config_columns_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/userPreferencesLabel">
+    </TextView>
+
+    <TextView
+        android:id="@+id/valuesLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/config_column_values_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/columnsLabel">
+    </TextView>
+
+    <TextView
+        android:id="@+id/layoutsLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/config_layouts_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/valuesLabel">
+    </TextView>
+</androidx.constraintlayout.widget.ConstraintLayout>

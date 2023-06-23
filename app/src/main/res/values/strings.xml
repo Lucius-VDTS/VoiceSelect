@@ -44,7 +44,7 @@
     <string name="config_activity_label">Configure</string>
 
     <string name="config_users_activity_button">Users</string>
-    <string name="config_preferences_activity_button">Preferences</string>
+    <string name="config_user_preferences_activity_button">User Preferences</string>
     <string name="config_columns_activity_button">Columns</string>
     <string name="config_column_values_activity_button">Values</string>
     <string name="config_layouts_activity_button">Layouts</string>
@@ -71,8 +71,8 @@
     <string name="user_admin_Label">Admin</string>
     <string name="user_primary_Label">Default\nSpoken</string>
 
-<!--  Configure Feedback Activity  -->
-    <string name="config_preferences_activity_label">Configure Preferences</string>
+<!--  Configure User Preferences  -->
+    <string name="config_user_preferences_activity_label">Configure Preferences</string>
 
     <string name="feedback_user_label">User:</string>
 
@@ -198,6 +198,9 @@
 
     <string name="settings_import">Import</string>
     <string name="settings_export">Export</string>
+
+    <!--  HUD  -->
+    <string name="settings_hud_text">Use your connected device to manage application settings.</string>
 
 <!--  Menu Footer  -->
     <string name="footer_layout_label">Layout:</string>

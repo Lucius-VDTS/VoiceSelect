@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
+import com.iristick.sdk.display.IRIWindow;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +53,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
 
     //Iristick Components
     private boolean isHeadsetAvailable = false;
+    private VDTSConfigMenuActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,8 +68,8 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         configUsersActivityButton = findViewById(R.id.configUsersActivityButton);
         configUsersActivityButton.setOnClickListener(v -> configUsersActivityButtonOnClick());
 
-        configPreferencesActivityButton = findViewById(R.id.configPreferencesActivityButton);
-        configPreferencesActivityButton.setOnClickListener(v -> configFeedbackActivityButtonOnClick());
+        configPreferencesActivityButton = findViewById(R.id.configUserPreferencesActivityButton);
+        configPreferencesActivityButton.setOnClickListener(v -> configUserPreferencesButtonOnClick());
 
         configColumnsActivityButton = findViewById(R.id.configColumnsActivityButton);
         configColumnsActivityButton.setOnClickListener(v -> configColumnsActivityButtonOnClick());
@@ -94,6 +96,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     @Override
     protected void onResume() {
         super.onResume();
+
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
 
@@ -138,9 +141,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     }
 
     private void disableViews() {
-        /*if (currentUser.getAuthority() <= 0) {
-            configUsersActivityButton.setEnabled(false);
-        } else*/ if (currentUser.getUid() == -9001L) {
+        if (currentUser.getUid() == -9001L) {
             configPreferencesActivityButton.setEnabled(false);
             configColumnsActivityButton.setEnabled(false);
             configColumnValuesActivityButton.setEnabled(false);
@@ -158,12 +159,12 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         startActivity(usersActivityIntent);
     }
 
-    public void configFeedbackActivityButtonOnClick() {
-        Intent feedbackActivityIntent = new Intent(
+    public void configUserPreferencesButtonOnClick() {
+        Intent userPreferencesActivityIntent = new Intent(
                 this,
-                VDTSConfigPreferencesActivity.class
+                VDTSConfigUserPreferencesActivity.class
         );
-        startActivity(feedbackActivityIntent);
+        startActivity(userPreferencesActivityIntent);
     }
 
     public void configColumnsActivityButtonOnClick() {
@@ -187,54 +188,58 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-        initializeIristick();
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
         initializeIristick();
     }
 
     /**
-     * Initialize elements based on Iristick connection
+     * Initialize Iristick HUD and voice commands when connected
      */
     private void initializeIristick() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Users", this::configUsersActivityButtonOnClick)
-            );
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new IristickHUD();
+            return iristickHUD;
+        });
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Feedback", this::configFeedbackActivityButtonOnClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Users", this::configUsersActivityButtonOnClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Columns", this::configColumnsActivityButtonOnClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("User Preferences", this::configUserPreferencesButtonOnClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add(
-                            "Column Values",
-                            this::configColumnValuesActivityButtonOnClick
-                    )
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Columns", this::configColumnsActivityButtonOnClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Layouts", this::configLayoutsActivityButtonOnClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add(
+                        "Values",
+                        this::configColumnValuesActivityButtonOnClick
+                )
+        );
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Layouts", this::configLayoutsActivityButtonOnClick)
+        );
+    }
+
+////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
+    public static class IristickHUD extends IRIWindow {
+       @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_config_menu_hud);
         }
     }
 }

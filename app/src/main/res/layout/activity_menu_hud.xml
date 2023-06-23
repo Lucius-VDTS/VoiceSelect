@@ -52,7 +52,7 @@
             android:gravity="center"
             android:textSize="@dimen/xxs_text_size"
             android:textColor="#ffffff"
-            android:text="Start"
+            android:text="@string/menu_start_activity_button"
             android:background="@drawable/button_background">
         </TextView>
     </LinearLayout>
@@ -67,7 +67,7 @@
         android:layout_marginEnd="@dimen/sixteen_x_margin"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="Resume"
+        android:text="@string/menu_resume_activity_button"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/layoutLinearLayout">
     </TextView>
@@ -82,7 +82,7 @@
         android:layout_marginEnd="@dimen/sixteen_x_margin"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="Configure"
+        android:text="@string/menu_configure_activity_button"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/resumeLabel">
     </TextView>
@@ -97,7 +97,7 @@
         android:layout_marginEnd="@dimen/sixteen_x_margin"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="Settings"
+        android:text="@string/menu_settings_activity_button"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/configureLabel">
     </TextView>
@@ -112,7 +112,7 @@
         android:layout_marginEnd="@dimen/sixteen_x_margin"
         android:textSize="@dimen/xxs_text_size"
         android:textColor="#ffffff"
-        android:text="Change User"
+        android:text="@string/menu_change_user_activity_button"
         android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/settingsLabel">
     </TextView>

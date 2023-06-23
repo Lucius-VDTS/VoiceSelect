@@ -50,7 +50,6 @@ import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 
 public class SettingsActivity extends AppCompatActivity implements IRIListener {
-
     private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
     private VDTSApplication vdtsApplication;
 
@@ -69,7 +68,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     private Button settingsExportButton;
 
     //Iristick Components
-    private boolean isHeadsetAvailable = false;
     private SettingsActivity.IristickHUD iristickHUD;
 
     @Override
@@ -260,94 +258,80 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-        initializeIristick();
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
         initializeIristick();
     }
 
     /**
-     * Initialize elements based on Iristick connection.
+     * Initialize Iristick based on connection.
      */
     private void initializeIristick() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Combined",()->setEntryMethod(METHOD_CHAINED))
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Combined",()->setEntryMethod(METHOD_CHAINED))
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Step By Step",()->setEntryMethod(METHOD_STEP))
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Step By Step",()->setEntryMethod(METHOD_STEP))
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Free Form",()->setEntryMethod(METHOD_FREE))
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Free Form",()->setEntryMethod(METHOD_FREE))
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Print Name", this::nameOnPictureClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Print Name", this::nameOnPictureClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Print Time", this::timeOnPictureClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Print Time", this::timeOnPictureClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Print GPS", this::gpsOnPictureClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Print GPS", this::gpsOnPictureClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("CSV", this::csvClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("CSV", this::csvClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("JSON", this::jsonClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("JSON", this::jsonClick)
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("XLSX", this::excelClick)
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("XLSX", this::excelClick)
+        );
 
 
-            IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new SettingsActivity.IristickHUD();
-                return iristickHUD;
-            });
-        }
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new SettingsActivity.IristickHUD();
+            return iristickHUD;
+        });
     }
 
-    ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
+////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
-        //HUD Views
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_data_gathering_hud);
-
-            //HUD Views
+            setContentView(R.layout.activity_settings_hud);
         }
     }
 }

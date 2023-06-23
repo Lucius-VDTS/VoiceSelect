@@ -215,8 +215,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     footerSessionValue.setText("");
                 }
 
-                disableViews();
                 initializeIristick();
+                disableViews();
             });
         });
     }
@@ -227,6 +227,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             resumeActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
+
+            iristickHUD.startLabel.setEnabled(false);
+            iristickHUD.resumeLabel.setEnabled(false);
+            iristickHUD.settingsLabel.setEnabled(false);
+            iristickHUD.changeUserLabel.setEnabled(false);
         }
     }
 
@@ -359,7 +364,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Initialize elements based on Iristick connection.
+     * Initialize Iristick state notifications and voice commands when connected.
      */
     @OptIn(markerClass = Experimental.class)
     private void initializeIristick() {
@@ -529,15 +534,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
      */
     @Override
     public void onFirmwareSyncProgress(float progress) {
-        if (isHeadsetAvailable) {
-            if (firmwareIristickNotificationService != null) {
-                firmwareIristickNotificationService.setProgress(
-                        100,
-                        (int) (progress * 100),
-                        false
-                );
-                firmwareIristickNotificationService.show();
-            }
+        if (firmwareIristickNotificationService != null) {
+            firmwareIristickNotificationService.setProgress(
+                    100,
+                    (int) (progress * 100),
+                    false
+            );
+            firmwareIristickNotificationService.show();
         }
     }
 
@@ -545,6 +548,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     public static class IristickHUD extends IRIWindow {
         //HUD Views
         private TextView layoutValue;
+        private TextView startLabel;
+        private TextView resumeLabel;
+        private TextView settingsLabel;
+        private TextView changeUserLabel;
 
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -552,6 +559,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             setContentView(R.layout.activity_menu_hud);
 
             layoutValue = findViewById(R.id.layoutValue);
+            startLabel = findViewById(R.id.startLabel);
+            resumeLabel = findViewById(R.id.resumeLabel);
+            settingsLabel = findViewById(R.id.settingsLabel);
+            changeUserLabel = findViewById(R.id.changeUserLabel);
         }
     }
 }

@@ -37,8 +37,8 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 /**
  * Config user's feedback params.
  */
-public class VDTSConfigPreferencesActivity extends AppCompatActivity implements IRIListener {
-    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigPreferencesActivity.class);
+public class VDTSConfigUserPreferencesActivity extends AppCompatActivity implements IRIListener {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigUserPreferencesActivity.class);
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
@@ -62,8 +62,7 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
     private Button saveFeedbackButton;
 
     //Iristick components
-    private boolean isHeadsetAvailable = false;
-    private VDTSConfigPreferencesActivity.IristickHUD iristickHUD;
+    private VDTSConfigUserPreferencesActivity.IristickHUD iristickHUD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,40 +220,25 @@ public class VDTSConfigPreferencesActivity extends AppCompatActivity implements 
     @Override
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
         initializeIristick();
     }
 
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
-    }
-
     /**
-     * Initialize elements based on Iristick connection.
+     * Initialize Iristick HUD when connected.
      */
     private void initializeIristick() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addWindow(this.getLifecycle(), () -> {
-                iristickHUD = new IristickHUD();
-                return iristickHUD;
-            });
-        }
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new IristickHUD();
+            return iristickHUD;
+        });
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
-        private TextView configOnDeviceText;
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_config_hud);
-
-            configOnDeviceText = findViewById(R.id.configHUDText);
-            assert configOnDeviceText != null;
-            configOnDeviceText.setText(R.string.config_hud_text);
         }
     }
 }
