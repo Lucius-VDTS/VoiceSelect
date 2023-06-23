@@ -235,10 +235,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
 
-            iristickHUD.startLabel.setEnabled(false);
-            iristickHUD.resumeLabel.setEnabled(false);
-            iristickHUD.settingsLabel.setEnabled(false);
-            iristickHUD.changeUserLabel.setEnabled(false);
+            if (isHeadsetAvailable) {
+                iristickHUD.startLabel.setEnabled(false);
+                iristickHUD.resumeLabel.setEnabled(false);
+                iristickHUD.settingsLabel.setEnabled(false);
+                iristickHUD.changeUserLabel.setEnabled(false);
+            }
         }
     }
 
