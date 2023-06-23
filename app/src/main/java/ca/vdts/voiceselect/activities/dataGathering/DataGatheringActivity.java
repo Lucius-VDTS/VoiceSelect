@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -414,7 +415,7 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     };
 
-    //todo adapterselect - select entry
+    //todo - select entry
     private void entryAdapterSelect(int index) {
         if (index >= 0) {
             columnValueIndexValue.setText(index);
@@ -521,9 +522,20 @@ public class DataGatheringActivity extends AppCompatActivity
             IristickSDK.addVoiceCommands(
                     this.getLifecycle(),
                     this,
+                    vc -> vc.add("Open Camera", this::openCamera)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
                     vc -> vc.add("Navigate Back", this::finish)
             );
         }
+    }
+
+    private void openCamera() {
+        Intent openCameraActivityIntent = new Intent(this, IristickCameraActivity.class);
+        startActivity(openCameraActivityIntent);
     }
 
     private void updateIristickHUD() {
