@@ -18,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
@@ -36,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -57,6 +59,10 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -148,7 +154,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSCustomLifecycle cameraLifecycle;
     private Camera camera;
     private ImageCapture imageCapture;
-    private static final int EXPOSURE_LEVELS = 10;
+    private static final int EXPOSURE_LEVELS = 10; // todo - add controls to control
     private int exposureLevel = EXPOSURE_LEVELS / 2;
     private static final int ZOOM_LEVELS = 5;
     private int zoomLevel = 0;
@@ -658,6 +664,61 @@ public class DataGatheringActivity extends AppCompatActivity
     private void openCamera() {
         Intent openCameraActivityIntent = new Intent(this, IristickCameraActivity.class);
         startActivity(openCameraActivityIntent);
+    }
+
+    private void takePicture() {
+        try {
+            final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS),
+                    "VoiceSelect/Pictures");
+
+            if (!photoDir.exists()) {
+                boolean mkdirResult = photoDir.mkdirs();
+                if (!mkdirResult) {
+                    LOG.info("Failed to create image directory");
+                    return;
+                }
+            }
+            DateTimeFormatter dateTimeWithoutSeconds = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm");
+            final File imageFile = File.createTempFile(
+                    dateTimeWithoutSeconds.format(LocalDateTime.now()),
+                    ".jpg",
+                    new File(photoDir.getPath())
+            );
+
+            ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions
+                    .Builder(imageFile)
+                    .build();
+
+            imageCapture.setFlashMode(ImageCapture.FLASH_MODE_AUTO);
+
+            imageCapture.takePicture(
+                    options,
+                    ContextCompat.getMainExecutor(this),
+                    new ImageCapture.OnImageSavedCallback() {
+                        @Override
+                        public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                            /**
+                             * todo - Enable this
+                            ImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            PictureReference pictureReference = new PictureReference(
+                                    currentUser.getUid(),
+                                    currentEntry.getUid(),
+                                    imageFile.getPath(),
+                                    currentLocation
+                            );
+                            currentEntryPhotos.add(pictureReference);*/
+                        }
+
+                        @Override
+                        public void onError(@NonNull ImageCaptureException exception) {
+                            LOG.error("Error taking photo: ", exception);
+                        }
+                    }
+            );
+        } catch (IOException e) {
+            LOG.error("IO Exception: ", e);
+        }
     }
 
     private void updateIristickHUD() {
