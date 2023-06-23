@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The JSON version of the junction table
  */
-
 public class JSONLayoutColumn {
 
     @Expose

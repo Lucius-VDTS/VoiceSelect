@@ -12,10 +12,11 @@ import java.util.List;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
-import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
-
+/**
+ * The JSON version of layouts
+ */
 public class JSONColumnLayout {
     private static final Logger LOG = LoggerFactory.getLogger(JSONColumnLayout.class);
 
@@ -23,12 +24,13 @@ public class JSONColumnLayout {
     @SerializedName("Layouts")
     private List<JSONLayout> layouts;
     
-    public JSONColumnLayout(List<Layout> layouts, List<LayoutColumn> layoutColumns, List<Column> columns, List<VDTSUser> users) {
+    public JSONColumnLayout(List<Layout> layouts, List<LayoutColumn> layoutColumns,
+                            List<Column> columns, List<VDTSUser> users) {
         LOG.debug("Creating ColumnLayout entity");
         this.layouts = new ArrayList<>();
 
-        for (Layout layout : layouts){
-            JSONLayout l = new JSONLayout(layout, layoutColumns,columns, users);
+        for (Layout layout : layouts) {
+            JSONLayout l = new JSONLayout(layout, layoutColumns, columns, users);
             this.layouts.add(l);
         }
     }

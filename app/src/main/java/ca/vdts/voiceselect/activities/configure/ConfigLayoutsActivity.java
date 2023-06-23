@@ -159,7 +159,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layouts -> {
                     layoutList.clear();
                     layoutList.addAll(layouts);
-                    
+
                     layoutList.remove(Layout.LAYOUT_NONE);
                     final Layout newLayout = Layout.LAYOUT_NONE;
                     newLayout.setName("");
