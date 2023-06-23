@@ -169,6 +169,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
+        android:layout_marginTop="@dimen/double_margin"
         app:layout_constraintTop_toBottomOf="@id/columnValueSpokenLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -180,7 +181,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/margin"
-            android:text="@string/num_range"
+            android:text="@string/column_value_numbers_button"
             android:textSize="@dimen/large_text_size"/>
 
         <Button
@@ -190,7 +191,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/letter_range"
+            android:text="@string/column_value_letters_button"
             android:textSize="@dimen/large_text_size"/>
     </LinearLayout>
 
@@ -198,7 +199,10 @@
         android:id="@+id/columnValueRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/double_margin"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginBottom="@dimen/margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
         android:paddingTop="@dimen/padding"
         android:paddingBottom="@dimen/padding"
         android:background="@drawable/recycler_view_background"

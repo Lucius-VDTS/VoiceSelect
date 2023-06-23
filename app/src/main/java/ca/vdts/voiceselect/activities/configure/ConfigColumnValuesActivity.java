@@ -449,7 +449,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 selectedColumnValue.setUserID(selectedUser.getUid());
 
                 if (isValidColumnValue(selectedColumnValue)) {
-                    if (isValidColumnValueSpoken(selectedColumnValue,automated)) {
+                    if (isValidColumnValueSpoken(selectedColumnValue,automated,false)) {
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         Handler handler = new Handler(Looper.getMainLooper());
                         executor.execute(() -> {
@@ -485,7 +485,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 );
 
                 if (isValidColumnValue(columnValue)) {
-                    if (isValidColumnValueSpoken(columnValue,automated)) {
+                    if (isValidColumnValueSpoken(columnValue,automated,true)) {
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         Handler handler = new Handler(Looper.getMainLooper());
                         executor.execute(() -> {
@@ -695,11 +695,43 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
      * @param columnValue - The column value to be checked.
      * @return - True if valid.
      */
-    private boolean isValidColumnValueSpoken(ColumnValue columnValue,boolean automated) {
+    private boolean isValidColumnValueSpoken(ColumnValue columnValue,boolean automated, boolean newValue) {
         if (!columnValueSpokenEditText.getText().toString().isEmpty()) {
             final List<String> spokenList = getFormattedColumnValueSpokenList();
 
-            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+
+            final List<ColumnValueSpoken> existingSpokens = new ArrayList<>();
+            if (newValue) {
+                Thread thread = new Thread(() -> existingSpokens.addAll(
+                        vsViewModel.findAllColumnValueSpokensByColumn(columnValue.getColumnID()))
+                );
+                thread.start();
+                try {
+                    thread.join();
+                    LOG.info("{} spokenValues found", existingSpokens.size());
+                } catch (InterruptedException e) {
+                    LOG.error("ValueSpoken Interrupted: ", e);
+                }
+            } else {
+                Thread thread = new Thread(
+                        () -> existingSpokens.addAll(
+                                vsViewModel.findAllColumnValueSpokensByColumnAndUser(
+                                        columnValue.getColumnID(),
+                                        selectedUser.getUid()
+                                )
+                        )
+                );
+                thread.start();
+                try {
+                    thread.join();
+                    LOG.info("{} spokenValues found", existingSpokens.size());
+                } catch (InterruptedException e) {
+                    LOG.error("ValueSpoken Interrupted: ", e);
+                }
+            }
+
+
+            for (ColumnValueSpoken columnValueSpoken :  existingSpokens) {
                 if (columnValueSpoken.getColumnValueID() != columnValue.getUid()) {
                     for (String spoken: spokenList) {
                         if (columnValueSpoken.getSpoken().equalsIgnoreCase(spoken)) {
@@ -839,7 +871,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         LOG.info("Showing Number Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(vdtsApplication.getResources().getString(R.string.LBL_INT_OPTIONS));
+        builder.setTitle(vdtsApplication.getResources().getString(R.string.column_value_number_range_label));
         final View customLayout = getLayoutInflater()
                 .inflate(R.layout.dialogue_fragment_spec_integer, null);
         builder.setView(customLayout);
@@ -854,10 +886,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         maxView.setText(String.valueOf(10));
         multiView.setText(String.valueOf(1));
 
-        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.column_values_enter_label), (dialogInterface, i) -> {
             saveNumberRange(minView.getText().toString(),maxView.getText().toString(),multiView.getText().toString());
         });
-        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.column_values_cancel_label), (dialogInterface, i) -> {
 
         });
 
@@ -914,7 +946,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         LOG.info("Showing Number Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle( vdtsApplication.getResources().getString(R.string.LBL_STRING_OPTIONS));
+        builder.setTitle( vdtsApplication.getResources().getString(R.string.column_value_letter_range_label));
         final View customLayout = getLayoutInflater()
                 .inflate(R.layout.dialogue_fragment_spec_letter, null);
         builder.setView(customLayout);
@@ -926,10 +958,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         minView.setText("A");
         maxView.setText("Z");
 
-        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.Enter), (dialogInterface, i) -> {
+        builder.setPositiveButton(vdtsApplication.getResources().getString(R.string.column_values_enter_label), (dialogInterface, i) -> {
             saveLetterRange(minView.getText().toString(),maxView.getText().toString());
         });
-        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.Cancel), (dialogInterface, i) -> {
+        builder.setNegativeButton(vdtsApplication.getResources().getString(R.string.column_values_cancel_label), (dialogInterface, i) -> {
 
         });
 

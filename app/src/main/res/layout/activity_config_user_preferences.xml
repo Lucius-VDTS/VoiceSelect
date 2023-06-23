@@ -26,7 +26,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/userText"
+            android:id="@+id/userValue"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="10"
@@ -42,205 +42,219 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/userLinearLayout"
         app:layout_constraintBottom_toTopOf="@id/feedbackBottomButtonsLinearLayout">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent">
-    <LinearLayout
-        android:id="@+id/userAutosaveLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/userPrefLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/userAutosaveLabel"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/preferences_auto_save_label"
-                android:textSize="@dimen/large_text_size"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/userAutoSaveSwitch"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingStart="@dimen/double_padding"
-                android:paddingEnd="@dimen/padding"
-                android:contentDescription="@string/feedback_enabled_label_content_description"
-                app:layout_constraintStart_toEndOf="@id/userAutosaveLabel"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/userFeedbackLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userAutosaveLayout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/userFeedbackConstraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/userFeedbackLabel"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/feedback_enabled_label"
-                android:textSize="@dimen/large_text_size"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/userAdminSwitch"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingStart="@dimen/double_padding"
-                android:paddingEnd="@dimen/padding"
-                android:contentDescription="@string/feedback_enabled_label_content_description"
-                app:layout_constraintStart_toEndOf="@id/userFeedbackLabel"/>
-
-            <TextView
-                android:id="@+id/userFlushLabel"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/four_x_margin"
-                android:gravity="center_vertical"
-                android:text="@string/feedback_queue_label"
-                android:textSize="@dimen/large_text_size"
-                app:layout_constraintStart_toEndOf="@id/userAdminSwitch"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/userPrimarySwitch"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingStart="@dimen/double_padding"
-                android:paddingEnd="@dimen/padding"
-                android:contentDescription="@string/feedback_queue_label_content_description"
-                app:layout_constraintStart_toEndOf="@id/userFlushLabel"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/rateLinearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/pitchLinearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userFeedbackLinearLayout">
-
-        <TextView
-            android:id="@+id/rateLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/feedback_rate_label"
-            android:textSize="@dimen/large_text_size"/>
-
-        <SeekBar
-            android:id="@+id/rateSeekBar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/eight_x_height"
-            android:max="100"
-            android:progress="50"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/pitchLinearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rateLinearLayout">
-
-        <TextView
-            android:id="@+id/pitchLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/feedback_pitch_label"
-            android:textSize="@dimen/large_text_size"/>
-
-        <SeekBar
-            android:id="@+id/pitchSeekBar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/eight_x_height"
-            android:max="100"
-            android:progress="50"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/sampleLinearLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pitchLinearLayout"
-        android:baselineAligned="false">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/sampleTextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/feedback_sample_text_hint"
-            app:placeholderText="@string/feedback_sample_text_placeholder">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/sampleTextInput"
+            <LinearLayout
+                android:id="@+id/userAutoSaveLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textSize="@dimen/medium_text_size"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/testFeedbackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:enabled="false"
-        android:text="@string/feedback_test_button"
-        android:textSize="@dimen/large_text_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sampleLinearLayout" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/userPrefLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/userAutosaveLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/preferences_auto_save_label"
+                        android:textSize="@dimen/large_text_size"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/userAutoSaveSwitch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="@dimen/double_padding"
+                        android:paddingEnd="@dimen/padding"
+                        android:contentDescription="@string/feedback_enabled_label_content_description"
+                        app:layout_constraintStart_toEndOf="@id/userAutosaveLabel"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/feedbackLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:text="@string/feedback_enabled_label"
+                android:textSize="@dimen/xl_text_size"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/userAutoSaveLayout"
+                app:layout_constraintStart_toStartOf="parent">
+            </TextView>
+
+            <LinearLayout
+                android:id="@+id/userFeedbackLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/feedbackLabel">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/userFeedbackConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/userFeedbackLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/feedback_enabled_label"
+                        android:textSize="@dimen/large_text_size"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/userFeedbackSwitch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="@dimen/double_padding"
+                        android:paddingEnd="@dimen/padding"
+                        android:contentDescription="@string/feedback_enabled_label_content_description"
+                        app:layout_constraintStart_toEndOf="@id/userFeedbackLabel"/>
+
+                    <TextView
+                        android:id="@+id/userFlushLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/four_x_margin"
+                        android:gravity="center_vertical"
+                        android:text="@string/feedback_queue_label"
+                        android:textSize="@dimen/large_text_size"
+                        app:layout_constraintStart_toEndOf="@id/userFeedbackSwitch"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/userFlushSwitch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="@dimen/double_padding"
+                        android:paddingEnd="@dimen/padding"
+                        android:contentDescription="@string/feedback_queue_label_content_description"
+                        app:layout_constraintStart_toEndOf="@id/userFlushLabel"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rateLinearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@id/pitchLinearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/userFeedbackLinearLayout">
+
+                <TextView
+                    android:id="@+id/rateLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/feedback_rate_label"
+                    android:textSize="@dimen/large_text_size"/>
+
+                <SeekBar
+                    android:id="@+id/rateSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/eight_x_height"
+                    android:max="100"
+                    android:progress="50"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pitchLinearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rateLinearLayout">
+
+                <TextView
+                    android:id="@+id/pitchLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/feedback_pitch_label"
+                    android:textSize="@dimen/large_text_size"/>
+
+                <SeekBar
+                    android:id="@+id/pitchSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/eight_x_height"
+                    android:max="100"
+                    android:progress="50"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sampleLinearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pitchLinearLayout"
+                android:baselineAligned="false">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sampleTextInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="@string/feedback_sample_text_hint"
+                    app:placeholderText="@string/feedback_sample_text_placeholder">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/sampleTextInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/medium_text_size"/>
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/testFeedbackButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/double_margin"
+                android:layout_marginEnd="@dimen/double_margin"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                android:enabled="false"
+                android:text="@string/feedback_test_button"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sampleLinearLayout" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
 
     <LinearLayout
         android:id="@+id/feedbackBottomButtonsLinearLayout"
