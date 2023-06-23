@@ -78,11 +78,11 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
-        userText = findViewById(R.id.userText);
+        userText = findViewById(R.id.userValue);
 
         autoSaveSwitch = findViewById(R.id.userAutoSaveSwitch);
-        enabledSwitch = findViewById(R.id.userAdminSwitch);
-        flushQueueSwitch = findViewById(R.id.userPrimarySwitch);
+        enabledSwitch = findViewById(R.id.userFeedbackSwitch);
+        flushQueueSwitch = findViewById(R.id.userFlushSwitch);
         rateSeekBar = findViewById(R.id.rateSeekBar);
         pitchSeekBar = findViewById(R.id.pitchSeekBar);
 

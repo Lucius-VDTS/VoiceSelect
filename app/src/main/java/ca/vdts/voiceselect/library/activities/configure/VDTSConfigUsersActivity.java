@@ -161,7 +161,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
         userPasswordEditText = findViewById(R.id.userPasswordEditText);
 
-        userAdminSwitch = findViewById(R.id.userAdminSwitch);
+        userAdminSwitch = findViewById(R.id.userFeedbackSwitch);
         userAdminSwitch.setOnClickListener(v -> {
             if (currentUser.getAuthority() < 1) {
                 userAdminSwitch.setChecked(false);
@@ -178,7 +178,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             }
         });
 
-        userPrimarySwitch = findViewById(R.id.userPrimarySwitch);
+        userPrimarySwitch = findViewById(R.id.userFlushSwitch);
         userPrimarySwitch.setOnClickListener(v -> {
             if (currentUser.getAuthority() < 1) {
                 userPrimarySwitch.setChecked(false);

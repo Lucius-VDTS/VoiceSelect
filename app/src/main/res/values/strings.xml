@@ -116,7 +116,7 @@
     <string name="feedback_sample_text_hint">Sample Text</string>
     <string name="feedback_sample_text_placeholder">Enter sample text</string>
 
-    <string name="feedback_test_button">Test</string>
+    <string name="feedback_test_button">Test Feedback</string>
     <string name="feedback_reset_button">Reset</string>
     <string name="feedback_default_button">Default</string>
     <string name="feedback_save_button">Save</string>
