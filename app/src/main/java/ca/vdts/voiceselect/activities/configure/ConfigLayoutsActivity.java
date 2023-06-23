@@ -160,8 +160,18 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layouts -> {
                     layoutList.clear();
                     layoutList.addAll(layouts);
-                    layoutList.get(0).setName("");
-                    layoutList.get(0).setExportCode("");
+                    
+                    layoutList.remove(Layout.LAYOUT_NONE);
+                    final Layout newLayout = Layout.LAYOUT_NONE;
+                    newLayout.setName("");
+                    newLayout.setExportCode("");
+                    layoutList.add(0, newLayout);
+
+                    if (selectedLayout != null) {
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
+                    } else {
+                        layoutSpinner.setSelection(0);
+                    }
                 }
         );
 
@@ -202,6 +212,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         executor.execute(() -> {
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
+            layoutList.remove(Layout.LAYOUT_NONE);
+            final Layout newLayout = Layout.LAYOUT_NONE;
+            newLayout.setName("");
+            newLayout.setExportCode("");
+            layoutList.add(0, newLayout);
             handler.post(() -> {
                 //todo - do in every other config editor????
                 layoutSpinnerAdapter = new VDTSNamedAdapter<>(
@@ -442,6 +457,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         String message = "Updated layout: " + selectedLayout.getName();
                         LOG.info(message);
                         vdtsApplication.displayToast(this, message, 0);
+
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
                         layoutSpinnerAdapter.notifyDataSetChanged();
 
                         ExecutorService getCurrentLayoutColumnsExecutor =
@@ -508,6 +525,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     createLayoutHandler.post(() -> {
                         layoutSpinnerAdapter.add(newLayout);
 
+                        selectedLayout = newLayout;
+
                         layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
                         layoutNameEditText.clearFocus();
                         layoutExportCodeEditText.clearFocus();
@@ -553,6 +572,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         }
                         final LayoutColumn[] removeLayoutColumnArray =
                                 removeLayoutColumnList.toArray(new LayoutColumn[0]);
+
+                        selectedLayout = null;
 
                         new Thread(
                                 () -> vsViewModel.deleteAllLayoutColumns(removeLayoutColumnArray)

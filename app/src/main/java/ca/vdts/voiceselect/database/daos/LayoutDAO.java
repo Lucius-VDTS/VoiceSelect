@@ -17,6 +17,6 @@ public interface LayoutDAO extends VDTSBaseDAO<Layout> {
     @Query("SELECT * FROM Layouts")
     LiveData<List<Layout>> findAllLayoutsLive();
 
-    @Query("SELECT * FROM Layouts WHERE active = 1")
+    @Query("SELECT * FROM Layouts WHERE active = 1 ORDER BY name")
     LiveData<List<Layout>> findAllActiveLayoutsLive();
 }
