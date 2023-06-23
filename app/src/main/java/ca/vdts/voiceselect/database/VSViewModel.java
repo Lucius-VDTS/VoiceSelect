@@ -303,7 +303,7 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueSpokenRepository.findAll(
                 "SELECT CVS.* FROM ColumnValueSpokens AS CVS " +
                         "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueID " +
-                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnID " +
+                        "LEFT JOIN Columns AS C ON C.uid = CV.columnID " +
                         "WHERE C.uid = " + columnID
         );
     }
@@ -329,9 +329,9 @@ public class VSViewModel extends VDTSViewModel {
         return columnValueSpokenRepository.findAll(
                 "SELECT CVS.* FROM ColumnValueSpokens AS CVS " +
                         "LEFT JOIN ColumnValues AS CV ON CV.uid = CVS.columnValueID " +
-                        "LEFT JOIN Columns AS C ON C.uid = CVS.columnID " +
+                        "LEFT JOIN Columns AS C ON C.uid = CV.columnID " +
                         "WHERE C.uid = " + columnID + " " +
-                        "AND VS.userID = " + userID
+                        "AND CVS.userID = " + userID
         );
     }
 

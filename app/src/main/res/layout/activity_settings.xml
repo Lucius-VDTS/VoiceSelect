@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.SettingsActivity"
-    android:id="@+id/optionsMenu">
+    android:id="@+id/optionsMenu"
+    tools:context=".activities.SettingsActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -13,192 +13,212 @@
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/prefBottomButtonsLinearLayout">
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/buttons"
+            android:id="@+id/controlsConstraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/entryModeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:text="@string/settings_entry_mode_label"
-        android:textSize="@dimen/large_text_size"
-        android:labelFor="@id/entryModeGroup"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/entryModeGroup"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/entryModeConstraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/double_margin"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/photoConstraintLayout" >
 
-    <RadioGroup
-        android:id="@+id/entryModeGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:fillViewport='true'
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/entryModeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/double_margin"
+                    android:text="@string/settings_entry_mode_label"
+                    android:textSize="@dimen/large_text_size"
+                    android:labelFor="@id/entryModeGroup"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/entryModeGroup"/>
 
-        <RadioButton
-            android:id="@+id/chainedRadio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_chained_mode"
-            android:textSize="@dimen/large_text_size"/>
+                <RadioGroup
+                    android:id="@+id/entryModeGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/double_margin"
+                    android:layout_marginHorizontal="@dimen/double_margin"
+                    android:fillViewport='true'
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/entryModeLabel">
 
-        <RadioButton
-            android:id="@+id/stepRadio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_step_mode"
-            android:textSize="@dimen/large_text_size" />
+                    <RadioButton
+                        android:id="@+id/chainedRadio"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_chained_mode"
+                        android:textSize="@dimen/large_text_size"/>
 
-        <RadioButton
-            android:id="@+id/freeRadio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_free_mode"
-            android:textSize="@dimen/large_text_size" />
-    </RadioGroup>
+                    <RadioButton
+                        android:id="@+id/stepRadio"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_step_mode"
+                        android:textSize="@dimen/large_text_size" />
 
-    <TextView
-        android:id="@+id/photoLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/photoGroup"
-        android:text="@string/settings_photo_label"
-        android:textSize="@dimen/large_text_size"
-        android:textStyle="bold"
-        android:labelFor="@id/photoGroup" />
+                    <RadioButton
+                        android:id="@+id/freeRadio"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_free_mode"
+                        android:textSize="@dimen/large_text_size" />
+                </RadioGroup>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/photoGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/eight_x_margin"
-        android:layout_marginBottom="@dimen/eight_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        android:fillViewport='true'
-        app:layout_constraintTop_toBottomOf="@id/entryModeGroup"
-        app:layout_constraintBottom_toTopOf="@id/exportGroup"
-        app:layout_constraintStart_toStartOf="parent" >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/photoConstraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                app:layout_constraintTop_toBottomOf="@id/entryModeConstraintLayout"
+                app:layout_constraintBottom_toTopOf="@id/exportConstraintLayout">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/printNameOnPictureCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_print_name_on_picture"
-            android:textSize="@dimen/large_text_size" />
+                <TextView
+                    android:id="@+id/photoLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/double_margin"
+                    android:layout_marginStart="@dimen/double_margin"
+                    android:layout_marginEnd="@dimen/double_margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/photoGroup"
+                    android:text="@string/settings_photo_label"
+                    android:textSize="@dimen/large_text_size"
+                    android:textStyle="bold"
+                    android:labelFor="@id/photoGroup" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/printTimeOnPictureCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_print_time_on_picture"
-            android:textSize="@dimen/large_text_size" />
+                <LinearLayout
+                    android:id="@+id/photoGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/double_margin"
+                    android:layout_marginHorizontal="@dimen/double_margin"
+                    android:orientation="horizontal"
+                    android:fillViewport='true'
+                    app:layout_constraintTop_toBottomOf="@id/photoLabel"
+                    app:layout_constraintStart_toStartOf="parent" >
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/printGPSOnPictureCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_print_gps_coordinates_on_picture"
-            android:textSize="@dimen/large_text_size" />
-    </LinearLayout>
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/printNameOnPictureCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_print_name_on_picture"
+                        android:textSize="@dimen/large_text_size" />
 
-    <TextView
-        android:id="@+id/exportLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:text="@string/settings_export_label"
-        android:textSize="@dimen/large_text_size"
-        android:labelFor="@id/exportGroup"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/exportGroup" />
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/printTimeOnPictureCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_print_time_on_picture"
+                        android:textSize="@dimen/large_text_size" />
 
-    <LinearLayout
-        android:id="@+id/exportGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sixteen_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/double_margin"
-        android:orientation="horizontal"
-        android:fillViewport='true'
-        app:layout_constraintBottom_toBottomOf="parent">
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/printGPSOnPictureCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:text="@string/settings_print_gps_coordinates_on_picture"
+                        android:textSize="@dimen/large_text_size" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/CSVCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_csv"
-            android:textSize="@dimen/large_text_size" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/exportConstraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight_x_margin"
+                app:layout_constraintTop_toBottomOf="@id/photoConstraintLayout"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/JSONCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_json"
-            android:textSize="@dimen/large_text_size" />
+                <TextView
+                    android:id="@+id/exportLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/double_margin"
+                    android:text="@string/settings_export_label"
+                    android:textSize="@dimen/large_text_size"
+                    android:labelFor="@id/exportGroup"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/exportGroup" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/excelCheck"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/settings_excel"
-            android:textSize="@dimen/large_text_size" />
-    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/exportGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/double_margin"
+                    android:layout_marginHorizontal="@dimen/double_margin"
+                    android:orientation="horizontal"
+                    android:fillViewport='true'
+                    app:layout_constraintTop_toBottomOf="@id/exportLabel"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/CSVCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:text="@string/settings_csv"
+                        android:textSize="@dimen/large_text_size" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/JSONCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:text="@string/settings_json"
+                        android:textSize="@dimen/large_text_size" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/excelCheck"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginTop="@dimen/double_margin"
+                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:text="@string/settings_excel"
+                        android:textSize="@dimen/large_text_size" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -231,5 +251,4 @@
             android:text="@string/settings_export"
             android:textSize="@dimen/large_text_size"/>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
