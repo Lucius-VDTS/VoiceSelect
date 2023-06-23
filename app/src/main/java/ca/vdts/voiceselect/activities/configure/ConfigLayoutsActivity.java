@@ -86,6 +86,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     private TextView layoutNameEditText;
     private TextView layoutExportCodeEditText;
 
+    private SwitchCompat commentRequiredSwitch;
+    private SwitchCompat pictureRequireSwitch;
+
     private Spinner layoutSpinner;
 
     private RecyclerView layoutColumnRecyclerView;
@@ -129,6 +132,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         layoutNameEditText = findViewById(R.id.layoutNameEditText);
         layoutExportCodeEditText = findViewById((R.id.layoutExportCodeEditText));
 
+        commentRequiredSwitch = findViewById(R.id.commentRequiredSwitch);
+        pictureRequireSwitch = findViewById(R.id.pictureRequiredSwitch);
+
         columnEnabledSwitch = findViewById(R.id.columnEnableSwitch);
         columnEnabledSwitch.setEnabled(false);
         columnEnabledSwitch.setOnClickListener(v -> enableOnClick());
@@ -153,8 +159,18 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 layouts -> {
                     layoutList.clear();
                     layoutList.addAll(layouts);
-                    layoutList.get(0).setName("");
-                    layoutList.get(0).setExportCode("");
+                    
+                    layoutList.remove(Layout.LAYOUT_NONE);
+                    final Layout newLayout = Layout.LAYOUT_NONE;
+                    newLayout.setName("");
+                    newLayout.setExportCode("");
+                    layoutList.add(0, newLayout);
+
+                    if (selectedLayout != null) {
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
+                    } else {
+                        layoutSpinner.setSelection(0);
+                    }
                 }
         );
 
@@ -195,6 +211,11 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         executor.execute(() -> {
             layoutList.clear();
             layoutList.addAll(vsViewModel.findAllActiveLayouts());
+            layoutList.remove(Layout.LAYOUT_NONE);
+            final Layout newLayout = Layout.LAYOUT_NONE;
+            newLayout.setName("");
+            newLayout.setExportCode("");
+            layoutList.add(0, newLayout);
             handler.post(() -> {
                 //todo - do in every other config editor????
                 layoutSpinnerAdapter = new VDTSNamedAdapter<>(
@@ -290,6 +311,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     } else {
                         layoutNameEditText.setText(selectedLayout.getName());
                         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
+                        commentRequiredSwitch.setChecked(selectedLayout.isCommentRequired());
+                        pictureRequireSwitch.setChecked(selectedLayout.isPictureRequired());
                     }
 
                     initializeLayoutColumnList(selectedLayout);
@@ -422,6 +445,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 //Update existing layout
                 selectedLayout.setName(layoutNameEditText.getText().toString().trim());
                 selectedLayout.setExportCode(layoutExportCodeEditText.getText().toString().trim());
+                selectedLayout.setCommentRequired(commentRequiredSwitch.isChecked());
+                selectedLayout.setPictureRequired(pictureRequireSwitch.isChecked());
 
                 ExecutorService updateLayoutExecutor = Executors.newSingleThreadExecutor();
                 Handler updateLayoutHandler = new Handler(Looper.getMainLooper());
@@ -431,6 +456,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         String message = "Updated layout: " + selectedLayout.getName();
                         LOG.info(message);
                         vdtsApplication.displayToast(this, message, 0);
+
+                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
                         layoutSpinnerAdapter.notifyDataSetChanged();
 
                         ExecutorService getCurrentLayoutColumnsExecutor =
@@ -484,7 +511,9 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 Layout newLayout = new Layout(
                         currentUser.getUid(),
                         layoutNameEditText.getText().toString(),
-                        layoutExportCodeEditText.getText().toString()
+                        layoutExportCodeEditText.getText().toString(),
+                        commentRequiredSwitch.isChecked(),
+                        pictureRequireSwitch.isChecked()
                 );
 
                 ExecutorService createLayoutExecutor = Executors.newSingleThreadExecutor();
@@ -494,6 +523,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     newLayout.setUid(uid);
                     createLayoutHandler.post(() -> {
                         layoutSpinnerAdapter.add(newLayout);
+
+                        selectedLayout = newLayout;
 
                         layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
                         layoutNameEditText.clearFocus();
@@ -540,6 +571,8 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         }
                         final LayoutColumn[] removeLayoutColumnArray =
                                 removeLayoutColumnList.toArray(new LayoutColumn[0]);
+
+                        selectedLayout = null;
 
                         new Thread(
                                 () -> vsViewModel.deleteAllLayoutColumns(removeLayoutColumnArray)
