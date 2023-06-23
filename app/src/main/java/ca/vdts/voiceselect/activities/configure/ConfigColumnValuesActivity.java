@@ -209,14 +209,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         //Recyclerview
         columnValueRecyclerView = findViewById(R.id.columnValueRecyclerView);
 
-        /*
-        //Observe/Update column value list
-        vsViewModel.findAllColumnValuesLive().observe(this, columnValues -> {
-            columnValueList.clear();
-            columnValueList.addAll(columnValues);
-        });
-         */
-
         //Observe/Update column spoken list
         vsViewModel.findAllColumnValueSpokensLive().observe(this, columnValueSpokens -> {
             columnValueSpokenList.clear();
@@ -577,7 +569,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Current settings may be lost.");
+        label.setText(R.string.import_dialogue_label);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
         dialog = builder.create();
@@ -619,9 +611,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             }
         });
 
-        noButton.setOnClickListener(v -> {
-            finalDialog.dismiss();
-        });
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
     public void exportButtonOnClick() {
@@ -810,13 +800,19 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     /**
-     * Initialize Iristick HUD when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new ConfigColumnValuesActivity.IristickHUD();
             return iristickHUD;
         });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

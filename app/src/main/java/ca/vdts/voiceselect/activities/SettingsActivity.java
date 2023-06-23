@@ -192,7 +192,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Current settings may be lost.");
+        label.setText(R.string.import_dialogue_label);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
         dialog = builder.create();
@@ -222,9 +222,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
             }
         });
 
-        noButton.setOnClickListener(v -> {
-            finalDialog.dismiss();
-        });
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
     public void onExportClick() {
@@ -262,9 +260,14 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Initialize Iristick based on connection.
+     * Initialize Iristick when connected.
      */
     private void initializeIristick() {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new SettingsActivity.IristickHUD();
+            return iristickHUD;
+        });
+
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
@@ -319,11 +322,11 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                 vc -> vc.add("XLSX", this::excelClick)
         );
 
-
-        IristickSDK.addWindow(this.getLifecycle(), () -> {
-            iristickHUD = new SettingsActivity.IristickHUD();
-            return iristickHUD;
-        });
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

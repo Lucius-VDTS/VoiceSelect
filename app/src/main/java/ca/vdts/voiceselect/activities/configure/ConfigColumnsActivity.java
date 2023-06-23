@@ -496,7 +496,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Current settings may be lost.");
+        label.setText(R.string.import_dialogue_label);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
         dialog = builder.create();
@@ -525,9 +525,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             }
         });
 
-        noButton.setOnClickListener(v -> {
-            finalDialog.dismiss();
-        });
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
     public void exportButtonOnClick() {
@@ -804,13 +802,19 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     }
 
     /**
-     * Initialize Iristick HUD when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new ConfigColumnsActivity.IristickHUD();
             return iristickHUD;
         });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

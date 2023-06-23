@@ -49,7 +49,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     //Views
     private TextView userText;
 
-    private SwitchCompat autosaveSwitch;
+    private SwitchCompat autoSaveSwitch;
     private SwitchCompat enabledSwitch;
     private SwitchCompat flushQueueSwitch;
     private SeekBar rateSeekBar;
@@ -67,7 +67,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_config_preferences);
+        setContentView(R.layout.activity_config_user_preferences);
 
         IristickSDK.registerListener(this.getLifecycle(), this);
 
@@ -80,7 +80,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
 
         userText = findViewById(R.id.userText);
 
-        autosaveSwitch = findViewById(R.id.userAutosaveSwitch);
+        autoSaveSwitch = findViewById(R.id.userAutoSaveSwitch);
         enabledSwitch = findViewById(R.id.userAdminSwitch);
         flushQueueSwitch = findViewById(R.id.userPrimarySwitch);
         rateSeekBar = findViewById(R.id.rateSeekBar);
@@ -127,7 +127,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
      */
     private void initializeUserSettings() {
         userText.setText(currentUser.getName());
-        autosaveSwitch.setChecked(currentUser.getAutosave() == 1);
+        autoSaveSwitch.setChecked(currentUser.getAutosave() == 1);
         enabledSwitch.setChecked(currentUser.getFeedback() == 1);
         flushQueueSwitch.setChecked(currentUser.isFeedbackQueue());
         rateSeekBar.setProgress((int) (currentUser.getFeedbackRate() * 50));
@@ -163,7 +163,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     }
 
     private void defaultButtonOnClick() {
-        autosaveSwitch.setChecked(true);
+        autoSaveSwitch.setChecked(true);
         enabledSwitch.setChecked(true);
         flushQueueSwitch.setChecked(false);
         rateSeekBar.setProgress(50);
@@ -172,7 +172,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
 
     private void saveFeedbackButtonOnClick() {
         try {
-            if (autosaveSwitch.isChecked()) {
+            if (autoSaveSwitch.isChecked()) {
                 currentUser.setAutosave(1);
             } else {
                 currentUser.setAutosave(0);
@@ -224,13 +224,19 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     }
 
     /**
-     * Initialize Iristick HUD when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new IristickHUD();
             return iristickHUD;
         });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

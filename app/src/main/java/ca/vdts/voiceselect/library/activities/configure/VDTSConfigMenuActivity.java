@@ -52,7 +52,6 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     private TextView footerVersionValue;
 
     //Iristick Components
-    private boolean isHeadsetAvailable = false;
     private VDTSConfigMenuActivity.IristickHUD iristickHUD;
 
     @Override
@@ -192,7 +191,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
     }
 
     /**
-     * Initialize Iristick HUD and voice commands when connected
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
@@ -231,6 +230,12 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
                 this.getLifecycle(),
                 this,
                 vc -> vc.add("Layouts", this::configLayoutsActivityButtonOnClick)
+        );
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
         );
     }
 

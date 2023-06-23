@@ -213,6 +213,9 @@
     <string name="footer_user_value">User Name</string>
     <string name="footer_version_value">Application Version</string>
 
+<!--  Import Dialogue  -->
+    <string name="import_dialogue_label">Current settings may be lost.</string>
+
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
