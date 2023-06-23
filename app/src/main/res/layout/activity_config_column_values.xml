@@ -164,6 +164,36 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/rangeLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/columnValueSpokenLinearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/valueNumRangeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/double_margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:text="@string/num_range"
+            android:textSize="@dimen/large_text_size"/>
+
+        <Button
+            android:id="@+id/valueLetterRangeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
+            android:text="@string/letter_range"
+            android:textSize="@dimen/large_text_size"/>
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/columnValueRecyclerView"
         android:layout_width="match_parent"
@@ -178,7 +208,7 @@
         app:layout_constraintBottom_toTopOf="@+id/columnValueBottomButtonsLinearLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/columnValueSpokenLinearLayout">
+        app:layout_constraintTop_toBottomOf="@id/rangeLinearLayout">
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
