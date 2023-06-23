@@ -50,6 +50,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     private TextView userText;
 
     private SwitchCompat autoSaveSwitch;
+    private SwitchCompat abbreviateSwitch;
     private SwitchCompat enabledSwitch;
     private SwitchCompat flushQueueSwitch;
     private SeekBar rateSeekBar;
@@ -81,6 +82,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
         userText = findViewById(R.id.userValue);
 
         autoSaveSwitch = findViewById(R.id.userAutoSaveSwitch);
+        abbreviateSwitch = findViewById(R.id.abbreviateSwitch);
         enabledSwitch = findViewById(R.id.userFeedbackSwitch);
         flushQueueSwitch = findViewById(R.id.userFlushSwitch);
         rateSeekBar = findViewById(R.id.rateSeekBar);
@@ -128,6 +130,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
     private void initializeUserSettings() {
         userText.setText(currentUser.getName());
         autoSaveSwitch.setChecked(currentUser.getAutosave() == 1);
+        abbreviateSwitch.setChecked(currentUser.isAbbreviate());
         enabledSwitch.setChecked(currentUser.getFeedback() == 1);
         flushQueueSwitch.setChecked(currentUser.isFeedbackQueue());
         rateSeekBar.setProgress((int) (currentUser.getFeedbackRate() * 50));
@@ -164,6 +167,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
 
     private void defaultButtonOnClick() {
         autoSaveSwitch.setChecked(true);
+        abbreviateSwitch.setChecked(true);
         enabledSwitch.setChecked(true);
         flushQueueSwitch.setChecked(false);
         rateSeekBar.setProgress(50);
@@ -177,6 +181,8 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
             } else {
                 currentUser.setAutosave(0);
             }
+
+            currentUser.setAbbreviate(abbreviateSwitch.isChecked());
 
             if (enabledSwitch.isChecked()) {
                 currentUser.setFeedback(1);

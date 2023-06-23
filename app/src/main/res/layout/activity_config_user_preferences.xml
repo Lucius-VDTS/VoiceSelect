@@ -83,6 +83,24 @@
                         android:paddingEnd="@dimen/padding"
                         android:contentDescription="@string/feedback_enabled_label_content_description"
                         app:layout_constraintStart_toEndOf="@id/userAutosaveLabel"/>
+
+                    <TextView
+                        android:id="@+id/abbreviateLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/preferences_abbreviate_label"
+                        android:textSize="@dimen/large_text_size"
+                        app:layout_constraintStart_toEndOf="@id/userAutoSaveSwitch"/>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/abbreviateSwitch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="@dimen/double_padding"
+                        android:paddingEnd="@dimen/padding"
+                        android:contentDescription="@string/feedback_enabled_label_content_description"
+                        app:layout_constraintStart_toEndOf="@id/abbreviateLabel"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
