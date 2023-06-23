@@ -109,6 +109,21 @@
         android:fadeScrollbars="true">
     </androidx.recyclerview.widget.RecyclerView>
 
+    <!-- Camera Preview -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/cameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:paddingTop="@dimen/padding"
+        android:paddingBottom="@dimen/padding"
+        android:background="@drawable/recycler_view_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/columnsLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/columnValuesLinearLayout"/>
+
     <!--  Column Values -->
     <LinearLayout
         android:id="@+id/columnValuesLinearLayout"
