@@ -105,6 +105,9 @@
 
     <string name="feedback_user_label">User:</string>
 
+    <string name="preferences_auto_save_label">Auto Save</string>
+    <string name="preferences_abbreviate_label">Abbreviate</string>
+
     <string name="feedback_enabled_label">Feedback</string>
     <string name="feedback_enabled_label_content_description">Enable Feedback</string>
     <string name="feedback_queue_label">Flush Queue</string>
@@ -196,8 +199,6 @@
     <string name="settings_chained_mode">Combined</string>
     <string name="settings_step_mode">Step-By-Step</string>
     <string name="settings_free_mode">Free Form</string>
-
-    <string name="preferences_auto_save_label">Auto Save</string>
 
     <string name="settings_photo_label">Photo Settings:</string>
     <string name="settings_print_name_on_picture">Print Name</string>
