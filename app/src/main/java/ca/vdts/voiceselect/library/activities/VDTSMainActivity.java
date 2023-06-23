@@ -1,5 +1,7 @@
 package ca.vdts.voiceselect.library.activities;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
 import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static android.Manifest.permission.CAMERA;
@@ -127,7 +129,9 @@ public class VDTSMainActivity extends AppCompatActivity {
                 INTERNET,
                 CAMERA,
                 RECORD_AUDIO,
-                ACCESS_MEDIA_LOCATION
+                ACCESS_MEDIA_LOCATION,
+                ACCESS_COARSE_LOCATION,
+                ACCESS_FINE_LOCATION
         };
 
         List<String> permissionList = new ArrayList<>(Arrays.asList(permissions));

@@ -1,8 +1,21 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.CAMERA;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
+import static android.widget.Toast.LENGTH_SHORT;
+import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -60,7 +74,7 @@ import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
  * Gather data for a particular session and its corresponding layout.
  */
 public class DataGatheringActivity extends AppCompatActivity
-        implements IRIListener, ScrollChangeListenerInterface {
+        implements IRIListener, ScrollChangeListenerInterface, LocationListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);
 
     private VDTSApplication vdtsApplication;
@@ -90,7 +104,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private LinearLayout columnValueLinearLayout;
     public ObservableHorizontalScrollView columnValueScrollView;
     private Button columnValueCommentButton;
-    private Button columnValuePhotoButton;
+    private Button columnValuePictureButton;
 
     private Button entryDeleteButton;
     private Button entryResetButton;
@@ -110,6 +124,12 @@ public class DataGatheringActivity extends AppCompatActivity
     //Iristick Components
     private boolean isHeadsetAvailable = false;
     private DataGatheringActivity.IristickHUD iristickHUD;
+
+    //GPS Components
+    private boolean GPSConnected = false;
+    private LocationManager locationManager;
+    private Location currentLocation;
+    private static final int PERM_CODE_GPS = 2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,7 +151,8 @@ public class DataGatheringActivity extends AppCompatActivity
         columnValueScrollView = findViewById(R.id.columnValueScrollView);
         columnValueScrollView.setScrollChangeListener(this);
         columnValueCommentButton = findViewById(R.id.columnValueCommentButton);
-        columnValuePhotoButton = findViewById(R.id.columnValuePhotoButton);
+        columnValuePictureButton = findViewById(R.id.columnValuePhotoButton);
+        columnValuePictureButton.setOnClickListener(v -> pictureButtonOnClick());
 
         entryDeleteButton = findViewById(R.id.entryDeleteButton);
         entryDeleteButton.setOnClickListener(v -> deleteEntryButtonOnClick());
@@ -167,6 +188,20 @@ public class DataGatheringActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         initializeIristickHUD();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        assert locationManager != null;
+        enableGPS();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        disableGPS();
     }
 
     /**
@@ -428,6 +463,10 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
+    private void pictureButtonOnClick() {
+
+    }
+
     private void deleteEntryButtonOnClick() {
 
     }
@@ -574,6 +613,63 @@ public class DataGatheringActivity extends AppCompatActivity
                 iristickHUD.entryNextValue.setText("");
             }
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (isBetterLocation(location, currentLocation)) {
+            currentLocation = location;
+            LOG.debug("{}, {}", location.getLatitude(), location.getLongitude());
+            if (!GPSConnected){
+                GPSConnected = true;
+                vdtsApplication.displayToast(
+                        this,
+                        "GPS connection found",
+                        LENGTH_SHORT
+                );
+            }
+        }
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        LOG.debug("onProviderEnabled: {}", provider);
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        LOG.debug("onProviderDisabled: {}", provider);
+    }
+
+    private void enableGPS() {
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, CAMERA) != PERMISSION_GRANTED) {
+            String[] permissions = {ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, CAMERA};
+            ActivityCompat.requestPermissions(this, permissions, PERM_CODE_GPS);
+            return;
+        }
+
+        locationManager.requestLocationUpdates(
+                GPS_PROVIDER,
+                5000,
+                0,
+                this
+        );
+        locationManager.requestLocationUpdates(
+                NETWORK_PROVIDER,
+                5000,
+                0,
+                this
+        );
+        currentLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        if (currentLocation == null) {
+            currentLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
+        }
+    }
+
+    private void disableGPS() {
+        locationManager.removeUpdates(this);
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
