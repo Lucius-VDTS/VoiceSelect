@@ -117,7 +117,11 @@ public class Importer {
 
                     users.getUsers().forEach(user -> {
                         VDTSUser currentUser = currentUsers.stream()
-                                .filter(cu -> cu.getExportCode().equalsIgnoreCase(user.getExportCode()))
+                                .filter(
+                                        cu -> cu.getExportCode().equalsIgnoreCase(
+                                                user.getExportCode()
+                                        )
+                                )
                                 .findFirst()
                                 .orElse(null);
                         final long[] currentUserID = new long[1];
@@ -139,7 +143,8 @@ public class Importer {
                             new Thread(() -> viewModel.updateUser(finalCurrentUser)).start();
                             currentUserID[0] = currentUser.getUid();
                         } else {
-                            currentUser = new VDTSUser(0,
+                            currentUser = new VDTSUser(
+                                    0,
                                     user.getName(),
                                     user.getExportCode(),
                                     user.getInitials(),
@@ -192,14 +197,25 @@ public class Importer {
                         if (columnWordList.size() > 0) {
                             currentColumns.forEach(currentColumn -> {
                                 final ColumnWords columnWords = columnWordList.stream()
-                                        .filter(columnWords1 -> columnWords1.getCode().equalsIgnoreCase(currentColumn.getExportCode()))
-                                        .findFirst()
+                                        .filter(
+                                                columnWords1 -> columnWords1.getCode()
+                                                        .equalsIgnoreCase(
+                                                                currentColumn.getExportCode()
+                                                        )
+                                        ).findFirst()
                                         .orElse(null);
                                 if (columnWords != null) {
-                                    final List<ColumnSpoken> currentUserColumnSpoken = currentColumnSpoken.stream()
-                                            .filter(columnSpoken -> columnSpoken.getUserID() == currentUserID[0])
-                                            .filter(columnSpoken -> columnSpoken.getColumnID() == currentColumn.getUid())
-                                            .collect(Collectors.toList());
+                                    final List<ColumnSpoken> currentUserColumnSpoken =
+                                            currentColumnSpoken.stream()
+                                                    .filter(
+                                                            columnSpoken ->
+                                                                    columnSpoken.getUserID() ==
+                                                                            currentUserID[0]
+                                                    ).filter(
+                                                            columnSpoken ->
+                                                                    columnSpoken.getColumnID() ==
+                                                                            currentColumn.getUid()
+                                                    ).collect(Collectors.toList());
                                     columnWords.getWords().forEach(word -> {
                                         if (currentUserColumnSpoken.stream().noneMatch(columnSpoken -> columnSpoken.getSpoken().equalsIgnoreCase(word.getWord()))) {
                                             new Thread(
@@ -216,7 +232,9 @@ public class Importer {
                                     currentUserColumnSpoken.forEach(columnSpoken -> {
                                         if (columnWords.getWords().size() > 0 &&
                                                 columnWords.getWords().stream().noneMatch(word -> word.getWord().equalsIgnoreCase(columnSpoken.getSpoken()))) {
-                                            new Thread(() -> viewModel.deleteColumnSpoken(columnSpoken)).start();
+                                            new Thread(
+                                                    () -> viewModel.deleteColumnSpoken(columnSpoken)
+                                            ).start();
                                         }
                                     });
                                 }
@@ -226,20 +244,43 @@ public class Importer {
                         final List<ValueWords> valueWordList = user.getValueWords();
                         if (valueWordList.size() > 0) {
                             currentColumns.forEach(currentColumn -> {
-                                List<ColumnValue> currentColumnValueList = currentColumnValues.stream()
-                                        .filter(columnValue -> columnValue.getColumnID() == currentColumn.getUid())
-                                        .collect(Collectors.toList());
+                                List<ColumnValue> currentColumnValueList =
+                                        currentColumnValues.stream()
+                                                .filter(
+                                                        columnValue ->
+                                                                columnValue.getColumnID() ==
+                                                                        currentColumn.getUid()
+                                                ).collect(Collectors.toList());
                                 currentColumnValueList.forEach(currentColumnValue -> {
                                     final ValueWords valueWords = valueWordList.stream()
-                                            .filter(valueWords1 -> valueWords1.getColumnCode().equalsIgnoreCase(currentColumn.getExportCode()))
-                                            .filter(valueWords1 -> valueWords1.getValueCode().equalsIgnoreCase(currentColumnValue.getExportCode()))
-                                            .findFirst()
+                                            .filter(
+                                                    valueWords1 ->
+                                                            valueWords1.getColumnCode()
+                                                                    .equalsIgnoreCase(
+                                                                            currentColumn
+                                                                                    .getExportCode()
+                                                                    )
+                                            ).filter(
+                                                    valueWords1 ->
+                                                            valueWords1.getValueCode()
+                                                                    .equalsIgnoreCase(
+                                                                            currentColumnValue
+                                                                                    .getExportCode()
+                                                                    )
+                                            ).findFirst()
                                             .orElse(null);
                                     if (valueWords != null) {
-                                        final List<ColumnValueSpoken> currentUserValueSpoken = currentValueSpoken.stream()
-                                                .filter(valueSpoken -> valueSpoken.getUserID() == currentUserID[0])
-                                                .filter(valueSpoken -> valueSpoken.getColumnValueID() == currentColumnValue.getUid())
-                                                .collect(Collectors.toList());
+                                        final List<ColumnValueSpoken> currentUserValueSpoken =
+                                                currentValueSpoken.stream()
+                                                        .filter(
+                                                                valueSpoken ->
+                                                                        valueSpoken.getUserID() ==
+                                                                                currentUserID[0]
+                                                        ).filter(
+                                                                valueSpoken ->
+                                                                        valueSpoken.getColumnValueID() ==
+                                                                                currentColumnValue.getUid()
+                                                        ).collect(Collectors.toList());
                                         valueWords.getWords().forEach(word -> {
                                             if (currentUserValueSpoken.stream().noneMatch(valueSpoken -> valueSpoken.getSpoken().equalsIgnoreCase(word.getWord()))) {
                                                 new Thread(
@@ -268,8 +309,11 @@ public class Importer {
                     currentUsers.forEach(currentUser -> {
                         if (users.getUsers().stream().noneMatch(user -> user.getExportCode().equalsIgnoreCase(currentUser.getExportCode()))) {
                             VDTSUser currentPrimary = currentUsers.stream()
-                                    .filter(userPrimary -> userPrimary.getUid() == currentUser.getUid() && userPrimary.isPrimary())
-                                    .findFirst()
+                                    .filter(
+                                            userPrimary ->
+                                                    userPrimary.getUid() == currentUser.getUid() &&
+                                                            userPrimary.isPrimary()
+                                    ).findFirst()
                                     .orElse(null);
                             if (currentPrimary != null) {
                                 currentPrimary.setPrimary(false);
