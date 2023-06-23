@@ -493,7 +493,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Columns and Values");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialogue_fragment_yes_no, null);
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText(R.string.import_dialogue_label);
@@ -504,9 +507,16 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-                    "Documents"+File.separator+"VoiceSelect"+File.separator+CONFIG_DIRECTORY+EXPORT_FILE_SETUP
-                    .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_SETUP)
+                            .concat(FILE_EXTENSION_VDTS)
+            );
             if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
@@ -516,12 +526,36 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 if (importer.importSetup(file)) {
                     columnAdapterSelect(-1);
 
-                    vdtsApplication.displayToast(this,"Setup imported successfully",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Setup imported successfully",
+                            Toast.LENGTH_SHORT
+                    );
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    executor.execute(() -> {
+                        columnList.clear();
+                        columnList.addAll(vsViewModel.findAllActiveColumns());
+                        columnList.remove(Column.COLUMN_NONE);
+                        handler.post(() -> {
+                            columnAdapter.setDataset(columnList);
+                            columnAdapterSelect(-1);
+                        });
+                    });
                 } else {
-                    vdtsApplication.displayToast(this,"Error importing Setup",Toast.LENGTH_SHORT);
+                    vdtsApplication.displayToast(
+                            this,
+                            "Error importing Setup",
+                            Toast.LENGTH_SHORT
+                    );
                 }
             } else {
-                vdtsApplication.displayToast(this,"Setup file not found",Toast.LENGTH_SHORT);
+                vdtsApplication.displayToast(
+                        this,
+                        "Setup file not found",
+                        Toast.LENGTH_SHORT
+                );
             }
         });
 

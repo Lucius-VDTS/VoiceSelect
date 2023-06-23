@@ -577,10 +577,16 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(Environment.getExternalStorageDirectory().toString() +
-                    File.separator+"Documents"+File.separator+"VoiceSelect"+File.separator+
-                    CONFIG_DIRECTORY + EXPORT_FILE_SETUP
-                    .concat(FILE_EXTENSION_VDTS));
+            File file = new File(
+                    Environment.getExternalStorageDirectory().toString()
+                            .concat(File.separator)
+                            .concat("Documents")
+                            .concat(File.separator)
+                            .concat("VoiceSelect")
+                            .concat(File.separator)
+                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_SETUP)
+                            .concat(FILE_EXTENSION_VDTS)
+            );
             if (file.exists()) {
                 final Importer importer = new Importer(
                         vsViewModel,
@@ -595,6 +601,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                             "Setup imported successfully",
                             Toast.LENGTH_SHORT
                     );
+
+                    initializeColumnList();
                 } else {
                     vdtsApplication.displayToast(
                             this,

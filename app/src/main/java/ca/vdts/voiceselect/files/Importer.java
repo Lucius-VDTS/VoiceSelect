@@ -373,15 +373,21 @@ public class Importer {
 
                     setup.getColumns().forEach(jsonColumn -> {
                         Column currentColumn = currentColumns.stream()
-                                .filter(column -> column.getExportCode().equalsIgnoreCase(jsonColumn.getExportCode()))
-                                .findFirst()
+                                .filter(
+                                        column -> column.getExportCode().equalsIgnoreCase(
+                                                jsonColumn.getExportCode()
+                                        )
+                                ).findFirst()
                                 .orElse(null);
                         final long[] currentColumnID = new long[1];
                         if (currentColumn != null) {
                             currentColumn.setUserID(
                                     currentUsers.stream()
-                                            .filter(user -> user.getExportCode().equalsIgnoreCase(jsonColumn.getUserCode()))
-                                            .findFirst()
+                                            .filter(
+                                                    user -> user.getExportCode().equalsIgnoreCase(
+                                                            jsonColumn.getUserCode()
+                                                    )
+                                            ).findFirst()
                                             .orElse(VDTS_USER_NONE)
                                             .getUid()
                             );
@@ -396,8 +402,11 @@ public class Importer {
                         } else {
                             currentColumn = new Column(
                                     currentUsers.stream()
-                                            .filter(user -> user.getExportCode().equalsIgnoreCase(jsonColumn.getUserCode()))
-                                            .findFirst()
+                                            .filter(
+                                                    user -> user.getExportCode().equalsIgnoreCase(
+                                                            jsonColumn.getUserCode()
+                                                    )
+                                            ).findFirst()
                                             .orElse(VDTS_USER_NONE)
                                             .getUid(),
                                     jsonColumn.getDisplayName(),
@@ -408,7 +417,9 @@ public class Importer {
                             currentColumn.setActive(jsonColumn.isActive());
                             Column finalCurrentColumn = currentColumn;
                             final Thread columnInsertThread = new Thread(
-                                    () -> currentColumnID[0] = viewModel.insertColumn(finalCurrentColumn)
+                                    () -> currentColumnID[0] = viewModel.insertColumn(
+                                            finalCurrentColumn
+                                    )
                             );
                             columnInsertThread.start();
                             try {
@@ -421,11 +432,16 @@ public class Importer {
                         }
 
                         currentUsers.forEach(currentUser -> {
-                            final List<ColumnSpoken> currentUserColumnSpoken = currentColumnSpoken.stream()
-                                    .filter(columnSpoken -> columnSpoken.getColumnID() == currentColumnID[0])
-                                    .filter(columnSpoken -> columnSpoken.getUserID() == currentUser.getUid())
-                                    .collect(Collectors.toList());
-                            if (currentUserColumnSpoken.size() <= 0) {
+                            final List<ColumnSpoken> currentUserColumnSpoken =
+                                    currentColumnSpoken.stream()
+                                            .filter(
+                                                    columnSpoken -> columnSpoken.getColumnID() ==
+                                                            currentColumnID[0]
+                                            ).filter(
+                                                    columnSpoken -> columnSpoken.getUserID() ==
+                                                            currentUser.getUid()
+                                            ).collect(Collectors.toList());
+                            if (currentUserColumnSpoken.size() == 0) {
                                 jsonColumn.getDefaultWords().forEach(
                                         word -> new Thread(
                                                 () -> viewModel.insertColumnSpoken(
@@ -443,21 +459,30 @@ public class Importer {
 
                     setup.getValues().forEach(jsonValue -> {
                         final long currentColumnID = currentColumns.stream()
-                                .filter(column -> column.getExportCode().equalsIgnoreCase(jsonValue.getColumnCode()))
-                                .findFirst()
+                                .filter(
+                                        column -> column.getExportCode().equalsIgnoreCase(
+                                                jsonValue.getColumnCode()
+                                        )
+                                ).findFirst()
                                 .orElse(COLUMN_NONE)
                                 .getUid();
                         ColumnValue currentValue = currentColumnValues.stream()
                                 .filter(columnValue -> columnValue.getColumnID() == currentColumnID)
-                                .filter(columnValue -> columnValue.getExportCode().equalsIgnoreCase(jsonValue.getExportCode()))
-                                .findFirst()
+                                .filter(
+                                        columnValue -> columnValue.getExportCode().equalsIgnoreCase(
+                                                jsonValue.getExportCode()
+                                        )
+                                ).findFirst()
                                 .orElse(null);
                         final long[] currentValueID = new long[1];
                         if (currentValue != null) {
                             currentValue.setUserID(
                                     currentUsers.stream()
-                                            .filter(user -> user.getExportCode().equalsIgnoreCase(jsonValue.getUserCode()))
-                                            .findFirst()
+                                            .filter(
+                                                    user -> user.getExportCode().equalsIgnoreCase(
+                                                            jsonValue.getUserCode()
+                                                    )
+                                            ).findFirst()
                                             .orElse(VDTS_USER_NONE)
                                             .getUid()
                             );
@@ -468,13 +493,18 @@ public class Importer {
                             currentValue.setExportCode(jsonValue.getExportCode());
                             currentValue.setActive(jsonValue.isActive());
                             ColumnValue finalCurrentValue = currentValue;
-                            new Thread(() -> viewModel.updateColumnValue(finalCurrentValue)).start();
+                            new Thread(
+                                    () -> viewModel.updateColumnValue(finalCurrentValue)
+                            ).start();
                             currentValueID[0] = currentValue.getUid();
                         } else {
                             currentValue = new ColumnValue(
                                     currentUsers.stream()
-                                            .filter(user -> user.getExportCode().equalsIgnoreCase(jsonValue.getUserCode()))
-                                            .findFirst()
+                                            .filter(
+                                                    user -> user.getExportCode().equalsIgnoreCase(
+                                                            jsonValue.getUserCode()
+                                                    )
+                                            ).findFirst()
                                             .orElse(VDTS_USER_NONE)
                                             .getUid(),
                                     currentColumnID,
@@ -486,7 +516,9 @@ public class Importer {
                             currentValue.setActive(jsonValue.isActive());
                             ColumnValue finalCurrentValue1 = currentValue;
                             final Thread valueInsertThread = new Thread(
-                                    () -> currentValueID[0] = viewModel.insertColumnValue(finalCurrentValue1)
+                                    () -> currentValueID[0] = viewModel.insertColumnValue(
+                                            finalCurrentValue1
+                                    )
                             );
                             valueInsertThread.start();
                             try {
@@ -498,11 +530,16 @@ public class Importer {
                         }
 
                         currentUsers.forEach(currentUser -> {
-                            final List<ColumnValueSpoken> currentUserValueSpoken = currentValueSpoken.stream()
-                                    .filter(valueSpoken -> valueSpoken.getColumnValueID() == currentValueID[0])
-                                    .filter(valueSpoken -> valueSpoken.getUserID() == currentUser.getUid())
-                                    .collect(Collectors.toList());
-                            if (currentUserValueSpoken.size() <= 0) {
+                            final List<ColumnValueSpoken> currentUserValueSpoken =
+                                    currentValueSpoken.stream()
+                                            .filter(
+                                                    valueSpoken -> valueSpoken.getColumnValueID() ==
+                                                            currentValueID[0]
+                                            ).filter(
+                                                    valueSpoken -> valueSpoken.getUserID() ==
+                                                            currentUser.getUid()
+                                            ).collect(Collectors.toList());
+                            if (currentUserValueSpoken.size() == 0) {
                                 jsonValue.getDefaultWords().forEach(
                                         word -> new Thread(
                                                 () -> viewModel.insertColumnValueSpoken(
