@@ -9,9 +9,14 @@ import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_CSV;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_JPG;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_JSON;
+import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_MP4;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_XLSX;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_GPS;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_NAME;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_TIME;
 import static ca.vdts.voiceselect.library.VDTSApplication.SESSIONS_DIRECTORY;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.isNumeric;
@@ -45,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.database.VSViewModel;
@@ -56,8 +62,10 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
+import ca.vdts.voiceselect.database.entities.VideoReference;
 import ca.vdts.voiceselect.files.JSONEntities.JSONColumnLayout;
 import ca.vdts.voiceselect.files.JSONEntities.Options;
 import ca.vdts.voiceselect.files.JSONEntities.Setup;
@@ -65,6 +73,7 @@ import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
+import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtils;
 import ca.vdts.voiceselect.library.utilities.VDTSLocalDateTimeSerializerUtil;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -240,7 +249,7 @@ public class Exporter {
         final List<EntryValue> entryValues = new ArrayList<>();
         final List<ColumnValue> columnValues = new ArrayList<>();
         final List<Column> columns = new ArrayList<>();
-        //final List<PictureReference> pictureReferences = new ArrayList<>();
+        final List<PictureReference> pictureReferences = new ArrayList<>();
         final Thread gatherThread = new Thread(() -> {
             LOG.debug("Starting db thread");
             users.addAll(viewModel.findAllUsers());
@@ -248,7 +257,7 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            //pictureReferences.addAll(viewModel.pictureReferences(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
         });
         gatherThread.start();
         try {
@@ -266,13 +275,13 @@ public class Exporter {
         );
         final String json = gson.toJson(totalSession);
         String exportPath;
-        /*if (pictureReferences.size() > 0) {
+        if (pictureReferences.size() > 0) {
             exportPath = SESSIONS_DIRECTORY
                     .concat(session.name().replace("/", "-"))
                     .concat(File.separator);
-        } else {*/
+        } else {
             exportPath = SESSIONS_DIRECTORY;
-        //}
+        }
         final String fileName = session.name()
                 .replace("/", "-")
                 .concat(" - ")
@@ -290,7 +299,7 @@ public class Exporter {
         final List<EntryValue> entryValues = new ArrayList<>();
         final List<ColumnValue> columnValues = new ArrayList<>();
         final List<Column> columns = new ArrayList<>();
-        //final List<PictureReference> pictureReferences = new ArrayList<>();
+        final List<PictureReference> pictureReferences = new ArrayList<>();
         final Thread gatherThread = new Thread(() -> {
             LOG.debug("Starting db thread");
             users.addAll(viewModel.findAllUsers());
@@ -299,7 +308,7 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            //pictureReferences.addAll(viewModel.pictureReferences(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
         });
         gatherThread.start();
         try {
@@ -382,13 +391,13 @@ public class Exporter {
         });
 
         String exportPath;
-        /*if (pictureReferences.size() > 0) {
+        if (pictureReferences.size() > 0) {
             exportPath = SESSIONS_DIRECTORY
                     .concat(session.name().replace("/", "-"))
                     .concat(File.separator);
-        } else {*/
+        } else {
             exportPath = SESSIONS_DIRECTORY;
-        //}
+        }
         final String fileName = session.name()
                 .replace("/", "-")
                 .concat(" - ")
@@ -406,8 +415,8 @@ public class Exporter {
         final List<EntryValue> entryValues = new ArrayList<>();
         final List<ColumnValue> columnValues = new ArrayList<>();
         final List<Column> columns = new ArrayList<>();
-        //final List<PictureReference> pictureReferences = new ArrayList<>();
-        //final List<VideoReference> videoReferences = new ArrayList<>();
+        final List<PictureReference> pictureReferences = new ArrayList<>();
+        final List<VideoReference> videoReferences = new ArrayList<>();
         final Thread gatherThread = new Thread(() -> {
             LOG.debug("Starting db thread");
             users.addAll(viewModel.findAllUsers());
@@ -416,8 +425,8 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            //pictureReferences.addAll(viewModel.pictureReferences(session.getUid()));
-            //videoReferences.addAll(viewModel.videoReferences(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
+            videoReferences.addAll(viewModel.videoReferences(session.getUid()));
         });
         gatherThread.start();
         try {
@@ -550,13 +559,13 @@ public class Exporter {
         workbook.setForceFormulaRecalculation(true);
 
         String exportPath;
-        /*if (pictureReferences.size() > 0 || videoReferences.size() > 0) {
+        if (pictureReferences.size() > 0 || videoReferences.size() > 0) {
             exportPath = SESSIONS_DIRECTORY
                     .concat(session.name().replace("/", "-"))
                     .concat(File.separator);
-        } else {*/
+        } else {
             exportPath = SESSIONS_DIRECTORY;
-        //}
+        }
         final String fileName = session.name()
                 .replace("/", "-")
                 .concat(" - ")
@@ -685,39 +694,6 @@ public class Exporter {
                 e.printStackTrace();
             }
         }
-
-        /*try {
-            int bufferSize = 8192;
-            byte[] buffer = new byte[bufferSize];
-            int bytesRead;
-
-            InputStream dbInput = Files.newInputStream(db.toPath());
-            OutputStream dbOutput = Files.newOutputStream(file.toPath());
-
-            while ((bytesRead = dbInput.read(buffer, 0, bufferSize)) > 0) {
-                dbOutput.write(buffer, 0, bytesRead);
-            }
-
-            dbOutput.flush();
-            dbOutput.close();
-            dbInput.close();
-
-            backupSharedPreferences.edit().putLong(
-                    "LAST_BACKUP",
-                    VDTSToolUtil.getTimeStamp().getTime()).apply();
-
-            LOG.info("Backup saved to {}", dbBackupDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("Backup error: ", e);
-        }*/
-
-        //noinspection ResultOfMethodCallIgnored
-        /*file.createNewFile();
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(json);
-        writer.close();*/
     }
 
     private void writeToFile(String filePath, Workbook workbook) throws IOException {
@@ -735,14 +711,11 @@ public class Exporter {
         );
     }
 
-    //TODO: MAKE WORK
-    /*
     public boolean exportMedia(Session  session) {
         return exportPhotos(session) && exportVideos(session);
-    }*/
+    }
 
-    //TODO: MAKE WORK
-    /*private boolean exportPhotos(Session  session) {
+    private boolean exportPhotos(Session  session) {
         LOG.debug("Exporting photos");
         final List<Entry> entries = new ArrayList<>();
         final List<PictureReference> references = new ArrayList<>();
@@ -750,7 +723,7 @@ public class Exporter {
         final Thread entryGatherThread = new Thread(() -> {
             LOG.debug("Starting entry db thread");
             entries.addAll(viewModel.findAllEntriesBySession(session.getUid()));
-            references.addAll(viewModel.pictureReferences(session.getUid()));
+            references.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
         });
         entryGatherThread.start();
         try {
@@ -835,7 +808,7 @@ public class Exporter {
                                 success.set(false);
                             }
                             try {
-                                ImageFileUtils.drawToBitmap(
+                                VDTSImageFileUtils.drawToBitmap(
                                         destination.getPath(),
                                         application.getPreferences().getBoolean(
                                                 PREF_PHOTO_PRINT_NAME,
@@ -876,10 +849,9 @@ public class Exporter {
             );
         }
         return success.get();
-    }*/
+    }
 
-    //TODO: MAKE WORK
-    /*private boolean exportVideos(Session  session) {
+    private boolean exportVideos(Session  session) {
         LOG.debug("Exporting videos");
         final List<VideoReference> references = new ArrayList<>();
         final List<VideoReference> missing = new ArrayList<>();
@@ -964,7 +936,7 @@ public class Exporter {
             );
         }
         return success.get();
-    }*/
+    }
 
     private void copy(File source, File destination) throws IOException {
         final FileInputStream inStream = new FileInputStream(source);

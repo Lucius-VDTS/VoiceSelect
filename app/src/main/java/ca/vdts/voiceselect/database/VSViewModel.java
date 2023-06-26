@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
@@ -18,8 +19,10 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
+import ca.vdts.voiceselect.database.entities.VideoReference;
 import ca.vdts.voiceselect.database.repositories.ColumnRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnSpokenRepository;
 import ca.vdts.voiceselect.database.repositories.ColumnValueRepository;
@@ -28,8 +31,10 @@ import ca.vdts.voiceselect.database.repositories.EntryRepository;
 import ca.vdts.voiceselect.database.repositories.EntryValueRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutColumnRepository;
 import ca.vdts.voiceselect.database.repositories.LayoutRepository;
+import ca.vdts.voiceselect.database.repositories.PictureReferenceRepository;
 import ca.vdts.voiceselect.database.repositories.SessionLayoutRepository;
 import ca.vdts.voiceselect.database.repositories.SessionRepository;
+import ca.vdts.voiceselect.database.repositories.VideoReferenceRepository;
 import ca.vdts.voiceselect.library.database.VDTSViewModel;
 
 /**
@@ -47,6 +52,9 @@ public class VSViewModel extends VDTSViewModel {
     private final EntryRepository entryRepository;
     private final EntryValueRepository entryValueRepository;
 
+    private final PictureReferenceRepository pictureReferenceRepository;
+    private final VideoReferenceRepository videoReferenceRepository;
+
     public VSViewModel(@NonNull Application application) {
         super(application);
         VSDatabase vsDatabase = VSDatabase.getInstance(getApplication());
@@ -61,6 +69,8 @@ public class VSViewModel extends VDTSViewModel {
         sessionLayoutRepository = new SessionLayoutRepository(vsDatabase.sessionLayoutDAO());
         entryRepository = new EntryRepository(vsDatabase.entryDAO());
         entryValueRepository = new EntryValueRepository(vsDatabase.entryValueDAO());
+        pictureReferenceRepository = new PictureReferenceRepository(vsDatabase.pictureReferenceDAO());
+        videoReferenceRepository = new VideoReferenceRepository(vsDatabase.videoReferenceDAO());
     }
 
     //Column
@@ -598,6 +608,110 @@ public class VSViewModel extends VDTSViewModel {
                 "SELECT EV.* FROM EntryValues AS EV " +
                         "LEFT JOIN Entries AS E ON E.uid = EV.entryID " +
                         "WHERE E.sessionID = " + sessionID
+        );
+    }
+
+    // PictureReference
+    public long insert(PictureReference pictureReference) {
+        return pictureReferenceRepository.insert(pictureReference);
+    }
+
+    public void insert(PictureReference[] pictureReferences) {
+        pictureReferenceRepository.insertAll(pictureReferences);
+    }
+
+    public void update(PictureReference pictureReference) {
+        pictureReferenceRepository.update(pictureReference);
+    }
+
+    public void update(PictureReference[] pictureReferences) {
+        pictureReferenceRepository.updateAll(pictureReferences);
+    }
+
+    public void delete(PictureReference pictureReference) {
+        pictureReferenceRepository.delete(pictureReference);
+    }
+
+    public void delete(PictureReference[] pictureReferences) {
+        pictureReferenceRepository.deleteAll(pictureReferences);
+    }
+
+    public List<PictureReference> findPictureReferencesByHeader(long headerID) {
+        return pictureReferenceRepository.findAll(
+                "SELECT PR.* FROM PictureReferences AS PR " +
+                        "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
+                        "WHERE E.headerID = " + headerID
+        );
+    }
+
+    public List<PictureReference> findPictureReferencesByEntryID(List<Long> entryIDs) {
+        final String[] IDs = {""};
+        entryIDs.forEach(id -> {
+            if (!IDs[0].isEmpty()) IDs[0] = IDs[0].concat(", ");
+            IDs[0] = IDs[0].concat(String.format(Locale.CANADA, "%d", id));
+        });
+        return pictureReferenceRepository.findAll(
+                "SELECT * FROM PictureReferences " +
+                        "WHERE entryID IN (" + IDs[0] + ")"
+        );
+    }
+
+    public LiveData<List<PictureReference>> findPictureReferencesLiveByEntryID(List<Entry> entries) {
+        final String[] IDs = {""};
+        entries.forEach(id -> {
+            if (!IDs[0].isEmpty()) IDs[0] = IDs[0].concat(", ");
+            IDs[0] = IDs[0].concat(String.format(Locale.CANADA, "%d", id.getUid()));
+        });
+        return pictureReferenceRepository.findAllLive(
+                "SELECT * FROM PictureReferences " +
+                        "WHERE entryID IN (" + IDs[0] + ")"
+        );
+    }
+
+    public LiveData<List<PictureReference>> findPictureReferencesLiveByHeader(long headerID) {
+        return pictureReferenceRepository.findAllLive(
+                "SELECT PR.* FROM PictureReferences AS PR " +
+                        "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
+                        "WHERE E.headerID = " + headerID
+        );
+    }
+
+    // VideoReference
+    public long insert(VideoReference videoReference) {
+        return videoReferenceRepository.insert(videoReference);
+    }
+
+    public void insert(VideoReference[] videoReferences) {
+        videoReferenceRepository.insertAll(videoReferences);
+    }
+
+    public void update(VideoReference videoReference) {
+        videoReferenceRepository.update(videoReference);
+    }
+
+    public void update(VideoReference[] videoReferences) {
+        videoReferenceRepository.updateAll(videoReferences);
+    }
+
+    public void delete(VideoReference videoReference) {
+        videoReferenceRepository.delete(videoReference);
+    }
+
+    public void delete(VideoReference[] videoReferences) {
+        videoReferenceRepository.deleteAll(videoReferences);
+    }
+
+    public List<VideoReference> videoReferences(long headerID) {
+        return videoReferenceRepository.findAll(
+                "SELECT * FROM VideoReference " +
+                        "WHERE headerID = " + headerID
+        );
+    }
+
+    public LiveData<List<VideoReference>> liveVideoReferences(long headerID) {
+        return videoReferenceRepository.findAllLive(
+                "SELECT * FROM VideoReference " +
+                        "WHERE headerID = " + headerID
         );
     }
 }

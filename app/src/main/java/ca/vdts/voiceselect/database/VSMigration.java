@@ -31,4 +31,35 @@ public class VSMigration {
             database.execSQL("ALTER TABLE 'Users' ADD 'abbreviate' INTEGER NOT NULL DEFAULT 0");
         }
     };
+
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            LOG.debug("Migrating database from version 3 to 4");
+            database.execSQL(
+                    "CREATE TABLE PictureReferences " +
+                            "(uid INTEGER NOT NULL, userID INTEGER NOT NULL, timeStamp TEXT," +
+                            "entryID INTEGER NOT NULL, path TEXT, latitude REAL, longitude REAL, " +
+                            "PRIMARY KEY(uid), " +
+                            "FOREIGN KEY(userID) REFERENCES Users(uid) ON UPDATE CASCADE ON DELETE CASCADE, " +
+                            "FOREIGN KEY(entryID) REFERENCES Entries(uid) ON UPDATE CASCADE ON DELETE CASCADE)"
+            );
+
+            database.execSQL("CREATE INDEX index_PictureReferences_userID on PictureReferences(userID)");
+            database.execSQL("CREATE INDEX index_PictureReferences_entryID ON PictureReferences(entryID)");
+
+
+            database.execSQL(
+                    "CREATE TABLE VideoReferences " +
+                            "(uid INTEGER NOT NULL, userID INTEGER NOT NULL, timeStamp TEXT," +
+                            "sessionID INTEGER NOT NULL, path TEXT, " +
+                            "PRIMARY KEY(uid), " +
+                            "FOREIGN KEY(userID) REFERENCES Users(uid) ON UPDATE CASCADE ON DELETE CASCADE, " +
+                            "FOREIGN KEY(sessionID) REFERENCES Sessions(uid) ON UPDATE CASCADE ON DELETE CASCADE)"
+            );
+
+            database.execSQL("CREATE INDEX index_VideoReferences_userID on VideoReferences(userID)");
+            database.execSQL("CREATE INDEX index_VideoReferences_sessionID ON VideoReferences(sessionID)");
+        }
+    };
 }

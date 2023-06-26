@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.database;
 
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_1_2;
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_2_3;
+import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_3_4;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -26,8 +27,10 @@ import ca.vdts.voiceselect.database.daos.EntryDAO;
 import ca.vdts.voiceselect.database.daos.EntryValueDAO;
 import ca.vdts.voiceselect.database.daos.LayoutColumnDAO;
 import ca.vdts.voiceselect.database.daos.LayoutDAO;
+import ca.vdts.voiceselect.database.daos.PictureReferenceDAO;
 import ca.vdts.voiceselect.database.daos.SessionDAO;
 import ca.vdts.voiceselect.database.daos.SessionLayoutDAO;
+import ca.vdts.voiceselect.database.daos.VideoReferenceDAO;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
@@ -36,8 +39,10 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
+import ca.vdts.voiceselect.database.entities.VideoReference;
 import ca.vdts.voiceselect.library.database.converters.VDTSConverter;
 import ca.vdts.voiceselect.library.database.daos.VDTSUserDAO;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -57,9 +62,11 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
                 Session.class,
                 SessionLayout.class,
                 Entry.class,
-                EntryValue.class
+                EntryValue.class,
+                PictureReference.class,
+                VideoReference.class
         },
-        version = 3
+        version = 4
 )
 @TypeConverters(
         {
@@ -84,6 +91,8 @@ public abstract class VSDatabase extends RoomDatabase {
     public abstract SessionLayoutDAO sessionLayoutDAO();
     public abstract EntryDAO entryDAO();
     public abstract EntryValueDAO entryValueDAO();
+    public abstract PictureReferenceDAO pictureReferenceDAO();
+    public abstract VideoReferenceDAO videoReferenceDAO();
 
 
     public static synchronized VSDatabase getInstance(VSApplication vsApplication) {
@@ -94,7 +103,7 @@ public abstract class VSDatabase extends RoomDatabase {
                                 vsApplication,
                                 VSDatabase.class,
                                 DB_NAME
-                        ).addMigrations(MIGRATION_1_2,MIGRATION_2_3)
+                        ).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4)
                         .addCallback(dbPopulateCallback)
                         .build();
             }

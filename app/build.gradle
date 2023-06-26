@@ -42,6 +42,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'                                         //Original - 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'                       //Original - 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'          //Original - 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'androidx.exifinterface:exifinterface:1.3.6'                     //Original -  'androidx.exifinterface:exifinterface:1.3.6'
 
     //The following dependencies were added after the application was created
     //Iristick
