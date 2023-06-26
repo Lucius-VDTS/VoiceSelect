@@ -153,7 +153,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private Location currentLocation;
     private static final int PERM_CODE_GPS = 2;
 
-    //Picture Components
+    //Device Camera Components
     private PreviewView previewView;
     private VDTSCustomLifecycle cameraLifecycle;
     private Camera camera;
@@ -366,7 +366,9 @@ public class DataGatheringActivity extends AppCompatActivity
                         columnText.setMaxLines(1);
                         columnText.setBackground(
                                 ContextCompat.getDrawable(this, R.drawable.text_background));
-                        columnText.setText(Objects.requireNonNull(columnMap.get(index)).getNameCode());     //todo - base this on setting - name vs name code
+                        columnText.setText(currentUser.isAbbreviate() ?
+                                Objects.requireNonNull(columnMap.get(index)).getNameCode() :
+                                Objects.requireNonNull(columnMap.get(index)).getName());
                         columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                         columnLinearLayout.addView(columnText);
                     }
