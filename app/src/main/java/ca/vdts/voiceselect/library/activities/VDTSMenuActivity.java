@@ -102,7 +102,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         IristickSDK.registerListener(this.getLifecycle(), this);
 
         vdtsApplication = (VDTSApplication) getApplication();
-        currentUser = vdtsApplication.getCurrentUser();
 
         //Layout Spinner
         layoutSpinner = findViewById(R.id.layoutSpinner);
@@ -308,6 +307,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             });
 
             Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
+            startActivityIntent.putExtra("layout", currentLayout.getUid());
             startActivity(startActivityIntent);
         }
     }

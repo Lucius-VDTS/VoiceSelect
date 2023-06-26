@@ -80,6 +80,8 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
+import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
@@ -97,12 +99,14 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
+    private Layout currentLayout;
     private Session currentSession;
     private Entry selectedEntry;
     private Column lastColumn;
     private ColumnValue selectedColumnValue;
 
     //Lists
+    private List<LayoutColumn> currentLayoutColumns;
     private final List<Column> columnList = new ArrayList<>();
     private final HashMap<Integer, Column> columnMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
@@ -288,7 +292,18 @@ public class DataGatheringActivity extends AppCompatActivity
             return iristickHUD;
         });
 
-        initializeSession();
+        initializeLayout();
+    }
+
+    private void initializeLayout() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            currentLayout = vsViewModel.findLayoutByID(
+                    getIntent().getLongExtra("layout", -9001L));
+            currentLayoutColumns = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
+            handler.post(this::initializeSession);
+        });
     }
 
     private void initializeSession() {
@@ -333,28 +348,28 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            columnList.clear();
-            columnList.addAll(vsViewModel.findAllActiveColumns());
-            columnList.remove(Column.COLUMN_NONE);
-            handler.post(() -> {
-                columnMap.clear();
-                int index = 0;
-                for (Column column : columnList) {
-                    columnMap.put(index, column);       //todo put in order of layout position
-                    index++;
+            columnMap.clear();
+            for (LayoutColumn layoutColumn : currentLayoutColumns) {
+                Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
+                columnMap.put((int) layoutColumn.getColumnPosition(), column);
+            }
 
-                    TextView columnText = new TextView(this);
-                    columnText.setMinWidth(minWidthDimen);
-                    columnText.setLayoutParams(layoutParams);
-                    columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
-                            marginPaddingDimen, marginPaddingDimen);
-                    columnText.setGravity(Gravity.CENTER);
-                    columnText.setMaxLines(1);
-                    columnText.setBackground(
-                            ContextCompat.getDrawable(this, R.drawable.text_background));
-                    columnText.setText(column.getNameCode());   //todo - base this on setting
-                    columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-                    columnLinearLayout.addView(columnText);
+            handler.post(() -> {
+                if (columnMap.size() != 0) {
+                    for (int index = 1; index <= columnMap.size(); index++){
+                        TextView columnText = new TextView(this);
+                        columnText.setMinWidth(minWidthDimen);
+                        columnText.setLayoutParams(layoutParams);
+                        columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
+                                marginPaddingDimen, marginPaddingDimen);
+                        columnText.setGravity(Gravity.CENTER);
+                        columnText.setMaxLines(1);
+                        columnText.setBackground(
+                                ContextCompat.getDrawable(this, R.drawable.text_background));
+                        columnText.setText(Objects.requireNonNull(columnMap.get(index)).getNameCode());     //todo - base this on setting - name vs name code
+                        columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                        columnLinearLayout.addView(columnText);
+                    }
                 }
 
                 initializeColumnValuesLayout();
@@ -370,25 +385,28 @@ public class DataGatheringActivity extends AppCompatActivity
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             columnValueMap.clear();
-            int columnValueMapIndex = 0;
-            for (Column column : columnList) {
-                columnValueMap.put(                     //todo put in order of layout position
-                        columnValueMapIndex,
-                        vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
-                columnValueMapIndex++;
+            for (int index = 1; index <= columnMap.size(); index++) {
+                columnValueMap.put(
+                        index,
+                        vsViewModel.findAllActiveColumnValuesByColumn(
+                                Objects.requireNonNull(columnMap.get(index)).getUid())
+                );
             }
 
-            handler.post(() -> {
-                final List<ColumnValue> columnValuesByColumn = new ArrayList<>();
-                columnValueSpinnerList.clear();
-                for (int index = 0; index < columnValueMap.size(); index++) {
-                    columnValuesByColumn.clear();
-                    columnValuesByColumn.addAll(Objects.requireNonNull(columnValueMap.get(index)));
+//            int columnValueMapIndex = 0;
+//            for (Column column : columnList) {
+//                columnValueMap.put(                     //todo put in order of layout position
+//                        columnValueMapIndex,
+//                        vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
+//                columnValueMapIndex++;
+//            }
 
+            handler.post(() -> {
+                for (int index = 1; index < columnValueMap.size(); index++) {
                     ColumnValueSpinner columnValueSpinner =
                             new ColumnValueSpinner(
                                     this,
-                                    columnValuesByColumn,
+                                    columnValueMap.get(index),
                                     columnValueSpinnerListener,
                                     index
                             );
@@ -396,6 +414,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnValueSpinnerList.add(columnValueSpinner.getColumnValueSpinner());
                     columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
                 }
+
                 initializeEntriesList();
             });
         });
@@ -623,34 +642,6 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
-    }
-
-    private void initializeIristickVoiceCommands() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Open Camera", this::openCamera)
-            );
-
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Navigate Back", this::finish)
-            );
-        }
-    }
-
     private void showPreview() {
         previewView.bringToFront();
         cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
@@ -721,44 +712,6 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    private void updateIristickHUD() {
-        if (iristickHUD != null) {
-            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
-
-            if (selectedColumnValue != null) {
-                entryValueMap.put(spinnerPosition, selectedColumnValue);
-                if (columnMap.size() > 0) {
-                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
-                            columnMap.get(spinnerPosition)).getName());
-                    if (columnMap.size() != spinnerPosition + 1) {
-                        iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
-                                columnMap.get(spinnerPosition + 1)).getName());
-                    } else {
-                        iristickHUD.columnNextLabel.setText(
-                                R.string.data_gathering_hud_end_of_row);
-                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
-                                this,
-                                R.drawable.text_background)
-                        );
-                    }
-                }
-                iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
-                if (entryValueMap.get(spinnerPosition + 1) != null ) {
-                    iristickHUD.entryNextValue.setText(Objects.requireNonNull(
-                            entryValueMap.get(spinnerPosition + 1)).getName());
-                } else {
-                    iristickHUD.entryNextValue.setText("");
-                }
-            } else {
-                iristickHUD.columnLastLabel.setText("");
-                iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
-                        columnMap.get(0)).getName());
-                iristickHUD.entryLastValue.setText("");
-                iristickHUD.entryNextValue.setText("");
-            }
-        }
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         if (isBetterLocation(location, currentLocation)) {
@@ -814,6 +767,72 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void disableGPS() {
         locationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = true;
+    }
+
+    @Override
+    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = false;
+    }
+
+    private void initializeIristickVoiceCommands() {
+        if (isHeadsetAvailable) {
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Open Camera", this::openCamera)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Navigate Back", this::finish)
+            );
+        }
+    }
+
+    private void updateIristickHUD() {
+        if (iristickHUD != null) {
+            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
+
+            if (selectedColumnValue != null) {
+                entryValueMap.put(spinnerPosition, selectedColumnValue);
+                if (columnMap.size() > 0) {
+                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
+                            columnMap.get(spinnerPosition)).getName());
+                    if (columnMap.size() != spinnerPosition + 1) {
+                        iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                                columnMap.get(spinnerPosition + 1)).getName());
+                    } else {
+                        iristickHUD.columnNextLabel.setText(
+                                R.string.data_gathering_hud_end_of_row);
+                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
+                                this,
+                                R.drawable.text_background)
+                        );
+                    }
+                }
+                iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
+                if (entryValueMap.get(spinnerPosition + 1) != null ) {
+                    iristickHUD.entryNextValue.setText(Objects.requireNonNull(
+                            entryValueMap.get(spinnerPosition + 1)).getName());
+                } else {
+                    iristickHUD.entryNextValue.setText("");
+                }
+            } else {
+                iristickHUD.columnLastLabel.setText("");
+                iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                        columnMap.get(1)).getName());
+                iristickHUD.entryLastValue.setText("");
+                iristickHUD.entryNextValue.setText("");
+            }
+        }
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////

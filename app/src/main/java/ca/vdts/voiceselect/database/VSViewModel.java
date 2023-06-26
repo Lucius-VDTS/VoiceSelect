@@ -86,7 +86,7 @@ public class VSViewModel extends VDTSViewModel {
 
     public void deleteAllColumns(Column[] columns) { columnRepository.deleteAll(columns); }
 
-    public Column findColumn(long uid) {
+    public Column findColumnByID(long uid) {
         return columnRepository.find(
                 "SELECT * FROM Columns " +
                         "WHERE uid = " + uid
@@ -234,8 +234,6 @@ public class VSViewModel extends VDTSViewModel {
                         "WHERE active = 1"
         );
     }
-
-
 
     public LiveData<List<ColumnValue>> findAllColumnValuesLive() {
         return columnValueRepository.findAllColumnValuesLive();

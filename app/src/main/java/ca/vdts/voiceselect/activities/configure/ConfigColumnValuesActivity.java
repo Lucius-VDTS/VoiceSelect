@@ -730,7 +730,6 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                 }
             }
 
-
             for (ColumnValueSpoken columnValueSpoken :  existingSpokens) {
                 if (columnValueSpoken.getColumnValueID() != columnValue.getUid()) {
                     for (String spoken: spokenList) {
