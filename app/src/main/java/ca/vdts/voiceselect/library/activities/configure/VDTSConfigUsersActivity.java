@@ -5,6 +5,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_USERS;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -210,7 +211,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         vsViewModel.findAllActiveUsersLive().observe(this, users -> {
             allUserList.clear();
             allUserList.addAll(users);
-            allUserList.remove(VDTSUser.VDTS_USER_NONE);
+            allUserList.remove(VDTS_USER_NONE);
 
             if (currentUser.getAuthority() > 0) {
                 selectableUserList.clear();
@@ -429,6 +430,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
                             if (userAdapter.getItemCount() == 1) {
                                 vdtsApplication.setCurrentUser(userAdapter.getEntity(0));
+                            } else {
+                                updateCurrentUser();
                             }
                         });
                     });
@@ -561,7 +564,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 );
                 if (importer.importUsers(file)) {
                     userAdapter.setSelectedEntity(-1);
-
+                    updateCurrentUser();
                     vdtsApplication.displayToast(
                             this,
                             "Users imported successfully",
@@ -680,6 +683,15 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                                     )
                                     )
                             );
+        }
+    }
+
+    public void updateCurrentUser(){
+        if (vdtsApplication.getCurrentUser()!=null && vdtsApplication.getCurrentUser() != VDTS_USER_NONE) {
+            Thread thread = new Thread(() -> {
+                vdtsApplication.setCurrentUser(vsViewModel.findUserByID(vdtsApplication.getCurrentUser().getUid()));
+            });
+            thread.start();
         }
     }
 

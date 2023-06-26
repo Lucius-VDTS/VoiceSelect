@@ -9,6 +9,7 @@ import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -17,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
@@ -32,14 +34,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
@@ -48,11 +59,16 @@ import com.iristick.sdk.display.IRIWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -69,10 +85,12 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
+import ca.vdts.voiceselect.library.utilities.VDTSCustomLifecycle;
 
 /**
  * Gather data for a particular session and its corresponding layout.
  */
+@SuppressLint("RestrictedApi")
 public class DataGatheringActivity extends AppCompatActivity
         implements IRIListener, ScrollChangeListenerInterface, LocationListener {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigColumnsActivity.class);
@@ -131,6 +149,16 @@ public class DataGatheringActivity extends AppCompatActivity
     private Location currentLocation;
     private static final int PERM_CODE_GPS = 2;
 
+    //Picture Components
+    private PreviewView previewView;
+    private VDTSCustomLifecycle cameraLifecycle;
+    private Camera camera;
+    private ImageCapture imageCapture;
+    private static final int EXPOSURE_LEVELS = 10; // todo - add controls to control
+    private int exposureLevel = EXPOSURE_LEVELS / 2;
+    private static final int ZOOM_LEVELS = 5;
+    private int zoomLevel = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,12 +210,59 @@ public class DataGatheringActivity extends AppCompatActivity
                         LinearLayoutManager.VERTICAL,
                         false
                 ));
+
+        //Camera
+        previewView = findViewById(R.id.cameraPreview);
+
+        cameraLifecycle = new VDTSCustomLifecycle();
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
+                .getInstance(this);
+        cameraProviderFuture.addListener(
+                () -> {
+                    try {
+                        ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                        //todo - Add camera existing check
+                        //todo - Rework to allow for camera selection
+                        CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                        imageCapture = new ImageCapture.Builder()
+                                .setCameraSelector(cameraSelector)
+                                .build();
+                        Preview preview = new Preview.Builder().build();
+                        preview.setSurfaceProvider(previewView.getSurfaceProvider());
+                        camera = cameraProvider.bindToLifecycle(
+                                cameraLifecycle,
+                                cameraSelector,
+                                imageCapture,
+                                preview
+                        );
+
+                        cameraLifecycle.performEvent(Lifecycle.Event.ON_CREATE);
+                    } catch (ExecutionException | InterruptedException e) {
+                        LOG.error("Error starting preview: ", e);
+                    }
+                },
+                ContextCompat.getMainExecutor(this)
+        );
+    }
+
+    @Override
+    protected void onPause() {
+        cameraLifecycle.performEvent(Lifecycle.Event.ON_PAUSE);
+        super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        cameraLifecycle.performEvent(Lifecycle.Event.ON_RESUME);
+        entryRecyclerView.bringToFront();
         initializeIristickHUD();
+    }
+
+    @Override
+    protected void onDestroy() {
+        cameraLifecycle.performEvent(Lifecycle.Event.ON_DESTROY);
+        super.onDestroy();
     }
 
     @Override
@@ -464,7 +539,11 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void pictureButtonOnClick() {
-
+        if (cameraLifecycle.getLifecycle().getCurrentState() == Lifecycle.State.STARTED) {
+            hidePreview();
+        } else {
+            showPreview();
+        }
     }
 
     private void deleteEntryButtonOnClick() {
@@ -572,9 +651,74 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
+    private void showPreview() {
+        previewView.bringToFront();
+        cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
+    }
+
+    private void hidePreview() {
+        entryRecyclerView.bringToFront();
+        cameraLifecycle.performEvent(Lifecycle.Event.ON_STOP);
+    }
+
     private void openCamera() {
         Intent openCameraActivityIntent = new Intent(this, IristickCameraActivity.class);
         startActivity(openCameraActivityIntent);
+    }
+
+    private void takePicture() {
+        try {
+            final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS),
+                    "VoiceSelect/Pictures");
+
+            if (!photoDir.exists()) {
+                boolean mkdirResult = photoDir.mkdirs();
+                if (!mkdirResult) {
+                    LOG.info("Failed to create image directory");
+                    return;
+                }
+            }
+            DateTimeFormatter dateTimeWithoutSeconds = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm");
+            final File imageFile = File.createTempFile(
+                    dateTimeWithoutSeconds.format(LocalDateTime.now()),
+                    ".jpg",
+                    new File(photoDir.getPath())
+            );
+
+            ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions
+                    .Builder(imageFile)
+                    .build();
+
+            imageCapture.setFlashMode(ImageCapture.FLASH_MODE_AUTO);
+
+            imageCapture.takePicture(
+                    options,
+                    ContextCompat.getMainExecutor(this),
+                    new ImageCapture.OnImageSavedCallback() {
+                        @Override
+                        public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                            /**
+                             * todo - Enable this
+                            ImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            PictureReference pictureReference = new PictureReference(
+                                    currentUser.getUid(),
+                                    currentEntry.getUid(),
+                                    imageFile.getPath(),
+                                    currentLocation
+                            );
+                            currentEntryPhotos.add(pictureReference);*/
+                        }
+
+                        @Override
+                        public void onError(@NonNull ImageCaptureException exception) {
+                            LOG.error("Error taking photo: ", exception);
+                        }
+                    }
+            );
+        } catch (IOException e) {
+            LOG.error("IO Exception: ", e);
+        }
     }
 
     private void updateIristickHUD() {

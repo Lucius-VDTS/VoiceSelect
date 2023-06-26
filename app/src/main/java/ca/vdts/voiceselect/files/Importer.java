@@ -134,6 +134,7 @@ public class Importer {
                             currentUser.setPrimary(user.isPrimary());
                             currentUser.setPassword(user.getPassword());
                             currentUser.setAutosave(user.getAutosave());
+                            currentUser.setAbbreviate(user.isAbbreviate());
                             currentUser.setFeedback(user.getFeedback());
                             currentUser.setFeedbackQueue(user.isFeedbackQueue());
                             currentUser.setFeedbackRate(user.getFeedbackRate());
@@ -153,6 +154,7 @@ public class Importer {
                                     user.isPrimary(),
                                     user.getPassword(),
                                     user.getAutosave(),
+                                    user.isAbbreviate(),
                                     user.getFeedback(),
                                     user.isFeedbackQueue(),
                                     user.getFeedbackRate(),

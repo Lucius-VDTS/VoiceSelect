@@ -56,6 +56,10 @@ public class User {
     private int autosave;
 
     @Expose
+    @SerializedName("abbreviate")
+    private boolean abbreviate;
+
+    @Expose
     @SerializedName("feedback")
     private int feedback;
 
@@ -94,6 +98,7 @@ public class User {
         primary = user.isPrimary();
         password = user.getPassword();
         autosave = user.getAutosave();
+        abbreviate = user.isAbbreviate();
         feedback = user.getFeedback();
         feedbackQueue = user.isFeedbackQueue();
         feedbackRate = user.getFeedbackRate();
@@ -177,6 +182,14 @@ public class User {
 
     public void setAutosave(int autosave) {
         this.autosave = autosave;
+    }
+
+    public boolean isAbbreviate() {
+        return abbreviate;
+    }
+
+    public void setAbbreviate(boolean abbreviate) {
+        this.abbreviate = abbreviate;
     }
 
     public int getFeedback() {

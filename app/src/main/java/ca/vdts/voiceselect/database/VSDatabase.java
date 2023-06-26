@@ -1,6 +1,7 @@
 package ca.vdts.voiceselect.database;
 
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_1_2;
+import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_2_3;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -58,7 +59,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
                 Entry.class,
                 EntryValue.class
         },
-        version = 2
+        version = 3
 )
 @TypeConverters(
         {
@@ -93,7 +94,7 @@ public abstract class VSDatabase extends RoomDatabase {
                                 vsApplication,
                                 VSDatabase.class,
                                 DB_NAME
-                        ).addMigrations(MIGRATION_1_2)
+                        ).addMigrations(MIGRATION_1_2,MIGRATION_2_3)
                         .addCallback(dbPopulateCallback)
                         .build();
             }
