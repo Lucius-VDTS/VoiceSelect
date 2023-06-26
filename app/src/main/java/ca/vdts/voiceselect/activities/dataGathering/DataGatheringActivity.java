@@ -352,7 +352,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnText.setMaxLines(1);
                     columnText.setBackground(
                             ContextCompat.getDrawable(this, R.drawable.text_background));
-                    columnText.setText(column.getNameCode());   //todo - base this on setting
+                    columnText.setText(currentUser.isAbbreviate()? column.getNameCode() : column.getName());
                     columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                     columnLinearLayout.addView(columnText);
                 }
