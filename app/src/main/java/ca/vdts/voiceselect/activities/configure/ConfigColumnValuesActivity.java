@@ -135,7 +135,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         columnValueDeleteButton.setOnClickListener(v -> deleteColumnValueButtonOnClick());
 
         numRangeButton = findViewById(R.id.valueNumRangeButton);
-        numRangeButton.setOnClickListener(v -> onValueNumRangeClick());
+        numRangeButton.setOnClickListener(v -> onValueNumberRangeClick());
 
         letterRangeButton = findViewById(R.id.valueLetterRangeButton);
         letterRangeButton.setOnClickListener(v -> onValueLetterRangeClick());
@@ -838,10 +838,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         }
     }
 
-    public void onValueNumRangeClick() {
+    public void onValueNumberRangeClick() {
         if (currentUser.getAuthority() > 0) {
             if (selectedColumn != null) {
-                showIntegerDialog();
+                showNumberDialog();
             } else {
                 LOG.info("Select a column to create values");
                 YoYo.with(Techniques.Shake)
@@ -867,7 +867,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         }
     }
 
-    private void showIntegerDialog() {
+    private void showNumberDialog() {
         LOG.info("Showing Number Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -943,7 +943,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     }
 
     private void showLetterDialog() {
-        LOG.info("Showing Number Dialog");
+        LOG.info("Showing Letter Dialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle( vdtsApplication.getResources().getString(R.string.column_value_letter_range_label));

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,7 +40,7 @@ public class IristickCameraActivity extends AppCompatActivity implements IRIList
 
     //Views
     private TextureView cameraPreview;
-    private Button takePhotoButton;
+    private ImageButton takePhotoButton;
 
     private IRICamera iriCamera;
     private IRICameraSession iriCameraSession;
