@@ -33,7 +33,7 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
-public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdapter.ViewHolder> {
+public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGatheringRecyclerAdapter.ViewHolder> {
     private final Context context;
     private final DataGatheringActivity dataGatheringActivity;
     private final VDTSAdapterClickListenerUtil selectedListener;
@@ -46,9 +46,9 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
     final List<Entry> entryDataset = new ArrayList<>();
     final List<EntryValue> entryValueDataset = new ArrayList<>();
 
-    public DataGatheringAdapter(Context context,
-                                DataGatheringActivity dataGatheringActivity,
-                                VDTSAdapterClickListenerUtil selectedListener) {
+    public DataGatheringRecyclerAdapter(Context context,
+                                        DataGatheringActivity dataGatheringActivity,
+                                        VDTSAdapterClickListenerUtil selectedListener) {
         this.context = context;
         this.dataGatheringActivity = dataGatheringActivity;
         this.selectedListener = selectedListener;
@@ -69,7 +69,7 @@ public class DataGatheringAdapter extends RecyclerView.Adapter<DataGatheringAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DataGatheringAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DataGatheringRecyclerAdapter.ViewHolder holder, int position) {
         final Entry entry = entryDataset.get(position);
         int size = entryDataset.size();
 

@@ -22,7 +22,6 @@ import ca.vdts.voiceselect.R;
  */
 public class VDTSNamedPositionedAdapter<Entity> extends ArrayAdapter<Entity> {
     private final int resource;
-    private int position;
     private final int spinnerPosition;
 
     private BiFunction<Entity, Integer, String> toStringFunction;
@@ -34,7 +33,7 @@ public class VDTSNamedPositionedAdapter<Entity> extends ArrayAdapter<Entity> {
         this.spinnerPosition = spinnerPosition;
     }
 
-    public VDTSNamedPositionedAdapter(Context context,  List<Entity> objects, int spinnerPosition) {
+    public VDTSNamedPositionedAdapter(Context context, List<Entity> objects, int spinnerPosition) {
         this(context, R.layout.adapter_spinner_named, objects, spinnerPosition);
     }
 
@@ -42,13 +41,12 @@ public class VDTSNamedPositionedAdapter<Entity> extends ArrayAdapter<Entity> {
     @Override
     @SuppressLint("ViewHolder")
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        final View v = LayoutInflater
+        final View view = LayoutInflater
                 .from(getContext())
                 .inflate(resource, parent, false);
-        final TextView tv = (TextView)v;
+        final TextView tv = (TextView) view;
 
         final Entity item = getItem(position);
-        this.position = position;
         final String text;
         if (item != null) {
             if (toStringFunction != null) {
@@ -61,16 +59,12 @@ public class VDTSNamedPositionedAdapter<Entity> extends ArrayAdapter<Entity> {
         }
 
         tv.setText(text);
-        return v;
+        return view;
     }
 
     @Override
     public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
         return getView(position, convertView, parent);
-    }
-
-    public int getSelectedEntityIndex() {
-        return position;
     }
 
     public int getSelectedSpinnerPosition() { return spinnerPosition; }

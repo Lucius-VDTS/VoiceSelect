@@ -17,6 +17,7 @@ import java.util.List;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
+import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
  * Class contains programmatically generated column value spinners, which includes the dataset,
@@ -28,6 +29,7 @@ public class ColumnValueSpinner {
     private final Spinner columnValueSpinner;
 
     public ColumnValueSpinner(Context context,
+                              VDTSUser currentUser,
                               List<ColumnValue> columnValuesByColumn,
                               AdapterView.OnItemSelectedListener columnValueSpinnerListener,
                               int spinnerPosition) {
@@ -60,7 +62,12 @@ public class ColumnValueSpinner {
                 columnValues,
                 spinnerPosition
         );
-        columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
+
+        if (currentUser.isAbbreviate()) {
+            columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getNameCode());
+        } else {
+            columnValueAdapter.setToStringFunction((columnValue, integer) -> columnValue.getName());
+        }
 
         columnValueSpinner = new Spinner(context);
         columnValueSpinner.setAdapter(columnValueAdapter);

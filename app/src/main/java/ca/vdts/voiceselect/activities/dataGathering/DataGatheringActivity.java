@@ -74,7 +74,7 @@ import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
-import ca.vdts.voiceselect.adapters.DataGatheringAdapter;
+import ca.vdts.voiceselect.adapters.DataGatheringRecyclerAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
@@ -139,7 +139,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     //Recycler View - Spinners
     private VSViewModel vsViewModel;
-    private DataGatheringAdapter dataGatheringAdapter;
+    private DataGatheringRecyclerAdapter dataGatheringRecyclerAdapter;
     private RecyclerView entryRecyclerView;
     private VDTSNamedPositionedAdapter vdtsNamedPositionedAdapter;
 
@@ -214,6 +214,8 @@ public class DataGatheringActivity extends AppCompatActivity
                         LinearLayoutManager.VERTICAL,
                         false
                 ));
+
+        //
 
         //Camera
         previewView = findViewById(R.id.cameraPreview);
@@ -351,12 +353,12 @@ public class DataGatheringActivity extends AppCompatActivity
             columnMap.clear();
             for (LayoutColumn layoutColumn : currentLayoutColumns) {
                 Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
-                columnMap.put((int) layoutColumn.getColumnPosition(), column);
+                columnMap.put((int) layoutColumn.getColumnPosition() - 1, column);
             }
 
             handler.post(() -> {
                 if (columnMap.size() != 0) {
-                    for (int index = 1; index <= columnMap.size(); index++){
+                    for (int index = 0; index < columnMap.size(); index++){
                         TextView columnText = new TextView(this);
                         columnText.setMinWidth(minWidthDimen);
                         columnText.setLayoutParams(layoutParams);
@@ -387,7 +389,7 @@ public class DataGatheringActivity extends AppCompatActivity
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             columnValueMap.clear();
-            for (int index = 1; index <= columnMap.size(); index++) {
+            for (int index = 0; index < columnMap.size(); index++) {
                 columnValueMap.put(
                         index,
                         vsViewModel.findAllActiveColumnValuesByColumn(
@@ -395,19 +397,12 @@ public class DataGatheringActivity extends AppCompatActivity
                 );
             }
 
-//            int columnValueMapIndex = 0;
-//            for (Column column : columnList) {
-//                columnValueMap.put(                     //todo put in order of layout position
-//                        columnValueMapIndex,
-//                        vsViewModel.findAllActiveColumnValuesByColumn(column.getUid()));
-//                columnValueMapIndex++;
-//            }
-
             handler.post(() -> {
-                for (int index = 1; index < columnValueMap.size(); index++) {
+                for (int index = 0; index < columnValueMap.size(); index++) {
                     ColumnValueSpinner columnValueSpinner =
                             new ColumnValueSpinner(
                                     this,
+                                    currentUser,
                                     columnValueMap.get(index),
                                     columnValueSpinnerListener,
                                     index
@@ -448,19 +443,19 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void initializeDGAdapter() {
-        dataGatheringAdapter = new DataGatheringAdapter(
+        dataGatheringRecyclerAdapter = new DataGatheringRecyclerAdapter(
                 this,
                 this,
                 new VDTSClickListenerUtil(this::entryAdapterSelect, entryRecyclerView)
         );
 
-        dataGatheringAdapter.setDatasets(
+        dataGatheringRecyclerAdapter.setDatasets(
                 columnList,
                 columnValueMap,
                 entryList,
                 entryValueList);
 
-        entryRecyclerView.setAdapter(dataGatheringAdapter);
+        entryRecyclerView.setAdapter(dataGatheringRecyclerAdapter);
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
@@ -468,7 +463,7 @@ public class DataGatheringActivity extends AppCompatActivity
         columnValueIndexValue.setText(String.format(
                 Locale.getDefault(),
                 "%d",
-                dataGatheringAdapter.getItemCount() + 1));
+                dataGatheringRecyclerAdapter.getItemCount() + 1));
 
         if (isHeadsetAvailable) {
             initializeIristickVoiceCommands();
@@ -492,10 +487,10 @@ public class DataGatheringActivity extends AppCompatActivity
                                 int oldx, int oldy) {
         if (observableHorizontalScrollView == columnScrollView) {
             columnValueScrollView.scrollTo(x, y);
-            dataGatheringAdapter.setXCord(x);
+            dataGatheringRecyclerAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == columnValueScrollView) {
             columnScrollView.scrollTo(x, y);
-            dataGatheringAdapter.setXCord(x);
+            dataGatheringRecyclerAdapter.setXCord(x);
         } else if (observableHorizontalScrollView == null) {
             columnScrollView.scrollTo(x, y);
             columnValueScrollView.scrollTo(x, y);
@@ -524,8 +519,8 @@ public class DataGatheringActivity extends AppCompatActivity
         @Override
         public void onChanged(List<Entry> entries) {
             if (entries != null) {
-                dataGatheringAdapter.clearEntries();
-                dataGatheringAdapter.addAllEntries(entries);
+                dataGatheringRecyclerAdapter.clearEntries();
+                dataGatheringRecyclerAdapter.addAllEntries(entries);
                 sessionEntriesCount.setText(String.format(
                         Locale.getDefault(), "%d", entries.size()));
 
@@ -540,8 +535,8 @@ public class DataGatheringActivity extends AppCompatActivity
         @Override
         public void onChanged(List<EntryValue> entryValues) {
             if (entryValues != null) {
-                dataGatheringAdapter.clearEntryValues();
-                dataGatheringAdapter.addAllEntryValues(entryValues);
+                dataGatheringRecyclerAdapter.clearEntryValues();
+                dataGatheringRecyclerAdapter.addAllEntryValues(entryValues);
             }
         }
     };
@@ -550,9 +545,9 @@ public class DataGatheringActivity extends AppCompatActivity
     private void entryAdapterSelect(int index) {
         if (index >= 0) {
             columnValueIndexValue.setText(index);
-            dataGatheringAdapter.setSelected(index - 1);
-            entryRecyclerView.scrollToPosition(dataGatheringAdapter.getItemCount() - 1 - index);
-            selectedEntry = dataGatheringAdapter.getEntry(index - 1);
+            dataGatheringRecyclerAdapter.setSelected(index - 1);
+            entryRecyclerView.scrollToPosition(dataGatheringRecyclerAdapter.getItemCount() - 1 - index);
+            selectedEntry = dataGatheringRecyclerAdapter.getEntry(index - 1);
             entryValueList.clear();
         } else {
 
@@ -626,7 +621,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             columnValueIndexValue.setText(String.format(
                                     Locale.getDefault(),
                                     "%d",
-                                    dataGatheringAdapter.getItemCount() + 1)
+                                    dataGatheringRecyclerAdapter.getItemCount() + 1)
                             );
 
                             columnScrollView.setScrollX(0);

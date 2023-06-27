@@ -144,7 +144,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         footerSessionValue = findViewById(R.id.footerSessionValue);
 
         footerUserValue = findViewById(R.id.footerUserValue);
-        footerUserValue.setText(currentUser.getName());
 
         footerVersionValue = findViewById(R.id.footerVersionValue);
         footerVersionValue.setText(BuildConfig.VERSION_NAME);

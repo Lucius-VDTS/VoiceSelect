@@ -35,7 +35,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 
 /**
- * Config user's feedback params.
+ * Configure user auto save, abbreviation, and feedback preferences.
  */
 public class VDTSConfigUserPreferencesActivity extends AppCompatActivity implements IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigUserPreferencesActivity.class);
@@ -208,7 +208,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
             LOG.info("Feedback settings saved for: {}", currentUser.getName());
             vdtsApplication.displayToast(
                     this,
-                    "Feedback settings saved for: " + currentUser.getName(),
+                    "Preferences saved for: " + currentUser.getName(),
                     0);
         } catch (Exception e) {
             YoYo.with(Techniques.Shake)
@@ -217,9 +217,9 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
                     .playOn(saveFeedbackButton);
             vdtsApplication.displayToast(
                     this,
-                    "Unable to save feedback settings for: " + currentUser.getName(),
+                    "Unable to save preferences for: " + currentUser.getName(),
                     0);
-            LOG.error("{}: Unable to save feedback settings for {}", e, currentUser.getName());
+            LOG.error("{}: Unable to save preferences for {}", e, currentUser.getName());
         }
     }
 
