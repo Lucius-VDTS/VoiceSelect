@@ -154,7 +154,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     }
 
     public Session getSelected() {
-        if (selectedIndex>0) {
+        if (selectedIndex>=0) {
             return dataset.get(selectedIndex);
         } else {
             return null;

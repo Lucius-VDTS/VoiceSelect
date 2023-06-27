@@ -6,8 +6,11 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_FILTER;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,11 +19,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.adapters.SessionAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Session;
@@ -30,8 +37,10 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSOuterClickListenerUtil;
 
 public class RecallActivity extends AppCompatActivity {
-
+    private static final Logger LOG = LoggerFactory.getLogger(RecallActivity.class);
     private VDTSApplication vdtsApplication;
+
+    private VDTSUser currentUser;
 
     private VSViewModel viewModel;
 
@@ -68,7 +77,6 @@ public class RecallActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         headerList.setLayoutManager(layoutManager);
 
-
         allSessions = new ArrayList<>();
         adapter = new SessionAdapter(allSessions, this, userMap, new VDTSOuterClickListenerUtil(this::selectCallback, headerList));
         headerList.setAdapter(adapter);
@@ -79,6 +87,7 @@ public class RecallActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
 
+        currentUser = vdtsApplication.getCurrentUser();
         updateSessions();
         updateUsers();
     }
@@ -119,6 +128,7 @@ public class RecallActivity extends AppCompatActivity {
 
     private void updateSessions() {
         new Thread(() -> {
+            adapter.setSelected(-1);
             openSessions.clear();
             openSessions.addAll(viewModel.findAllOpenSessionsOrderByStartDate());
             allSessions.clear();
@@ -151,7 +161,75 @@ public class RecallActivity extends AppCompatActivity {
 
     private void selectCallback(Integer index) {
         adapter.setSelected(index);
-       // parseBNFCommand(String.format("Select ID %d", index + 1));
+        showOpenDialogue();
+    }
+
+    private void showOpenDialogue() {
+        LOG.info("Showing Choice Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Recall Session");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_recall,
+                null
+        );
+        builder.setView(customLayout);
+        Button openButton = customLayout.findViewById(R.id.openButton);
+        Button exportButton = customLayout.findViewById(R.id.exportButton);
+        Button deleteButton = customLayout.findViewById(R.id.deleteButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        openButton.setOnClickListener(v -> {
+            vdtsApplication.getPreferences().setLong(
+                    String.format("%s_SESSION", currentUser.getExportCode()),
+                    adapter.getSelected().getUid());
+            finalDialog.dismiss();
+            Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
+            startActivity(resumeActivityIntent);
+        });
+
+        exportButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            export();
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            finalDialog.dismiss();
+            showConfirmDialog();
+        });
+
+    }
+
+    private void showConfirmDialog() {
+        LOG.info("Showing Confirm Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Deletion");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText(String.format("Delete Session %s ?",adapter.getSelected().name()));
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+        yesButton.setOnClickListener(v -> {
+            final Session session = adapter.getSelected();
+            new Thread(()-> {
+                viewModel.deleteSession(session);
+                updateSessions();
+            }).start();
+            finalDialog.dismiss();
+        });
+
+        noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
 
 }

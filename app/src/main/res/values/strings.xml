@@ -74,6 +74,8 @@
     <string name="status">Status:</string>
     <string name="status_open">Available</string>
     <string name="status_closed">Finished</string>
+    <string name="dialogue_delete_button">Delete</string>
+    <string name="dialogue_open_button">Open</string>
 
 <!--  Iristick Camera Activity  -->
     <string name="iristick_camera_activity_label">Iristick Camera</string>
@@ -242,5 +244,6 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
+
 
 </resources>
