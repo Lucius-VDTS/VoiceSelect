@@ -39,6 +39,8 @@ public class VDTSApplication extends Application {
     public static final String PREF_EXPORT_CSV = "PREF_EXPORT_CSV";
     public static final String PREF_EXPORT_JSON = "PREF_EXPORT_JSON";
     public static final String PREF_EXPORT_XLSX = "PREF_EXPORT_XLSX";
+    public static final String PREF_ZOOM = "PREF_ZOOM";
+    public static final String PREF_BRIGHTNESS = "PREF_BRIGHTNESS";
 
     public static final long DEFAULT_UID = -9001L;
     public static final int METHOD_CHAINED = 0;

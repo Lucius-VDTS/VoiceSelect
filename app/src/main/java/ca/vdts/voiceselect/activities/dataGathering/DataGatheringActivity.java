@@ -7,6 +7,8 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
 
 import android.annotation.SuppressLint;
@@ -33,6 +35,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -82,12 +85,14 @@ import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.LayoutColumn;
+import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 import ca.vdts.voiceselect.library.utilities.VDTSCustomLifecycle;
+import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtils;
 
 /**
  * Gather data for a particular session and its corresponding layout.
@@ -117,6 +122,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private final List<EntryValue> entryValueList = new ArrayList<>();
     private final HashMap<Integer, ColumnValue> entryValueMap = new HashMap<>();
     private LiveData<List<EntryValue>> entryValueListLive;
+
+    private final List<PictureReference> currentEntryPhotos = new ArrayList<>();
 
     //Views
     private LinearLayout columnLinearLayout;
@@ -686,16 +693,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     new ImageCapture.OnImageSavedCallback() {
                         @Override
                         public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                            /**
-                             * todo - Enable this
-                            ImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
                             PictureReference pictureReference = new PictureReference(
                                     currentUser.getUid(),
-                                    currentEntry.getUid(),
+                                    selectedEntry.getUid(),
                                     imageFile.getPath(),
                                     currentLocation
                             );
-                            currentEntryPhotos.add(pictureReference);*/
+                            currentEntryPhotos.add(pictureReference);
                         }
 
                         @Override
@@ -707,6 +712,56 @@ public class DataGatheringActivity extends AppCompatActivity
         } catch (IOException e) {
             LOG.error("IO Exception: ", e);
         }
+    }
+
+    private void zoomIn() {
+        if (zoomLevel < ZOOM_LEVELS) {
+            ++zoomLevel;
+            setCameraZoom(zoomLevel, true);
+        }
+    }
+
+    private void zoomOut() {
+        if (zoomLevel > 0) {
+            --zoomLevel;
+            setCameraZoom(zoomLevel, true);
+        }
+    }
+
+    private void setCameraZoom(int zoom, boolean feedback) {
+        if (feedback) {
+            vdtsApplication.displayToast(this,String.format(Locale.CANADA, "Setting zoom to %d", zoom),0);
+        }
+        zoomLevel = zoom;
+        final float linearZoom = (float) zoom / (float) ZOOM_LEVELS;
+        LOG.debug("Zoom level: {}/{}, Linear Zoom: {}", zoom, ZOOM_LEVELS, linearZoom);
+        camera.getCameraControl().setLinearZoom(linearZoom);
+        vdtsApplication.getPreferences().setInt(PREF_ZOOM, zoom);
+    }
+
+    private void increaseExposure() {
+        if (exposureLevel < EXPOSURE_LEVELS) {
+            ++exposureLevel;
+            setExposureLevel(exposureLevel, true);
+        }
+    }
+
+    private void decreaseExposure() {
+        if (exposureLevel > 0) {
+            --exposureLevel;
+            setExposureLevel(exposureLevel, true);
+        }
+    }
+
+    @OptIn(markerClass = androidx.camera.core.ExperimentalExposureCompensation.class)
+    private void setExposureLevel(int exposureLevel, boolean feedback) {
+        if (feedback) {
+            vdtsApplication.displayToast(this, String.format(Locale.CANADA, "Setting brightness to %d", exposureLevel),0
+            );
+        }
+        this.exposureLevel = exposureLevel;
+        camera.getCameraControl().setExposureCompensationIndex(exposureLevel);
+        vdtsApplication.getPreferences().setInt(PREF_BRIGHTNESS, exposureLevel);
     }
 
     @Override
