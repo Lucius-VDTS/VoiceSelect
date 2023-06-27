@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activities.recall.RecallActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sesh_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/double_margin"
+        android:paddingTop="@dimen/padding"
+        android:paddingBottom="@dimen/padding"
+        android:background="@drawable/recycler_view_background"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/filterLayout"
+        app:layout_constraintVertical_bias="1.0"
+        android:contentDescription="hf_scroll_vertical"
+        tools:ignore="HardcodedText" />
+
+    <LinearLayout
+        android:id="@+id/filterLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    <TextView
+        android:id="@+id/searchLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/searchView"
+        android:text="@string/search_label"
+        android:textSize="@dimen/medium_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/searchView"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="@dimen/medium_text_size"
+        app:layout_constraintStart_toEndOf="@+id/searchLabel"
+        app:layout_constraintEnd_toStartOf="@+id/openCheck"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/openCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/incomplete_only"
+        android:textSize="@dimen/medium_text_size"
+        android:onClick="onOpenCheck"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

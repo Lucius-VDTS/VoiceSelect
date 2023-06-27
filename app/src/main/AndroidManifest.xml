@@ -52,6 +52,9 @@
         <activity android:name=".activities.dataGathering.DataGatheringActivity"
             android:label="@string/data_gathering_activity_label" />
 
+        <activity android:name=".activities.recall.RecallActivity"
+            android:label="@string/menu_recall" />
+
         <activity android:name=".activities.dataGathering.IristickCameraActivity"
             android:label="@string/iristick_camera_activity_label" />
 
