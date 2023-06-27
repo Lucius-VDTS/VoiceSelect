@@ -640,7 +640,7 @@ public class VSViewModel extends VDTSViewModel {
         return pictureReferenceRepository.findAll(
                 "SELECT PR.* FROM PictureReferences AS PR " +
                         "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
-                        "WHERE E.headerID = " + headerID
+                        "WHERE E.sessionID = " + headerID
         );
     }
 
@@ -672,7 +672,7 @@ public class VSViewModel extends VDTSViewModel {
         return pictureReferenceRepository.findAllLive(
                 "SELECT PR.* FROM PictureReferences AS PR " +
                         "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
-                        "WHERE E.headerID = " + headerID
+                        "WHERE E.sessionID = " + headerID
         );
     }
 
@@ -703,15 +703,15 @@ public class VSViewModel extends VDTSViewModel {
 
     public List<VideoReference> videoReferences(long headerID) {
         return videoReferenceRepository.findAll(
-                "SELECT * FROM VideoReference " +
-                        "WHERE headerID = " + headerID
+                "SELECT * FROM VideoReferences " +
+                        "WHERE sessionID = " + headerID
         );
     }
 
     public LiveData<List<VideoReference>> liveVideoReferences(long headerID) {
         return videoReferenceRepository.findAllLive(
-                "SELECT * FROM VideoReference " +
-                        "WHERE headerID = " + headerID
+                "SELECT * FROM VideoReferences " +
+                        "WHERE sessionID = " + headerID
         );
     }
 }
