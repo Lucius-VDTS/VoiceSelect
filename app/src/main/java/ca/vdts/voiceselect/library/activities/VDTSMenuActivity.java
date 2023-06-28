@@ -43,8 +43,11 @@ import ca.vdts.voiceselect.activities.SettingsActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
 import ca.vdts.voiceselect.activities.recall.RecallActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
+import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
+import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.Session;
+import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.activities.configure.VDTSConfigMenuActivity;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedAdapter;
@@ -61,6 +64,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private VDTSUser currentUser;
     private Session currentSession;
     private Layout currentLayout;
+    private SessionLayout currentSessionLayout;
 
     //Views
     private Spinner layoutSpinner;
@@ -293,15 +297,32 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
             executor.execute(() -> {
-                int dailySessionCount = vsViewModel.countSessionsStartedToday();
+                int dailySessionCount = vsViewModel.findAllSessionStartedToday();
                 currentSession = new Session(
                         currentUser.getUid(),
                         currentUser.getSessionPrefix(),
                         currentLayout.getName(),
                         dailySessionCount + 1);
-                long uid = vsViewModel.insertSession(currentSession);
-                currentSession.setUid(uid);
+                long currentSessionID = vsViewModel.insertSession(currentSession);
+                currentSession.setUid(currentSessionID);
                 LOG.info("Added session: {}", currentSession.getSessionPrefix());
+
+                //Create SessionLayout
+                List<LayoutColumn> currentLayoutColumnList;
+                currentLayoutColumnList = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
+                for (LayoutColumn layoutColumn : currentLayoutColumnList) {
+                    Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
+
+                    currentSessionLayout = new SessionLayout(
+                            currentSession.getUid(),
+                            column.getUid(),
+                            (int) layoutColumn.getColumnPosition()
+                    );
+
+                    long currentSessionLayoutUID =
+                            vsViewModel.insertSessionLayout(currentSessionLayout);
+                    currentSessionLayout.setUid(currentSessionLayoutUID);
+                }
 
                 handler.post(() -> {
                     //Attach new session to current user
@@ -313,7 +334,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             });
 
             Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
-            startActivityIntent.putExtra("layout", currentLayout.getUid());
+//            startActivityIntent.putExtra("layout", currentLayout.getUid());
             startActivity(startActivityIntent);
         }
     }

@@ -490,7 +490,7 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
-    public int countSessionsStartedToday() {
+    public int findAllSessionStartedToday() {
         return sessionRepository.findAll(
                 "SELECT * FROM Sessions " +
                         "WHERE startDate >= '" + LocalDateTime.now() + "' " +

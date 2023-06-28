@@ -84,9 +84,9 @@ import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.Layout;
-import ca.vdts.voiceselect.database.entities.LayoutColumn;
 import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
+import ca.vdts.voiceselect.database.entities.SessionLayout;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -111,7 +111,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private ColumnValue selectedColumnValue;
 
     //Lists
-    private List<LayoutColumn> currentLayoutColumnList;
+    private List<SessionLayout> currentSessionLayoutList;
     private final List<Column> columnList = new ArrayList<>();
     private final HashMap<Integer, Column> columnMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
@@ -223,8 +223,6 @@ public class DataGatheringActivity extends AppCompatActivity
                         false
                 ));
 
-        //
-
         //Camera
         previewView = findViewById(R.id.cameraPreview);
 
@@ -299,19 +297,20 @@ public class DataGatheringActivity extends AppCompatActivity
             return iristickHUD;
         });
 
-        initializeLayout();
+        initializeSession();
     }
 
-    private void initializeLayout() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            currentLayout = vsViewModel.findLayoutByID(
-                    getIntent().getLongExtra("layout", -9001L));
-            currentLayoutColumnList = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
-            handler.post(this::initializeSession);
-        });
-    }
+//    private void initializeLayout() {
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        executor.execute(() -> {
+//            currentLayout = vsViewModel.findLayoutByID(
+//                    getIntent().getLongExtra("layout", -9001L));
+//
+//            currentLayoutColumnList = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
+//            handler.post(this::initializeSession);
+//        });
+//    }
 
     private void initializeSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
@@ -323,8 +322,25 @@ public class DataGatheringActivity extends AppCompatActivity
             currentSession = vsViewModel.findSessionByID(currentSessionID);
             handler.post(() -> {
                 sessionValue.setText(currentSession.name());
-                initializeColumnsLayout();
+                initializeSessionLayout();
             });
+        });
+    }
+
+    private void initializeSessionLayout() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            currentSessionLayoutList =
+                    vsViewModel.findAllSessionLayoutsBySession(currentSession.getUid());
+
+            columnMap.clear();
+            for (SessionLayout sessionLayout : currentSessionLayoutList) {
+                Column column = vsViewModel.findColumnByID(sessionLayout.getColumnID());
+                columnMap.put(sessionLayout.getColumnPosition() - 1, column);
+            }
+
+            handler.post(this::initializeColumnsLayout);
         });
     }
 
@@ -355,12 +371,6 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            columnMap.clear();
-            for (LayoutColumn layoutColumn : currentLayoutColumnList) {
-                Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
-                columnMap.put((int) layoutColumn.getColumnPosition() - 1, column);
-            }
-
             handler.post(() -> {
                 if (columnMap.size() != 0) {
                     for (int index = 0; index < columnMap.size(); index++){
