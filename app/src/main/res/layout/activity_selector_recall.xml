@@ -27,7 +27,7 @@
             android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
             android:text="@string/incomplete_only"
-            android:textSize="@dimen/large_text_size"/>
+            android:textSize="@dimen/medium_text_size"/>
 
         <SearchView
             android:id="@+id/sessionSearch"

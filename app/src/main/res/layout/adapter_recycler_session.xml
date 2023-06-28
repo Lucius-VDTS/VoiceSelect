@@ -24,9 +24,8 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:textSize="@dimen/xxl_text_size"
-        app:layout_constraintHorizontal_weight="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="@dimen/medium_text_size"
+        android:layout_weight="0.1" />
 
     <TextView
         android:id="@+id/selectorSessionLabel"
@@ -34,12 +33,10 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:textSize="@dimen/xxl_text_size"
+        android:textSize="@dimen/medium_text_size"
         android:text="@string/footer_session_label"
-        app:layout_constraintEnd_toStartOf="@id/selectorSessionValue"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintHorizontal_weight="1.0"
-        app:layout_constraintStart_toEndOf="@id/sessionIndexValue" />
+        android:layout_weight="0.1"
+        />
 
     <TextView
         android:id="@+id/selectorSessionValue"
@@ -47,9 +44,8 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
-        android:textSize="@dimen/xxl_text_size"
-        android:layout_weight="0.9"
-        app:layout_constraintHorizontal_weight="0.9" />
+        android:textSize="@dimen/medium_text_size"
+        android:layout_weight="3" />
     </LinearLayout>
 
     <LinearLayout
@@ -59,30 +55,26 @@
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/double_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sessionNameLayout">
 
     <TextView
         android:id="@+id/selectorStatusLabel"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="65dp"
+        android:layout_marginStart="73dp"
         android:layout_marginEnd="@dimen/margin"
-        android:textSize="@dimen/xxl_text_size"
+        android:textSize="@dimen/medium_text_size"
         android:text="@string/status"
-        android:layout_weight="1.0"/>
+        android:layout_weight="0.2"/>
 
     <TextView
         android:id="@+id/statusValue"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:textSize="@dimen/xxl_text_size"
-        app:layout_constraintStart_toEndOf="@id/selectorStatusLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="0.5"/>
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        android:textSize="@dimen/medium_text_size"
+        android:layout_weight="3" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
