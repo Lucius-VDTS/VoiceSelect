@@ -78,10 +78,10 @@ public class RecallActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 boolean isValidSubmit = false;
                 if (query != null && !query.isEmpty()) {
-                    adapter.addFilter(query);
+                    sessionAdapter.addFilter(query);
                     isValidSubmit = true;
                 } else {
-                    adapter.clearFilter();
+                    sessionAdapter.clearFilter();
                 }
 
                 return isValidSubmit;
@@ -91,10 +91,10 @@ public class RecallActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 boolean isValidSubmit = false;
                 if (newText != null && !newText.isEmpty()) {
-                    adapter.addFilter(newText);
+                    sessionAdapter.addFilter(newText);
                     isValidSubmit = true;
                 }else {
-                    adapter.clearFilter();
+                    sessionAdapter.clearFilter();
                 }
 
                 return isValidSubmit;
@@ -131,7 +131,7 @@ public class RecallActivity extends AppCompatActivity {
     }
 
 
-    public void onOpenCheck(View view) {
+    public void onOpenCheck() {
         if (openSessionList != null && sessionList != null) {
             sessionAdapter.setSessionDataset(openCheck.isChecked() ? openSessionList : sessionList);
         }

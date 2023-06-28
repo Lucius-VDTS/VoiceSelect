@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -45,10 +44,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         this.context = context;
         this.userMap = userMap;
         this.selectedListener = selectedListener;
-    }
-
-    public Session getItem(int i) {
-        return filterCriteria == null ? sessionDataset.get(i) : filteredSessionDataset.get(i);
     }
 
     @NonNull
