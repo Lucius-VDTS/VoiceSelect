@@ -139,7 +139,9 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     public void clearSelected() {
         int old = selectedIndex;
         selectedIndex = -1;
-        notifyItemChanged(old);
+        if (old >= 0 && old < sessionDataset.size()) {
+            notifyItemChanged(old);
+        }
     }
 
     /**

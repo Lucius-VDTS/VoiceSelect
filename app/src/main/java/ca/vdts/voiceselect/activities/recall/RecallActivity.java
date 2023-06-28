@@ -132,11 +132,8 @@ public class RecallActivity extends AppCompatActivity {
 
 
     public void onOpenCheck() {
-        if (openSessionList != null && sessionList != null) {
-            sessionAdapter.setSessionDataset(openCheck.isChecked() ? openSessionList : sessionList);
-        }
-
         vdtsApplication.getPreferences().setBoolean(PREF_FILTER, openCheck.isChecked());
+        updateSessions();
     }
 
     private void export() {
@@ -180,7 +177,7 @@ public class RecallActivity extends AppCompatActivity {
 
     private void updateSessions() {
         new Thread(() -> {
-            sessionAdapter.setSelected(-1);
+            sessionAdapter.clearSelected();
 
             openSessionList.clear();
             openSessionList.addAll(vsViewModel.findAllOpenSessionsOrderByStartDate());
