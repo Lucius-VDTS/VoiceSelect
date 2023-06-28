@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,7 +54,7 @@ public class RecallActivity extends AppCompatActivity {
     final List<VDTSUser> userList = new ArrayList<>();
     final HashMap<Long,VDTSUser> userMap = new HashMap<>();
     private SwitchCompat openCheck;
-    private TextView searchView;
+    private SearchView searchView;
 
     @SuppressLint("UseSparseArrays")
     @Override
@@ -66,7 +67,40 @@ public class RecallActivity extends AppCompatActivity {
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         openCheck = findViewById(R.id.openCheck);
-        searchView = findViewById(R.id.searchView);
+        openCheck.setOnClickListener(v -> onOpenCheck());
+        searchView = findViewById(R.id.sessionSearch);
+        //searchView.setSubmitButtonEnabled(true);
+        searchView.setIconifiedByDefault(false);
+        searchView.setIconified(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                boolean isValidSubmit = false;
+                if (query != null && !query.isEmpty()) {
+                    sessionAdapter.addFilter(query);
+                    isValidSubmit = true;
+                } else {
+                    sessionAdapter.clearFilter();
+                }
+
+                return isValidSubmit;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                boolean isValidSubmit = false;
+                if (newText != null && !newText.isEmpty()) {
+                    sessionAdapter.addFilter(newText);
+                    isValidSubmit = true;
+                }else {
+                    sessionAdapter.clearFilter();
+                }
+
+                return isValidSubmit;
+            }
+        });
+
 
         openCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_FILTER,false));
 
@@ -86,6 +120,7 @@ public class RecallActivity extends AppCompatActivity {
         headerRecyclerView.setAdapter(sessionAdapter);
     }
 
+
     @Override
     protected void onResume(){
         super.onResume();
@@ -96,7 +131,7 @@ public class RecallActivity extends AppCompatActivity {
     }
 
 
-    public void onOpenCheck(View view) {
+    public void onOpenCheck() {
         if (openSessionList != null && sessionList != null) {
             sessionAdapter.setSessionDataset(openCheck.isChecked() ? openSessionList : sessionList);
         }
@@ -186,6 +221,7 @@ public class RecallActivity extends AppCompatActivity {
         sessionAdapter.setSelected(index);
         showOpenDialogue();
     }
+
 
     private void showOpenDialogue() {
         LOG.info("Showing Choice Dialog");

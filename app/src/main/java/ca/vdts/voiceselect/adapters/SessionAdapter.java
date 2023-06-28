@@ -1,8 +1,6 @@
 package ca.vdts.voiceselect.adapters;
 
 
-import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -49,10 +46,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         this.selectedListener = selectedListener;
     }
 
-    public Session getItem(int i) {
-        return filterCriteria == null ? sessionDataset.get(i) : filteredSessionDataset.get(i);
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -80,17 +73,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             holder.statusView.setText(R.string.status_open);
         } else {
             holder.statusView.setText(R.string.status_closed);
-        }
-
-        if (session.getUserID() != VDTS_USER_NONE.getUid()){
-            if (userMap.get(session.getUserID()) != null){
-                holder.userView.setText(
-                        Objects.requireNonNull(userMap.get(session.getUserID())).getName());
-            } else {
-                holder.userView.setText("");
-            }
-        } else {
-            holder.userView.setText("");
         }
 
         if (size == 1) {
@@ -224,7 +206,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         final TextView idView;
         final TextView sessionView;
         final TextView statusView;
-        final TextView userView;
 
         ViewHolder(View view) {
             super(view);
@@ -232,7 +213,6 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             idView = view.findViewById(R.id.sessionIndexValue);
             sessionView = view.findViewById(R.id.selectorSessionValue);
             statusView = view.findViewById(R.id.statusValue);
-            userView = view.findViewById(R.id.selectorUserValue);
         }
     }
 }
