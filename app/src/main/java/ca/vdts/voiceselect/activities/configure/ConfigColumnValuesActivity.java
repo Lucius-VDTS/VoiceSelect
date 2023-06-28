@@ -947,7 +947,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle( vdtsApplication.getResources().getString(R.string.column_value_letter_range_label));
         final View customLayout = getLayoutInflater()
-                .inflate(R.layout.dialogue_fragment_spec_letter, null);
+                .inflate(R.layout.dialogue_fragment_letter, null);
         builder.setView(customLayout);
 
         EditText minView  = customLayout.findViewById(R.id.minValue);
