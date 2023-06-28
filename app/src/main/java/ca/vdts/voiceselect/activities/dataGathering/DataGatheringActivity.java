@@ -428,13 +428,8 @@ public class DataGatheringActivity extends AppCompatActivity
         executor.execute(() -> {
             entryList.clear();
             entryList.addAll(vsViewModel.findAllEntriesBySession(currentSession.getUid()));
-
-//            entryListLive.removeObservers(this);
             entryListLive = vsViewModel.findAllEntriesBySessionLive(currentSession.getUid());
-            handler.post(() -> {
-
-                initializeEntryValuesList();
-            });
+            handler.post(this::initializeEntryValuesList);
         });
     }
 
@@ -710,21 +705,18 @@ public class DataGatheringActivity extends AppCompatActivity
     private void zoomIn() {
         if (zoomLevel < ZOOM_LEVELS) {
             ++zoomLevel;
-            setCameraZoom(zoomLevel, true);
+            setCameraZoom(zoomLevel);
         }
     }
 
     private void zoomOut() {
         if (zoomLevel > 0) {
             --zoomLevel;
-            setCameraZoom(zoomLevel, true);
+            setCameraZoom(zoomLevel);
         }
     }
 
-    private void setCameraZoom(int zoom, boolean feedback) {
-        if (feedback) {
-            vdtsApplication.displayToast(this,String.format(Locale.CANADA, "Setting zoom to %d", zoom),0);
-        }
+    private void setCameraZoom(int zoom) {
         zoomLevel = zoom;
         final float linearZoom = (float) zoom / (float) ZOOM_LEVELS;
         LOG.debug("Zoom level: {}/{}, Linear Zoom: {}", zoom, ZOOM_LEVELS, linearZoom);
@@ -735,23 +727,19 @@ public class DataGatheringActivity extends AppCompatActivity
     private void increaseExposure() {
         if (exposureLevel < EXPOSURE_LEVELS) {
             ++exposureLevel;
-            setExposureLevel(exposureLevel, true);
+            setExposureLevel(exposureLevel);
         }
     }
 
     private void decreaseExposure() {
         if (exposureLevel > 0) {
             --exposureLevel;
-            setExposureLevel(exposureLevel, true);
+            setExposureLevel(exposureLevel);
         }
     }
 
     @OptIn(markerClass = androidx.camera.core.ExperimentalExposureCompensation.class)
-    private void setExposureLevel(int exposureLevel, boolean feedback) {
-        if (feedback) {
-            vdtsApplication.displayToast(this, String.format(Locale.CANADA, "Setting brightness to %d", exposureLevel),0
-            );
-        }
+    private void setExposureLevel(int exposureLevel) {
         this.exposureLevel = exposureLevel;
         camera.getCameraControl().setExposureCompensationIndex(exposureLevel);
         vdtsApplication.getPreferences().setInt(PREF_BRIGHTNESS, exposureLevel);

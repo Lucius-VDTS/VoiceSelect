@@ -1,7 +1,6 @@
 package ca.vdts.voiceselect.database.entities;
 
 import static androidx.room.ForeignKey.CASCADE;
-
 import static ca.vdts.voiceselect.database.entities.Column.COLUMN_NONE;
 import static ca.vdts.voiceselect.database.entities.Session.SESSION_NONE;
 import static ca.vdts.voiceselect.library.VDTSApplication.DEFAULT_UID;
@@ -20,8 +19,7 @@ import java.util.Objects;
 
 /**
  * Entity defines the SessionLayouts table. Entity associates columns and their position with a
- * session so that if it's layout is changed the session can maintain it's historical layout
- * if desired.
+ * session so that if it's layout is changed the session maintains it's historical layout.
  */
 @Entity(
         tableName = "SessionLayouts",
