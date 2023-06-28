@@ -41,6 +41,7 @@ import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.SettingsActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
+import ca.vdts.voiceselect.activities.recall.RecallActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.Session;
@@ -65,6 +66,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private Spinner layoutSpinner;
     private Button startActivityButton;
     private Button resumeActivityButton;
+
+    private Button recallActivityButton;
     private Button configureActivityButton;
     private Button settingsActivityButton;
     private Button changeUserActivityButton;
@@ -123,6 +126,9 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         resumeActivityButton = findViewById(R.id.resumeActivityButton);
         resumeActivityButton.setOnClickListener(v -> resumeActivityButtonOnClick());
+
+        recallActivityButton = findViewById(R.id.recallActivityButton);
+        recallActivityButton.setOnClickListener(v -> recallActivityButtonOnClick());
 
         configureActivityButton = findViewById(R.id.configureActivityButton);
         configureActivityButton.setOnClickListener(v -> configureActivityButtonOnClick());
@@ -230,6 +236,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
         if (currentUser.getUid() == -9001L) {
             startActivityButton.setEnabled(false);
             resumeActivityButton.setEnabled(false);
+            recallActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
 
@@ -325,6 +332,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
             startActivity(resumeActivityIntent);
         }
+    }
+
+    public void recallActivityButtonOnClick() {
+            Intent resumeActivityIntent = new Intent(this, RecallActivity.class);
+            startActivity(resumeActivityIntent);
     }
 
     public void configureActivityButtonOnClick() {

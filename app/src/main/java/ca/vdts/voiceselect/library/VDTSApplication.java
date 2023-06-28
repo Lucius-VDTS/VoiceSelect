@@ -33,17 +33,23 @@ public class VDTSApplication extends Application {
     public static final String PREF_ENTRY_METHOD = "PREF_ENTRY_METHOD";
 
     public static final String PREF_AUTOSAVE = "PREF_AUTOSAVE ";
+    public static final String PREF_FILTER = " PREF_FILTER";
     public static final String PREF_PHOTO_PRINT_NAME = "PREF_PHOTO_PRINT_NAME";
     public static final String PREF_PHOTO_PRINT_GPS = "PREF_PHOTO_PRINT_GPS";
     public static final String PREF_PHOTO_PRINT_TIME = "PREF_PHOTO_PRINT_TIME";
     public static final String PREF_EXPORT_CSV = "PREF_EXPORT_CSV";
     public static final String PREF_EXPORT_JSON = "PREF_EXPORT_JSON";
     public static final String PREF_EXPORT_XLSX = "PREF_EXPORT_XLSX";
+    public static final String PREF_ZOOM = "PREF_ZOOM";
+    public static final String PREF_BRIGHTNESS = "PREF_BRIGHTNESS";
 
-    public static final long DEFAULT_UID = -9001L;
+    //Entry Method Enum
     public static final int METHOD_CHAINED = 0;
     public static final int METHOD_STEP = 1;
     public static final int METHOD_FREE = 2;
+
+    //Default Values
+    public static final long DEFAULT_UID = -9001L;
     public static final LocalDateTime DEFAULT_DATE = LocalDateTime.now();
 
     //VDTSApplication

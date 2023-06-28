@@ -31,6 +31,7 @@
 
     <string name="menu_start_activity_button">Start</string>
     <string name="menu_resume_activity_button">Resume</string>
+    <string name="menu_recall_activity_button">Recall</string>
     <string name="menu_configure_activity_button">Configure</string>
     <string name="menu_settings_activity_button">Settings</string>
     <string name="menu_change_user_activity_button">Change User</string>
@@ -65,6 +66,16 @@
     <string name="data_gathering_end_button">End</string>
 
     <string name="data_gathering_hud_end_of_row">END</string>
+
+<!-- Recall Activity -->
+    <string name="menu_recall">Recall</string>
+    <string name="incomplete_only">Unfinished Only</string>
+    <string name="search_label">Search:</string>
+    <string name="status">Status:</string>
+    <string name="status_open">Available</string>
+    <string name="status_closed">Finished</string>
+    <string name="dialogue_delete_button">Delete</string>
+    <string name="dialogue_open_button">Open</string>
 
 <!--  Iristick Camera Activity  -->
     <string name="iristick_camera_activity_label">Iristick Camera</string>
@@ -233,4 +244,6 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
+
+
 </resources>
