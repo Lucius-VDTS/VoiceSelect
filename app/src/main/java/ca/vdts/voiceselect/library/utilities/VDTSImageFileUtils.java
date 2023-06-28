@@ -25,19 +25,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Locale;
 
 public class VDTSImageFileUtils {
     private static final Logger LOG = LoggerFactory.getLogger(VDTSImageFileUtils.class);
+    private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd HH-mm-ss"
+    );
+    private static final DateTimeFormatter preciseDateTimeFormat = DateTimeFormatter.ofPattern(
+            "yyyy-MM-dd HH-mm-ss.SSS"
+    );
 
     public VDTSImageFileUtils() {
     }
 
-    public static String generateFileName(String label) {
-        return label.concat(String.format(Locale.getDefault(), "%1$tY-%1$tm-%1$td %1$tH-%1$tM-%1$tS", VDTSToolUtil.getTimeStamp()));
+    public static String generateFileName(String label, boolean precise) {
+        return label.concat(
+                precise ?
+                        preciseDateTimeFormat.format(LocalDateTime.now()) :
+                        dateTimeFormat.format(LocalDateTime.now())
+        );
     }
 
     public static void addGPS(String src, Location location) {

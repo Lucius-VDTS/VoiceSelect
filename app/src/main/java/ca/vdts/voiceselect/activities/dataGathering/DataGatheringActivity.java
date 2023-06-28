@@ -23,8 +23,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Range;
+import android.util.Rational;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -39,6 +44,7 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalExposureCompensation;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
@@ -64,8 +70,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,9 +169,14 @@ public class DataGatheringActivity extends AppCompatActivity
     private PreviewView previewView;
     private VDTSCustomLifecycle cameraLifecycle;
     private Camera camera;
+    private GestureDetector scrollDetector;
+    private ScaleGestureDetector scaleDetector;
     private ImageCapture imageCapture;
     private static final int EXPOSURE_LEVELS = 10; // todo - add controls to control
     private int exposureLevel = EXPOSURE_LEVELS / 2;
+    private float zoomRatio = 1.0f;
+    private float minZoomRatio = 1.0f;
+    private float maxZoomRatio = 1.0f;
     private static final int ZOOM_LEVELS = 5;
     private int zoomLevel = 0;
 
@@ -224,7 +233,10 @@ public class DataGatheringActivity extends AppCompatActivity
                 ));
 
         //Camera
+        scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
+        scrollDetector = new GestureDetector(this, new ScrollListener());
         previewView = findViewById(R.id.cameraPreview);
+        previewView.setOnTouchListener(onTouchListener);
 
         cameraLifecycle = new VDTSCustomLifecycle();
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
@@ -246,6 +258,35 @@ public class DataGatheringActivity extends AppCompatActivity
                                 cameraSelector,
                                 imageCapture,
                                 preview
+                        );
+
+                        camera.getCameraInfo().getZoomState().observe(
+                                this,
+                                observer -> {
+                                    zoomRatio = observer.getZoomRatio();
+                                    minZoomRatio = observer.getMinZoomRatio();
+                                    maxZoomRatio = observer.getMaxZoomRatio();
+
+                                    String logMessage = String.format(
+                                            Locale.getDefault(),
+                                            "Zoom Ratio: %.2f, Min Zoom Ratio: %.2f, Max Zoom Ratio: %.2f",
+                                            zoomRatio,
+                                            minZoomRatio,
+                                            maxZoomRatio
+                                    );
+                                    LOG.debug(logMessage);
+
+                                    String message = String.format(
+                                            Locale.getDefault(),
+                                            "Zoom Level: %.2f",
+                                            zoomRatio
+                                    );
+                                    vdtsApplication.displayToast(
+                                            this,
+                                            message,
+                                            LENGTH_SHORT
+                                    );
+                                }
                         );
 
                         cameraLifecycle.performEvent(Lifecycle.Event.ON_CREATE);
@@ -646,11 +687,13 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void showPreview() {
         previewView.bringToFront();
+        previewView.setVisibility(View.VISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
     }
 
     private void hidePreview() {
         entryRecyclerView.bringToFront();
+        previewView.setVisibility(View.INVISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_STOP);
     }
 
@@ -672,9 +715,8 @@ public class DataGatheringActivity extends AppCompatActivity
                     return;
                 }
             }
-            DateTimeFormatter dateTimeWithoutSeconds = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm");
             final File imageFile = File.createTempFile(
-                    dateTimeWithoutSeconds.format(LocalDateTime.now()),
+                    VDTSImageFileUtils.generateFileName("", false),
                     ".jpg",
                     new File(photoDir.getPath())
             );
@@ -877,6 +919,91 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
     }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float scaleFactor = detector.getScaleFactor();
+            float newRatio = zoomRatio * scaleFactor;
+            newRatio = Math.max(minZoomRatio, Math.min(maxZoomRatio, newRatio));
+            LOG.debug(
+                    String.format(
+                            Locale.getDefault(),
+                            "Scale Factor: %.2f, New Ratio: %.2f",
+                            scaleFactor,
+                            newRatio
+                    )
+            );
+            camera.getCameraControl().setZoomRatio(newRatio);
+
+            return true;
+        }
+    }
+
+    private class ScrollListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(@NonNull MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        @OptIn(markerClass = ExperimentalExposureCompensation.class)
+        public boolean onScroll(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float distanceX,
+                                float distanceY) {
+            final String message = String.format(
+                    Locale.getDefault(),
+                    "onScroll - event1: %s, event2: %s, distance x: %.2f, distance y: %.2f",
+                    e1.toString(),
+                    e2.toString(),
+                    distanceX,
+                    distanceY
+            );
+            LOG.debug(message);
+
+            Range<Integer> exposureRange = camera.getCameraInfo()
+                    .getExposureState()
+                    .getExposureCompensationRange();
+            Rational exposureStep = camera.getCameraInfo()
+                    .getExposureState()
+                    .getExposureCompensationStep();
+
+            LOG.debug("Exposure Range: {}, ExposureStep: {}", exposureRange, exposureStep);
+
+            int newExposureLevel = exposureLevel + (int) (distanceY * exposureStep.floatValue());
+
+            newExposureLevel = Math.max(
+                    exposureRange.getLower(),
+                    Math.min(exposureRange.getUpper(), newExposureLevel)
+            );
+            LOG.debug("New target exposure level: {}", newExposureLevel);
+            int finalNewExposureLevel = newExposureLevel;
+            camera.getCameraControl().setExposureCompensationIndex(newExposureLevel).addListener(
+                    () -> {
+                        exposureLevel = finalNewExposureLevel;
+                        vdtsApplication.displayToast(
+                                vdtsApplication.getApplicationContext(),
+                                String.format(
+                                        Locale.getDefault(),
+                                        "Brightness set to %d",
+                                        exposureLevel
+                                ),
+                                LENGTH_SHORT
+                        );
+                    },
+                    getMainExecutor()
+            );
+
+            return true;
+        }
+    }
+
+    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            scrollDetector.onTouchEvent(motionEvent);
+            return scaleDetector.onTouchEvent(motionEvent);
+        }
+    };
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
