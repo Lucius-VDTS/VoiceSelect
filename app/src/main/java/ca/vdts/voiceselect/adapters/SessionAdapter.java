@@ -1,8 +1,6 @@
 package ca.vdts.voiceselect.adapters;
 
 
-import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -55,7 +53,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
         final TextView idView;
         final TextView sessionView;
         final TextView statusView;
-        final TextView userView;
+        //final TextView userView;
 
         ViewHolder(View view) {
             super(view);
@@ -63,7 +61,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             idView = view.findViewById(R.id.sessionIndexValue);
             sessionView = view.findViewById(R.id.selectorSessionValue);
             statusView = view.findViewById(R.id.statusValue);
-            userView = view.findViewById(R.id.selectorUserValue);
+            //userView = view.findViewById(R.id.selectorUserValue);
         }
     }
 
@@ -90,7 +88,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             holder.statusView.setText(R.string.status_closed);
         }
 
-        if (session.getUserID() != VDTS_USER_NONE.getUid()){
+        /*if (session.getUserID() != VDTS_USER_NONE.getUid()){
             if (users.get(session.getUserID()) != null){
                 holder.userView.setText(users.get(session.getUserID()).getName());
             } else {
@@ -98,7 +96,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
             }
         } else {
             holder.userView.setText("");
-        }
+        }*/
 
         if (size == 1) {
             holder.layout.setBackgroundResource(R.drawable.recycler_view_item);

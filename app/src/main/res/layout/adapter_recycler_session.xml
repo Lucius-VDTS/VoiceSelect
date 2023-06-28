@@ -7,9 +7,20 @@
     android:layout_marginEnd="@dimen/margin"
     android:paddingVertical="@dimen/double_padding">
 
+    <LinearLayout
+        android:id="@+id/sessionNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
     <TextView
         android:id="@+id/sessionIndexValue"
-        android:layout_width="0dp"
+        android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
@@ -37,49 +48,34 @@
         android:layout_marginStart="@dimen/margin"
         android:layout_marginEnd="@dimen/double_margin"
         android:textSize="@dimen/xxl_text_size"
-        app:layout_constraintEnd_toStartOf="@id/selectorUserLabel"
-        app:layout_constraintHorizontal_weight="0.9"
-        app:layout_constraintStart_toEndOf="@id/selectorSessionLabel" />
+        android:layout_weight="0.9"
+        app:layout_constraintHorizontal_weight="0.9" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/selectorUserLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+    <LinearLayout
+        android:id="@+id/sessionStatusLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
         android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:textSize="@dimen/xxl_text_size"
-        android:text="@string/footer_user_label"
-        app:layout_constraintEnd_toStartOf="@id/selectorUserValue"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintHorizontal_weight="1.0"
-        app:layout_constraintStart_toEndOf="@id/selectorSessionValue" />
-
-    <TextView
-        android:id="@+id/selectorUserValue"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/double_margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:textSize="@dimen/xxl_text_size"
-        app:layout_constraintEnd_toStartOf="@id/selectorStatusLabel"
-        app:layout_constraintHorizontal_weight="0.6"
-        app:layout_constraintStart_toEndOf="@id/selectorUserLabel" />
+        android:layout_marginEnd="@dimen/double_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sessionNameLayout">
 
     <TextView
         android:id="@+id/selectorStatusLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginStart="65dp"
         android:layout_marginEnd="@dimen/margin"
         android:textSize="@dimen/xxl_text_size"
         android:text="@string/status"
-        app:layout_constraintEnd_toStartOf="@id/statusValue"
-        app:layout_constraintStart_toEndOf="@id/selectorUserValue"
-        app:layout_constraintHorizontal_weight="1.0"/>
+        android:layout_weight="1.0"/>
 
     <TextView
         android:id="@+id/statusValue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/double_margin"
         android:layout_marginEnd="@dimen/margin"
@@ -87,5 +83,6 @@
         app:layout_constraintStart_toEndOf="@id/selectorStatusLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.5"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
