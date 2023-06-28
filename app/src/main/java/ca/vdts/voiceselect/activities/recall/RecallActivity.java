@@ -42,19 +42,18 @@ public class RecallActivity extends AppCompatActivity {
 
     private VDTSUser currentUser;
 
-    private VSViewModel viewModel;
+    private VSViewModel vsViewModel;
 
-    private List<Session> allSessions = new ArrayList<>();
-    private List<Session> openSessions = new ArrayList<>();
+    private List<Session> sessionList = new ArrayList<>();
+    private final List<Session> openSessionList = new ArrayList<>();
 
-    private RecyclerView headerList;
-    private SessionAdapter adapter;
+    private RecyclerView headerRecyclerView;
+    private SessionAdapter sessionAdapter;
 
-    final List<VDTSUser> users = new ArrayList<>();
+    final List<VDTSUser> userList = new ArrayList<>();
     final HashMap<Long,VDTSUser> userMap = new HashMap<>();
     private SwitchCompat openCheck;
     private TextView searchView;
-
 
     @SuppressLint("UseSparseArrays")
     @Override
@@ -64,23 +63,27 @@ public class RecallActivity extends AppCompatActivity {
 
         vdtsApplication = (VDTSApplication) this.getApplication();
 
-        viewModel = new ViewModelProvider(this).get(VSViewModel.class);
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         openCheck = findViewById(R.id.openCheck);
         searchView = findViewById(R.id.searchView);
 
         openCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_FILTER,false));
 
-        headerList = findViewById(R.id.sesh_list);
-        headerList.setHasFixedSize(true);
+        headerRecyclerView = findViewById(R.id.sesh_list);
+        headerRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        headerList.setLayoutManager(layoutManager);
+        headerRecyclerView.setLayoutManager(layoutManager);
 
-        allSessions = new ArrayList<>();
-        adapter = new SessionAdapter(allSessions, this, userMap, new VDTSOuterClickListenerUtil(this::selectCallback, headerList));
-        headerList.setAdapter(adapter);
-
+        sessionList = new ArrayList<>();
+        sessionAdapter = new SessionAdapter(
+                sessionList,
+                this,
+                userMap,
+                new VDTSOuterClickListenerUtil(this::selectCallback, headerRecyclerView)
+        );
+        headerRecyclerView.setAdapter(sessionAdapter);
     }
 
     @Override
@@ -94,73 +97,93 @@ public class RecallActivity extends AppCompatActivity {
 
 
     public void onOpenCheck(View view) {
-        if (openSessions != null && allSessions != null) {
-            adapter.setDataset(openCheck.isChecked() ? openSessions : allSessions);
+        if (openSessionList != null && sessionList != null) {
+            sessionAdapter.setSessionDataset(openCheck.isChecked() ? openSessionList : sessionList);
         }
+
         vdtsApplication.getPreferences().setBoolean(PREF_FILTER, openCheck.isChecked());
     }
 
     private void export() {
         //ISaver saver = Saver.createSaver(ONEDRIVE_APP_ID);
-        final Exporter exporter = new Exporter(viewModel,vdtsApplication,this);
+        final Exporter exporter = new Exporter(vsViewModel,vdtsApplication,this);
         boolean CSV = true;
         boolean Excel = true;
         boolean JSON = true;
+
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
-            CSV = exporter.exportSessionCSV(adapter.getSelected());
+            CSV = exporter.exportSessionCSV(sessionAdapter.getSelected());
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
-            JSON= exporter.exportSessionJSON(adapter.getSelected());
+            JSON= exporter.exportSessionJSON(sessionAdapter.getSelected());
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
-            Excel = exporter.exportSessionExcel(adapter.getSelected());
+            Excel = exporter.exportSessionExcel(sessionAdapter.getSelected());
         }
         if (CSV && Excel && JSON) {
-            if (exporter.exportMedia(adapter.getSelected())) {
-                vdtsApplication.displayToast(this,"Session exported successfully",0);
+            if (exporter.exportMedia(sessionAdapter.getSelected())) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Session exported successfully",
+                        0
+                );
             } else {
-                vdtsApplication.displayToast(this,"Error exporting session photos",0);
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting session photos",
+                        0
+                );
             }
         } else {
-            vdtsApplication.displayToast(this,"Error exporting session",0);
+            vdtsApplication.displayToast(
+                    this,
+                    "Error exporting session",
+                    0
+            );
         }
     }
 
     private void updateSessions() {
         new Thread(() -> {
-            adapter.setSelected(-1);
-            openSessions.clear();
-            openSessions.addAll(viewModel.findAllOpenSessionsOrderByStartDate());
-            allSessions.clear();
-            allSessions.addAll(viewModel.findAllSessionsOrderByStartDate());
+            sessionAdapter.setSelected(-1);
+
+            openSessionList.clear();
+            openSessionList.addAll(vsViewModel.findAllOpenSessionsOrderByStartDate());
+
+            sessionList.clear();
+            sessionList.addAll(vsViewModel.findAllSessionsOrderByStartDate());
+
             ArrayList<Session> sessions = new ArrayList<>();
             if (openCheck.isChecked()){
-                sessions.addAll(openSessions);
+                sessions.addAll(openSessionList);
             } else {
-                sessions.addAll(allSessions);
+                sessions.addAll(sessionList);
             }
-            runOnUiThread(()->{
-                adapter.setDataset(sessions);
-                adapter.notifyDataSetChanged();
+
+            runOnUiThread(()-> {
+                sessionAdapter.setSessionDataset(sessions);
+                sessionAdapter.notifyDataSetChanged();
             });
         }).start();
     }
 
     private void updateUsers() {
         new Thread(() -> {
-            users.clear();
-            users.addAll(viewModel.findAllUsers());
+            userList.clear();
+            userList.addAll(vsViewModel.findAllUsers());
+
             userMap.clear();
-            for (VDTSUser user : users){
+            for (VDTSUser user : userList){
                 userMap.put(user.getUid(),user);
             }
-            runOnUiThread(() -> adapter.setUsers(userMap));
-            runOnUiThread(() -> adapter.notifyDataSetChanged());
+
+            runOnUiThread(() -> sessionAdapter.setUserMap(userMap));
+            runOnUiThread(() -> sessionAdapter.notifyDataSetChanged());
         }).start();
     }
 
     private void selectCallback(Integer index) {
-        adapter.setSelected(index);
+        sessionAdapter.setSelected(index);
         showOpenDialogue();
     }
 
@@ -175,16 +198,19 @@ public class RecallActivity extends AppCompatActivity {
                 null
         );
         builder.setView(customLayout);
+
         Button openButton = customLayout.findViewById(R.id.openButton);
         Button exportButton = customLayout.findViewById(R.id.exportButton);
         Button deleteButton = customLayout.findViewById(R.id.deleteButton);
+
         dialog = builder.create();
         dialog.show();
         AlertDialog finalDialog = dialog;
+
         openButton.setOnClickListener(v -> {
             vdtsApplication.getPreferences().setLong(
                     String.format("%s_SESSION", currentUser.getExportCode()),
-                    adapter.getSelected().getUid());
+                    sessionAdapter.getSelected().getUid());
             finalDialog.dismiss();
             Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
             startActivity(resumeActivityIntent);
@@ -199,7 +225,6 @@ public class RecallActivity extends AppCompatActivity {
             finalDialog.dismiss();
             showConfirmDialog();
         });
-
     }
 
     private void showConfirmDialog() {
@@ -213,17 +238,20 @@ public class RecallActivity extends AppCompatActivity {
                 null
         );
         builder.setView(customLayout);
+
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText(String.format("Delete Session %s ?",adapter.getSelected().name()));
+        label.setText(String.format("Delete Session %s ?", sessionAdapter.getSelected().name()));
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
+
         dialog = builder.create();
         dialog.show();
         AlertDialog finalDialog = dialog;
+
         yesButton.setOnClickListener(v -> {
-            final Session session = adapter.getSelected();
+            final Session session = sessionAdapter.getSelected();
             new Thread(()-> {
-                viewModel.deleteSession(session);
+                vsViewModel.deleteSession(session);
                 updateSessions();
             }).start();
             finalDialog.dismiss();
@@ -231,5 +259,4 @@ public class RecallActivity extends AppCompatActivity {
 
         noButton.setOnClickListener(v -> finalDialog.dismiss());
     }
-
 }
