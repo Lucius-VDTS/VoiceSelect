@@ -872,7 +872,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(vdtsApplication.getResources().getString(R.string.column_value_number_range_label));
         final View customLayout = getLayoutInflater()
-                .inflate(R.layout.dialogue_fragment_spec_integer, null);
+                .inflate(R.layout.dialogue_fragment_integer, null);
         builder.setView(customLayout);
 
         EditText minView  = customLayout.findViewById(R.id.minValue);
