@@ -95,10 +95,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private VDTSNotificationUtil errorIristickNotificationService;
     @Nullable
     private VDTSNotificationUtil firmwareIristickNotificationService;
-    @Nullable
-    private VDTSNotificationUtil connectedIristickNotificationService;
-    @Nullable
-    private VDTSNotificationUtil disconnectedIristickNotificationService;
     private VDTSMenuActivity.IristickHUD iristickHUD;
 
     @Override
@@ -218,16 +214,16 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                             } else {
                                 layoutSpinner.setSelection(layoutList.indexOf(currentLayout));
                             }
+
+                            if (currentSession != null) {
+                                footerLayoutValue.setText(currentSession.getLayoutName());
+                                footerSessionValue.setText(currentSession.name());
+                            } else {
+                                footerLayoutValue.setText("");
+                                footerSessionValue.setText("");
+                            }
                         });
                     });
-                }
-
-                if (currentSession != null) {
-                    footerLayoutValue.setText(currentSession.getLayoutName());
-                    footerSessionValue.setText(currentSession.name());
-                } else {
-                    footerLayoutValue.setText("");
-                    footerSessionValue.setText("");
                 }
 
                 disableViews();
@@ -532,38 +528,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             if (firmwareIristickNotificationService != null) {
                 firmwareIristickNotificationService.cancel();
                 firmwareIristickNotificationService = null;
-            }
-        }
-
-        if (state.equals(IRIState.HEADSET_CONNECTED)) {
-            if (connectedIristickNotificationService == null) {
-                connectedIristickNotificationService = new VDTSNotificationUtil(
-                        getApplicationContext(),
-                        VDTSNotificationUtil.Channel.CONNECTED
-                );
-            }
-            connectedIristickNotificationService.setContentTitle("Iristick connected");
-            connectedIristickNotificationService.show();
-        } else {
-            if (connectedIristickNotificationService != null) {
-                connectedIristickNotificationService.cancel();
-                connectedIristickNotificationService = null;
-            }
-        }
-
-        if (state.equals(IRIState.DISCONNECTED)) {
-            if (disconnectedIristickNotificationService == null) {
-                disconnectedIristickNotificationService = new VDTSNotificationUtil(
-                        getApplicationContext(),
-                        VDTSNotificationUtil.Channel.DISCONNECTED
-                );
-            }
-            disconnectedIristickNotificationService.setContentTitle("Iristick disconnected");
-            disconnectedIristickNotificationService.show();
-        } else {
-            if (disconnectedIristickNotificationService != null) {
-                disconnectedIristickNotificationService.cancel();
-                disconnectedIristickNotificationService = null;
             }
         }
     }

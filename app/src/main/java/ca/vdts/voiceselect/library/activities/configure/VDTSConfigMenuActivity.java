@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -25,7 +26,6 @@ import ca.vdts.voiceselect.activities.configure.ConfigColumnValuesActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
 import ca.vdts.voiceselect.activities.configure.ConfigLayoutsActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
-import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -36,8 +36,10 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIListener {
     //private static final Logger LOG = LoggerFactory.getLogger(VDTSConfigMenuActivity.class);
 
-    VDTSApplication vdtsApplication;
-    VDTSUser currentUser;
+    private VDTSApplication vdtsApplication;
+    private VDTSUser currentUser;
+    private Session currentSession;
+    private VSViewModel vsViewModel;
 
     //Views
     private Button configUsersActivityButton;
@@ -81,6 +83,8 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         configLayoutsActivityButton = findViewById(R.id.configLayoutsActivityButton);
         configLayoutsActivityButton.setOnClickListener(v -> configLayoutsActivityButtonOnClick());
 
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
         footerLayoutValue = findViewById(R.id.footerLayoutValue);
 
         footerSessionValue = findViewById(R.id.footerSessionValue);
@@ -99,44 +103,31 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
         currentUser = vdtsApplication.getCurrentUser();
         footerUserValue.setText(currentUser.getName());
 
-        VSViewModel viewModel = new VSViewModel(vdtsApplication);
+        initializeCurrentSession();
+    }
+
+    private void initializeCurrentSession() {
+        String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
+        long currentSessionID = vdtsApplication.getPreferences().getLong(
+                currentSessionKey,
+                -1L);
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            final String layoutKey = currentUser.getExportCode().concat("_Layout");
-            final long layoutID = vdtsApplication.getPreferences().getLong(
-                    layoutKey,
-                    -1L
-            );
-            Layout currentLayout = null;
-            if (layoutID > 0) {
-                currentLayout = viewModel.findLayoutByID(layoutID);
-            }
-            if (currentLayout != null) {
-                final Layout l = currentLayout;
-                handler.post(() -> footerLayoutValue.setText(l .getName()));
-            } else {
-                handler.post(() -> footerLayoutValue.setText(""));
-            }
+            currentSession = vsViewModel.findSessionByID(currentSessionID);
+            handler.post(() -> {
+                if (currentSession != null) {
+                    footerLayoutValue.setText(currentSession.getLayoutName());
+                    footerSessionValue.setText(currentSession.name());
+                } else {
+                    footerLayoutValue.setText("");
+                    footerSessionValue.setText("");
+                }
 
-            final String sessionKey = currentUser.getExportCode().concat("_Session");
-            final long sessionID = vdtsApplication.getPreferences().getLong(
-                    sessionKey,
-                    -1L
-            );
-            Session currentSession = null;
-            if (sessionID > 0) {
-                currentSession = viewModel.findSessionByID(sessionID);
-            }
-            if (currentSession != null) {
-                final Session c = currentSession;
-                handler.post(() -> footerSessionValue.setText(c.name()));
-            } else {
-                handler.post(() -> footerSessionValue.setText(""));
-            }
+                disableViews();
+            });
         });
-
-        disableViews();
     }
 
     private void disableViews() {
