@@ -325,12 +325,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 user.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
                 user.setPrimary(userPrimarySwitch.isChecked());
 
-                /*if (!userAdminSwitch.isChecked()) {
-                    selectedUser.setPassword("");
-                } else {*/
-                    final String password = userPasswordEditText.getText().toString().trim();
-                    user.setPassword(!password.isEmpty() ? password : null);
-                //}
+                final String password = userPasswordEditText.getText().toString().trim();
+                user.setPassword(!password.isEmpty() ? password : null);
 
                 if (isValidUser(user)) {
                     if (user.getUid() == vdtsApplication.getCurrentUser().getUid()) {
@@ -355,7 +351,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                 Toast.LENGTH_SHORT
                         );
 
-                        handler.post(() -> userAdapter.updateSelectedEntity());
+                        handler.post(() -> {
+                            userAdapter.updateSelectedEntity();
+                            updateCurrentUser();
+                        });
                     });
                 } else {
                     LOG.error("Unable to update user");
@@ -380,10 +379,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         userPrimarySwitch.isChecked(),
                         !password.isEmpty() ? password : null
                 );
-
-                if (!userAdminSwitch.isChecked()) {
-                    vdtsUser.setPassword("");
-                }
 
                 if (isValidUser(vdtsUser)) {
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -426,12 +421,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         handler.post(() -> {
                             if (primaryUser != null) { userAdapter.updateEntity(primaryUser); }
 
-                            userAdapter.addEntity(vdtsUser);
-
                             if (userAdapter.getItemCount() == 1) {
                                 vdtsApplication.setCurrentUser(userAdapter.getEntity(0));
-                            } else {
-                                updateCurrentUser();
                             }
                         });
                     });
@@ -687,10 +678,11 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     }
 
     public void updateCurrentUser(){
-        if (vdtsApplication.getCurrentUser()!=null && vdtsApplication.getCurrentUser() != VDTS_USER_NONE) {
-            Thread thread = new Thread(() -> {
-                vdtsApplication.setCurrentUser(vsViewModel.findUserByID(vdtsApplication.getCurrentUser().getUid()));
-            });
+        if (vdtsApplication.getCurrentUser() != null &&
+                vdtsApplication.getCurrentUser() != VDTS_USER_NONE) {
+            Thread thread = new Thread(() -> vdtsApplication.setCurrentUser(
+                    vsViewModel.findUserByID(vdtsApplication.getCurrentUser().getUid()))
+            );
             thread.start();
         }
     }
