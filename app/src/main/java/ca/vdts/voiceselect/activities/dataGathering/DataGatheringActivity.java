@@ -106,7 +106,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private ColumnValue selectedColumnValue;
 
     //Lists
-    private List<LayoutColumn> currentLayoutColumns;
+    private List<LayoutColumn> currentLayoutColumnList;
     private final List<Column> columnList = new ArrayList<>();
     private final HashMap<Integer, Column> columnMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
@@ -115,7 +115,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private final List<Entry> entryList = new ArrayList<>();
     private LiveData<List<Entry>> entryListLive;
     private final List<EntryValue> entryValueList = new ArrayList<>();
-    private final HashMap<Integer, ColumnValue> entryValueMap = new HashMap<>();
+    private final HashMap<Integer, EntryValue> entryValueMap = new HashMap<>();
     private LiveData<List<EntryValue>> entryValueListLive;
 
     //Views
@@ -146,6 +146,7 @@ public class DataGatheringActivity extends AppCompatActivity
     //Iristick Components
     private boolean isHeadsetAvailable = false;
     private DataGatheringActivity.IristickHUD iristickHUD;
+    private final HashMap<Integer, ColumnValue> entryHUDMap = new HashMap<>();
 
     //GPS Components
     private boolean GPSConnected = false;
@@ -285,9 +286,6 @@ public class DataGatheringActivity extends AppCompatActivity
         disableGPS();
     }
 
-    /**
-     * Initialize Iristick HUD.
-     */
     private void initializeIristickHUD() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
             iristickHUD = new DataGatheringActivity.IristickHUD();
@@ -303,7 +301,7 @@ public class DataGatheringActivity extends AppCompatActivity
         executor.execute(() -> {
             currentLayout = vsViewModel.findLayoutByID(
                     getIntent().getLongExtra("layout", -9001L));
-            currentLayoutColumns = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
+            currentLayoutColumnList = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
             handler.post(this::initializeSession);
         });
     }
@@ -351,7 +349,7 @@ public class DataGatheringActivity extends AppCompatActivity
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             columnMap.clear();
-            for (LayoutColumn layoutColumn : currentLayoutColumns) {
+            for (LayoutColumn layoutColumn : currentLayoutColumnList) {
                 Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
                 columnMap.put((int) layoutColumn.getColumnPosition() - 1, column);
             }
@@ -446,11 +444,12 @@ public class DataGatheringActivity extends AppCompatActivity
         dataGatheringRecyclerAdapter = new DataGatheringRecyclerAdapter(
                 this,
                 this,
+                currentUser,
                 new VDTSClickListenerUtil(this::entryAdapterSelect, entryRecyclerView)
         );
 
         dataGatheringRecyclerAdapter.setDatasets(
-                columnList,
+                columnMap,
                 columnValueMap,
                 entryList,
                 entryValueList);
@@ -543,15 +542,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     //todo - select entry
     private void entryAdapterSelect(int index) {
-        if (index >= 0) {
-            columnValueIndexValue.setText(index);
-            dataGatheringRecyclerAdapter.setSelected(index - 1);
-            entryRecyclerView.scrollToPosition(dataGatheringRecyclerAdapter.getItemCount() - 1 - index);
-            selectedEntry = dataGatheringRecyclerAdapter.getEntry(index - 1);
-            entryValueList.clear();
-        } else {
 
-        }
     }
 
     private void pictureButtonOnClick() {
@@ -595,6 +586,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 newEntry.setUid(uid);
                 createEntryHandler.post(() -> {
                     entryValueList.clear();
+                    entryValueMap.clear();
+
                     for (int index = 0; index < columnValueSpinnerList.size(); index++) {
                         ColumnValue columnValue =
                                 (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
@@ -605,6 +598,7 @@ public class DataGatheringActivity extends AppCompatActivity
                         } else {
                             newEntryValue = new EntryValue(newEntry.getUid());
                         }
+
                         entryValueList.add(index, newEntryValue);
 
                         columnValueSpinnerList.get(index).setSelection(0);
@@ -612,7 +606,6 @@ public class DataGatheringActivity extends AppCompatActivity
 
                     EntryValue[] entryValues = new EntryValue[entryValueList.size()];
                     entryValueList.toArray(entryValues);
-
                     ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
                     Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
                     createEntryValuesExecutor.execute(() -> {
@@ -627,7 +620,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             columnScrollView.setScrollX(0);
 
                             selectedColumnValue = null;
-                            entryValueMap.clear();
+                            entryHUDMap.clear();
                             if (isHeadsetAvailable) {
                                 iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
                                 updateIristickHUD();
@@ -799,7 +792,7 @@ public class DataGatheringActivity extends AppCompatActivity
             int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
 
             if (selectedColumnValue != null) {
-                entryValueMap.put(spinnerPosition, selectedColumnValue);
+                entryHUDMap.put(spinnerPosition, selectedColumnValue);
                 if (columnMap.size() > 0) {
                     iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
                             columnMap.get(spinnerPosition)).getName());
@@ -816,9 +809,9 @@ public class DataGatheringActivity extends AppCompatActivity
                     }
                 }
                 iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
-                if (entryValueMap.get(spinnerPosition + 1) != null ) {
+                if (entryHUDMap.get(spinnerPosition + 1) != null ) {
                     iristickHUD.entryNextValue.setText(Objects.requireNonNull(
-                            entryValueMap.get(spinnerPosition + 1)).getName());
+                            entryHUDMap.get(spinnerPosition + 1)).getName());
                 } else {
                     iristickHUD.entryNextValue.setText("");
                 }

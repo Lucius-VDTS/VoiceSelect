@@ -31,26 +31,30 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
+import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGatheringRecyclerAdapter.ViewHolder> {
     private final Context context;
     private final DataGatheringActivity dataGatheringActivity;
+    private final VDTSUser currentUser;
     private final VDTSAdapterClickListenerUtil selectedListener;
     private final MutableLiveData<Integer> xCord;
     private int selectedIndex = -1;
 
     //Lists - Maps
-    final List<Column> columnDataset = new ArrayList<>();
+    private final List<Column> columnDataset = new ArrayList<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueDataset = new HashMap<>();
-    final List<Entry> entryDataset = new ArrayList<>();
-    final List<EntryValue> entryValueDataset = new ArrayList<>();
+    private final List<Entry> entryDataset = new ArrayList<>();
+    private final List<EntryValue> entryValueDataset = new ArrayList<>();
 
     public DataGatheringRecyclerAdapter(Context context,
                                         DataGatheringActivity dataGatheringActivity,
+                                        VDTSUser currentUser,
                                         VDTSAdapterClickListenerUtil selectedListener) {
         this.context = context;
         this.dataGatheringActivity = dataGatheringActivity;
+        this.currentUser = currentUser;
         this.selectedListener = selectedListener;
 
         xCord = new MutableLiveData<>();
@@ -95,7 +99,11 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
                     ).findFirst()
                     .orElse(ColumnValue.COLUMN_VALUE_NONE);
 
-            entryValue.setText(columnValue.getName());
+            if (currentUser.isAbbreviate()) {
+                entryValue.setText(columnValue.getNameCode());
+            } else {
+                entryValue.setText(columnValue.getName());
+            }
         }
 
         if (size == 1) {
@@ -129,12 +137,14 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
         return entryDataset.size();
     }
 
-    public void setDatasets(List<Column> columnList,
+    public void setDatasets(HashMap<Integer, Column> columnMap,
                             HashMap<Integer, List<ColumnValue>> columnValueMap,
                             List<Entry> entryList,
                             List<EntryValue> entryValueList) {
         columnDataset.clear();
-        columnDataset.addAll(columnList);
+        for (int index = 0; index < columnMap.size(); index++) {
+            columnDataset.add(index, columnMap.get(index));
+        }
 
         columnValueDataset.clear();
         for (int index = 0; index < columnValueMap.size(); index++) {
@@ -164,7 +174,7 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
     public void addAllEntryValues(Collection<EntryValue> entryValues) {
         final int startRange = entryDataset.size();
         entryValueDataset.addAll(entryValues);
-        notifyItemRangeInserted(startRange, entryDataset.size());
+        notifyItemRangeInserted(startRange, entryValues.size());
     }
 
     public void clearEntries() {
