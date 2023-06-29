@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
@@ -136,7 +137,7 @@ public class RecallActivity extends AppCompatActivity {
         updateSessions();
     }
 
-    private void export() {
+    private void export(Session session) {
         //ISaver saver = Saver.createSaver(ONEDRIVE_APP_ID);
         final Exporter exporter = new Exporter(vsViewModel,vdtsApplication,this);
         boolean CSV = true;
@@ -144,16 +145,16 @@ public class RecallActivity extends AppCompatActivity {
         boolean JSON = true;
 
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
-            CSV = exporter.exportSessionCSV(sessionAdapter.getSelected());
+            CSV = exporter.exportSessionCSV(session);
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
-            JSON= exporter.exportSessionJSON(sessionAdapter.getSelected());
+            JSON= exporter.exportSessionJSON(session);
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
-            Excel = exporter.exportSessionExcel(sessionAdapter.getSelected());
+            Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {
-            if (exporter.exportMedia(sessionAdapter.getSelected())) {
+            if (exporter.exportMedia(session)) {
                 vdtsApplication.displayToast(
                         this,
                         "Session exported successfully",
@@ -223,6 +224,8 @@ public class RecallActivity extends AppCompatActivity {
     private void showOpenDialogue() {
         LOG.info("Showing Choice Dialog");
 
+        AtomicBoolean keepSelection = new AtomicBoolean(false);
+
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Recall Session");
@@ -240,6 +243,12 @@ public class RecallActivity extends AppCompatActivity {
         dialog.show();
         AlertDialog finalDialog = dialog;
 
+        finalDialog.setOnDismissListener(v -> {
+                if (!keepSelection.get()) {
+                    sessionAdapter.setSelected(-1);
+                }
+            });
+
         openButton.setOnClickListener(v -> {
             vdtsApplication.getPreferences().setLong(
                     String.format("%s_SESSION", currentUser.getExportCode()),
@@ -250,11 +259,13 @@ public class RecallActivity extends AppCompatActivity {
         });
 
         exportButton.setOnClickListener(v -> {
+            Session session = new Session(sessionAdapter.getSelected());
             finalDialog.dismiss();
-            export();
+            export(session);
         });
 
         deleteButton.setOnClickListener(v -> {
+            keepSelection.set(true);
             finalDialog.dismiss();
             showConfirmDialog();
         });
@@ -280,6 +291,8 @@ public class RecallActivity extends AppCompatActivity {
         dialog = builder.create();
         dialog.show();
         AlertDialog finalDialog = dialog;
+
+        finalDialog.setOnDismissListener(v -> sessionAdapter.setSelected(-1));
 
         yesButton.setOnClickListener(v -> {
             final Session session = sessionAdapter.getSelected();
