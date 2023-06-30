@@ -202,8 +202,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 layoutAdapter.notifyDataSetChanged();
 
                 if (layoutList.size() > 1) {
-                    layoutList.remove(Layout.LAYOUT_NONE);
-
                     Executor currentLayoutExecutor = Executors.newSingleThreadExecutor();
                     Handler currentLayoutHandler = new Handler(Looper.getMainLooper());
                     currentLayoutExecutor.execute(() -> {
@@ -239,6 +237,43 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             recallActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
+        } else {
+            startActivityButton.setEnabled(true);
+            resumeActivityButton.setEnabled(true);
+            recallActivityButton.setEnabled(true);
+            settingsActivityButton.setEnabled(true);
+            changeUserActivityButton.setEnabled(true);
+        }
+
+        if (layoutList.size() > 1) {
+            layoutList.remove(Layout.LAYOUT_NONE);
+            layoutSpinner.setEnabled(true);
+        } else {
+            layoutSpinner.setEnabled(false);
+
+            if (currentUser.getUid() == -9001) {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(configureActivityButton);
+
+                vdtsApplication.displayToast(
+                        vdtsApplication,
+                        "Configure the application to start a session",
+                        0
+                );
+            } else {
+                YoYo.with(Techniques.Shake)
+                        .duration(SHAKE_DURATION)
+                        .repeat(SHAKE_REPEAT)
+                        .playOn(configureActivityButton);
+
+                vdtsApplication.displayToast(
+                        vdtsApplication,
+                        "Create a layout to start a session",
+                        0
+                );
+            }
         }
     }
 
@@ -248,23 +283,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     currentLayout = (Layout) parent.getItemAtPosition(position);
-                    if (currentLayout.getUid() == -9001L) {
-                        YoYo.with(Techniques.Shake)
-                                .duration(SHAKE_DURATION)
-                                .repeat(SHAKE_REPEAT)
-                                .playOn(configureActivityButton);
-                        vdtsApplication.displayToast(
-                                vdtsApplication,
-                                "Configure the application to start a session",
-                                0
-                        );
-
-                        layoutSpinner.setEnabled(false);
-                    } else {
-                        layoutSpinner.setEnabled(true);
-                        final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-                        vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
-                    }
                 }
 
                 @Override
