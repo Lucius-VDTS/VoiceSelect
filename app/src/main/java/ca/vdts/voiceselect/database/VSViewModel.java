@@ -612,35 +612,35 @@ public class VSViewModel extends VDTSViewModel {
     }
 
     // PictureReference
-    public long insert(PictureReference pictureReference) {
+    public long insertPictureReference(PictureReference pictureReference) {
         return pictureReferenceRepository.insert(pictureReference);
     }
 
-    public void insert(PictureReference[] pictureReferences) {
+    public void insertAllPictureReferences(PictureReference[] pictureReferences) {
         pictureReferenceRepository.insertAll(pictureReferences);
     }
 
-    public void update(PictureReference pictureReference) {
+    public void updatePictureReference(PictureReference pictureReference) {
         pictureReferenceRepository.update(pictureReference);
     }
 
-    public void update(PictureReference[] pictureReferences) {
+    public void updateAllPictureReferences(PictureReference[] pictureReferences) {
         pictureReferenceRepository.updateAll(pictureReferences);
     }
 
-    public void delete(PictureReference pictureReference) {
+    public void deletePictureReference(PictureReference pictureReference) {
         pictureReferenceRepository.delete(pictureReference);
     }
 
-    public void delete(PictureReference[] pictureReferences) {
+    public void deleteAllPictureReferences(PictureReference[] pictureReferences) {
         pictureReferenceRepository.deleteAll(pictureReferences);
     }
 
-    public List<PictureReference> findPictureReferencesByHeader(long headerID) {
+    public List<PictureReference> findPictureReferencesBySession(long sessionID) {
         return pictureReferenceRepository.findAll(
                 "SELECT PR.* FROM PictureReferences AS PR " +
                         "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
-                        "WHERE E.sessionID = " + headerID
+                        "WHERE E.sessionID = " + sessionID
         );
     }
 

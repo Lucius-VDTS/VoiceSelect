@@ -1,5 +1,6 @@
 package ca.vdts.voiceselect.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -31,9 +33,11 @@ import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
+import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
+@SuppressLint("NotifyDataSetChanged")
 public class DataGatheringRecyclerAdapter
         extends RecyclerView.Adapter<DataGatheringRecyclerAdapter.ViewHolder> {
     private final Context context;
@@ -48,6 +52,7 @@ public class DataGatheringRecyclerAdapter
     private final HashMap<Integer, List<ColumnValue>> columnValueDataset = new HashMap<>();
     private final List<Entry> entryDataset = new ArrayList<>();
     private final List<EntryValue> entryValueDataset = new ArrayList<>();
+    private final List<PictureReference> pictureDataset = new ArrayList<>();
 
     public DataGatheringRecyclerAdapter(Context context,
                                         DataGatheringActivity dataGatheringActivity,
@@ -110,6 +115,16 @@ public class DataGatheringRecyclerAdapter
             }
         }
 
+        long pictureCount = pictureDataset.stream()
+                .filter(pr -> pr.getEntryID() == entry.getUid())
+                .count();
+
+        holder.entryPhotoValue.setText(
+                pictureCount > 0 ?
+                        String.format(Locale.getDefault(), "%d", pictureCount) :
+                        ""
+        );
+
         if (size == 1) {
             holder.entryLinearLayout.setBackgroundResource(R.drawable.recycler_view_item);
         } else if (position == 0) {
@@ -143,7 +158,8 @@ public class DataGatheringRecyclerAdapter
 
     public void setDatasets(HashMap<Integer, Column> columnMap,
                             HashMap<Integer, List<ColumnValue>> columnValueMap,
-                            List<Entry> entryList, List<EntryValue> entryValueList) {
+                            List<Entry> entryList, List<EntryValue> entryValueList,
+                            List<PictureReference> pictureReferenceList) {
         columnDataset.clear();
         for (int index = 0; index < columnMap.size(); index++) {
             columnDataset.add(index, columnMap.get(index));
@@ -159,6 +175,9 @@ public class DataGatheringRecyclerAdapter
 
         entryValueDataset.clear();
         entryValueDataset.addAll(entryValueList);
+
+        pictureDataset.clear();
+        pictureDataset.addAll(pictureReferenceList);
 
         notifyDataSetChanged();
     }
@@ -194,11 +213,45 @@ public class DataGatheringRecyclerAdapter
         return entryDataset.get(index);
     }
 
+    public int getEntryPosition(long entryID) {
+        Entry entry = entryDataset.stream()
+                .filter(e -> e.getUid() == entryID)
+                .findFirst()
+                .orElse(null);
+        if (entry != null) {
+            return entryDataset.indexOf(entry);
+        } else {
+            return -1;
+        }
+    }
+
     public List<EntryValue> getEntryValues(int index) {
         return entryValueDataset.stream()
-                .filter(entryValue ->
-                        entryValue.getEntryID() == entryDataset.get(index).getUid())
+                .filter(entryValue -> entryValue.getEntryID() == entryDataset.get(index).getUid())
                 .collect(Collectors.toList());
+    }
+
+    public void addPictureReferences(List<PictureReference> pictureReferences, int index) {
+        List<PictureReference> entryPictureReferences = pictureDataset.stream()
+                .filter(
+                        pictureReference ->
+                                pictureReference.getEntryID() == entryDataset.get(index).getUid()
+                ).collect(Collectors.toList());
+
+        pictureReferences.forEach(pictureReference -> {
+            if (!entryPictureReferences.contains(pictureReference)) {
+                pictureDataset.add(pictureReference);
+            }
+        });
+        notifyItemChanged(index);
+    }
+
+    public List<PictureReference> getPictureReferences(int index) {
+        return pictureDataset.stream()
+                .filter(
+                        pictureReference ->
+                                pictureReference.getEntryID() == entryDataset.get(index).getUid()
+                ).collect(Collectors.toList());
     }
 
     public void setSelected(int index) {
