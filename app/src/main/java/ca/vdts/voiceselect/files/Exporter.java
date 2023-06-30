@@ -257,7 +257,7 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesBySession(session.getUid()));
         });
         gatherThread.start();
         try {
@@ -308,7 +308,7 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesBySession(session.getUid()));
         });
         gatherThread.start();
         try {
@@ -425,7 +425,7 @@ public class Exporter {
             entryValues.addAll(viewModel.findAllEntryValuesBySession(session.getUid()));
             columnValues.addAll(viewModel.findAllColumnValuesBySession(session.getUid()));
             columns.addAll(viewModel.findAllColumnsBySession(session.getUid()));
-            pictureReferences.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
+            pictureReferences.addAll(viewModel.findPictureReferencesBySession(session.getUid()));
             videoReferences.addAll(viewModel.videoReferences(session.getUid()));
         });
         gatherThread.start();
@@ -723,7 +723,7 @@ public class Exporter {
         final Thread entryGatherThread = new Thread(() -> {
             LOG.debug("Starting entry db thread");
             entries.addAll(viewModel.findAllEntriesBySession(session.getUid()));
-            references.addAll(viewModel.findPictureReferencesByHeader(session.getUid()));
+            references.addAll(viewModel.findPictureReferencesBySession(session.getUid()));
         });
         entryGatherThread.start();
         try {
@@ -845,7 +845,7 @@ public class Exporter {
             });
 
             missing.forEach(
-                    pictureReference -> new Thread(() -> viewModel.delete(pictureReference)).start()
+                    pictureReference -> new Thread(() -> viewModel.deletePictureReference(pictureReference)).start()
             );
         }
         return success.get();

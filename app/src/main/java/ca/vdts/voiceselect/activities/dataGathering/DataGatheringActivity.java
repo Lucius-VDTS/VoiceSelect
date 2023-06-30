@@ -136,6 +136,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private final HashMap<Integer, EntryValue> entryValueMap = new HashMap<>();
     private LiveData<List<EntryValue>> entryValueListLive;
 
+    private final List<PictureReference> pictureReferenceList = new ArrayList<>();
     private final List<PictureReference> currentEntryPhotos = new ArrayList<>();
 
     //Views
@@ -513,6 +514,18 @@ public class DataGatheringActivity extends AppCompatActivity
             entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(
                     currentSession.getUid()
             );
+            handler.post(this::initializePictureReferenceList);
+        });
+    }
+
+    private void initializePictureReferenceList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            pictureReferenceList.clear();
+            pictureReferenceList.addAll(
+                    vsViewModel.findPictureReferencesBySession(currentSession.getUid())
+            );
             handler.post(this::initializeDGAdapter);
         });
     }
@@ -529,7 +542,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnMap,
                 columnValueMap,
                 entryList,
-                entryValueList
+                entryValueList,
+                pictureReferenceList
         );
 
         entryRecyclerView.setAdapter(dataGatheringRecyclerAdapter);
@@ -764,16 +778,34 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         });
 
-        PictureReference[] insertPictureReferences = new PictureReference[insertPictureReferenceList.size()];
-        PictureReference[] updatePictureReferences = new PictureReference[updatePictureReferenceList.size()];
+        PictureReference[] insertPictureReferences = new
+                PictureReference[insertPictureReferenceList.size()];
+        PictureReference[] updatePictureReferences = new
+                PictureReference[updatePictureReferenceList.size()];
 
         insertPictureReferenceList.toArray(insertPictureReferences);
         updatePictureReferenceList.toArray(updatePictureReferences);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            if (insertPictureReferences.length > 0) vsViewModel.insert(insertPictureReferences);
-            if (updatePictureReferences.length > 0) vsViewModel.update(updatePictureReferences);
+            if (insertPictureReferences.length > 0) {
+                vsViewModel.insertAllPictureReferences(insertPictureReferences);
+            }
+            if (updatePictureReferences.length > 0) {
+                vsViewModel.updateAllPictureReferences(updatePictureReferences);
+            }
+            handler.post(() -> {
+                if (insertPictureReferences.length > 0) {
+                    int entryIndex = dataGatheringRecyclerAdapter.getEntryPosition(entryID);
+                    if (entryIndex >= 0) {
+                        dataGatheringRecyclerAdapter.addPictureReferences(
+                                insertPictureReferenceList,
+                                entryIndex
+                        );
+                    }
+                }
+            });
         });
     }
 
