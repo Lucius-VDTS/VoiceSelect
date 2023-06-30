@@ -109,6 +109,12 @@ public class Session implements VDTSIndexedNamedInterface {
         this(0L, userID, userPrefix, layoutName,LocalDateTime.now(), dateIteration, null);
     }
 
+    public Session(Session session) {
+        this(session.getUid(), session.getUserID(), session.getSessionPrefix(), session.getLayoutName(),
+                session.getStartDate(), session.getDateIteration(), session.getEndDate());
+    }
+
+
     public long getUid() {
         return uid;
     }

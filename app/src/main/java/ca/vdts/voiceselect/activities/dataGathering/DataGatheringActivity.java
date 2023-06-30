@@ -9,6 +9,8 @@ import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
+import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
 
 import android.annotation.SuppressLint;
@@ -19,12 +21,18 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Range;
+import android.util.Rational;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,6 +40,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +48,7 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalExposureCompensation;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
@@ -53,6 +63,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.iristick.sdk.Experimental;
 import com.iristick.sdk.IRIHeadset;
@@ -65,8 +77,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +85,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
@@ -167,9 +178,15 @@ public class DataGatheringActivity extends AppCompatActivity
     private PreviewView previewView;
     private VDTSCustomLifecycle cameraLifecycle;
     private Camera camera;
+    private GestureDetector scrollDetector;
+    private ScaleGestureDetector scaleDetector;
     private ImageCapture imageCapture;
-    private static final int EXPOSURE_LEVELS = 10; // todo - add controls to control
+    private boolean previewShowing = false;
+    private static final int EXPOSURE_LEVELS = 10;
     private int exposureLevel = EXPOSURE_LEVELS / 2;
+    private float zoomRatio = 1.0f;
+    private float minZoomRatio = 1.0f;
+    private float maxZoomRatio = 1.0f;
     private static final int ZOOM_LEVELS = 5;
     private int zoomLevel = 0;
 
@@ -223,10 +240,14 @@ public class DataGatheringActivity extends AppCompatActivity
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+                )
+        );
 
         //Camera
+        scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
+        scrollDetector = new GestureDetector(this, new ScrollListener());
         previewView = findViewById(R.id.cameraPreview);
+        previewView.setOnTouchListener(onTouchListener);
 
         cameraLifecycle = new VDTSCustomLifecycle();
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
@@ -250,6 +271,31 @@ public class DataGatheringActivity extends AppCompatActivity
                                 preview
                         );
 
+                        camera.getCameraInfo().getZoomState().observe(
+                                this,
+                                observer -> {
+                                    zoomRatio = observer.getZoomRatio();
+                                    minZoomRatio = observer.getMinZoomRatio();
+                                    maxZoomRatio = observer.getMaxZoomRatio();
+
+                                    String logMessage = String.format(
+                                            Locale.getDefault(),
+                                            "Zoom Ratio: %.2f, Min Zoom Ratio: %.2f, Max Zoom Ratio: %.2f",
+                                            zoomRatio,
+                                            minZoomRatio,
+                                            maxZoomRatio
+                                    );
+                                    LOG.debug(logMessage);
+
+                                    String message = String.format(
+                                            Locale.getDefault(),
+                                            "Zoom Level: %.2f",
+                                            zoomRatio
+                                    );
+                                    LOG.debug(message);
+                                }
+                        );
+
                         cameraLifecycle.performEvent(Lifecycle.Event.ON_CREATE);
                     } catch (ExecutionException | InterruptedException e) {
                         LOG.error("Error starting preview: ", e);
@@ -270,6 +316,11 @@ public class DataGatheringActivity extends AppCompatActivity
         super.onResume();
         cameraLifecycle.performEvent(Lifecycle.Event.ON_RESUME);
         entryRecyclerView.bringToFront();
+        if (previewShowing) {
+            showPreview();
+        } else {
+            hidePreview();
+        }
         initializeIristickHUD();
     }
 
@@ -291,6 +342,21 @@ public class DataGatheringActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         disableGPS();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (previewShowing) {
+            runOnUiThread(
+                    () -> vdtsApplication.displayToast(
+                            this,
+                            "Use long press to exist camera before navigating back",
+                            Toast.LENGTH_LONG
+                    )
+            );
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initializeIristickHUD() {
@@ -400,7 +466,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnValueMap.put(
                         index,
                         vsViewModel.findAllActiveColumnValuesByColumn(
-                                Objects.requireNonNull(columnMap.get(index)).getUid())
+                                Objects.requireNonNull(columnMap.get(index)).getUid()
+                        )
                 );
 
                 columnValueSpokenMap.put(
@@ -411,14 +478,13 @@ public class DataGatheringActivity extends AppCompatActivity
 
             handler.post(() -> {
                 for (int index = 0; index < columnValueMap.size(); index++) {
-                    ColumnValueSpinner columnValueSpinner =
-                            new ColumnValueSpinner(
-                                    this,
-                                    currentUser,
-                                    columnValueMap.get(index),
-                                    columnValueSpinnerListener,
-                                    index
-                            );
+                    ColumnValueSpinner columnValueSpinner = new ColumnValueSpinner(
+                            this,
+                            currentUser,
+                            columnValueMap.get(index),
+                            columnValueSpinnerListener,
+                            index
+                    );
 
                     columnValueSpinnerList.add(columnValueSpinner.getColumnValueSpinner());
                     columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
@@ -444,7 +510,9 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
+            entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(
+                    currentSession.getUid()
+            );
             handler.post(this::initializeDGAdapter);
         });
     }
@@ -461,17 +529,21 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnMap,
                 columnValueMap,
                 entryList,
-                entryValueList);
+                entryValueList
+        );
 
         entryRecyclerView.setAdapter(dataGatheringRecyclerAdapter);
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
 
-        columnValueIndexValue.setText(String.format(
-                Locale.getDefault(),
-                "%d",
-                dataGatheringRecyclerAdapter.getItemCount() + 1));
+        columnValueIndexValue.setText(
+                String.format(
+                        Locale.getDefault(),
+                        "%d",
+                        dataGatheringRecyclerAdapter.getItemCount() + 1
+                )
+        );
 
         if (isHeadsetAvailable) {
             initializeIristickVoiceCommands();
@@ -529,8 +601,9 @@ public class DataGatheringActivity extends AppCompatActivity
             if (entries != null) {
                 dataGatheringRecyclerAdapter.clearEntries();
                 dataGatheringRecyclerAdapter.addAllEntries(entries);
-                sessionEntriesCount.setText(String.format(
-                        Locale.getDefault(), "%d", entries.size()));
+                sessionEntriesCount.setText(
+                        String.format(Locale.getDefault(), "%d", entries.size())
+                );
 
                 if (isHeadsetAvailable) {
                     iristickHUD.sessionEntriesCount.setText(sessionEntriesCount.getText());
@@ -549,9 +622,67 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     };
 
-    //todo - select entry
-    private void entryAdapterSelect(int index) {
+    private void entryAdapterSelect(Integer index) {
+        if (index != null) {
+            dataGatheringRecyclerAdapter.setSelected(index);
+            selectedEntry = dataGatheringRecyclerAdapter.getEntry(index);
+            currentEntryPhotos.clear();
+        } else {
+            newEntry();
+        }
+        updateViews();
+    }
 
+    private void updateViews() {
+        runOnUiThread(() -> {
+            if (selectedEntry.getUid() > 0) {
+                List<Entry> entries = entryListLive.getValue();
+                int index = entries != null ? entries.indexOf(selectedEntry) : 0;
+                columnValueIndexValue.setText(
+                        String.format(Locale.getDefault(), "%d", index + 1)
+                );
+                List<EntryValue> entryValues = entryValueListLive.getValue();
+                if (entryValues != null) {
+                    List<EntryValue> selectedEntryValues = entryValues.stream()
+                            .filter(entryValue -> entryValue.getEntryID() == selectedEntry.getUid())
+                            .collect(Collectors.toList());
+                    for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
+                        List<ColumnValue> columnValues = columnValueMap.get(columnIndex);
+                        if (columnValues != null) {
+                            ColumnValue columnValue = columnValues.stream()
+                                    .filter(
+                                            cv -> selectedEntryValues.stream()
+                                                    .anyMatch(
+                                                            ev -> ev.getColumnValueID() == cv.getUid()
+                                                    )
+                                    ).findFirst()
+                                    .orElse(null);
+
+                            Spinner columnSpinner = columnValueSpinnerList.get(columnIndex);
+                            if (columnSpinner != null) {
+                                if (columnValue == null) {
+                                    columnSpinner.setSelection(0);
+                                } else {
+                                    int position = columnValues.indexOf(columnValue) + 1;
+                                    columnSpinner.setSelection(position);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                columnValueIndexValue.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "%d",
+                                dataGatheringRecyclerAdapter.getItemCount() + 1
+                        )
+                );
+                for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
+                    columnValueSpinnerList.get(columnIndex).setSelection(0);
+                }
+            }
+        });
     }
 
     private void pictureButtonOnClick() {
@@ -580,79 +711,179 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void saveEntryButtonOnClick() {
         if (currentEntry != null) {
+        if (selectedEntry.getUid() > 0) {
             //Update existing entry
+            ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
+            Handler updateEntryHandler = new Handler(Looper.getMainLooper());
+            updateEntryExecutor.execute(() -> {
+                if (currentLocation != null) {
+                    if (selectedEntry.getLatitude() == null) {
+                        selectedEntry.setLatitude(currentLocation.getLatitude());
+                    }
+                    if (selectedEntry.getLongitude() == null) {
+                        selectedEntry.setLongitude(currentLocation.getLongitude());
+                    }
+                }
+                vsViewModel.updateEntry(selectedEntry);
+                updateEntryHandler.post(() -> {
+                    savePictureReferences(selectedEntry.getUid());
+                    saveEntryValues(selectedEntry.getUid());
+                });
+            });
         } else {
-            //Create new entry
-            Entry newEntry = new Entry(
-                    currentUser.getUid(),
-                    currentSession.getUid()
-            );
-
+            //Save a new entry
+            if (selectedEntry == null) {
+                newEntry();
+            }
             ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
             Handler createEntryHandler = new Handler(Looper.getMainLooper());
             createEntryExecutor.execute(() -> {
-                long uid = vsViewModel.insertEntry(newEntry);
-                newEntry.setUid(uid);
+                if (currentLocation != null) {
+                    selectedEntry.setLatitude(currentLocation.getLatitude());
+                    selectedEntry.setLongitude(currentLocation.getLongitude());
+                }
+                long uid = vsViewModel.insertEntry(selectedEntry);
+                selectedEntry.setUid(uid);
                 createEntryHandler.post(() -> {
-                    entryValueList.clear();
-                    entryValueMap.clear();
-
-                    for (int index = 0; index < columnValueSpinnerList.size(); index++) {
-                        ColumnValue columnValue =
-                                (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
-
-                        EntryValue newEntryValue;
-                        if (columnValue != null) {
-                            newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
-                        } else {
-                            newEntryValue = new EntryValue(newEntry.getUid());
-                        }
-
-                        entryValueList.add(index, newEntryValue);
-
-                        columnValueSpinnerList.get(index).setSelection(0);
-                    }
-
-                    EntryValue[] entryValues = new EntryValue[entryValueList.size()];
-                    entryValueList.toArray(entryValues);
-                    ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
-                    Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
-                    createEntryValuesExecutor.execute(() -> {
-                        vsViewModel.insertAllEntryValues(entryValues);
-                        createEntryValuesHandler.post(() -> {
-                            columnValueIndexValue.setText(String.format(
-                                    Locale.getDefault(),
-                                    "%d",
-                                    dataGatheringRecyclerAdapter.getItemCount() + 1)
-                            );
-
-                            columnScrollView.setScrollX(0);
-
-                            selectedColumnValue = null;
-                            entryHUDMap.clear();
-                            if (isHeadsetAvailable) {
-                                iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
-                                updateIristickHUD();
-                            }
-                        });
-                    });
+                    savePictureReferences(uid);
+                    saveEntryValues(uid);
                 });
             });
         }
     }
 
+    private void savePictureReferences(long entryID) {
+        final List<PictureReference> insertPictureReferenceList = new ArrayList<>();
+        final List<PictureReference> updatePictureReferenceList = new ArrayList<>();
+
+        currentEntryPhotos.forEach(pictureReference -> {
+            pictureReference.setEntryID(entryID);
+            if (pictureReference.getUid() > 0) {
+                updatePictureReferenceList.add(pictureReference);
+            } else {
+                insertPictureReferenceList.add(pictureReference);
+            }
+        });
+
+        PictureReference[] insertPictureReferences = new PictureReference[insertPictureReferenceList.size()];
+        PictureReference[] updatePictureReferences = new PictureReference[updatePictureReferenceList.size()];
+
+        insertPictureReferenceList.toArray(insertPictureReferences);
+        updatePictureReferenceList.toArray(updatePictureReferences);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            if (insertPictureReferences.length > 0) vsViewModel.insert(insertPictureReferences);
+            if (updatePictureReferences.length > 0) vsViewModel.update(updatePictureReferences);
+        });
+    }
+
+    private void saveEntryValues(long entryID) {
+        List<EntryValue> entryValues = entryValueListLive.getValue();
+        if (entryValues != null) {
+            entryValues = entryValues.stream()
+                    .filter(ev -> ev.getEntryID() == entryID)
+                    .collect(Collectors.toList());
+        } else {
+            entryValues = new ArrayList<>();
+        }
+        final List<EntryValue> finalEntryValues = entryValues;
+
+        final List<EntryValue> insertEntryValueList = new ArrayList<>();
+        final List<EntryValue> updateEntryValueList = new ArrayList<>();
+        final List<EntryValue> deleteEntryValueList = new ArrayList<>();
+
+        columnValueMap.forEach(
+                (position, columnValues) -> {
+                    EntryValue entryValue = finalEntryValues.stream()
+                            .filter(
+                                    ev -> columnValues.stream()
+                                            .anyMatch(cv -> cv.getUid() == ev.getColumnValueID())
+                            ).findFirst()
+                            .orElse(null);
+                    ColumnValue columnValue = (ColumnValue) columnValueSpinnerList
+                            .get(position)
+                            .getSelectedItem();
+                    if (entryValue != null && columnValue != null) {
+                        entryValue.setColumnValueID(columnValue.getUid());
+                        updateEntryValueList.add(entryValue);
+                    } else if (entryValue != null) {
+                        deleteEntryValueList.add(entryValue);
+                    } else if (columnValue != null) {
+                        entryValue = new EntryValue(entryID, columnValue.getUid());
+                        insertEntryValueList.add(entryValue);
+                    }
+                }
+        );
+        finalEntryValues.forEach(
+                entryValue -> {
+                    if (insertEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid()) &&
+                            updateEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid()) &&
+                            deleteEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid())) {
+                        deleteEntryValueList.add(entryValue);
+                    }
+                }
+        );
+
+        EntryValue[] insertEntryValues = new EntryValue[insertEntryValueList.size()];
+        EntryValue[] updateEntryValues = new EntryValue[updateEntryValueList.size()];
+        EntryValue[] deleteEntryValues = new EntryValue[deleteEntryValueList.size()];
+
+        insertEntryValueList.toArray(insertEntryValues);
+        updateEntryValueList.toArray(updateEntryValues);
+        deleteEntryValueList.toArray(deleteEntryValues);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            if (insertEntryValues.length > 0) vsViewModel.insertAllEntryValues(insertEntryValues);
+            if (updateEntryValues.length > 0) vsViewModel.updateAllEntryValues(updateEntryValues);
+            if (deleteEntryValues.length > 0) vsViewModel.deleteAllEntryValues(deleteEntryValues);
+            handler.post(() -> {
+                newEntry();
+                updateViews();
+
+                entryHUDMap.clear();
+                if (isHeadsetAvailable) {
+                    iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
+                    updateIristickHUD();
+                }
+            });
+        });
+    }
+
+    private void newEntry() {
+        dataGatheringRecyclerAdapter.clearSelected();
+        columnScrollView.setScrollX(0);
+        selectedEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+        selectedColumnValue = null;
+        currentEntryPhotos.clear();
+    }
+
     private void showPreview() {
         previewView.bringToFront();
+        previewView.setVisibility(View.VISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
+        previewShowing = true;
+        vdtsApplication.displayToast(
+                this,
+                "Use long press to exit camera",
+                Toast.LENGTH_LONG
+        );
     }
 
     private void hidePreview() {
         entryRecyclerView.bringToFront();
+        previewView.setVisibility(View.INVISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_STOP);
+        previewShowing = false;
     }
 
     private void openCamera() {
-        Intent openCameraActivityIntent = new Intent(this, IristickCameraActivity.class);
+        Intent openCameraActivityIntent = new Intent(
+                this,
+                IristickCameraActivity.class
+        );
         startActivity(openCameraActivityIntent);
     }
 
@@ -669,9 +900,8 @@ public class DataGatheringActivity extends AppCompatActivity
                     return;
                 }
             }
-            DateTimeFormatter dateTimeWithoutSeconds = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm");
             final File imageFile = File.createTempFile(
-                    dateTimeWithoutSeconds.format(LocalDateTime.now()),
+                    VDTSImageFileUtils.generateFileName("", false),
                     ".jpg",
                     new File(photoDir.getPath())
             );
@@ -688,7 +918,16 @@ public class DataGatheringActivity extends AppCompatActivity
                     new ImageCapture.OnImageSavedCallback() {
                         @Override
                         public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                            new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
+                            YoYo.with(Techniques.Pulse)
+                                    .duration(PULSE_DURATION)
+                                    .repeat(PULSE_REPEAT)
+                                    .playOn(previewView);
+
                             VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            if (selectedEntry == null) {
+                                newEntry();
+                            }
                             PictureReference pictureReference = new PictureReference(
                                     currentUser.getUid(),
                                     currentEntry.getUid(),
@@ -931,6 +1170,106 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
     }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float scaleFactor = detector.getScaleFactor();
+            float newRatio = zoomRatio * scaleFactor;
+            newRatio = Math.max(minZoomRatio, Math.min(maxZoomRatio, newRatio));
+            LOG.debug(
+                    String.format(
+                            Locale.getDefault(),
+                            "Scale Factor: %.2f, New Ratio: %.2f",
+                            scaleFactor,
+                            newRatio
+                    )
+            );
+            camera.getCameraControl().setZoomRatio(newRatio);
+
+            return true;
+        }
+    }
+
+    private class ScrollListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(@NonNull MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        @OptIn(markerClass = ExperimentalExposureCompensation.class)
+        public boolean onScroll(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float distanceX,
+                                float distanceY) {
+            final String message = String.format(
+                    Locale.getDefault(),
+                    "onScroll - event1: %s, event2: %s, distance x: %.2f, distance y: %.2f",
+                    e1.toString(),
+                    e2.toString(),
+                    distanceX,
+                    distanceY
+            );
+            LOG.debug(message);
+
+            Range<Integer> exposureRange = camera.getCameraInfo()
+                    .getExposureState()
+                    .getExposureCompensationRange();
+            Rational exposureStep = camera.getCameraInfo()
+                    .getExposureState()
+                    .getExposureCompensationStep();
+
+            LOG.debug("Exposure Range: {}, ExposureStep: {}", exposureRange, exposureStep);
+
+            int newExposureLevel = exposureLevel + (int) (distanceY * exposureStep.floatValue());
+
+            newExposureLevel = Math.max(
+                    exposureRange.getLower(),
+                    Math.min(exposureRange.getUpper(), newExposureLevel)
+            );
+            LOG.debug("New target exposure level: {}", newExposureLevel);
+            int finalNewExposureLevel = newExposureLevel;
+            camera.getCameraControl().setExposureCompensationIndex(newExposureLevel).addListener(
+                    () -> {
+                        exposureLevel = finalNewExposureLevel;
+                        LOG.debug(
+                                String.format(
+                                        Locale.getDefault(),
+                                        "Brightness set to %d",
+                                        exposureLevel
+                                )
+                        );
+                    },
+                    getMainExecutor()
+            );
+
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(@NonNull MotionEvent e) {
+            takePicture();
+            return true;
+        }
+
+        @Override
+        public void onLongPress(@NonNull MotionEvent e) {
+            hidePreview();
+        }
+
+        @Override
+        public boolean onDoubleTap(@NonNull MotionEvent e) {
+            // start/stop recording
+            return true;
+        }
+    }
+
+    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            scrollDetector.onTouchEvent(motionEvent);
+            return scaleDetector.onTouchEvent(motionEvent);
+        }
+    };
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
