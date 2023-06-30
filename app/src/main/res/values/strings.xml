@@ -67,6 +67,7 @@
 
     <string name="data_gathering_hud_end_of_row">END</string>
 
+    <string name="comment_dialogue_edit_comment">Edit Comment</string>
     <string name="comment_dialogue_enter_label">Enter</string>
     <string name="comment_dialogue_cancel_label">Cancel</string>
 

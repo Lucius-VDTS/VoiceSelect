@@ -6,29 +6,19 @@
     android:layout_height="match_parent"
     android:id="@+id/commentDialogue">
 
-    <TextView
-        android:id="@+id/commentLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/four_x_margin"
-        android:layout_marginStart="@dimen/double_margin"
-        android:text="@string/comment_label"
-        android:textSize="@dimen/medium_text_size"
-        android:labelFor="@id/commentValue"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <EditText
         android:id="@+id/commentValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_margin"
+        android:layout_margin="@dimen/double_margin"
+        android:padding="@dimen/double_padding"
         android:gravity="top|start"
         android:lines="10"
         android:inputType="textMultiLine"
         android:scrollbars="vertical"
         android:fadeScrollbars="true"
-        app:layout_constraintTop_toBottomOf="@id/commentLabel"
+        android:background="@drawable/text_background"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -906,7 +906,9 @@ public class DataGatheringActivity extends AppCompatActivity
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Comment");
+        builder.setTitle(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_edit_comment)
+        );
         final View customLayout = getLayoutInflater().inflate(
                 R.layout.dialogue_fragment_comment,
                 null
