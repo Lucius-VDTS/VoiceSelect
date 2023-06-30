@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -114,6 +115,10 @@ public class DataGatheringRecyclerAdapter
                 entryValue.setText(columnValue.getName());
             }
         }
+
+        holder.entryCommentValue.setChecked(
+                entry.getComment() != null && !entry.getComment().isEmpty()
+        );
 
         long pictureCount = pictureDataset.stream()
                 .filter(pr -> pr.getEntryID() == entry.getUid())
@@ -285,7 +290,7 @@ public class DataGatheringRecyclerAdapter
         final TextView entryIndexValue;
         final ObservableHorizontalScrollView entryValueScrollView;
         final LinearLayout entryValueLinearLayout;
-        final TextView entryCommentValue;
+        final CheckBox entryCommentValue;
         final TextView entryPhotoValue;
 
         ViewHolder(View v, Context context, DataGatheringActivity dataGatheringActivity,

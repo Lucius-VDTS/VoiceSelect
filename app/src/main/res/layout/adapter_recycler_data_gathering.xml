@@ -44,17 +44,15 @@
                 android:orientation="horizontal"/>
         </ca.vdts.voiceselect.activities.dataGathering.ObservableHorizontalScrollView>
 
-        <TextView
+        <CheckBox
             android:id="@+id/entryValueComment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:layout_marginEnd="@dimen/half_margin"
-            android:padding="@dimen/half_padding"
-            android:textSize="@dimen/large_text_size">
-        </TextView>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:clickable="false" />
 
         <TextView
             android:id="@+id/entryValuePhoto"
@@ -64,7 +62,6 @@
             android:gravity="center"
             android:layout_marginStart="@dimen/half_margin"
             android:padding="@dimen/half_padding"
-            android:textSize="@dimen/large_text_size">
-        </TextView>
+            android:textSize="@dimen/large_text_size" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
