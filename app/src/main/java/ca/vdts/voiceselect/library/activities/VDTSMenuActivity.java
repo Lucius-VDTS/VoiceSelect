@@ -222,8 +222,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                             }
                         });
                     });
-                } else {
-
                 }
 
                 disableViews();
@@ -285,25 +283,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 public void onItemSelected(AdapterView<?> parent, View view,
                                            int position, long id) {
                     currentLayout = (Layout) parent.getItemAtPosition(position);
-//                    if (layoutSpinner.getChildCount() == 0) {
-//                        layoutSpinner.setEnabled(true);
-//                        final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-//                        vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
-//                    } else if (currentLayout.getUid() == -9001L) {
-//
-//                    YoYo.with(Techniques.Shake)
-//                            .duration(SHAKE_DURATION)
-//                            .repeat(SHAKE_REPEAT)
-//                            .playOn(configureActivityButton);
-//
-//                        layoutSpinner.setEnabled(false);
-//                    }
-
-//                    else {
-//                        layoutSpinner.setEnabled(true);
-//                        final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-//                        vdtsApplication.getPreferences().setLong(layoutKey, currentLayout.getUid());
-//                    }
                 }
 
                 @Override
