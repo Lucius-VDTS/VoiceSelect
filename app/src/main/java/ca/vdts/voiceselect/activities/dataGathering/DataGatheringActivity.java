@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -338,6 +339,21 @@ public class DataGatheringActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         disableGPS();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (previewShowing) {
+            runOnUiThread(
+                    () -> vdtsApplication.displayToast(
+                            this,
+                            "Use long press to exist camera before navigating back",
+                            Toast.LENGTH_LONG
+                    )
+            );
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initializeIristickHUD() {
