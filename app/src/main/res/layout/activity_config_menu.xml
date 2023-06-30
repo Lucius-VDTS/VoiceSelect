@@ -107,7 +107,6 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/padding"
             android:layout_marginStart="@dimen/double_margin"
-            android:text="@string/footer_layout_value"
             android:textSize="@dimen/medium_text_size"
             app:layout_constraintBottom_toTopOf="@id/footerSessionValue"
             app:layout_constraintStart_toEndOf="@id/footerLayoutLabel"/>
@@ -127,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/double_margin"
-            android:text="@string/footer_session_value"
+
             android:textSize="@dimen/medium_text_size"
             app:layout_constraintBottom_toTopOf="@id/footerUserValue"
             app:layout_constraintStart_toEndOf="@id/footerSessionLabel"/>
@@ -147,7 +146,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/double_margin"
-            android:text="@string/footer_user_value"
             android:textSize="@dimen/small_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/footerUserLabel"/>
@@ -157,7 +155,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/double_margin"
-            android:text="@string/footer_version_value"
             android:textSize="@dimen/small_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

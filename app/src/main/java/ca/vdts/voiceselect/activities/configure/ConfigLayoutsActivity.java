@@ -304,7 +304,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                         YoYo.with(Techniques.Shake)
                                 .duration(SHAKE_DURATION)
                                 .repeat(SHAKE_REPEAT)
-                                .playOn(layoutSpinner);
+                                .playOn(layoutNewButton);
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
                                 "A layout must be created before it can be customized",
