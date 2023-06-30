@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.database;
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_1_2;
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_2_3;
 import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_3_4;
+import static ca.vdts.voiceselect.database.VSMigration.MIGRATION_4_5;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -66,7 +67,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
                 PictureReference.class,
                 VideoReference.class
         },
-        version = 4
+        version = 5
 )
 @TypeConverters(
         {
@@ -94,7 +95,6 @@ public abstract class VSDatabase extends RoomDatabase {
     public abstract PictureReferenceDAO pictureReferenceDAO();
     public abstract VideoReferenceDAO videoReferenceDAO();
 
-
     public static synchronized VSDatabase getInstance(VSApplication vsApplication) {
         LOG.info("Getting database instance");
         if (dbInstance == null) {
@@ -103,8 +103,9 @@ public abstract class VSDatabase extends RoomDatabase {
                                 vsApplication,
                                 VSDatabase.class,
                                 DB_NAME
-                        ).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4)
-                        .addCallback(dbPopulateCallback)
+                        ).addMigrations(
+                                MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5
+                        ).addCallback(dbPopulateCallback)
                         .build();
             }
         }

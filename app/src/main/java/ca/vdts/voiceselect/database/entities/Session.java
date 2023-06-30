@@ -186,7 +186,7 @@ public class Session implements VDTSIndexedNamedInterface {
         return String.format(
                 Locale.getDefault(),
                 "%s%s-%d",
-                this.getSessionPrefix() == null && this.getSessionPrefix().isEmpty() ?
+                this.getSessionPrefix() == null || this.getSessionPrefix().isEmpty() ?
                         "" :
                         this.getSessionPrefix().concat("-"),
                 datePattern.format(this.getStartDate()),

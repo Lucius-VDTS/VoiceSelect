@@ -74,6 +74,11 @@ public class Entry {
     @ColumnInfo(name = "longitude")
     private Double longitude;
 
+    @Expose
+    @SerializedName("comment")
+    @ColumnInfo(name = "comment")
+    private String comment;
+
     //Non-Default Constructor
     public Entry(long uid, long userID, long sessionID, LocalDateTime createdDate) {
         this.uid = uid;
@@ -82,6 +87,7 @@ public class Entry {
         this.createdDate = createdDate;
         this.latitude = null;
         this.longitude = null;
+        this.comment = null;
     }
 
     //Place holder constructor - entity has id 0 until saved to database
@@ -136,6 +142,14 @@ public class Entry {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override

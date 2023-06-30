@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -211,6 +213,7 @@ public class DataGatheringActivity extends AppCompatActivity
         columnValueScrollView = findViewById(R.id.columnValueScrollView);
         columnValueScrollView.setScrollChangeListener(this);
         columnValueCommentButton = findViewById(R.id.columnValueCommentButton);
+        columnValueCommentButton.setOnClickListener(v -> commentButtonOnClick());
         columnValuePictureButton = findViewById(R.id.columnValuePhotoButton);
         columnValuePictureButton.setOnClickListener(v -> pictureButtonOnClick());
 
@@ -699,6 +702,10 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
+    private void commentButtonOnClick() {
+        showCommentDialogue();
+    }
+
     private void pictureButtonOnClick() {
         if (cameraLifecycle.getLifecycle().getCurrentState() == Lifecycle.State.STARTED) {
             hidePreview();
@@ -889,6 +896,39 @@ public class DataGatheringActivity extends AppCompatActivity
         currentEntry = new Entry(currentUser.getUid(), currentSession.getUid());
         selectedColumnValue = null;
         currentEntryPhotos.clear();
+    }
+
+    private void showCommentDialogue() {
+        LOG.info("Showing comment dialogue");
+
+        if (currentEntry == null) {
+            newEntry();
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Comment");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_comment,
+                null
+        );
+        builder.setView(customLayout);
+
+        EditText commentView = customLayout.findViewById(R.id.commentValue);
+        commentView.setText(currentEntry.getComment() != null ? currentEntry.getComment() : "");
+
+        builder.setPositiveButton(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_enter_label),
+                (dialogInterface, i) -> currentEntry.setComment(commentView.getText().toString())
+        );
+
+        builder.setNegativeButton(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_cancel_label),
+                (dialogInterface, i) -> {}
+        );
+
+        AlertDialog dialog = builder.create();
+        assert dialog.getWindow() != null;
+        dialog.show();
     }
 
     private void showPreview() {
