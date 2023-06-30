@@ -72,8 +72,11 @@ public class VDTSApplication extends Application {
 
     //Shake settings
     public static final int SHAKE_DURATION = 200;
-
     public static final int SHAKE_REPEAT = 2;
+
+    //Pulse settings
+    public static final int PULSE_DURATION = 100;
+    public static final int PULSE_REPEAT = 1;
 
     //Strings
     public static final String EXPORT_FILE_USERS = "Users";

@@ -9,6 +9,8 @@ import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
+import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
+import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
 
 import android.annotation.SuppressLint;
@@ -19,6 +21,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -60,6 +63,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
@@ -915,6 +920,12 @@ public class DataGatheringActivity extends AppCompatActivity
                     new ImageCapture.OnImageSavedCallback() {
                         @Override
                         public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                            new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
+                            YoYo.with(Techniques.Pulse)
+                                    .duration(PULSE_DURATION)
+                                    .repeat(PULSE_REPEAT)
+                                    .playOn(previewView);
+
                             VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
                             if (selectedEntry == null) {
                                 newEntry();
