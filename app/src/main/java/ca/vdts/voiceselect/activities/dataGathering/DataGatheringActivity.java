@@ -285,11 +285,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                             "Zoom Level: %.2f",
                                             zoomRatio
                                     );
-                                    vdtsApplication.displayToast(
-                                            this,
-                                            message,
-                                            LENGTH_SHORT
-                                    );
+                                    LOG.debug(message);
                                 }
                         );
 
@@ -866,6 +862,11 @@ public class DataGatheringActivity extends AppCompatActivity
         previewView.setVisibility(View.VISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
         previewShowing = true;
+        vdtsApplication.displayToast(
+                this,
+                "Use long press to exit camera",
+                Toast.LENGTH_LONG
+        );
     }
 
     private void hidePreview() {
@@ -1164,14 +1165,12 @@ public class DataGatheringActivity extends AppCompatActivity
             camera.getCameraControl().setExposureCompensationIndex(newExposureLevel).addListener(
                     () -> {
                         exposureLevel = finalNewExposureLevel;
-                        vdtsApplication.displayToast(
-                                vdtsApplication.getApplicationContext(),
+                        LOG.debug(
                                 String.format(
                                         Locale.getDefault(),
                                         "Brightness set to %d",
                                         exposureLevel
-                                ),
-                                LENGTH_SHORT
+                                )
                         );
                     },
                     getMainExecutor()
