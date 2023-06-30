@@ -78,6 +78,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
@@ -172,7 +173,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private GestureDetector scrollDetector;
     private ScaleGestureDetector scaleDetector;
     private ImageCapture imageCapture;
-    private static final int EXPOSURE_LEVELS = 10; // todo - add controls to control
+    private boolean previewShowing = false;
+    private static final int EXPOSURE_LEVELS = 10;
     private int exposureLevel = EXPOSURE_LEVELS / 2;
     private float zoomRatio = 1.0f;
     private float minZoomRatio = 1.0f;
@@ -230,7 +232,8 @@ public class DataGatheringActivity extends AppCompatActivity
                         this,
                         LinearLayoutManager.VERTICAL,
                         false
-                ));
+                )
+        );
 
         //Camera
         scaleDetector = new ScaleGestureDetector(this, new ScaleListener());
@@ -309,6 +312,11 @@ public class DataGatheringActivity extends AppCompatActivity
         super.onResume();
         cameraLifecycle.performEvent(Lifecycle.Event.ON_RESUME);
         entryRecyclerView.bringToFront();
+        if (previewShowing) {
+            showPreview();
+        } else {
+            hidePreview();
+        }
         initializeIristickHUD();
     }
 
@@ -449,20 +457,20 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnValueMap.put(
                         index,
                         vsViewModel.findAllActiveColumnValuesByColumn(
-                                Objects.requireNonNull(columnMap.get(index)).getUid())
+                                Objects.requireNonNull(columnMap.get(index)).getUid()
+                        )
                 );
             }
 
             handler.post(() -> {
                 for (int index = 0; index < columnValueMap.size(); index++) {
-                    ColumnValueSpinner columnValueSpinner =
-                            new ColumnValueSpinner(
-                                    this,
-                                    currentUser,
-                                    columnValueMap.get(index),
-                                    columnValueSpinnerListener,
-                                    index
-                            );
+                    ColumnValueSpinner columnValueSpinner = new ColumnValueSpinner(
+                            this,
+                            currentUser,
+                            columnValueMap.get(index),
+                            columnValueSpinnerListener,
+                            index
+                    );
 
                     columnValueSpinnerList.add(columnValueSpinner.getColumnValueSpinner());
                     columnValueLinearLayout.addView(columnValueSpinner.getColumnValueSpinner());
@@ -488,7 +496,9 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
-            entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(currentSession.getUid());
+            entryValueListLive = vsViewModel.findAllEntryValuesLiveBySession(
+                    currentSession.getUid()
+            );
             handler.post(this::initializeDGAdapter);
         });
     }
@@ -505,17 +515,21 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnMap,
                 columnValueMap,
                 entryList,
-                entryValueList);
+                entryValueList
+        );
 
         entryRecyclerView.setAdapter(dataGatheringRecyclerAdapter);
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
 
-        columnValueIndexValue.setText(String.format(
-                Locale.getDefault(),
-                "%d",
-                dataGatheringRecyclerAdapter.getItemCount() + 1));
+        columnValueIndexValue.setText(
+                String.format(
+                        Locale.getDefault(),
+                        "%d",
+                        dataGatheringRecyclerAdapter.getItemCount() + 1
+                )
+        );
 
         if (isHeadsetAvailable) {
             initializeIristickVoiceCommands();
@@ -573,8 +587,9 @@ public class DataGatheringActivity extends AppCompatActivity
             if (entries != null) {
                 dataGatheringRecyclerAdapter.clearEntries();
                 dataGatheringRecyclerAdapter.addAllEntries(entries);
-                sessionEntriesCount.setText(String.format(
-                        Locale.getDefault(), "%d", entries.size()));
+                sessionEntriesCount.setText(
+                        String.format(Locale.getDefault(), "%d", entries.size())
+                );
 
                 if (isHeadsetAvailable) {
                     iristickHUD.sessionEntriesCount.setText(sessionEntriesCount.getText());
@@ -593,9 +608,67 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     };
 
-    //todo - select entry
-    private void entryAdapterSelect(int index) {
+    private void entryAdapterSelect(Integer index) {
+        if (index != null) {
+            dataGatheringRecyclerAdapter.setSelected(index);
+            selectedEntry = dataGatheringRecyclerAdapter.getEntry(index);
+            currentEntryPhotos.clear();
+        } else {
+            newEntry();
+        }
+        updateViews();
+    }
 
+    private void updateViews() {
+        runOnUiThread(() -> {
+            if (selectedEntry.getUid() > 0) {
+                List<Entry> entries = entryListLive.getValue();
+                int index = entries != null ? entries.indexOf(selectedEntry) : 0;
+                columnValueIndexValue.setText(
+                        String.format(Locale.getDefault(), "%d", index + 1)
+                );
+                List<EntryValue> entryValues = entryValueListLive.getValue();
+                if (entryValues != null) {
+                    List<EntryValue> selectedEntryValues = entryValues.stream()
+                            .filter(entryValue -> entryValue.getEntryID() == selectedEntry.getUid())
+                            .collect(Collectors.toList());
+                    for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
+                        List<ColumnValue> columnValues = columnValueMap.get(columnIndex);
+                        if (columnValues != null) {
+                            ColumnValue columnValue = columnValues.stream()
+                                    .filter(
+                                            cv -> selectedEntryValues.stream()
+                                                    .anyMatch(
+                                                            ev -> ev.getColumnValueID() == cv.getUid()
+                                                    )
+                                    ).findFirst()
+                                    .orElse(null);
+
+                            Spinner columnSpinner = columnValueSpinnerList.get(columnIndex);
+                            if (columnSpinner != null) {
+                                if (columnValue == null) {
+                                    columnSpinner.setSelection(0);
+                                } else {
+                                    int position = columnValues.indexOf(columnValue) + 1;
+                                    columnSpinner.setSelection(position);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                columnValueIndexValue.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "%d",
+                                dataGatheringRecyclerAdapter.getItemCount() + 1
+                        )
+                );
+                for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
+                    columnValueSpinnerList.get(columnIndex).setSelection(0);
+                }
+            }
+        });
     }
 
     private void pictureButtonOnClick() {
@@ -623,82 +696,174 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void saveEntryButtonOnClick() {
-        if (selectedEntry != null) {
+        if (selectedEntry.getUid() > 0) {
             //Update existing entry
+            ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
+            Handler updateEntryHandler = new Handler(Looper.getMainLooper());
+            updateEntryExecutor.execute(() -> {
+                if (currentLocation != null) {
+                    if (selectedEntry.getLatitude() == null) {
+                        selectedEntry.setLatitude(currentLocation.getLatitude());
+                    }
+                    if (selectedEntry.getLongitude() == null) {
+                        selectedEntry.setLongitude(currentLocation.getLongitude());
+                    }
+                }
+                vsViewModel.updateEntry(selectedEntry);
+                updateEntryHandler.post(() -> {
+                    savePictureReferences(selectedEntry.getUid());
+                    saveEntryValues(selectedEntry.getUid());
+                });
+            });
         } else {
-            //Create new entry
-            Entry newEntry = new Entry(
-                    currentUser.getUid(),
-                    currentSession.getUid()
-            );
-
+            //Save a new entry
+            if (selectedEntry == null) {
+                newEntry();
+            }
             ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
             Handler createEntryHandler = new Handler(Looper.getMainLooper());
             createEntryExecutor.execute(() -> {
-                long uid = vsViewModel.insertEntry(newEntry);
-                newEntry.setUid(uid);
+                if (currentLocation != null) {
+                    selectedEntry.setLatitude(currentLocation.getLatitude());
+                    selectedEntry.setLongitude(currentLocation.getLongitude());
+                }
+                long uid = vsViewModel.insertEntry(selectedEntry);
+                selectedEntry.setUid(uid);
                 createEntryHandler.post(() -> {
-                    entryValueList.clear();
-                    entryValueMap.clear();
-
-                    for (int index = 0; index < columnValueSpinnerList.size(); index++) {
-                        ColumnValue columnValue =
-                                (ColumnValue) columnValueSpinnerList.get(index).getSelectedItem();
-
-                        EntryValue newEntryValue;
-                        if (columnValue != null) {
-                            newEntryValue = new EntryValue(newEntry.getUid(), columnValue.getUid());
-                        } else {
-                            newEntryValue = new EntryValue(newEntry.getUid());
-                        }
-
-                        entryValueList.add(index, newEntryValue);
-
-                        columnValueSpinnerList.get(index).setSelection(0);
-                    }
-
-                    EntryValue[] entryValues = new EntryValue[entryValueList.size()];
-                    entryValueList.toArray(entryValues);
-                    ExecutorService createEntryValuesExecutor = Executors.newSingleThreadExecutor();
-                    Handler createEntryValuesHandler = new Handler(Looper.getMainLooper());
-                    createEntryValuesExecutor.execute(() -> {
-                        vsViewModel.insertAllEntryValues(entryValues);
-                        createEntryValuesHandler.post(() -> {
-                            columnValueIndexValue.setText(String.format(
-                                    Locale.getDefault(),
-                                    "%d",
-                                    dataGatheringRecyclerAdapter.getItemCount() + 1)
-                            );
-
-                            columnScrollView.setScrollX(0);
-
-                            selectedColumnValue = null;
-                            entryHUDMap.clear();
-                            if (isHeadsetAvailable) {
-                                iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
-                                updateIristickHUD();
-                            }
-                        });
-                    });
+                    savePictureReferences(uid);
+                    saveEntryValues(uid);
                 });
             });
         }
+    }
+
+    private void savePictureReferences(long entryID) {
+        final List<PictureReference> insertPictureReferenceList = new ArrayList<>();
+        final List<PictureReference> updatePictureReferenceList = new ArrayList<>();
+
+        currentEntryPhotos.forEach(pictureReference -> {
+            pictureReference.setEntryID(entryID);
+            if (pictureReference.getUid() > 0) {
+                updatePictureReferenceList.add(pictureReference);
+            } else {
+                insertPictureReferenceList.add(pictureReference);
+            }
+        });
+
+        PictureReference[] insertPictureReferences = new PictureReference[insertPictureReferenceList.size()];
+        PictureReference[] updatePictureReferences = new PictureReference[updatePictureReferenceList.size()];
+
+        insertPictureReferenceList.toArray(insertPictureReferences);
+        updatePictureReferenceList.toArray(updatePictureReferences);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            if (insertPictureReferences.length > 0) vsViewModel.insert(insertPictureReferences);
+            if (updatePictureReferences.length > 0) vsViewModel.update(updatePictureReferences);
+        });
+    }
+
+    private void saveEntryValues(long entryID) {
+        List<EntryValue> entryValues = entryValueListLive.getValue();
+        if (entryValues != null) {
+            entryValues = entryValues.stream()
+                    .filter(ev -> ev.getEntryID() == entryID)
+                    .collect(Collectors.toList());
+        } else {
+            entryValues = new ArrayList<>();
+        }
+        final List<EntryValue> finalEntryValues = entryValues;
+
+        final List<EntryValue> insertEntryValueList = new ArrayList<>();
+        final List<EntryValue> updateEntryValueList = new ArrayList<>();
+        final List<EntryValue> deleteEntryValueList = new ArrayList<>();
+
+        columnValueMap.forEach(
+                (position, columnValues) -> {
+                    EntryValue entryValue = finalEntryValues.stream()
+                            .filter(
+                                    ev -> columnValues.stream()
+                                            .anyMatch(cv -> cv.getUid() == ev.getColumnValueID())
+                            ).findFirst()
+                            .orElse(null);
+                    ColumnValue columnValue = (ColumnValue) columnValueSpinnerList
+                            .get(position)
+                            .getSelectedItem();
+                    if (entryValue != null && columnValue != null) {
+                        entryValue.setColumnValueID(columnValue.getUid());
+                        updateEntryValueList.add(entryValue);
+                    } else if (entryValue != null) {
+                        deleteEntryValueList.add(entryValue);
+                    } else if (columnValue != null) {
+                        entryValue = new EntryValue(entryID, columnValue.getUid());
+                        insertEntryValueList.add(entryValue);
+                    }
+                }
+        );
+        finalEntryValues.forEach(
+                entryValue -> {
+                    if (insertEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid()) &&
+                            updateEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid()) &&
+                            deleteEntryValueList.stream().noneMatch(ev -> ev.getUid() == entryValue.getUid())) {
+                        deleteEntryValueList.add(entryValue);
+                    }
+                }
+        );
+
+        EntryValue[] insertEntryValues = new EntryValue[insertEntryValueList.size()];
+        EntryValue[] updateEntryValues = new EntryValue[updateEntryValueList.size()];
+        EntryValue[] deleteEntryValues = new EntryValue[deleteEntryValueList.size()];
+
+        insertEntryValueList.toArray(insertEntryValues);
+        updateEntryValueList.toArray(updateEntryValues);
+        deleteEntryValueList.toArray(deleteEntryValues);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            if (insertEntryValues.length > 0) vsViewModel.insertAllEntryValues(insertEntryValues);
+            if (updateEntryValues.length > 0) vsViewModel.updateAllEntryValues(updateEntryValues);
+            if (deleteEntryValues.length > 0) vsViewModel.deleteAllEntryValues(deleteEntryValues);
+            handler.post(() -> {
+                newEntry();
+                updateViews();
+
+                entryHUDMap.clear();
+                if (isHeadsetAvailable) {
+                    iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
+                    updateIristickHUD();
+                }
+            });
+        });
+    }
+
+    private void newEntry() {
+        dataGatheringRecyclerAdapter.clearSelected();
+        columnScrollView.setScrollX(0);
+        selectedEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+        selectedColumnValue = null;
+        currentEntryPhotos.clear();
     }
 
     private void showPreview() {
         previewView.bringToFront();
         previewView.setVisibility(View.VISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_START);
+        previewShowing = true;
     }
 
     private void hidePreview() {
         entryRecyclerView.bringToFront();
         previewView.setVisibility(View.INVISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_STOP);
+        previewShowing = false;
     }
 
     private void openCamera() {
-        Intent openCameraActivityIntent = new Intent(this, IristickCameraActivity.class);
+        Intent openCameraActivityIntent = new Intent(
+                this,
+                IristickCameraActivity.class
+        );
         startActivity(openCameraActivityIntent);
     }
 
@@ -734,6 +899,9 @@ public class DataGatheringActivity extends AppCompatActivity
                         @Override
                         public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                             VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            if (selectedEntry == null) {
+                                newEntry();
+                            }
                             PictureReference pictureReference = new PictureReference(
                                     currentUser.getUid(),
                                     selectedEntry.getUid(),
@@ -993,6 +1161,23 @@ public class DataGatheringActivity extends AppCompatActivity
                     getMainExecutor()
             );
 
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(@NonNull MotionEvent e) {
+            takePicture();
+            return true;
+        }
+
+        @Override
+        public void onLongPress(@NonNull MotionEvent e) {
+            hidePreview();
+        }
+
+        @Override
+        public boolean onDoubleTap(@NonNull MotionEvent e) {
+            // start/stop recording
             return true;
         }
     }

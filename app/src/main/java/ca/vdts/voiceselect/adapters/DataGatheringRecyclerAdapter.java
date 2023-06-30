@@ -34,7 +34,8 @@ import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
-public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGatheringRecyclerAdapter.ViewHolder> {
+public class DataGatheringRecyclerAdapter
+        extends RecyclerView.Adapter<DataGatheringRecyclerAdapter.ViewHolder> {
     private final Context context;
     private final DataGatheringActivity dataGatheringActivity;
     private final VDTSUser currentUser;
@@ -63,17 +64,20 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater
+        View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.adapter_recycler_data_gathering, parent, false),
-                context,
-                dataGatheringActivity,
-                xCord,
-                columnDataset);
+                .inflate(R.layout.adapter_recycler_data_gathering, parent, false);
+
+        if (selectedListener != null) {
+            view.setOnClickListener(selectedListener);
+        }
+
+        return new ViewHolder(view, context, dataGatheringActivity, xCord, columnDataset);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DataGatheringRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DataGatheringRecyclerAdapter.ViewHolder holder,
+                                 int position) {
         final Entry entry = entryDataset.get(position);
         int size = entryDataset.size();
 
@@ -139,8 +143,7 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
 
     public void setDatasets(HashMap<Integer, Column> columnMap,
                             HashMap<Integer, List<ColumnValue>> columnValueMap,
-                            List<Entry> entryList,
-                            List<EntryValue> entryValueList) {
+                            List<Entry> entryList, List<EntryValue> entryValueList) {
         columnDataset.clear();
         for (int index = 0; index < columnMap.size(); index++) {
             columnDataset.add(index, columnMap.get(index));
@@ -310,12 +313,8 @@ public class DataGatheringRecyclerAdapter extends RecyclerView.Adapter<DataGathe
          */
         @Override
         public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
-                                    int x, int y,
-                                    int oldx, int oldy) {
-            dataGatheringActivity.onScrollChanged(
-                    null,
-                    x, y,
-                    oldx, oldy);
+                                    int x, int y, int oldx, int oldy) {
+            dataGatheringActivity.onScrollChanged(null, x, y, oldx, oldy);
             xCord.setValue(x);
         }
 
