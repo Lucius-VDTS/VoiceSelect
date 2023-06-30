@@ -208,22 +208,22 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         userRecyclerView = findViewById(R.id.userRecyclerView);
 
         //Observe/Update user list
-        vsViewModel.findAllActiveUsersLive().observe(this, users -> {
-            allUserList.clear();
-            allUserList.addAll(users);
-            allUserList.remove(VDTS_USER_NONE);
-
-            if (currentUser.getAuthority() > 0) {
-                selectableUserList.clear();
-                selectableUserList.addAll(allUserList);
-                userAdapter.setDataset(selectableUserList);
-            }
-        });
-
-        if (currentUser.getAuthority() == 0) {
-            selectableUserList.clear();
-            selectableUserList.add(currentUser);
-        }
+//        vsViewModel.findAllActiveUsersLive().observe(this, users -> {
+//            allUserList.clear();
+//            allUserList.addAll(users);
+//            allUserList.remove(VDTS_USER_NONE);
+//
+//            if (currentUser.getAuthority() > 0) {
+//                selectableUserList.clear();
+//                selectableUserList.addAll(allUserList);
+//                userAdapter.setDataset(selectableUserList);
+//            }
+//        });
+//
+//        if (currentUser.getAuthority() == 0) {
+//            selectableUserList.clear();
+//            selectableUserList.add(currentUser);
+//        }
 
         userRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
@@ -245,6 +245,25 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     @Override
     protected void onResume() {
         super.onResume();
+        initializeUserList();
+    }
+
+    private void initializeUserList() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(() -> {
+            allUserList.clear();
+            allUserList.addAll(vsViewModel.findAllActiveUsers());
+            allUserList.remove(VDTS_USER_NONE);
+
+            selectableUserList.clear();
+            if (currentUser.getAuthority() > 0) {
+                selectableUserList.addAll(allUserList);
+            } else {
+                selectableUserList.add(currentUser);
+            }
+            handler.post(() -> userAdapter.setDataset(selectableUserList));
+        });
     }
 
     /**
@@ -351,10 +370,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                 Toast.LENGTH_SHORT
                         );
 
-                        handler.post(() -> {
-                            userAdapter.updateSelectedEntity();
-                            updateCurrentUser();
-                        });
+                        handler.post(() -> userAdapter.updateSelectedEntity());
                     });
                 } else {
                     LOG.error("Unable to update user");
@@ -401,8 +417,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                 vsViewModel.insertColumnSpoken(userColumnSpoken);
                             });
 
-                            final List<ColumnValueSpoken> primaryColumnValueSpokens = vsViewModel
-                                    .findAllColumnValueSpokensByUser(primaryUser.getUid()
+                            final List<ColumnValueSpoken> primaryColumnValueSpokens =
+                                    vsViewModel.findAllColumnValueSpokensByUser(primaryUser.getUid()
                             );
                             primaryColumnValueSpokens.forEach(columnValueSpoken -> {
                                 final ColumnValueSpoken userColumnValueSpoken =
@@ -419,7 +435,10 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         }
 
                         handler.post(() -> {
+                            //todo - maybe unnecessary
                             if (primaryUser != null) { userAdapter.updateEntity(primaryUser); }
+
+                            userAdapter.addEntity(vdtsUser);
 
                             if (userAdapter.getItemCount() == 1) {
                                 vdtsApplication.setCurrentUser(userAdapter.getEntity(0));
@@ -528,13 +547,17 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 null
         );
         builder.setView(customLayout);
+
         TextView label = customLayout.findViewById(R.id.mainLabel);
         label.setText(R.string.import_dialogue_label);
+
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
+
         dialog = builder.create();
         dialog.show();
         AlertDialog finalDialog = dialog;
+
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
             File file = new File(
@@ -592,7 +615,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     Toast.LENGTH_SHORT
             );
         }else {
-            //saver = Saver.createSaver(ONEDRIVE_APP_ID);
             final Exporter exporter = new Exporter(
                     vsViewModel,
                     vdtsApplication,
@@ -652,7 +674,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         if (userAdminSwitch.isChecked()) {
             return !vdtsUser.getName().isEmpty() &&
                     !vdtsUser.getExportCode().isEmpty() &&
-                    //!vdtsUser.getPassword().isEmpty() &&
                     allUserList.stream()
                             .noneMatch(
                                     user1 -> vdtsUser.getUid() != user1.getUid() && (

@@ -239,13 +239,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             recallActivityButton.setEnabled(false);
             settingsActivityButton.setEnabled(false);
             changeUserActivityButton.setEnabled(false);
-
-            if (isHeadsetAvailable) {
-                iristickHUD.startLabel.setEnabled(false);
-                iristickHUD.resumeLabel.setEnabled(false);
-                iristickHUD.settingsLabel.setEnabled(false);
-                iristickHUD.changeUserLabel.setEnabled(false);
-            }
         }
     }
 
@@ -262,7 +255,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                                 .playOn(configureActivityButton);
                         vdtsApplication.displayToast(
                                 vdtsApplication,
-                                "Create a layout to start a session",
+                                "Configure the application to start a session",
                                 0
                         );
 
@@ -330,7 +323,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
             });
 
             Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
-//            startActivityIntent.putExtra("layout", currentLayout.getUid());
             startActivity(startActivityIntent);
         }
     }
@@ -398,7 +390,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
      */
     @OptIn(markerClass = Experimental.class)
     private void initializeIristick() {
-        if (isHeadsetAvailable) {
+        if (isHeadsetAvailable && iristickHUD != null) {
             VDTSNotificationUtil.init(this);
 
             aboutActivityButton.setVisibility(View.VISIBLE);
@@ -412,6 +404,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 }
             } else {
                 iristickHUD.layoutValue.setText(R.string.menu_layout_value);
+            }
+
+            if (currentUser.getUid() == -9001L) {
+                iristickHUD.startLabel.setEnabled(false);
+                iristickHUD.resumeLabel.setEnabled(false);
+                iristickHUD.settingsLabel.setEnabled(false);
+                iristickHUD.changeUserLabel.setEnabled(false);
             }
 
             IristickSDK.addVoiceGrammar(getLifecycle(), this, ac -> {

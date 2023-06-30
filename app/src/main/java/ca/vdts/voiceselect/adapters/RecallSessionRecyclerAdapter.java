@@ -25,7 +25,7 @@ import ca.vdts.voiceselect.library.interfaces.VDTSFilterableInterface;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 @SuppressLint("NotifyDataSetChanged")
-public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHolder>
+public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSessionRecyclerAdapter.ViewHolder>
         implements VDTSFilterableInterface {
     private final Context context;
     private List<Session> sessionDataset;
@@ -38,7 +38,7 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.ViewHold
     private final VDTSAdapterClickListenerUtil selectedListener;
     private int selectedIndex = -1;
 
-    public SessionAdapter(List<Session> sessions, Context context, HashMap<Long,
+    public RecallSessionRecyclerAdapter(List<Session> sessions, Context context, HashMap<Long,
             VDTSUser> userMap, VDTSAdapterClickListenerUtil selectedListener) {
         sessionDataset = sessions;
         this.context = context;

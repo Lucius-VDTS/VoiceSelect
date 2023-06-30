@@ -54,6 +54,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.iristick.sdk.Experimental;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
@@ -80,10 +81,11 @@ import ca.vdts.voiceselect.activities.configure.ConfigColumnsActivity;
 import ca.vdts.voiceselect.adapters.DataGatheringRecyclerAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
+import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.database.entities.ColumnValue;
+import ca.vdts.voiceselect.database.entities.ColumnValueSpoken;
 import ca.vdts.voiceselect.database.entities.Entry;
 import ca.vdts.voiceselect.database.entities.EntryValue;
-import ca.vdts.voiceselect.database.entities.Layout;
 import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
@@ -104,17 +106,17 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
-    private Layout currentLayout;
     private Session currentSession;
-    private Entry selectedEntry;
-    private Column lastColumn;
+    private Entry currentEntry;
+    private Spinner currentSpinner;
     private ColumnValue selectedColumnValue;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
-    private final List<Column> columnList = new ArrayList<>();
     private final HashMap<Integer, Column> columnMap = new HashMap<>();
+    private List<ColumnSpoken> columnSpokenList = new ArrayList<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
+    private HashMap<Integer, List<ColumnValueSpoken>> columnValueSpokenMap = new HashMap<>();
     private final List<Spinner> columnValueSpinnerList = new ArrayList<>();
 
     private final List<Entry> entryList = new ArrayList<>();
@@ -300,18 +302,6 @@ public class DataGatheringActivity extends AppCompatActivity
         initializeSession();
     }
 
-//    private void initializeLayout() {
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        Handler handler = new Handler(Looper.getMainLooper());
-//        executor.execute(() -> {
-//            currentLayout = vsViewModel.findLayoutByID(
-//                    getIntent().getLongExtra("layout", -9001L));
-//
-//            currentLayoutColumnList = vsViewModel.findAllLayoutColumnsByLayout(currentLayout);
-//            handler.post(this::initializeSession);
-//        });
-//    }
-
     private void initializeSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
         long currentSessionID = vdtsApplication.getPreferences().getLong(currentSessionKey);
@@ -371,6 +361,8 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            columnSpokenList = vsViewModel.findAllColumnSpokensByUser(currentUser.getUid());
+
             handler.post(() -> {
                 if (columnMap.size() != 0) {
                     for (int index = 0; index < columnMap.size(); index++){
@@ -409,6 +401,11 @@ public class DataGatheringActivity extends AppCompatActivity
                         index,
                         vsViewModel.findAllActiveColumnValuesByColumn(
                                 Objects.requireNonNull(columnMap.get(index)).getUid())
+                );
+
+                columnValueSpokenMap.put(
+                        index,
+                        vsViewModel.findAllColumnValueSpokensByUser(currentUser.getUid())
                 );
             }
 
@@ -582,7 +579,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void saveEntryButtonOnClick() {
-        if (selectedEntry != null) {
+        if (currentEntry != null) {
             //Update existing entry
         } else {
             //Create new entry
@@ -694,7 +691,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
                             PictureReference pictureReference = new PictureReference(
                                     currentUser.getUid(),
-                                    selectedEntry.getUid(),
+                                    currentEntry.getUid(),
                                     imageFile.getPath(),
                                     currentLocation
                             );
@@ -837,6 +834,63 @@ public class DataGatheringActivity extends AppCompatActivity
                     this,
                     vc -> vc.add("Navigate Back", this::finish)
             );
+        }
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void initializeIristickGrammar() {
+        if (isHeadsetAvailable) {
+            //Step by step
+            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+                vg.addSequentialGroup(sg -> {
+                    //First entry value in row
+                    sg.addAlternativeGroup(start -> {
+                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
+                        if (columnValueSpokenList != null) {
+                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                start.addToken(columnValueSpoken.getSpoken());
+                            }
+                        }
+
+                        start.addToken("Skip");
+                        start.addToken("Delete Last");
+                        start.addToken("Repeat Entry");
+                        start.addToken("End Session");
+                    });
+
+                    //Rest of entry values in row
+                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
+                        int finalIndex = index;
+                        sg.addAlternativeGroup(middle -> {
+                            List<ColumnValueSpoken> columnValueSpokenList =
+                                    columnValueSpokenMap.get(finalIndex);
+                            if (columnValueSpokenList != null) {
+                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                    middle.addToken(columnValueSpoken.getSpoken());
+                                }
+                            }
+
+                            middle.addToken("Skip");
+                            middle.addToken("Reset Entry");
+                        });
+                    }
+
+                    //End of row
+                    sg.addAlternativeGroup(end -> {
+                        end.addToken("Make Comment");
+                        end.addToken("Open Camera");
+                        end.addToken("Reset Entry");
+                        end.addToken("Save Entry");
+                    });
+
+                    //todo - need another alternative group based on whether comments/photos are required before saving
+                });
+
+                vg.setListener(((recognizer, tokens, tags) -> {
+                    //todo - stuff based on tokens
+                    String test = tokens[0];
+                }));
+            });
         }
     }
 

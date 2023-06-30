@@ -29,7 +29,7 @@ import java.util.List;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
-import ca.vdts.voiceselect.adapters.SessionAdapter;
+import ca.vdts.voiceselect.adapters.RecallSessionRecyclerAdapter;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.files.Exporter;
@@ -49,7 +49,7 @@ public class RecallActivity extends AppCompatActivity {
     private final List<Session> openSessionList = new ArrayList<>();
 
     private RecyclerView headerRecyclerView;
-    private SessionAdapter sessionAdapter;
+    private RecallSessionRecyclerAdapter recallSessionRecyclerAdapter;
 
     final List<VDTSUser> userList = new ArrayList<>();
     final HashMap<Long,VDTSUser> userMap = new HashMap<>();
@@ -78,10 +78,10 @@ public class RecallActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 boolean isValidSubmit = false;
                 if (query != null && !query.isEmpty()) {
-                    sessionAdapter.addFilter(query);
+                    recallSessionRecyclerAdapter.addFilter(query);
                     isValidSubmit = true;
                 } else {
-                    sessionAdapter.clearFilter();
+                    recallSessionRecyclerAdapter.clearFilter();
                 }
 
                 return isValidSubmit;
@@ -91,10 +91,10 @@ public class RecallActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 boolean isValidSubmit = false;
                 if (newText != null && !newText.isEmpty()) {
-                    sessionAdapter.addFilter(newText);
+                    recallSessionRecyclerAdapter.addFilter(newText);
                     isValidSubmit = true;
                 }else {
-                    sessionAdapter.clearFilter();
+                    recallSessionRecyclerAdapter.clearFilter();
                 }
 
                 return isValidSubmit;
@@ -111,13 +111,13 @@ public class RecallActivity extends AppCompatActivity {
         headerRecyclerView.setLayoutManager(layoutManager);
 
         sessionList = new ArrayList<>();
-        sessionAdapter = new SessionAdapter(
+        recallSessionRecyclerAdapter = new RecallSessionRecyclerAdapter(
                 sessionList,
                 this,
                 userMap,
                 new VDTSOuterClickListenerUtil(this::selectCallback, headerRecyclerView)
         );
-        headerRecyclerView.setAdapter(sessionAdapter);
+        headerRecyclerView.setAdapter(recallSessionRecyclerAdapter);
     }
 
 
@@ -144,16 +144,16 @@ public class RecallActivity extends AppCompatActivity {
         boolean JSON = true;
 
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
-            CSV = exporter.exportSessionCSV(sessionAdapter.getSelected());
+            CSV = exporter.exportSessionCSV(recallSessionRecyclerAdapter.getSelected());
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
-            JSON= exporter.exportSessionJSON(sessionAdapter.getSelected());
+            JSON= exporter.exportSessionJSON(recallSessionRecyclerAdapter.getSelected());
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
-            Excel = exporter.exportSessionExcel(sessionAdapter.getSelected());
+            Excel = exporter.exportSessionExcel(recallSessionRecyclerAdapter.getSelected());
         }
         if (CSV && Excel && JSON) {
-            if (exporter.exportMedia(sessionAdapter.getSelected())) {
+            if (exporter.exportMedia(recallSessionRecyclerAdapter.getSelected())) {
                 vdtsApplication.displayToast(
                         this,
                         "Session exported successfully",
@@ -177,7 +177,7 @@ public class RecallActivity extends AppCompatActivity {
 
     private void updateSessions() {
         new Thread(() -> {
-            sessionAdapter.clearSelected();
+            recallSessionRecyclerAdapter.clearSelected();
 
             openSessionList.clear();
             openSessionList.addAll(vsViewModel.findAllOpenSessionsOrderByStartDate());
@@ -193,8 +193,8 @@ public class RecallActivity extends AppCompatActivity {
             }
 
             runOnUiThread(()-> {
-                sessionAdapter.setSessionDataset(sessions);
-                sessionAdapter.notifyDataSetChanged();
+                recallSessionRecyclerAdapter.setSessionDataset(sessions);
+                recallSessionRecyclerAdapter.notifyDataSetChanged();
             });
         }).start();
     }
@@ -209,13 +209,13 @@ public class RecallActivity extends AppCompatActivity {
                 userMap.put(user.getUid(),user);
             }
 
-            runOnUiThread(() -> sessionAdapter.setUserMap(userMap));
-            runOnUiThread(() -> sessionAdapter.notifyDataSetChanged());
+            runOnUiThread(() -> recallSessionRecyclerAdapter.setUserMap(userMap));
+            runOnUiThread(() -> recallSessionRecyclerAdapter.notifyDataSetChanged());
         }).start();
     }
 
     private void selectCallback(Integer index) {
-        sessionAdapter.setSelected(index);
+        recallSessionRecyclerAdapter.setSelected(index);
         showOpenDialogue();
     }
 
@@ -243,7 +243,7 @@ public class RecallActivity extends AppCompatActivity {
         openButton.setOnClickListener(v -> {
             vdtsApplication.getPreferences().setLong(
                     String.format("%s_SESSION", currentUser.getExportCode()),
-                    sessionAdapter.getSelected().getUid());
+                    recallSessionRecyclerAdapter.getSelected().getUid());
             finalDialog.dismiss();
             Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
             startActivity(resumeActivityIntent);
@@ -273,7 +273,7 @@ public class RecallActivity extends AppCompatActivity {
         builder.setView(customLayout);
 
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText(String.format("Delete Session %s ?", sessionAdapter.getSelected().name()));
+        label.setText(String.format("Delete Session %s ?", recallSessionRecyclerAdapter.getSelected().name()));
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
 
@@ -282,7 +282,7 @@ public class RecallActivity extends AppCompatActivity {
         AlertDialog finalDialog = dialog;
 
         yesButton.setOnClickListener(v -> {
-            final Session session = sessionAdapter.getSelected();
+            final Session session = recallSessionRecyclerAdapter.getSelected();
             new Thread(()-> {
                 vsViewModel.deleteSession(session);
                 updateSessions();
