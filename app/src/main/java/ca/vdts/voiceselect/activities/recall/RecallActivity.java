@@ -245,7 +245,7 @@ public class RecallActivity extends AppCompatActivity {
 
         finalDialog.setOnDismissListener(v -> {
                 if (!keepSelection.get()) {
-                    sessionAdapter.setSelected(-1);
+                    recallSessionRecyclerAdapter.setSelected(-1);
                 }
             });
 
@@ -259,7 +259,7 @@ public class RecallActivity extends AppCompatActivity {
         });
 
         exportButton.setOnClickListener(v -> {
-            Session session = new Session(sessionAdapter.getSelected());
+            Session session = new Session(recallSessionRecyclerAdapter.getSelected());
             finalDialog.dismiss();
             export(session);
         });
@@ -292,7 +292,7 @@ public class RecallActivity extends AppCompatActivity {
         dialog.show();
         AlertDialog finalDialog = dialog;
 
-        finalDialog.setOnDismissListener(v -> sessionAdapter.setSelected(-1));
+        finalDialog.setOnDismissListener(v -> recallSessionRecyclerAdapter.setSelected(-1));
 
         yesButton.setOnClickListener(v -> {
             final Session session = recallSessionRecyclerAdapter.getSelected();

@@ -625,7 +625,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private void entryAdapterSelect(Integer index) {
         if (index != null) {
             dataGatheringRecyclerAdapter.setSelected(index);
-            selectedEntry = dataGatheringRecyclerAdapter.getEntry(index);
+            currentEntry = dataGatheringRecyclerAdapter.getEntry(index);
             currentEntryPhotos.clear();
         } else {
             newEntry();
@@ -635,23 +635,23 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void updateViews() {
         runOnUiThread(() -> {
-            if (selectedEntry.getUid() > 0) {
+            if (currentEntry.getUid() > 0) {
                 List<Entry> entries = entryListLive.getValue();
-                int index = entries != null ? entries.indexOf(selectedEntry) : 0;
+                int index = entries != null ? entries.indexOf(currentEntry) : 0;
                 columnValueIndexValue.setText(
                         String.format(Locale.getDefault(), "%d", index + 1)
                 );
                 List<EntryValue> entryValues = entryValueListLive.getValue();
                 if (entryValues != null) {
-                    List<EntryValue> selectedEntryValues = entryValues.stream()
-                            .filter(entryValue -> entryValue.getEntryID() == selectedEntry.getUid())
+                    List<EntryValue> currentEntryValues = entryValues.stream()
+                            .filter(entryValue -> entryValue.getEntryID() == currentEntry.getUid())
                             .collect(Collectors.toList());
                     for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
                         List<ColumnValue> columnValues = columnValueMap.get(columnIndex);
                         if (columnValues != null) {
                             ColumnValue columnValue = columnValues.stream()
                                     .filter(
-                                            cv -> selectedEntryValues.stream()
+                                            cv -> currentEntryValues.stream()
                                                     .anyMatch(
                                                             ev -> ev.getColumnValueID() == cv.getUid()
                                                     )
@@ -710,40 +710,39 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void saveEntryButtonOnClick() {
-        if (currentEntry != null) {
-        if (selectedEntry.getUid() > 0) {
+        if (currentEntry.getUid() > 0) {
             //Update existing entry
             ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
             Handler updateEntryHandler = new Handler(Looper.getMainLooper());
             updateEntryExecutor.execute(() -> {
                 if (currentLocation != null) {
-                    if (selectedEntry.getLatitude() == null) {
-                        selectedEntry.setLatitude(currentLocation.getLatitude());
+                    if (currentEntry.getLatitude() == null) {
+                        currentEntry.setLatitude(currentLocation.getLatitude());
                     }
-                    if (selectedEntry.getLongitude() == null) {
-                        selectedEntry.setLongitude(currentLocation.getLongitude());
+                    if (currentEntry.getLongitude() == null) {
+                        currentEntry.setLongitude(currentLocation.getLongitude());
                     }
                 }
-                vsViewModel.updateEntry(selectedEntry);
+                vsViewModel.updateEntry(currentEntry);
                 updateEntryHandler.post(() -> {
-                    savePictureReferences(selectedEntry.getUid());
-                    saveEntryValues(selectedEntry.getUid());
+                    savePictureReferences(currentEntry.getUid());
+                    saveEntryValues(currentEntry.getUid());
                 });
             });
         } else {
             //Save a new entry
-            if (selectedEntry == null) {
+            if (currentEntry == null) {
                 newEntry();
             }
             ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
             Handler createEntryHandler = new Handler(Looper.getMainLooper());
             createEntryExecutor.execute(() -> {
                 if (currentLocation != null) {
-                    selectedEntry.setLatitude(currentLocation.getLatitude());
-                    selectedEntry.setLongitude(currentLocation.getLongitude());
+                    currentEntry.setLatitude(currentLocation.getLatitude());
+                    currentEntry.setLongitude(currentLocation.getLongitude());
                 }
-                long uid = vsViewModel.insertEntry(selectedEntry);
-                selectedEntry.setUid(uid);
+                long uid = vsViewModel.insertEntry(currentEntry);
+                currentEntry.setUid(uid);
                 createEntryHandler.post(() -> {
                     savePictureReferences(uid);
                     saveEntryValues(uid);
@@ -855,7 +854,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private void newEntry() {
         dataGatheringRecyclerAdapter.clearSelected();
         columnScrollView.setScrollX(0);
-        selectedEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+        currentEntry = new Entry(currentUser.getUid(), currentSession.getUid());
         selectedColumnValue = null;
         currentEntryPhotos.clear();
     }
@@ -925,7 +924,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     .playOn(previewView);
 
                             VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
-                            if (selectedEntry == null) {
+                            if (currentEntry == null) {
                                 newEntry();
                             }
                             PictureReference pictureReference = new PictureReference(
