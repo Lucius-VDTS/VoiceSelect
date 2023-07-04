@@ -668,11 +668,11 @@ public class VSViewModel extends VDTSViewModel {
         );
     }
 
-    public LiveData<List<PictureReference>> findPictureReferencesLiveByHeader(long headerID) {
+    public LiveData<List<PictureReference>> findPictureReferencesLiveBySession(long sessionID) {
         return pictureReferenceRepository.findAllLive(
                 "SELECT PR.* FROM PictureReferences AS PR " +
                         "LEFT JOIN Entries AS E ON E.uid = PR.entryID " +
-                        "WHERE E.sessionID = " + headerID
+                        "WHERE E.sessionID = " + sessionID
         );
     }
 

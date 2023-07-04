@@ -204,6 +204,12 @@ public class DataGatheringRecyclerAdapter
         notifyItemRangeInserted(startRange, entryValues.size());
     }
 
+    public void addAllPictureReferences(Collection<PictureReference> pictureReferences) {
+        final int startRange = pictureDataset.size();
+        pictureDataset.addAll(pictureReferences);
+        notifyItemRangeInserted(startRange, pictureDataset.size());
+    }
+
     public void clearEntries() {
         entryDataset.clear();
         notifyDataSetChanged();
@@ -211,6 +217,11 @@ public class DataGatheringRecyclerAdapter
 
     public void clearEntryValues() {
         entryValueDataset.clear();
+        notifyDataSetChanged();
+    }
+
+    public void clearPictureReferences() {
+        pictureDataset.clear();
         notifyDataSetChanged();
     }
 

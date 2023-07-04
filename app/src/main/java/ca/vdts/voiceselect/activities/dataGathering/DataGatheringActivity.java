@@ -144,6 +144,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private LiveData<List<EntryValue>> entryValueListLive;
 
     private final List<PictureReference> pictureReferenceList = new ArrayList<>();
+    private LiveData<List<PictureReference>> pictureReferencesListLive;
     private final List<PictureReference> currentEntryPhotos = new ArrayList<>();
 
     //Views
@@ -534,6 +535,9 @@ public class DataGatheringActivity extends AppCompatActivity
             pictureReferenceList.addAll(
                     vsViewModel.findPictureReferencesBySession(currentSession.getUid())
             );
+            pictureReferencesListLive = vsViewModel.findPictureReferencesLiveBySession(
+                    currentSession.getUid()
+            );
             handler.post(this::initializeDGAdapter);
         });
     }
@@ -558,6 +562,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
+        pictureReferencesListLive.observe(this, pictureReferenceObserver);
 
         columnValueIndexValue.setText(
                 String.format(
@@ -585,8 +590,7 @@ public class DataGatheringActivity extends AppCompatActivity
      */
     @Override
     public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
-                                int x, int y,
-                                int oldx, int oldy) {
+                                int x, int y, int oldx, int oldy) {
         if (observableHorizontalScrollView == columnScrollView) {
             columnValueScrollView.scrollTo(x, y);
             dataGatheringRecyclerAdapter.setXCord(x);
@@ -640,6 +644,16 @@ public class DataGatheringActivity extends AppCompatActivity
             if (entryValues != null) {
                 dataGatheringRecyclerAdapter.clearEntryValues();
                 dataGatheringRecyclerAdapter.addAllEntryValues(entryValues);
+            }
+        }
+    };
+
+    private final Observer<List<PictureReference>> pictureReferenceObserver = new Observer<List<PictureReference>>() {
+        @Override
+        public void onChanged(List<PictureReference> pictureReferences) {
+            if (pictureReferences != null) {
+                dataGatheringRecyclerAdapter.clearPictureReferences();
+                dataGatheringRecyclerAdapter.addAllPictureReferences(pictureReferences);
             }
         }
     };
@@ -760,44 +774,7 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService deletePicturesService = Executors.newSingleThreadExecutor();
         Handler deletePicturesHandler = new Handler(Looper.getMainLooper());
         deletePicturesService.execute(() -> {
-            currentEntryPhotos.forEach(pictureReference -> {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(
-                        () -> {
-                            String[] projection = { MediaStore.Images.Media._ID };
-                            String selection = MediaStore.Images.Media.DATA + " = ?";
-                            String[] selectionArgs = new String[] { pictureReference.getPath() };
-
-                            Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                            ContentResolver contentResolver = getContentResolver();
-                            Cursor cursor = contentResolver.query(
-                                    queryUri,
-                                    projection,
-                                    selection,
-                                    selectionArgs,
-                                    null
-                            );
-
-                            if (cursor != null) {
-                                if (cursor.moveToFirst()) {
-                                    long id = cursor.getLong(
-                                            cursor.getColumnIndexOrThrow(
-                                                    MediaStore.Images.Media._ID
-                                            )
-                                    );
-                                    Uri deleteUri = ContentUris.withAppendedId(queryUri, id);
-                                    contentResolver.delete(
-                                            deleteUri,
-                                            null,
-                                            null
-                                    );
-                                }
-                                cursor.close();
-                            }
-                        },
-                        5000
-                );
-            });
+            currentEntryPhotos.forEach(this::deletePicture);
             final PictureReference[] pictureReferences = new PictureReference[currentEntryPhotos.size()];
             currentEntryPhotos.toArray(pictureReferences);
             vsViewModel.deleteAllPictureReferences(pictureReferences);
@@ -836,7 +813,57 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
+    private void deletePicture(PictureReference pictureReference) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(
+                () -> {
+                    String[] projection = { MediaStore.Images.Media._ID };
+                    String selection = MediaStore.Images.Media.DATA + " = ?";
+                    String[] selectionArgs = new String[] { pictureReference.getPath() };
+
+                    Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    ContentResolver contentResolver = getContentResolver();
+                    Cursor cursor = contentResolver.query(
+                            queryUri,
+                            projection,
+                            selection,
+                            selectionArgs,
+                            null
+                    );
+
+                    if (cursor != null) {
+                        if (cursor.moveToFirst()) {
+                            long id = cursor.getLong(
+                                    cursor.getColumnIndexOrThrow(
+                                            MediaStore.Images.Media._ID
+                                    )
+                            );
+                            Uri deleteUri = ContentUris.withAppendedId(queryUri, id);
+                            contentResolver.delete(
+                                    deleteUri,
+                                    null,
+                                    null
+                            );
+                        }
+                        cursor.close();
+                    }
+                },
+                5000
+        );
+    }
+
     private void resetEntryButtonOnClick() {
+        List<PictureReference> deletePictureReference = currentEntryPhotos.stream()
+                .filter(pictureReference -> pictureReference.getUid() == 0)
+                .collect(Collectors.toList());
+        deletePictureReference.forEach(this::deletePicture);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            final PictureReference[] deletePictures = new PictureReference[deletePictureReference.size()];
+            deletePictureReference.toArray(deletePictures);
+            vsViewModel.deleteAllPictureReferences(deletePictures);
+        });
+
         newEntry();
         updateViews();
     }
