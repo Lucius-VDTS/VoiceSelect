@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,7 +37,7 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSOuterClickListenerUtil;
 
-public class RecallActivity extends AppCompatActivity {
+public class RecallActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private static final Logger LOG = LoggerFactory.getLogger(RecallActivity.class);
     private VDTSApplication vdtsApplication;
 
@@ -47,13 +46,9 @@ public class RecallActivity extends AppCompatActivity {
     private VSViewModel vsViewModel;
 
     private List<Session> sessionList = new ArrayList<>();
-    private final List<Session> openSessionList = new ArrayList<>();
 
     private RecyclerView headerRecyclerView;
     private RecallSessionRecyclerAdapter recallSessionRecyclerAdapter;
-
-    final List<VDTSUser> userList = new ArrayList<>();
-    final HashMap<Long,VDTSUser> userMap = new HashMap<>();
     private SwitchCompat openCheck;
     private SearchView searchView;
 
@@ -70,37 +65,9 @@ public class RecallActivity extends AppCompatActivity {
         openCheck = findViewById(R.id.openCheck);
         openCheck.setOnClickListener(v -> onOpenCheck());
         searchView = findViewById(R.id.sessionSearch);
-        //searchView.setSubmitButtonEnabled(true);
         searchView.setIconifiedByDefault(false);
         searchView.setIconified(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                boolean isValidSubmit = false;
-                if (query != null && !query.isEmpty()) {
-                    recallSessionRecyclerAdapter.addFilter(query);
-                    isValidSubmit = true;
-                } else {
-                    recallSessionRecyclerAdapter.clearFilter();
-                }
-
-                return isValidSubmit;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                boolean isValidSubmit = false;
-                if (newText != null && !newText.isEmpty()) {
-                    recallSessionRecyclerAdapter.addFilter(newText);
-                    isValidSubmit = true;
-                }else {
-                    recallSessionRecyclerAdapter.clearFilter();
-                }
-
-                return isValidSubmit;
-            }
-        });
+        searchView.setOnQueryTextListener(this);
 
 
         openCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_FILTER,false));
@@ -114,8 +81,8 @@ public class RecallActivity extends AppCompatActivity {
         sessionList = new ArrayList<>();
         recallSessionRecyclerAdapter = new RecallSessionRecyclerAdapter(
                 sessionList,
+                openCheck.isChecked(),
                 this,
-                userMap,
                 new VDTSOuterClickListenerUtil(this::selectCallback, headerRecyclerView)
         );
         headerRecyclerView.setAdapter(recallSessionRecyclerAdapter);
@@ -128,13 +95,23 @@ public class RecallActivity extends AppCompatActivity {
 
         currentUser = vdtsApplication.getCurrentUser();
         updateSessions();
-        updateUsers();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        recallSessionRecyclerAdapter.addFilter(newText);
+        return false;
     }
 
 
     public void onOpenCheck() {
         vdtsApplication.getPreferences().setBoolean(PREF_FILTER, openCheck.isChecked());
-        updateSessions();
+        recallSessionRecyclerAdapter.setFilterOpen(openCheck.isChecked());
     }
 
     private void export(Session session) {
@@ -145,16 +122,16 @@ public class RecallActivity extends AppCompatActivity {
         boolean JSON = true;
 
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
-            CSV = exporter.exportSessionCSV(recallSessionRecyclerAdapter.getSelected());
+            CSV = exporter.exportSessionCSV(session);
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
-            JSON= exporter.exportSessionJSON(recallSessionRecyclerAdapter.getSelected());
+            JSON= exporter.exportSessionJSON(session);
         }
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
-            Excel = exporter.exportSessionExcel(recallSessionRecyclerAdapter.getSelected());
+            Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {
-            if (exporter.exportMedia(recallSessionRecyclerAdapter.getSelected())) {
+            if (exporter.exportMedia(session)) {
                 vdtsApplication.displayToast(
                         this,
                         "Session exported successfully",
@@ -180,38 +157,14 @@ public class RecallActivity extends AppCompatActivity {
         new Thread(() -> {
             recallSessionRecyclerAdapter.clearSelected();
 
-            openSessionList.clear();
-            openSessionList.addAll(vsViewModel.findAllOpenSessionsOrderByStartDate());
-
             sessionList.clear();
             sessionList.addAll(vsViewModel.findAllSessionsOrderByStartDate());
 
-            ArrayList<Session> sessions = new ArrayList<>();
-            if (openCheck.isChecked()){
-                sessions.addAll(openSessionList);
-            } else {
-                sessions.addAll(sessionList);
-            }
+            ArrayList<Session> sessions = new ArrayList<>(sessionList);
 
             runOnUiThread(()-> {
                 recallSessionRecyclerAdapter.setSessionDataset(sessions);
-                recallSessionRecyclerAdapter.notifyDataSetChanged();
             });
-        }).start();
-    }
-
-    private void updateUsers() {
-        new Thread(() -> {
-            userList.clear();
-            userList.addAll(vsViewModel.findAllUsers());
-
-            userMap.clear();
-            for (VDTSUser user : userList){
-                userMap.put(user.getUid(),user);
-            }
-
-            runOnUiThread(() -> recallSessionRecyclerAdapter.setUserMap(userMap));
-            runOnUiThread(() -> recallSessionRecyclerAdapter.notifyDataSetChanged());
         }).start();
     }
 
