@@ -214,6 +214,10 @@ public class DataGatheringRecyclerAdapter
         notifyDataSetChanged();
     }
 
+    public void removeEntry(Entry entry) {
+        entryDataset.remove(entry);
+    }
+
     public Entry getEntry(int index) {
         return entryDataset.get(index);
     }
