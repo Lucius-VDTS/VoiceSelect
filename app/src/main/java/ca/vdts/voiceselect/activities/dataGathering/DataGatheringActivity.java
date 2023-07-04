@@ -84,6 +84,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -917,8 +918,48 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
-    private void endSessionButtonOnClick() {
 
+    private void endSessionButtonOnClick() {
+        if (currentSession!=null) {
+            showEndConfirmDialogue();
+        }
+    }
+
+    //TODO: Probably needs an export
+    private void showEndConfirmDialogue() {
+        LOG.info("Showing End Confirm Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("End Session?");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Mark this session as finished?");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+
+        yesButton.setOnClickListener(view -> {
+            currentSession.setEndDate(LocalDateTime.now());
+            ExecutorService endExecutor = Executors.newSingleThreadExecutor();
+            Handler endHandler = new Handler(Looper.getMainLooper());
+            endExecutor.execute(() -> {
+                vsViewModel.updateSession(currentSession);
+                vdtsApplication.getPreferences().setLong(
+                        String.format("%s_SESSION", currentUser.getExportCode()),
+                        -1L);
+                endHandler.post(this::finish);
+            });
+        });
+
+        noButton.setOnClickListener(view -> finalDialog.dismiss());
     }
 
     private void saveEntryButtonOnClick() {
