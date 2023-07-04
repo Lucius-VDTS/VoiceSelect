@@ -719,11 +719,57 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void resetEntryButtonOnClick() {
-
+        newEntry();
+        updateViews();
     }
 
     private void repeatEntryButtonOnClick() {
-
+        final Entry copyEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+        if (currentLocation != null) {
+            copyEntry.setLatitude(currentLocation.getLatitude());
+            copyEntry.setLongitude(currentLocation.getLongitude());
+        }
+        ExecutorService entryExecutor = Executors.newSingleThreadExecutor();
+        Handler entryHandler = new Handler(Looper.getMainLooper());
+        entryExecutor.execute(() -> {
+            final long copyID = vsViewModel.insertEntry(copyEntry);
+            entryHandler.post(() -> {
+                copyEntry.setUid(copyID);
+                List<EntryValue> entryValues = entryValueListLive.getValue();
+                if (entryValues != null) {
+                    if (currentEntry == null) {
+                        newEntry();
+                    }
+                    assert currentEntry != null;
+                    long currentEntryUid = currentEntry.getUid();
+                    if (currentEntryUid == 0L) {
+                        final Entry lastEntry = dataGatheringRecyclerAdapter.getEntry(
+                                dataGatheringRecyclerAdapter.getItemCount() - 1
+                        );
+                        assert lastEntry != null;
+                        currentEntryUid = lastEntry.getUid();
+                    }
+                    final long finalEntryID = currentEntryUid;
+                    entryValues = entryValues.stream()
+                            .filter(ev -> ev.getEntryID() == finalEntryID)
+                            .collect(Collectors.toList());
+                } else {
+                    entryValues = new ArrayList<>();
+                }
+                final List<EntryValue> copyValueList = new ArrayList<>();
+                entryValues.forEach(entryValue -> {
+                    final EntryValue copyValue = new EntryValue(
+                            copyID,
+                            entryValue.getColumnValueID()
+                    );
+                    copyValueList.add(copyValue);
+                });
+                final EntryValue[] copyEntryValues = new EntryValue[entryValues.size()];
+                copyValueList.toArray(copyEntryValues);
+                ExecutorService valueExecutor = Executors.newSingleThreadExecutor();
+                valueExecutor.execute(() -> vsViewModel.insertAllEntryValues(copyEntryValues));
+            });
+        });
     }
 
     private void endSessionButtonOnClick() {
