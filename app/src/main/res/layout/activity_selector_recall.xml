@@ -38,6 +38,7 @@
             android:layout_weight="0.5"
             android:layout_gravity="end"
             android:iconifiedByDefault="false"
+            android:queryHint="Search"
             android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
             />
 
