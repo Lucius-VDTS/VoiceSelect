@@ -14,18 +14,23 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaActionSound;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Range;
 import android.util.Rational;
 import android.util.TypedValue;
@@ -37,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -45,6 +51,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -77,6 +84,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +145,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private LiveData<List<EntryValue>> entryValueListLive;
 
     private final List<PictureReference> pictureReferenceList = new ArrayList<>();
+    private LiveData<List<PictureReference>> pictureReferencesListLive;
     private final List<PictureReference> currentEntryPhotos = new ArrayList<>();
 
     //Views
@@ -211,6 +220,7 @@ public class DataGatheringActivity extends AppCompatActivity
         columnValueScrollView = findViewById(R.id.columnValueScrollView);
         columnValueScrollView.setScrollChangeListener(this);
         columnValueCommentButton = findViewById(R.id.columnValueCommentButton);
+        columnValueCommentButton.setOnClickListener(v -> commentButtonOnClick());
         columnValuePictureButton = findViewById(R.id.columnValuePhotoButton);
         columnValuePictureButton.setOnClickListener(v -> pictureButtonOnClick());
 
@@ -526,6 +536,9 @@ public class DataGatheringActivity extends AppCompatActivity
             pictureReferenceList.addAll(
                     vsViewModel.findPictureReferencesBySession(currentSession.getUid())
             );
+            pictureReferencesListLive = vsViewModel.findPictureReferencesLiveBySession(
+                    currentSession.getUid()
+            );
             handler.post(this::initializeDGAdapter);
         });
     }
@@ -550,6 +563,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         entryListLive.observe(this, entryObserver);
         entryValueListLive.observe(this, entryValueObserver);
+        pictureReferencesListLive.observe(this, pictureReferenceObserver);
 
         columnValueIndexValue.setText(
                 String.format(
@@ -577,8 +591,7 @@ public class DataGatheringActivity extends AppCompatActivity
      */
     @Override
     public void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
-                                int x, int y,
-                                int oldx, int oldy) {
+                                int x, int y, int oldx, int oldy) {
         if (observableHorizontalScrollView == columnScrollView) {
             columnValueScrollView.scrollTo(x, y);
             dataGatheringRecyclerAdapter.setXCord(x);
@@ -636,11 +649,22 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     };
 
+    private final Observer<List<PictureReference>> pictureReferenceObserver = new Observer<List<PictureReference>>() {
+        @Override
+        public void onChanged(List<PictureReference> pictureReferences) {
+            if (pictureReferences != null) {
+                dataGatheringRecyclerAdapter.clearPictureReferences();
+                dataGatheringRecyclerAdapter.addAllPictureReferences(pictureReferences);
+            }
+        }
+    };
+
     private void entryAdapterSelect(Integer index) {
         if (index != null) {
             dataGatheringRecyclerAdapter.setSelected(index);
             currentEntry = dataGatheringRecyclerAdapter.getEntry(index);
             currentEntryPhotos.clear();
+            currentEntryPhotos.addAll(dataGatheringRecyclerAdapter.getPictureReferences(index));
         } else {
             newEntry();
         }
@@ -699,6 +723,10 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
+    private void commentButtonOnClick() {
+        showCommentDialogue();
+    }
+
     private void pictureButtonOnClick() {
         if (cameraLifecycle.getLifecycle().getCurrentState() == Lifecycle.State.STARTED) {
             hidePreview();
@@ -708,22 +736,234 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void deleteEntryButtonOnClick() {
+        if (currentEntry == null || currentEntry.getUid() == 0) {
+            resetEntryButtonOnClick();
+        } else {
+            showDeleteConfirmDialogue();
+        }
+    }
 
+    private void showDeleteConfirmDialogue() {
+        LOG.info("Showing Deletion Confirm Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Entry?");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Entry and associated pictures shall be permanently deleted.\nDelete Entry?");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+
+        yesButton.setOnClickListener(view -> {
+            finalDialog.dismiss();
+            deleteEntry();
+        });
+
+        noButton.setOnClickListener(view -> finalDialog.dismiss());
+    }
+
+    private void deleteEntry() {
+        ExecutorService deletePicturesService = Executors.newSingleThreadExecutor();
+        Handler deletePicturesHandler = new Handler(Looper.getMainLooper());
+        deletePicturesService.execute(() -> {
+            currentEntryPhotos.forEach(this::deletePicture);
+            final PictureReference[] pictureReferences = new PictureReference[currentEntryPhotos.size()];
+            currentEntryPhotos.toArray(pictureReferences);
+            vsViewModel.deleteAllPictureReferences(pictureReferences);
+            deletePicturesHandler.post(() -> {
+                final long deleteEntryID = currentEntry.getUid();
+
+                List<EntryValue> entryValueList = entryValueListLive.getValue();
+                if (entryValueList != null) {
+                    entryValueList = entryValueList.stream()
+                            .filter(entryValue -> entryValue.getEntryID() == deleteEntryID)
+                            .collect(Collectors.toList());
+                } else {
+                    entryValueList = new ArrayList<>();
+                }
+                final EntryValue[] entryValues = new EntryValue[entryValueList.size()];
+                entryValueList.toArray(entryValues);
+
+                ExecutorService deleteEntryValueService = Executors.newSingleThreadExecutor();
+                Handler deleteEntryValueHandler = new Handler(Looper.getMainLooper());
+                deleteEntryValueService.execute(() -> {
+                    vsViewModel.deleteAllEntryValues(entryValues);
+                    deleteEntryValueHandler.post(() -> {
+                        ExecutorService deleteEntryService = Executors.newSingleThreadExecutor();
+                        Handler deleteEntryHandler = new Handler(Looper.getMainLooper());
+                        deleteEntryService.execute(() -> {
+                            dataGatheringRecyclerAdapter.removeEntry(currentEntry);
+                            vsViewModel.deleteEntry(currentEntry);
+                            deleteEntryHandler.post(() -> {
+                                newEntry();
+                                updateViews();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    private void deletePicture(PictureReference pictureReference) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(
+                () -> {
+                    String[] projection = { MediaStore.Images.Media._ID };
+                    String selection = MediaStore.Images.Media.DATA + " = ?";
+                    String[] selectionArgs = new String[] { pictureReference.getPath() };
+
+                    Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    ContentResolver contentResolver = getContentResolver();
+                    Cursor cursor = contentResolver.query(
+                            queryUri,
+                            projection,
+                            selection,
+                            selectionArgs,
+                            null
+                    );
+
+                    if (cursor != null) {
+                        if (cursor.moveToFirst()) {
+                            long id = cursor.getLong(
+                                    cursor.getColumnIndexOrThrow(
+                                            MediaStore.Images.Media._ID
+                                    )
+                            );
+                            Uri deleteUri = ContentUris.withAppendedId(queryUri, id);
+                            contentResolver.delete(
+                                    deleteUri,
+                                    null,
+                                    null
+                            );
+                        }
+                        cursor.close();
+                    }
+                },
+                5000
+        );
     }
 
     private void resetEntryButtonOnClick() {
+        List<PictureReference> deletePictureReference = currentEntryPhotos.stream()
+                .filter(pictureReference -> pictureReference.getUid() == 0)
+                .collect(Collectors.toList());
+        deletePictureReference.forEach(this::deletePicture);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            final PictureReference[] deletePictures = new PictureReference[deletePictureReference.size()];
+            deletePictureReference.toArray(deletePictures);
+            vsViewModel.deleteAllPictureReferences(deletePictures);
+        });
 
+        newEntry();
+        updateViews();
     }
 
     private void repeatEntryButtonOnClick() {
-
+        final Entry copyEntry = new Entry(currentUser.getUid(), currentSession.getUid());
+        if (currentLocation != null) {
+            copyEntry.setLatitude(currentLocation.getLatitude());
+            copyEntry.setLongitude(currentLocation.getLongitude());
+        }
+        ExecutorService entryExecutor = Executors.newSingleThreadExecutor();
+        Handler entryHandler = new Handler(Looper.getMainLooper());
+        entryExecutor.execute(() -> {
+            final long copyID = vsViewModel.insertEntry(copyEntry);
+            entryHandler.post(() -> {
+                copyEntry.setUid(copyID);
+                List<EntryValue> entryValues = entryValueListLive.getValue();
+                if (entryValues != null) {
+                    if (currentEntry == null) {
+                        newEntry();
+                    }
+                    assert currentEntry != null;
+                    long currentEntryUid = currentEntry.getUid();
+                    if (currentEntryUid == 0L) {
+                        final Entry lastEntry = dataGatheringRecyclerAdapter.getEntry(
+                                dataGatheringRecyclerAdapter.getItemCount() - 1
+                        );
+                        assert lastEntry != null;
+                        currentEntryUid = lastEntry.getUid();
+                    }
+                    final long finalEntryID = currentEntryUid;
+                    entryValues = entryValues.stream()
+                            .filter(ev -> ev.getEntryID() == finalEntryID)
+                            .collect(Collectors.toList());
+                } else {
+                    entryValues = new ArrayList<>();
+                }
+                final List<EntryValue> copyValueList = new ArrayList<>();
+                entryValues.forEach(entryValue -> {
+                    final EntryValue copyValue = new EntryValue(
+                            copyID,
+                            entryValue.getColumnValueID()
+                    );
+                    copyValueList.add(copyValue);
+                });
+                final EntryValue[] copyEntryValues = new EntryValue[entryValues.size()];
+                copyValueList.toArray(copyEntryValues);
+                ExecutorService valueExecutor = Executors.newSingleThreadExecutor();
+                valueExecutor.execute(() -> vsViewModel.insertAllEntryValues(copyEntryValues));
+            });
+        });
     }
 
-    private void endSessionButtonOnClick() {
 
+    private void endSessionButtonOnClick() {
+        if (currentSession!=null) {
+            showEndConfirmDialogue();
+        }
+    }
+
+    //TODO: Probably needs an export
+    private void showEndConfirmDialogue() {
+        LOG.info("Showing End Confirm Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("End Session?");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Mark this session as finished?");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+
+        yesButton.setOnClickListener(view -> {
+            currentSession.setEndDate(LocalDateTime.now());
+            ExecutorService endExecutor = Executors.newSingleThreadExecutor();
+            Handler endHandler = new Handler(Looper.getMainLooper());
+            endExecutor.execute(() -> {
+                vsViewModel.updateSession(currentSession);
+                vdtsApplication.getPreferences().setLong(
+                        String.format("%s_SESSION", currentUser.getExportCode()),
+                        -1L);
+                endHandler.post(this::finish);
+            });
+        });
+
+        noButton.setOnClickListener(view -> finalDialog.dismiss());
     }
 
     private void saveEntryButtonOnClick() {
+        if (currentEntry == null) newEntry();
         if (currentEntry.getUid() > 0) {
             //Update existing entry
             ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
@@ -889,6 +1129,41 @@ public class DataGatheringActivity extends AppCompatActivity
         currentEntry = new Entry(currentUser.getUid(), currentSession.getUid());
         selectedColumnValue = null;
         currentEntryPhotos.clear();
+    }
+
+    private void showCommentDialogue() {
+        LOG.info("Showing comment dialogue");
+
+        if (currentEntry == null) {
+            newEntry();
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_edit_comment)
+        );
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_comment,
+                null
+        );
+        builder.setView(customLayout);
+
+        EditText commentView = customLayout.findViewById(R.id.commentValue);
+        commentView.setText(currentEntry.getComment() != null ? currentEntry.getComment() : "");
+
+        builder.setPositiveButton(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_enter_label),
+                (dialogInterface, i) -> currentEntry.setComment(commentView.getText().toString())
+        );
+
+        builder.setNegativeButton(
+                vdtsApplication.getResources().getString(R.string.comment_dialogue_cancel_label),
+                (dialogInterface, i) -> {}
+        );
+
+        AlertDialog dialog = builder.create();
+        assert dialog.getWindow() != null;
+        dialog.show();
     }
 
     private void showPreview() {

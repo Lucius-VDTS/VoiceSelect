@@ -14,35 +14,32 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.entities.Session;
-import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.interfaces.VDTSFilterableInterface;
 import ca.vdts.voiceselect.library.utilities.VDTSAdapterClickListenerUtil;
 
 @SuppressLint("NotifyDataSetChanged")
-public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSessionRecyclerAdapter.ViewHolder>
-        implements VDTSFilterableInterface {
+public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSessionRecyclerAdapter.ViewHolder> {
     private final Context context;
     private List<Session> sessionDataset;
-    private HashMap<Long, VDTSUser> userMap;
 
     private List<Session> filteredSessionDataset;
-    private String oldCriteria = null;
-    private String filterCriteria;
+    private String filterCriteria = "";
+    private boolean filterOpen;
 
     private final VDTSAdapterClickListenerUtil selectedListener;
     private int selectedIndex = -1;
 
-    public RecallSessionRecyclerAdapter(List<Session> sessions, Context context, HashMap<Long,
-            VDTSUser> userMap, VDTSAdapterClickListenerUtil selectedListener) {
+    public RecallSessionRecyclerAdapter(List<Session> sessions, boolean filterOpen,Context context, VDTSAdapterClickListenerUtil selectedListener) {
         sessionDataset = sessions;
+        filteredSessionDataset = new ArrayList<>(sessions);
+        this.filterOpen = filterOpen;
         this.context = context;
-        this.userMap = userMap;
         this.selectedListener = selectedListener;
     }
 
@@ -59,7 +56,7 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Session session;
-        if (this.filterCriteria == null) {
+        if (isFiltered()) {
             session = this.sessionDataset.get(position);
         } else {
             session = this.filteredSessionDataset.get(position);
@@ -69,7 +66,7 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
 
         holder.idView.setText(String.valueOf(position+1));
         holder.sessionView.setText(session.name());
-        if (session.getEndDate() !=null ) {
+        if (session.getEndDate() ==null ) {
             holder.statusView.setText(R.string.status_open);
         } else {
             holder.statusView.setText(R.string.status_closed);
@@ -108,14 +105,13 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
         return filterCriteria == null ? sessionDataset.size() : filteredSessionDataset.size();
     }
 
-    public void setSessionDataset(final List<Session> sessions) {
-        this.sessionDataset = sessions;
-        if(filterCriteria!=null)filter_impl(filterCriteria);
-        notifyDataSetChanged();
+    public boolean isFiltered(){
+        return filterOpen || !filterCriteria.isEmpty();
     }
 
-    public void setUserMap(final HashMap<Long, VDTSUser> userMap) {
-        this.userMap = userMap;
+    public void setSessionDataset(final List<Session> sessions) {
+        this.sessionDataset = sessions;
+        filter(filterCriteria);
         notifyDataSetChanged();
     }
 
@@ -130,7 +126,11 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
 
     public Session getSelected() {
         if (selectedIndex>=0) {
-            return sessionDataset.get(selectedIndex);
+            if (isFiltered()) {
+                return sessionDataset.get(selectedIndex);
+            } else {
+                return filteredSessionDataset.get(selectedIndex);
+            }
         } else {
             return null;
         }
@@ -144,62 +144,42 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
         }
     }
 
-    /**
-     * concatenate the current filter with another filter. If there is no current filter,
-     * then this function acts as if {@link #filter(String)} was called
-     *
-     * @param criteria the string to add to the current filter
-     */
-    @Override
     public void addFilter(String criteria) {
-        oldCriteria = filterCriteria;
-        filter(filterCriteria == null ? criteria : filterCriteria + criteria);
+        filterCriteria = criteria != null? criteria : "";
+        filter(filterCriteria);
     }
 
-    /**
-     * Filter entities in the dataset whose names start with the input criteria. If the criteria is
-     * the same as the current filter criteria then this function does nothing.
-     *
-     * @param criteria the string to filter by
-     */
-    @Override
-    public void filter(String criteria) {
-        if (filterCriteria == null || !filterCriteria.equals(criteria.toLowerCase())) {
-            filter_impl(criteria);
-            notifyDataSetChanged();
+    public boolean isFilterOpen() {
+        return filterOpen;
+    }
+
+    public void setFilterOpen(boolean filterOpen) {
+        this.filterOpen = filterOpen;
+        filter(filterCriteria);
+    }
+
+    // Filter Class
+    private void filter(String charText) {
+        selectedIndex = -1;
+        charText = charText.toLowerCase(Locale.getDefault());
+        filteredSessionDataset.clear();
+        List<Session> tempList;
+        if (filterOpen){
+            tempList = sessionDataset.stream().filter(session -> session.getEndDate() == null).collect(Collectors.toList());
+        } else {
+            tempList = new ArrayList<>(sessionDataset);
         }
-    }
 
-    private void filter_impl(String criteria) {
-        filterCriteria = criteria.toLowerCase();
-        filteredSessionDataset = sessionDataset.stream()
-                .filter(c->c.name().toLowerCase().startsWith(filterCriteria))
-                .collect(Collectors.toList());
-        if (filteredSessionDataset.size() < 1){
-            if (oldCriteria != null) {
-                filter_impl(oldCriteria);
-            } else {
-                clearFilter();
+        if (charText.length() == 0) {
+            filteredSessionDataset.addAll(tempList);
+        } else {
+            for (Session wp :tempList) {
+                if (wp.name().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    filteredSessionDataset.add(wp);
+                }
             }
         }
-    }
-
-    @Override
-    public void clearFilter() {
-        if (filterCriteria != null) {
-            filteredSessionDataset = null;
-            filterCriteria = null;
-            notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public String getFilter() {
-        if (filterCriteria != null) {
-            return filterCriteria;
-        } else {
-            return "";
-        }
+        notifyDataSetChanged();
     }
 
 ////VIEW_HOLDER_SUBCLASS////////////////////////////////////////////////////////////////////////////

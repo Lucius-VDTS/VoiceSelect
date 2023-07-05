@@ -67,6 +67,10 @@
 
     <string name="data_gathering_hud_end_of_row">END</string>
 
+    <string name="comment_dialogue_edit_comment">Edit Comment</string>
+    <string name="comment_dialogue_enter_label">Enter</string>
+    <string name="comment_dialogue_cancel_label">Cancel</string>
+
 <!-- Recall Activity -->
     <string name="menu_recall">Recall</string>
     <string name="incomplete_only">Unfinished Only</string>
@@ -244,6 +248,7 @@
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
+    <string name="comment_label">Comment:</string>
 
 
 </resources>

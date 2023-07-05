@@ -62,4 +62,13 @@ public class VSMigration {
             database.execSQL("CREATE INDEX index_VideoReferences_sessionID ON VideoReferences(sessionID)");
         }
     };
+
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            LOG.debug("Migrating database from version 4 to 5");
+
+            database.execSQL("ALTER TABLE 'Entries' ADD 'comment' TEXT");
+        }
+    };
 }

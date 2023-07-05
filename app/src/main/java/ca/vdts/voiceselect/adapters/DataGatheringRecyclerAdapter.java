@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -115,6 +116,10 @@ public class DataGatheringRecyclerAdapter
             }
         }
 
+        holder.entryCommentValue.setChecked(
+                entry.getComment() != null && !entry.getComment().isEmpty()
+        );
+
         long pictureCount = pictureDataset.stream()
                 .filter(pr -> pr.getEntryID() == entry.getUid())
                 .count();
@@ -199,6 +204,12 @@ public class DataGatheringRecyclerAdapter
         notifyItemRangeInserted(startRange, entryValues.size());
     }
 
+    public void addAllPictureReferences(Collection<PictureReference> pictureReferences) {
+        final int startRange = pictureDataset.size();
+        pictureDataset.addAll(pictureReferences);
+        notifyItemRangeInserted(startRange, pictureDataset.size());
+    }
+
     public void clearEntries() {
         entryDataset.clear();
         notifyDataSetChanged();
@@ -207,6 +218,15 @@ public class DataGatheringRecyclerAdapter
     public void clearEntryValues() {
         entryValueDataset.clear();
         notifyDataSetChanged();
+    }
+
+    public void clearPictureReferences() {
+        pictureDataset.clear();
+        notifyDataSetChanged();
+    }
+
+    public void removeEntry(Entry entry) {
+        entryDataset.remove(entry);
     }
 
     public Entry getEntry(int index) {
@@ -285,7 +305,7 @@ public class DataGatheringRecyclerAdapter
         final TextView entryIndexValue;
         final ObservableHorizontalScrollView entryValueScrollView;
         final LinearLayout entryValueLinearLayout;
-        final TextView entryCommentValue;
+        final CheckBox entryCommentValue;
         final TextView entryPhotoValue;
 
         ViewHolder(View v, Context context, DataGatheringActivity dataGatheringActivity,
