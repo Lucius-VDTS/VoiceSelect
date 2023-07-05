@@ -311,7 +311,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                         currentLayout.getName(),
                         dailySessionCount + 1);
                 long currentSessionID = vsViewModel.insertSession(currentSession);
-                currentSession.setUid(currentSessionID);
                 LOG.info("Added session: {}", currentSession.getSessionPrefix());
 
                 //Create SessionLayout
@@ -332,6 +331,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 }
 
                 handler.post(() -> {
+                    currentSession.setUid(currentSessionID);
+
                     //Attach new session to current user
                     vdtsApplication.getPreferences().setLong(
                             String.format("%s_SESSION", currentUser.getExportCode()),

@@ -359,7 +359,8 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         if (this == o) return true;
         if (!(o instanceof VDTSUser)) return false;
         VDTSUser vdtsUser = (VDTSUser) o;
-        return Objects.equals(getExportCode(), vdtsUser.getExportCode());
+        return (getUid() > 0 && vdtsUser.getUid() > 0 && Objects.equals(getUid(), vdtsUser.getUid())) ||
+                Objects.equals(getExportCode(), vdtsUser.getExportCode());
     }
 
     @Override

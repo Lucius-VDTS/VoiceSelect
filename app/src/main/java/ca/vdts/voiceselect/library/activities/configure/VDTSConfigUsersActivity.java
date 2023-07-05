@@ -370,7 +370,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                                 Toast.LENGTH_SHORT
                         );
 
-                        handler.post(() -> userAdapter.updateSelectedEntity());
+                        handler.post(() -> userAdapter.updateEntity(user));
                     });
                 } else {
                     LOG.error("Unable to update user");
