@@ -64,7 +64,6 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
     private VDTSUser currentUser;
     private Session currentSession;
     private Layout currentLayout;
-    private SessionLayout currentSessionLayout;
 
     //Views
     private Spinner layoutSpinner;
@@ -320,7 +319,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                 for (LayoutColumn layoutColumn : currentLayoutColumnList) {
                     Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
 
-                    currentSessionLayout = new SessionLayout(
+                    SessionLayout currentSessionLayout = new SessionLayout(
                             currentSessionID,
                             column.getUid(),
                             (int) layoutColumn.getColumnPosition()
