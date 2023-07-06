@@ -8,6 +8,9 @@ import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
@@ -109,6 +112,7 @@ import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
+import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -1133,7 +1137,6 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    //TODO: Probably needs an export
     private void showEndConfirmDialogue() {
         LOG.info("Showing End Confirm Dialog");
 
@@ -1163,11 +1166,51 @@ public class DataGatheringActivity extends AppCompatActivity
                 vdtsApplication.getPreferences().setLong(
                         String.format("%s_SESSION", currentUser.getExportCode()),
                         -1L);
+                export(currentSession);
                 endHandler.post(this::finish);
             });
         });
 
         noButton.setOnClickListener(view -> finalDialog.dismiss());
+    }
+
+    private void export(Session session) {
+        //ISaver saver = Saver.createSaver(ONEDRIVE_APP_ID);
+        final Exporter exporter = new Exporter(vsViewModel,vdtsApplication,this);
+        boolean CSV = true;
+        boolean Excel = true;
+        boolean JSON = true;
+
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
+            CSV = exporter.exportSessionCSV(session);
+        }
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
+            JSON= exporter.exportSessionJSON(session);
+        }
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
+            Excel = exporter.exportSessionExcel(session);
+        }
+        if (CSV && Excel && JSON) {
+            if (exporter.exportMedia(session)) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Session exported successfully",
+                        0
+                );
+            } else {
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting session photos",
+                        0
+                );
+            }
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Error exporting session",
+                    0
+            );
+        }
     }
 
     private void newEntry() {
