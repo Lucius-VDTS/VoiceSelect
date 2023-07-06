@@ -106,10 +106,10 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
         vdtsApplication = (VDTSApplication) getApplication();
 
+        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
         //Layout Spinner
         layoutSpinner = findViewById(R.id.layoutSpinner);
-
-        vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
 
         layoutAdapter = new VDTSNamedAdapter<>(
                 this,
@@ -208,7 +208,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                         currentLayout = vsViewModel.findLayoutByID(layoutID);
                         currentLayoutHandler.post(() -> {
                             if (currentLayout == null) {
-                                layoutSpinner.setSelection(0);
+                                currentLayout = layoutList.get(0);
                             } else {
                                 layoutSpinner.setSelection(layoutList.indexOf(currentLayout));
                             }
@@ -220,12 +220,13 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                                 footerLayoutValue.setText("");
                                 footerSessionValue.setText("");
                             }
+
+                            initializeIristick();
                         });
                     });
                 }
 
                 disableViews();
-                initializeIristick();
             });
         });
     }
@@ -320,7 +321,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     Column column = vsViewModel.findColumnByID(layoutColumn.getColumnID());
 
                     currentSessionLayout = new SessionLayout(
-                            currentSession.getUid(),
+                            currentSessionID,
                             column.getUid(),
                             (int) layoutColumn.getColumnPosition()
                     );

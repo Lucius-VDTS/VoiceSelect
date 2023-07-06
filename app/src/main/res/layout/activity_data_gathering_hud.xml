@@ -146,18 +146,29 @@
             android:textColor="@color/black">
         </TextView>
 
-        <TextView
+<!--        <TextView-->
+<!--            android:id="@+id/entryValueComment"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="0.6"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_marginEnd="@dimen/margin"-->
+<!--            android:padding="@dimen/half_padding"-->
+<!--            android:background="@drawable/text_background"-->
+<!--            android:textSize="@dimen/xxs_text_size"-->
+<!--            android:textColor="#ffffff">-->
+<!--        </TextView>-->
+
+        <CheckBox
             android:id="@+id/entryValueComment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.6"
             android:gravity="center"
             android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
             android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="#ffffff">
-        </TextView>
+            android:clickable="false">
+        </CheckBox>
 
         <TextView
             android:id="@+id/entryValuePhoto"

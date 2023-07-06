@@ -42,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -127,8 +128,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSUser currentUser;
     private Session currentSession;
     private Entry currentEntry;
-    private Spinner currentSpinner;
     private ColumnValue selectedColumnValue;
+    private int emptyColumnValueIndex = -1;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -575,7 +576,6 @@ public class DataGatheringActivity extends AppCompatActivity
 
         if (isHeadsetAvailable) {
             initializeIristickVoiceCommands();
-
             iristickHUD.sessionValue.setText(sessionValue.getText());
             iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
         }
@@ -615,7 +615,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     vdtsNamedPositionedAdapter =
                             (VDTSNamedPositionedAdapter) parent.getAdapter();
 
-                    updateIristickHUD();
+                    if (isHeadsetAvailable) { updateIristickHUD(); }
                 }
 
                 @Override
@@ -665,9 +665,56 @@ public class DataGatheringActivity extends AppCompatActivity
             currentEntry = dataGatheringRecyclerAdapter.getEntry(index);
             currentEntryPhotos.clear();
             currentEntryPhotos.addAll(dataGatheringRecyclerAdapter.getPictureReferences(index));
+
+            if (isHeadsetAvailable) {
+                List<EntryValue> entryValueList = entryValueListLive.getValue();
+                if (entryValueList != null) {
+                    List<EntryValue> currentEntryValueList = entryValueList.stream()
+                            .filter(entryValue -> entryValue.getEntryID() == currentEntry.getUid())
+                            .collect(Collectors.toList());
+
+                    List<Long> currentEntryValueColumnValueIDs = currentEntryValueList.stream()
+                            .mapToLong(EntryValue::getColumnValueID)
+                            .distinct()
+                            .boxed()
+                            .collect(Collectors.toList());
+                    for (int i = 0; i < columnValueSpinnerList.size(); i++) {
+                        List<ColumnValue> columnValues = columnValueMap.get(i);
+                        emptyColumnValueIndex = i;
+                        assert columnValues != null;
+                        List<Long> columnValueIDs = columnValues.stream()
+                                .mapToLong(ColumnValue::getUid)
+                                .distinct()
+                                .boxed()
+                                .collect(Collectors.toList());
+
+                        //todo - break when no ids in currentEntryColumnValueIDs can be found in columnValueIDs
+//                        if (columnValueIDs.stream().noneMatch(currentEntryValueColumnValueIDs::contains)) {
+//                            break;
+//                        }
+
+//                        if (columnValueIDs.stream().noneMatch(currentEntryValueColumnValueIDs::contains)) {
+//                            break;
+//                        }
+                    }
+
+//                    List<ColumnValue> columnValues = columnValueMap.get(0);
+//                    selectedColumnValue = columnValues.stream()
+//                            .filter(
+//                                    cv -> currentEntryValueList.stream()
+//                                            .anyMatch(
+//                                                    ev -> ev.getColumnValueID() == cv.getUid()
+//                                            )
+//                            ).findFirst()
+//                            .orElse(null);
+                }
+
+                updateIristickHUD();
+            }
         } else {
             newEntry();
         }
+
         updateViews();
     }
 
@@ -716,6 +763,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                 dataGatheringRecyclerAdapter.getItemCount() + 1
                         )
                 );
+
                 for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
                     columnValueSpinnerList.get(columnIndex).setSelection(0);
                 }
@@ -918,50 +966,6 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
-
-    private void endSessionButtonOnClick() {
-        if (currentSession!=null) {
-            showEndConfirmDialogue();
-        }
-    }
-
-    //TODO: Probably needs an export
-    private void showEndConfirmDialogue() {
-        LOG.info("Showing End Confirm Dialog");
-
-        AlertDialog dialog;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("End Session?");
-        final View customLayout = getLayoutInflater().inflate(
-                R.layout.dialogue_fragment_yes_no,
-                null
-        );
-        builder.setView(customLayout);
-        TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Mark this session as finished?");
-        Button yesButton = customLayout.findViewById(R.id.yesButton);
-        Button noButton = customLayout.findViewById(R.id.noButton);
-
-        dialog = builder.create();
-        dialog.show();
-        AlertDialog finalDialog = dialog;
-
-        yesButton.setOnClickListener(view -> {
-            currentSession.setEndDate(LocalDateTime.now());
-            ExecutorService endExecutor = Executors.newSingleThreadExecutor();
-            Handler endHandler = new Handler(Looper.getMainLooper());
-            endExecutor.execute(() -> {
-                vsViewModel.updateSession(currentSession);
-                vdtsApplication.getPreferences().setLong(
-                        String.format("%s_SESSION", currentUser.getExportCode()),
-                        -1L);
-                endHandler.post(this::finish);
-            });
-        });
-
-        noButton.setOnClickListener(view -> finalDialog.dismiss());
-    }
-
     private void saveEntryButtonOnClick() {
         if (currentEntry == null) newEntry();
         if (currentEntry.getUid() > 0) {
@@ -1123,7 +1127,51 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
+    private void endSessionButtonOnClick() {
+        if (currentSession!=null) {
+            showEndConfirmDialogue();
+        }
+    }
+
+    //TODO: Probably needs an export
+    private void showEndConfirmDialogue() {
+        LOG.info("Showing End Confirm Dialog");
+
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("End Session?");
+        final View customLayout = getLayoutInflater().inflate(
+                R.layout.dialogue_fragment_yes_no,
+                null
+        );
+        builder.setView(customLayout);
+        TextView label = customLayout.findViewById(R.id.mainLabel);
+        label.setText("Mark this session as finished?");
+        Button yesButton = customLayout.findViewById(R.id.yesButton);
+        Button noButton = customLayout.findViewById(R.id.noButton);
+
+        dialog = builder.create();
+        dialog.show();
+        AlertDialog finalDialog = dialog;
+
+        yesButton.setOnClickListener(view -> {
+            currentSession.setEndDate(LocalDateTime.now());
+            ExecutorService endExecutor = Executors.newSingleThreadExecutor();
+            Handler endHandler = new Handler(Looper.getMainLooper());
+            endExecutor.execute(() -> {
+                vsViewModel.updateSession(currentSession);
+                vdtsApplication.getPreferences().setLong(
+                        String.format("%s_SESSION", currentUser.getExportCode()),
+                        -1L);
+                endHandler.post(this::finish);
+            });
+        });
+
+        noButton.setOnClickListener(view -> finalDialog.dismiss());
+    }
+
     private void newEntry() {
+        emptyColumnValueIndex = -1;
         dataGatheringRecyclerAdapter.clearSelected();
         columnScrollView.setScrollX(0);
         currentEntry = new Entry(currentUser.getUid(), currentSession.getUid());
@@ -1153,7 +1201,10 @@ public class DataGatheringActivity extends AppCompatActivity
 
         builder.setPositiveButton(
                 vdtsApplication.getResources().getString(R.string.comment_dialogue_enter_label),
-                (dialogInterface, i) -> currentEntry.setComment(commentView.getText().toString())
+                (dialogInterface, i) -> {
+                    currentEntry.setComment(commentView.getText().toString());
+                    iristickHUD.entryCommentValue.setChecked(true);
+                }
         );
 
         builder.setNegativeButton(
@@ -1278,14 +1329,14 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void increaseExposure() {
         if (exposureLevel < EXPOSURE_LEVELS) {
-            ++exposureLevel;
+            exposureLevel++;
             setExposureLevel(exposureLevel);
         }
     }
 
     private void decreaseExposure() {
         if (exposureLevel > 0) {
-            --exposureLevel;
+            exposureLevel--;
             setExposureLevel(exposureLevel);
         }
     }
@@ -1352,129 +1403,6 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void disableGPS() {
         locationManager.removeUpdates(this);
-    }
-
-    @Override
-    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = true;
-    }
-
-    @Override
-    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
-        IRIListener.super.onHeadsetAvailable(headset);
-        isHeadsetAvailable = false;
-    }
-
-    private void initializeIristickVoiceCommands() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Open Camera", this::openCamera)
-            );
-
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Navigate Back", this::finish)
-            );
-        }
-    }
-
-    @OptIn(markerClass = Experimental.class)
-    private void initializeIristickGrammar() {
-        if (isHeadsetAvailable) {
-            //Step by step
-            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
-                vg.addSequentialGroup(sg -> {
-                    //First entry value in row
-                    sg.addAlternativeGroup(start -> {
-                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
-                        if (columnValueSpokenList != null) {
-                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                                start.addToken(columnValueSpoken.getSpoken());
-                            }
-                        }
-
-                        start.addToken("Skip");
-                        start.addToken("Delete Last");
-                        start.addToken("Repeat Entry");
-                        start.addToken("End Session");
-                    });
-
-                    //Rest of entry values in row
-                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
-                        int finalIndex = index;
-                        sg.addAlternativeGroup(middle -> {
-                            List<ColumnValueSpoken> columnValueSpokenList =
-                                    columnValueSpokenMap.get(finalIndex);
-                            if (columnValueSpokenList != null) {
-                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                                    middle.addToken(columnValueSpoken.getSpoken());
-                                }
-                            }
-
-                            middle.addToken("Skip");
-                            middle.addToken("Reset Entry");
-                        });
-                    }
-
-                    //End of row
-                    sg.addAlternativeGroup(end -> {
-                        end.addToken("Make Comment");
-                        end.addToken("Open Camera");
-                        end.addToken("Reset Entry");
-                        end.addToken("Save Entry");
-                    });
-
-                    //todo - need another alternative group based on whether comments/photos are required before saving
-                });
-
-                vg.setListener(((recognizer, tokens, tags) -> {
-                    //todo - stuff based on tokens
-                    String test = tokens[0];
-                }));
-            });
-        }
-    }
-
-    private void updateIristickHUD() {
-        if (iristickHUD != null) {
-            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
-
-            if (selectedColumnValue != null) {
-                entryHUDMap.put(spinnerPosition, selectedColumnValue);
-                if (columnMap.size() > 0) {
-                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
-                            columnMap.get(spinnerPosition)).getName());
-                    if (columnMap.size() != spinnerPosition + 1) {
-                        iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
-                                columnMap.get(spinnerPosition + 1)).getName());
-                    } else {
-                        iristickHUD.columnNextLabel.setText(
-                                R.string.data_gathering_hud_end_of_row);
-                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
-                                this,
-                                R.drawable.text_background)
-                        );
-                    }
-                }
-                iristickHUD.entryLastValue.setText(selectedColumnValue.getName());
-                if (entryHUDMap.get(spinnerPosition + 1) != null ) {
-                    iristickHUD.entryNextValue.setText(Objects.requireNonNull(
-                            entryHUDMap.get(spinnerPosition + 1)).getName());
-                } else {
-                    iristickHUD.entryNextValue.setText("");
-                }
-            } else {
-                iristickHUD.columnLastLabel.setText("");
-                iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
-                        columnMap.get(1)).getName());
-                iristickHUD.entryLastValue.setText("");
-                iristickHUD.entryNextValue.setText("");
-            }
-        }
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -1577,6 +1505,143 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = true;
+    }
+
+    @Override
+    public void onHeadsetDisappeared(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        isHeadsetAvailable = false;
+    }
+
+    private void initializeIristickVoiceCommands() {
+        if (isHeadsetAvailable) {
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Open Camera", this::openCamera)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Navigate Back", this::finish)
+            );
+        }
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void initializeIristickGrammar() {
+        if (isHeadsetAvailable) {
+            //Step by step
+            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+                vg.addSequentialGroup(sg -> {
+                    //First entry value in row
+                    sg.addAlternativeGroup(start -> {
+                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
+                        if (columnValueSpokenList != null) {
+                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                start.addToken(columnValueSpoken.getSpoken());
+                            }
+                        }
+
+                        start.addToken("Skip");
+                        start.addToken("Delete Last");
+                        start.addToken("Repeat Entry");
+                        start.addToken("End Session");
+                    });
+
+                    //Rest of entry values in row
+                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
+                        int finalIndex = index;
+                        sg.addAlternativeGroup(middle -> {
+                            List<ColumnValueSpoken> columnValueSpokenList =
+                                    columnValueSpokenMap.get(finalIndex);
+                            if (columnValueSpokenList != null) {
+                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                    middle.addToken(columnValueSpoken.getSpoken());
+                                }
+                            }
+
+                            middle.addToken("Skip");
+                            middle.addToken("Reset Entry");
+                        });
+                    }
+
+                    //End of row
+                    sg.addAlternativeGroup(end -> {
+                        end.addToken("Make Comment");
+                        end.addToken("Open Camera");
+                        end.addToken("Reset Entry");
+                        end.addToken("Save Entry");
+                    });
+
+                    //todo - need another alternative group based on whether comments/photos are required before saving
+                });
+
+                vg.setListener(((recognizer, tokens, tags) -> {
+                    //todo - stuff based on tokens
+                    String test = tokens[0];
+                }));
+            });
+        }
+    }
+
+    private void updateIristickHUD() {
+        if (iristickHUD != null) {
+            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
+
+            if (selectedColumnValue != null || emptyColumnValueIndex >= 0) {
+                if (selectedColumnValue != null) {
+                    entryHUDMap.put(spinnerPosition, selectedColumnValue);
+                } else {
+                    spinnerPosition = emptyColumnValueIndex;
+                }
+
+                if (columnMap.size() > 0) {
+                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
+                            columnMap.get(spinnerPosition)).getName());
+                    if (columnMap.size() != spinnerPosition + 1) {
+                        iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                                columnMap.get(spinnerPosition + 1)).getName());
+                    } else {
+                        iristickHUD.columnNextLabel.setText(
+                                R.string.data_gathering_hud_end_of_row);
+                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
+                                this,
+                                R.drawable.text_background)
+                        );
+                    }
+                }
+
+                iristickHUD.entryLastValue.setText(selectedColumnValue != null ?
+                        selectedColumnValue.getName() :
+                        "");
+                if (entryHUDMap.get(spinnerPosition + 1) != null ) {
+                    iristickHUD.entryNextValue.setText(Objects.requireNonNull(
+                            entryHUDMap.get(spinnerPosition + 1)).getName());
+                } else {
+                    iristickHUD.entryNextValue.setText("");
+                }
+            } else {
+                iristickHUD.columnLastLabel.setText("");
+                iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
+                        columnMap.get(0)).getName());
+                iristickHUD.entryLastValue.setText("");
+                iristickHUD.entryNextValue.setText("");
+                iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
+                        this,
+                        R.drawable.spinner_background)
+                );
+                iristickHUD.entryCommentValue.setChecked(false);
+                iristickHUD.entryPhotoValue.setText("");
+            }
+        }
+    }
+
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
         //HUD Views
@@ -1586,7 +1651,7 @@ public class DataGatheringActivity extends AppCompatActivity
         private TextView entryIndexValue;
         private TextView entryLastValue;
         private TextView entryNextValue;
-        private TextView entryCommentValue;
+        private CheckBox entryCommentValue;
         private TextView entryPhotoValue;
 
         private TextView sessionValue;
