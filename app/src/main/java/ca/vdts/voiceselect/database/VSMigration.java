@@ -71,4 +71,14 @@ public class VSMigration {
             database.execSQL("ALTER TABLE 'Entries' ADD 'comment' TEXT");
         }
     };
+
+    static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            LOG.debug("Migrating from 5 to 6");
+
+            database.execSQL("ALTER TABLE 'Sessions' ADD 'commentRequired' INTERGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE 'Sessions' ADD 'pictureRequired' INTERGER NOT NULL DEFAULT 0");
+        }
+    };
 }

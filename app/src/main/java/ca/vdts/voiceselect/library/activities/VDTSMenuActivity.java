@@ -309,6 +309,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                         currentUser.getUid(),
                         currentUser.getSessionPrefix(),
                         currentLayout.getName(),
+                        currentLayout.isCommentRequired(),
+                        currentLayout.isPictureRequired(),
                         dailySessionCount + 1);
                 long currentSessionID = vsViewModel.insertSession(currentSession);
                 LOG.info("Added session: {}", currentSession.getSessionPrefix());

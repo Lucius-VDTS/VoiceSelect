@@ -7,11 +7,9 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static android.widget.Toast.LENGTH_SHORT;
-import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
-import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
@@ -1346,49 +1344,6 @@ public class DataGatheringActivity extends AppCompatActivity
         } catch (IOException e) {
             LOG.error("IO Exception: ", e);
         }
-    }
-
-    private void zoomIn() {
-        if (zoomLevel < ZOOM_LEVELS) {
-            ++zoomLevel;
-            setCameraZoom(zoomLevel);
-        }
-    }
-
-    private void zoomOut() {
-        if (zoomLevel > 0) {
-            --zoomLevel;
-            setCameraZoom(zoomLevel);
-        }
-    }
-
-    private void setCameraZoom(int zoom) {
-        zoomLevel = zoom;
-        final float linearZoom = (float) zoom / (float) ZOOM_LEVELS;
-        LOG.debug("Zoom level: {}/{}, Linear Zoom: {}", zoom, ZOOM_LEVELS, linearZoom);
-        camera.getCameraControl().setLinearZoom(linearZoom);
-        vdtsApplication.getPreferences().setInt(PREF_ZOOM, zoom);
-    }
-
-    private void increaseExposure() {
-        if (exposureLevel < EXPOSURE_LEVELS) {
-            exposureLevel++;
-            setExposureLevel(exposureLevel);
-        }
-    }
-
-    private void decreaseExposure() {
-        if (exposureLevel > 0) {
-            exposureLevel--;
-            setExposureLevel(exposureLevel);
-        }
-    }
-
-    @OptIn(markerClass = androidx.camera.core.ExperimentalExposureCompensation.class)
-    private void setExposureLevel(int exposureLevel) {
-        this.exposureLevel = exposureLevel;
-        camera.getCameraControl().setExposureCompensationIndex(exposureLevel);
-        vdtsApplication.getPreferences().setInt(PREF_BRIGHTNESS, exposureLevel);
     }
 
     @Override
