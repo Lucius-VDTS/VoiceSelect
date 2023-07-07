@@ -135,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                 vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)
         );
         excelCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, false)
+                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, true)
         );
 
         switch (vdtsApplication.getPreferences().getInt(PREF_ENTRY_METHOD, -1)) {
