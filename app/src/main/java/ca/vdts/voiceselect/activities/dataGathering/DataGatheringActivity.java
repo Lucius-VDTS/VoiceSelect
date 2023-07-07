@@ -970,44 +970,66 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void saveEntryButtonOnClick() {
         if (currentEntry == null) newEntry();
-        if (currentEntry.getUid() > 0) {
-            //Update existing entry
-            ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
-            Handler updateEntryHandler = new Handler(Looper.getMainLooper());
-            updateEntryExecutor.execute(() -> {
-                if (currentLocation != null) {
-                    if (currentEntry.getLatitude() == null) {
-                        currentEntry.setLatitude(currentLocation.getLatitude());
+        boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotos.isEmpty();
+        boolean commentIssue = currentEntry.getComment() == null || currentEntry.getComment().isEmpty();
+        if (commentIssue && pictureIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a comment and a picture.",
+                    0
+            );
+        } else if (commentIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a comment.",
+                    0
+            );
+        } else if (pictureIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a picture.",
+                    0
+            );
+        } else {
+            if (currentEntry.getUid() > 0) {
+                //Update existing entry
+                ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
+                Handler updateEntryHandler = new Handler(Looper.getMainLooper());
+                updateEntryExecutor.execute(() -> {
+                    if (currentLocation != null) {
+                        if (currentEntry.getLatitude() == null) {
+                            currentEntry.setLatitude(currentLocation.getLatitude());
+                        }
+                        if (currentEntry.getLongitude() == null) {
+                            currentEntry.setLongitude(currentLocation.getLongitude());
+                        }
                     }
-                    if (currentEntry.getLongitude() == null) {
+                    vsViewModel.updateEntry(currentEntry);
+                    updateEntryHandler.post(() -> {
+                        savePictureReferences(currentEntry.getUid());
+                        saveEntryValues(currentEntry.getUid());
+                    });
+                });
+            } else {
+                //Save a new entry
+                if (currentEntry == null) {
+                    newEntry();
+                }
+                ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
+                Handler createEntryHandler = new Handler(Looper.getMainLooper());
+                createEntryExecutor.execute(() -> {
+                    if (currentLocation != null) {
+                        currentEntry.setLatitude(currentLocation.getLatitude());
                         currentEntry.setLongitude(currentLocation.getLongitude());
                     }
-                }
-                vsViewModel.updateEntry(currentEntry);
-                updateEntryHandler.post(() -> {
-                    savePictureReferences(currentEntry.getUid());
-                    saveEntryValues(currentEntry.getUid());
+                    long uid = vsViewModel.insertEntry(currentEntry);
+                    currentEntry.setUid(uid);
+                    createEntryHandler.post(() -> {
+                        savePictureReferences(uid);
+                        saveEntryValues(uid);
+                    });
                 });
-            });
-        } else {
-            //Save a new entry
-            if (currentEntry == null) {
-                newEntry();
             }
-            ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
-            Handler createEntryHandler = new Handler(Looper.getMainLooper());
-            createEntryExecutor.execute(() -> {
-                if (currentLocation != null) {
-                    currentEntry.setLatitude(currentLocation.getLatitude());
-                    currentEntry.setLongitude(currentLocation.getLongitude());
-                }
-                long uid = vsViewModel.insertEntry(currentEntry);
-                currentEntry.setUid(uid);
-                createEntryHandler.post(() -> {
-                    savePictureReferences(uid);
-                    saveEntryValues(uid);
-                });
-            });
         }
     }
 
@@ -1244,7 +1266,9 @@ public class DataGatheringActivity extends AppCompatActivity
                 vdtsApplication.getResources().getString(R.string.comment_dialogue_enter_label),
                 (dialogInterface, i) -> {
                     currentEntry.setComment(commentView.getText().toString());
-                    iristickHUD.entryCommentValue.setChecked(true);
+                    if (isHeadsetAvailable) {
+                        iristickHUD.entryCommentValue.setChecked(true);
+                    }
                 }
         );
 
