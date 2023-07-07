@@ -1,14 +1,13 @@
 package ca.vdts.voiceselect.activities.configure;
 
-import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_SETUP;
-import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
+import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -37,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +49,7 @@ import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.ColumnSpoken;
 import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.FileUtil;
 import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSIndexedNamedAdapter;
@@ -507,56 +508,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(
-                    Environment.getExternalStorageDirectory().toString()
-                            .concat(File.separator)
-                            .concat("Documents")
-                            .concat(File.separator)
-                            .concat("VoiceSelect")
-                            .concat(File.separator)
-                            .concat(CONFIG_DIRECTORY+EXPORT_FILE_SETUP)
-                            .concat(FILE_EXTENSION_VDTS)
-            );
-            if (file.exists()) {
-                final Importer importer = new Importer(
-                        vsViewModel,
-                        this,
-                        vdtsApplication
-                );
-                if (importer.importSetup(file)) {
-                    columnAdapterSelect(-1);
+            openFilePicker();
 
-                    vdtsApplication.displayToast(
-                            this,
-                            "Setup imported successfully",
-                            Toast.LENGTH_SHORT
-                    );
-
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    executor.execute(() -> {
-                        columnList.clear();
-                        columnList.addAll(vsViewModel.findAllActiveColumns());
-                        columnList.remove(Column.COLUMN_NONE);
-                        handler.post(() -> {
-                            columnAdapter.setDataset(columnList);
-                            columnAdapterSelect(-1);
-                        });
-                    });
-                } else {
-                    vdtsApplication.displayToast(
-                            this,
-                            "Error importing Setup",
-                            Toast.LENGTH_SHORT
-                    );
-                }
-            } else {
-                vdtsApplication.displayToast(
-                        this,
-                        "Setup file not found",
-                        Toast.LENGTH_SHORT
-                );
-            }
         });
 
         noButton.setOnClickListener(v -> finalDialog.dismiss());
@@ -835,6 +788,77 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 ).distinct()
                         .filter(spoken -> !spoken.isEmpty())
                         .collect(Collectors.toList());
+    }
+
+    public void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+        startActivityForResult(intent, SELECT_FOLDER);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_FOLDER) {
+            if (resultCode == RESULT_OK && data != null) {
+
+                Uri originalUri = data.getData();
+
+                try {
+                    File file = FileUtil.from(this,originalUri );
+                    LOG.debug("file", "File...:::: uti - "+file .getPath()+" file -" + file + " : " + file .exists());
+
+                    if (file.exists()) {
+                        final Importer importer = new Importer(
+                                vsViewModel,
+                                this,
+                                vdtsApplication
+                        );
+                        if (importer.importSetup(file)) {
+                            columnAdapterSelect(-1);
+
+                            vdtsApplication.displayToast(
+                                    this,
+                                    "Setup imported successfully",
+                                    Toast.LENGTH_SHORT
+                            );
+
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            executor.execute(() -> {
+                                columnList.clear();
+                                columnList.addAll(vsViewModel.findAllActiveColumns());
+                                columnList.remove(Column.COLUMN_NONE);
+                                handler.post(() -> {
+                                    columnAdapter.setDataset(columnList);
+                                    columnAdapterSelect(-1);
+                                });
+                            });
+                        } else {
+                            vdtsApplication.displayToast(
+                                    this,
+                                    "Error importing Setup",
+                                    Toast.LENGTH_SHORT
+                            );
+                        }
+                    } else {
+                        vdtsApplication.displayToast(
+                                this,
+                                "Setup file not found",
+                                Toast.LENGTH_SHORT
+                        );
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    vdtsApplication.displayToast(
+                            this,
+                            "Setup file not found",
+                            Toast.LENGTH_SHORT
+                    );
+                }
+            }
+        }
     }
 
     @Override
