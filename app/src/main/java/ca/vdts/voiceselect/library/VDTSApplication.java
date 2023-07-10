@@ -48,6 +48,9 @@ public class VDTSApplication extends Application {
     public static final int METHOD_STEP = 1;
     public static final int METHOD_FREE = 2;
 
+    //File Picker Enum
+    public static final int SELECT_FOLDER = 2;
+
     //Default Values
     public static final long DEFAULT_UID = -9001L;
     public static final LocalDateTime DEFAULT_DATE = LocalDateTime.now();
@@ -83,7 +86,7 @@ public class VDTSApplication extends Application {
     public static final String EXPORT_FILE_SETUP = "Setup";
     public static final String EXPORT_FILE_LAYOUT = "Layout";
     public static final String EXPORT_FILE_OPTIONS = "Settings";
-    public static final String FILE_EXTENSION_VDTS = ".vdts";
+    public static final String FILE_EXTENSION_VDTS = ".txt";
     public static final String FILE_EXTENSION_JSON = ".json";
     public static final String FILE_EXTENSION_CSV = ".csv";
     public static final String FILE_EXTENSION_XLSX = ".xlsx";

@@ -6,9 +6,10 @@ import static android.Manifest.permission.CAMERA;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
-import static android.widget.Toast.LENGTH_LONG;
-import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
-import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
+import static android.widget.Toast.LENGTH_SHORT;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
+import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSLocationUtil.isBetterLocation;
@@ -118,6 +119,7 @@ import ca.vdts.voiceselect.database.entities.EntryValue;
 import ca.vdts.voiceselect.database.entities.PictureReference;
 import ca.vdts.voiceselect.database.entities.Session;
 import ca.vdts.voiceselect.database.entities.SessionLayout;
+import ca.vdts.voiceselect.files.Exporter;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
@@ -1011,46 +1013,66 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void saveEntryButtonOnClick() {
         if (currentEntry == null) newEntry();
-        if (currentEntry.getUid() > 0) {
-            //Update existing entry
-            ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
-            Handler updateEntryHandler = new Handler(Looper.getMainLooper());
-            updateEntryExecutor.execute(() -> {
-                if (currentLocation != null) {
-                    if (currentEntry.getLatitude() == null) {
-                        currentEntry.setLatitude(currentLocation.getLatitude());
+        boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotos.isEmpty();
+        boolean commentIssue = currentEntry.getComment() == null || currentEntry.getComment().isEmpty();
+        if (commentIssue && pictureIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a comment and a picture.",
+                    0
+            );
+        } else if (commentIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a comment.",
+                    0
+            );
+        } else if (pictureIssue){
+            vdtsApplication.displayToast(
+                    this,
+                    "This entry requires a picture.",
+                    0
+            );
+        } else {
+            if (currentEntry.getUid() > 0) {
+                //Update existing entry
+                ExecutorService updateEntryExecutor = Executors.newSingleThreadExecutor();
+                Handler updateEntryHandler = new Handler(Looper.getMainLooper());
+                updateEntryExecutor.execute(() -> {
+                    if (currentLocation != null) {
+                        if (currentEntry.getLatitude() == null) {
+                            currentEntry.setLatitude(currentLocation.getLatitude());
+                        }
+                        if (currentEntry.getLongitude() == null) {
+                            currentEntry.setLongitude(currentLocation.getLongitude());
+                        }
                     }
-                    if (currentEntry.getLongitude() == null) {
+                    vsViewModel.updateEntry(currentEntry);
+                    updateEntryHandler.post(() -> {
+                        savePictureReferences(currentEntry.getUid());
+                        saveEntryValues(currentEntry.getUid());
+                    });
+                });
+            } else {
+                //Save a new entry
+                if (currentEntry == null) {
+                    newEntry();
+                }
+                ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
+                Handler createEntryHandler = new Handler(Looper.getMainLooper());
+                createEntryExecutor.execute(() -> {
+                    if (currentLocation != null) {
+                        currentEntry.setLatitude(currentLocation.getLatitude());
                         currentEntry.setLongitude(currentLocation.getLongitude());
                     }
-                }
-                vsViewModel.updateEntry(currentEntry);
-                updateEntryHandler.post(() -> {
-                    savePictureReferences(currentEntry.getUid());
-                    saveEntryValues(currentEntry.getUid());
+                    long uid = vsViewModel.insertEntry(currentEntry);
+                    currentEntry.setUid(uid);
+                    createEntryHandler.post(() -> {
+                        savePictureReferences(uid);
+                        saveEntryValues(uid);
+                    });
                 });
-            });
-        } else {
-            //Save a new entry
-            if (currentEntry == null) {
-                newEntry();
             }
-
-            ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
-            Handler createEntryHandler = new Handler(Looper.getMainLooper());
-            createEntryExecutor.execute(() -> {
-                if (currentLocation != null) {
-                    currentEntry.setLatitude(currentLocation.getLatitude());
-                    currentEntry.setLongitude(currentLocation.getLongitude());
-                }
-
-                long uid = vsViewModel.insertEntry(currentEntry);
-                currentEntry.setUid(uid);
-                createEntryHandler.post(() -> {
-                    savePictureReferences(uid);
-                    saveEntryValues(uid);
-                });
-            });
         }
     }
 
@@ -1180,7 +1202,6 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    //TODO: Probably needs an export
     private void showEndConfirmDialogue() {
         LOG.info("Showing End Confirm Dialog");
 
@@ -1210,11 +1231,51 @@ public class DataGatheringActivity extends AppCompatActivity
                 vdtsApplication.getPreferences().setLong(
                         String.format("%s_SESSION", currentUser.getExportCode()),
                         -1L);
+                export(currentSession);
                 endHandler.post(this::finish);
             });
         });
 
         noButton.setOnClickListener(view -> finalDialog.dismiss());
+    }
+
+    private void export(Session session) {
+        //ISaver saver = Saver.createSaver(ONEDRIVE_APP_ID);
+        final Exporter exporter = new Exporter(vsViewModel,vdtsApplication,this);
+        boolean CSV = true;
+        boolean Excel = true;
+        boolean JSON = true;
+
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
+            CSV = exporter.exportSessionCSV(session);
+        }
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
+            JSON= exporter.exportSessionJSON(session);
+        }
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,true)){
+            Excel = exporter.exportSessionExcel(session);
+        }
+        if (CSV && Excel && JSON) {
+            if (exporter.exportMedia(session)) {
+                vdtsApplication.displayToast(
+                        this,
+                        "Session exported successfully",
+                        0
+                );
+            } else {
+                vdtsApplication.displayToast(
+                        this,
+                        "Error exporting session photos",
+                        0
+                );
+            }
+        } else {
+            vdtsApplication.displayToast(
+                    this,
+                    "Error exporting session",
+                    0
+            );
+        }
     }
 
     private void newEntry() {
@@ -1250,7 +1311,9 @@ public class DataGatheringActivity extends AppCompatActivity
                 vdtsApplication.getResources().getString(R.string.comment_dialogue_enter_label),
                 (dialogInterface, i) -> {
                     currentEntry.setComment(commentView.getText().toString());
-                    iristickHUD.entryCommentValue.setChecked(true);
+                    if (isHeadsetAvailable) {
+                        iristickHUD.entryCommentValue.setChecked(true);
+                    }
                 }
         );
 
@@ -1344,49 +1407,6 @@ public class DataGatheringActivity extends AppCompatActivity
         } catch (IOException e) {
             LOG.error("IO Exception: ", e);
         }
-    }
-
-    private void zoomIn() {
-        if (zoomLevel < ZOOM_LEVELS) {
-            ++zoomLevel;
-            setCameraZoom(zoomLevel);
-        }
-    }
-
-    private void zoomOut() {
-        if (zoomLevel > 0) {
-            --zoomLevel;
-            setCameraZoom(zoomLevel);
-        }
-    }
-
-    private void setCameraZoom(int zoom) {
-        zoomLevel = zoom;
-        final float linearZoom = (float) zoom / (float) ZOOM_LEVELS;
-        LOG.debug("Zoom level: {}/{}, Linear Zoom: {}", zoom, ZOOM_LEVELS, linearZoom);
-        camera.getCameraControl().setLinearZoom(linearZoom);
-        vdtsApplication.getPreferences().setInt(PREF_ZOOM, zoom);
-    }
-
-    private void increaseExposure() {
-        if (exposureLevel < EXPOSURE_LEVELS) {
-            exposureLevel++;
-            setExposureLevel(exposureLevel);
-        }
-    }
-
-    private void decreaseExposure() {
-        if (exposureLevel > 0) {
-            exposureLevel--;
-            setExposureLevel(exposureLevel);
-        }
-    }
-
-    @OptIn(markerClass = androidx.camera.core.ExperimentalExposureCompensation.class)
-    private void setExposureLevel(int exposureLevel) {
-        this.exposureLevel = exposureLevel;
-        camera.getCameraControl().setExposureCompensationIndex(exposureLevel);
-        vdtsApplication.getPreferences().setInt(PREF_BRIGHTNESS, exposureLevel);
     }
 
     @Override

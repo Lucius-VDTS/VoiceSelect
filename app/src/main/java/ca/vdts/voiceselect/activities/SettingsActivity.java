@@ -1,8 +1,5 @@
 package ca.vdts.voiceselect.activities;
 
-import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_OPTIONS;
-import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_CHAINED;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_FREE;
 import static ca.vdts.voiceselect.library.VDTSApplication.METHOD_STEP;
@@ -13,12 +10,14 @@ import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_GPS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_NAME;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_PHOTO_PRINT_TIME;
+import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -41,10 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.files.Exporter;
+import ca.vdts.voiceselect.files.FileUtil;
 import ca.vdts.voiceselect.files.Importer;
 import ca.vdts.voiceselect.library.VDTSApplication;
 
@@ -133,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                 vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)
         );
         excelCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, false)
+                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, true)
         );
 
         switch (vdtsApplication.getPreferences().getInt(PREF_ENTRY_METHOD, -1)) {
@@ -222,44 +223,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         AlertDialog finalDialog = dialog;
         yesButton.setOnClickListener(v -> {
             finalDialog.dismiss();
-            File file = new File(
-                    Environment.getExternalStorageDirectory().toString()
-                            .concat(File.separator)
-                            .concat("Documents")
-                            .concat(File.separator)
-                            .concat("VoiceSelect")
-                            .concat(File.separator)
-                            .concat(CONFIG_DIRECTORY)
-                            .concat(EXPORT_FILE_OPTIONS)
-                            .concat(FILE_EXTENSION_VDTS));
-            if (file.exists()) {
-                final VSViewModel viewModel = new ViewModelProvider(this).get(
-                        VSViewModel.class
-                );
-                final Importer importer = new Importer(
-                        viewModel,
-                        this,
-                        vdtsApplication
-                );
-                if (importer.importOptions(file)) {
-                    updateControls();
-
-                    vdtsApplication.displayToast(
-                            this,
-                            "Settings imported successfully"
-                    );
-                } else {
-                    vdtsApplication.displayToast(
-                            this,
-                            "Error importing settings"
-                    );
-                }
-            } else {
-                vdtsApplication.displayToast(
-                        this,
-                        "Setting file not found"
-                );
-            }
+            openFilePicker();
         });
 
         noButton.setOnClickListener(v -> finalDialog.dismiss());
@@ -294,6 +258,68 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                         this,
                         "Error exporting options"
                 );
+            }
+        }
+    }
+
+    public void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/plain");
+        startActivityForResult(intent, SELECT_FOLDER);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_FOLDER) {
+            if (resultCode == RESULT_OK && data != null) {
+
+                Uri originalUri = data.getData();
+
+                try {
+                    File file = FileUtil.from(this,originalUri );
+                    LOG.debug("file", "File...:::: uti - "+file .getPath()+" file -" + file + " : " + file .exists());
+
+                    if (file.exists()) {
+                        final VSViewModel viewModel = new ViewModelProvider(this).get(
+                                VSViewModel.class
+                        );
+                        final Importer importer = new Importer(
+                                viewModel,
+                                this,
+                                vdtsApplication
+                        );
+                        if (importer.importOptions(file)) {
+                            updateControls();
+
+                            vdtsApplication.displayToast(
+                                    this,
+                                    "Settings imported successfully",
+                                    Toast.LENGTH_SHORT
+                            );
+                        } else {
+                            vdtsApplication.displayToast(
+                                    this,
+                                    "Error importing settings",
+                                    Toast.LENGTH_SHORT
+                            );
+                        }
+                    } else {
+                        vdtsApplication.displayToast(
+                                this,
+                                "Setting file not found",
+                                Toast.LENGTH_SHORT
+                        );
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    vdtsApplication.displayToast(
+                            this,
+                            "Settings file not found",
+                            Toast.LENGTH_SHORT
+                    );
+                }
             }
         }
     }

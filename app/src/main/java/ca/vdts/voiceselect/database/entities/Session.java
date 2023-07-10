@@ -64,6 +64,16 @@ public class Session implements VDTSIndexedNamedInterface {
     private String layoutName;
 
     @Expose
+    @SerializedName("commentRequired")
+    @ColumnInfo(name = "commentRequired")
+    private boolean commentRequired;
+
+    @Expose
+    @SerializedName("pictureRequired")
+    @ColumnInfo(name = "pictureRequired")
+    private boolean pictureRequired;
+
+    @Expose
     @SerializedName("startDate")
     @ColumnInfo(name = "startDate")
     private LocalDateTime startDate;
@@ -86,18 +96,22 @@ public class Session implements VDTSIndexedNamedInterface {
             VDTS_USER_NONE.getUid(),
             VDTS_USER_NONE.getSessionPrefix(),
             LAYOUT_NONE.getName(),
+            false,
+            false,
             DEFAULT_DATE,
             0,
             DEFAULT_DATE
     );
 
     //Non-Default Constructor
-    public Session(long uid, long userID, String sessionPrefix, String layoutName,
+    public Session(long uid, long userID, String sessionPrefix, String layoutName, boolean commentRequired, boolean pictureRequired,
                    LocalDateTime startDate, int dateIteration, LocalDateTime endDate) {
         this.uid = uid;
         this.userID = userID;
         this.sessionPrefix = sessionPrefix;
         this.layoutName = layoutName;
+        this.commentRequired = commentRequired;
+        this.pictureRequired = pictureRequired;
         this.startDate = startDate;
         this.dateIteration = dateIteration;
         this.endDate = endDate;
@@ -105,12 +119,12 @@ public class Session implements VDTSIndexedNamedInterface {
 
     //Place holder constructor - entity has id 0 until saved to database
     @Ignore
-    public Session(long userID, String userPrefix, String layoutName, int dateIteration) {
-        this(0L, userID, userPrefix, layoutName,LocalDateTime.now(), dateIteration, null);
+    public Session(long userID, String userPrefix, String layoutName, boolean commentRequired, boolean pictureRequired, int dateIteration) {
+        this(0L, userID, userPrefix, layoutName,commentRequired,pictureRequired,LocalDateTime.now(), dateIteration, null);
     }
 
     public Session(Session session) {
-        this(session.getUid(), session.getUserID(), session.getSessionPrefix(), session.getLayoutName(),
+        this(session.getUid(), session.getUserID(), session.getSessionPrefix(), session.getLayoutName(), session.isCommentRequired(),session.isPictureRequired(),
                 session.getStartDate(), session.getDateIteration(), session.getEndDate());
     }
 
@@ -145,6 +159,22 @@ public class Session implements VDTSIndexedNamedInterface {
 
     public void setLayoutName(String layoutName) {
         this.layoutName = layoutName;
+    }
+
+    public boolean isCommentRequired() {
+        return commentRequired;
+    }
+
+    public void setCommentRequired(boolean commentRequired) {
+        this.commentRequired = commentRequired;
+    }
+
+    public boolean isPictureRequired() {
+        return pictureRequired;
+    }
+
+    public void setPictureRequired(boolean pictureRequired) {
+        this.pictureRequired = pictureRequired;
     }
 
     public LocalDateTime getStartDate() {

@@ -127,7 +127,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
             JSON= exporter.exportSessionJSON(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,false)){
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,true)){
             Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {

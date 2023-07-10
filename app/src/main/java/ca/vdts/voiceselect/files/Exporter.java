@@ -646,9 +646,9 @@ public class Exporter {
         }
 
         try {
-            writeToFile(localExportPath.concat(fileName), workbook);
+            writeToFile(exportDir.concat(fileName), workbook);
         } catch (IOException e) {
-            LOG.error("Users export file write failed: ", e);
+            LOG.error("Session export write failed: ", e);
             return false;
         }
 
@@ -698,17 +698,35 @@ public class Exporter {
 
     private void writeToFile(String filePath, Workbook workbook) throws IOException {
         final File file = new File(filePath);
-        final FileOutputStream fos = new FileOutputStream(file);
-        workbook.write(fos);
-        fos.flush();
-        fos.close();
-        workbook.close();
-        activity.getApplication().sendBroadcast(
-                new Intent(
-                        Intent.ACTION_MEDIA_SCANNER_FINISHED,
-                        Uri.fromFile(file)
-                )
-        );
+
+        if (file.exists()) {
+            boolean deleteResult = file.delete();
+            if (deleteResult) {
+                LOG.info("Deleted existing file(s): {}", file);
+            } else {
+                LOG.info("Failed to delete existing file: {}", file);
+            }
+        }
+
+        if (!file.exists()) {
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(file);
+                workbook.write(fos);
+                fos.flush();
+                fos.close();
+                workbook.close();
+                activity.getApplication().sendBroadcast(
+                        new Intent(
+                                Intent.ACTION_MEDIA_SCANNER_FINISHED,
+                                Uri.fromFile(file)
+                        )
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public boolean exportMedia(Session  session) {
