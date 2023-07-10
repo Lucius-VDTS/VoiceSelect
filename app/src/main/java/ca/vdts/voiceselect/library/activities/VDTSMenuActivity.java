@@ -325,9 +325,9 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                             (int) layoutColumn.getColumnPosition()
                     );
 
-                    long currentSessionLayoutUID =
+                    long currentSessionLayoutID =
                             vsViewModel.insertSessionLayout(currentSessionLayout);
-                    currentSessionLayout.setUid(currentSessionLayoutUID);
+                    currentSessionLayout.setUid(currentSessionLayoutID);
                 }
 
                 handler.post(() -> {
@@ -338,11 +338,11 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                             String.format("%s_SESSION", currentUser.getExportCode()),
                             currentSession.getUid());
                     LOG.info("Attached session to: {}", currentUser.getName());
+
+                    Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
+                    startActivity(startActivityIntent);
                 });
             });
-
-            Intent startActivityIntent = new Intent(this, DataGatheringActivity.class);
-            startActivity(startActivityIntent);
         }
     }
 
