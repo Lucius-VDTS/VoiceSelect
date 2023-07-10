@@ -297,7 +297,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    selectedLayout = (Layout) parent.getItemAtPosition(position);
+                    selectedLayout = new Layout ((Layout) parent.getItemAtPosition(position));
                     selectedLayoutPosition = position;
 
                     if (layoutList.size() <= 1) {
@@ -441,111 +441,103 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .repeat(SHAKE_REPEAT)
                     .playOn(layoutSaveButton);
             vdtsApplication.displayToast(this, message);
-        } else if (!layoutNameEditText.getText().toString().isEmpty() &&
-                   !layoutExportCodeEditText.getText().toString().isEmpty()) {
+        } else {
             if (selectedLayout.getUid() >= 1) {
                 //Update existing layout
                 selectedLayout.setName(layoutNameEditText.getText().toString().trim());
                 selectedLayout.setExportCode(layoutExportCodeEditText.getText().toString().trim());
                 selectedLayout.setCommentRequired(commentRequiredSwitch.isChecked());
                 selectedLayout.setPictureRequired(pictureRequireSwitch.isChecked());
-
-                ExecutorService updateLayoutExecutor = Executors.newSingleThreadExecutor();
-                Handler updateLayoutHandler = new Handler(Looper.getMainLooper());
-                updateLayoutExecutor.execute(() -> {
-                    vsViewModel.updateLayout(selectedLayout);
-                    updateLayoutHandler.post(() -> {
-                        String message = "Updated layout: " + selectedLayout.getName();
-                        LOG.info(message);
-                        vdtsApplication.displayToast(this, message);
-
-                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
-                        layoutSpinnerAdapter.notifyDataSetChanged();
-
-                        ExecutorService getCurrentLayoutColumnsExecutor =
-                                Executors.newSingleThreadExecutor();
-                        Handler getCurrentLayoutColumnsHandler = new Handler(
-                                Looper.getMainLooper()
-                        );
-                        getCurrentLayoutColumnsExecutor.execute(() -> {
-                            List<LayoutColumn> currentLayoutColumns =
-                                    vsViewModel.findAllLayoutColumnsByLayout(selectedLayout);
-                            getCurrentLayoutColumnsHandler.post(() -> {
-                                ExecutorService deleteCurrentLayoutColumnsExecutor =
-                                        Executors.newSingleThreadExecutor();
-                                Handler deleteCurrentLayoutColumnsHandler = new Handler(
-                                        Looper.getMainLooper()
-                                );
-                                deleteCurrentLayoutColumnsExecutor.execute(() -> {
-                                    currentLayoutColumns.forEach(lc -> {
-                                        if (!configLayoutsAdapter.getLayoutColumnDataset().contains(lc)) {
-                                            vsViewModel.deleteLayoutColumn(lc);
-                                        }
-                                    });
-                                    deleteCurrentLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns deleted"));
-                                });
-
-                                ExecutorService saveLayoutColumnsExecutor =
-                                        Executors.newSingleThreadExecutor();
-                                Handler saveLayoutColumnsHandler = new Handler(
-                                        Looper.getMainLooper()
-                                );
-                                saveLayoutColumnsExecutor.execute(() -> {
-                                    configLayoutsAdapter.getLayoutColumnDataset().forEach(lc -> {
-                                        if (currentLayoutColumns.contains(lc)) {
-                                            vsViewModel.updateLayoutColumn(lc);
-                                        } else {
-                                            vsViewModel.insertLayoutColumn(lc);
-                                        }
-                                    });
-                                    saveLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns saved."));
-                                });
-                            });
-                        });
-                    });
-                });
             } else {
                 //Create new layout
-                Layout newLayout = new Layout(
+                selectedLayout = new Layout(
                         currentUser.getUid(),
                         layoutNameEditText.getText().toString(),
                         layoutExportCodeEditText.getText().toString(),
                         commentRequiredSwitch.isChecked(),
                         pictureRequireSwitch.isChecked()
                 );
-
-                ExecutorService createLayoutExecutor = Executors.newSingleThreadExecutor();
-                Handler createLayoutHandler = new Handler(Looper.getMainLooper());
-                createLayoutExecutor.execute(() -> {
-                    long uid = vsViewModel.insertLayout(newLayout);
-                    newLayout.setUid(uid);
-                    createLayoutHandler.post(() -> {
-                        layoutSpinnerAdapter.add(newLayout);
-
-                        selectedLayout = newLayout;
-
-                        layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
-                        layoutNameEditText.clearFocus();
-                        layoutExportCodeEditText.clearFocus();
-
-                        String message = "Created layout: " + newLayout.getName();
-                        LOG.info(message);
-                        vdtsApplication.displayToast(this, message);
-                    });
-                });
             }
-        } else {
-            String message = "Layout must have a name and export code";
-            LOG.info(message);
-            YoYo.with(Techniques.Shake)
-                    .duration(SHAKE_DURATION)
-                    .repeat(SHAKE_REPEAT)
-                    .playOn(layoutNameEditText);
-            YoYo.with(Techniques.Shake)
-                    .duration(SHAKE_DURATION)
-                    .repeat(SHAKE_REPEAT)
-                    .playOn(layoutExportCodeEditText);
-            vdtsApplication.displayToast(this, message);
+
+            if (isValidLayout(selectedLayout)) {
+                if (selectedLayout.getUid() >= 1) {
+                    ExecutorService updateLayoutExecutor = Executors.newSingleThreadExecutor();
+                    Handler updateLayoutHandler = new Handler(Looper.getMainLooper());
+                    updateLayoutExecutor.execute(() -> {
+                        vsViewModel.updateLayout(selectedLayout);
+                        updateLayoutHandler.post(() -> {
+                            String message = "Updated layout: " + selectedLayout.getName();
+                            LOG.info(message);
+                            vdtsApplication.displayToast(this, message);
+
+                            layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
+                            layoutSpinnerAdapter.notifyDataSetChanged();
+
+                            ExecutorService getCurrentLayoutColumnsExecutor =
+                                    Executors.newSingleThreadExecutor();
+                            Handler getCurrentLayoutColumnsHandler = new Handler(
+                                    Looper.getMainLooper()
+                            );
+                            getCurrentLayoutColumnsExecutor.execute(() -> {
+                                List<LayoutColumn> currentLayoutColumns =
+                                        vsViewModel.findAllLayoutColumnsByLayout(selectedLayout);
+                                getCurrentLayoutColumnsHandler.post(() -> {
+                                    ExecutorService deleteCurrentLayoutColumnsExecutor =
+                                            Executors.newSingleThreadExecutor();
+                                    Handler deleteCurrentLayoutColumnsHandler = new Handler(
+                                            Looper.getMainLooper()
+                                    );
+                                    deleteCurrentLayoutColumnsExecutor.execute(() -> {
+                                        currentLayoutColumns.forEach(lc -> {
+                                            if (!configLayoutsAdapter.getLayoutColumnDataset().contains(lc)) {
+                                                vsViewModel.deleteLayoutColumn(lc);
+                                            }
+                                        });
+                                        deleteCurrentLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns deleted"));
+                                    });
+
+                                    ExecutorService saveLayoutColumnsExecutor =
+                                            Executors.newSingleThreadExecutor();
+                                    Handler saveLayoutColumnsHandler = new Handler(
+                                            Looper.getMainLooper()
+                                    );
+                                    saveLayoutColumnsExecutor.execute(() -> {
+                                        configLayoutsAdapter.getLayoutColumnDataset().forEach(lc -> {
+                                            if (currentLayoutColumns.contains(lc)) {
+                                                vsViewModel.updateLayoutColumn(lc);
+                                            } else {
+                                                vsViewModel.insertLayoutColumn(lc);
+                                            }
+                                        });
+                                        saveLayoutColumnsHandler.post(() -> LOG.debug("Layout Columns saved."));
+                                    });
+                                });
+                            });
+                        });
+                    });
+                } else {
+                    Layout newLayout = new Layout(selectedLayout);
+                    ExecutorService createLayoutExecutor = Executors.newSingleThreadExecutor();
+                    Handler createLayoutHandler = new Handler(Looper.getMainLooper());
+                    createLayoutExecutor.execute(() -> {
+                        long uid = vsViewModel.insertLayout(newLayout);
+                        newLayout.setUid(uid);
+                        createLayoutHandler.post(() -> {
+                            layoutSpinnerAdapter.add(newLayout);
+
+                            selectedLayout = newLayout;
+
+                            layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(newLayout));
+                            layoutNameEditText.clearFocus();
+                            layoutExportCodeEditText.clearFocus();
+
+                            String message = "Created layout: " + newLayout.getName();
+                            LOG.info(message);
+                            vdtsApplication.displayToast(this, message);
+                        });
+                    });
+                }
+            }
         }
     }
 
@@ -662,6 +654,70 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                 );
             }
         }
+    }
+
+    /**
+     * Check if the layout is unique, has a name, and export code.
+     * @param layout - The layout to be checked.
+     * @return - True if valid.
+     */
+    private boolean isValidLayout(Layout layout) {
+        if (layout.getName().isEmpty()) {
+            LOG.info("Invalid layout - no name");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutNameEditText);
+            vdtsApplication.displayToast(
+                    this,
+                    "A layout must have a name"
+            );
+            return false;
+        }
+
+        if (layout.getExportCode().isEmpty()) {
+            LOG.info("Invalid layout - no export code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutExportCodeEditText);
+            vdtsApplication.displayToast(
+                    this,
+                    "A layout must have an export code"
+            );
+        }
+
+        if (layoutList.stream()
+                .anyMatch(layout1 -> layout.getUid() != layout1.getUid() &&
+                        layout1.getName().equalsIgnoreCase(layout.getName()))) {
+            LOG.info("Invalid layout - non-unique name");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutNameEditText);
+            vdtsApplication.displayToast(
+                    this,
+                    "A layout must have a unique name"
+            );
+            return false;
+        }
+
+        if (layoutList.stream()
+                .anyMatch(layout1 -> layout.getUid() != layout1.getUid() &&
+                        layout1.getExportCode().equalsIgnoreCase(layout.getExportCode()))) {
+            LOG.info("Invalid layout - non-unique export code");
+            YoYo.with(Techniques.Shake)
+                    .duration(SHAKE_DURATION)
+                    .repeat(SHAKE_REPEAT)
+                    .playOn(layoutExportCodeEditText);
+            vdtsApplication.displayToast(
+                    this,
+                    "A layout must have a unique export code"
+            );
+            return false;
+        }
+
+        return true;
     }
 
     public void openFilePicker() {

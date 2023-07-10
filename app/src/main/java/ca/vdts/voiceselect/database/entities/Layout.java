@@ -121,6 +121,10 @@ public class Layout implements VDTSIndexedNamedInterface {
         );
     }
 
+    public Layout(Layout other){
+        this(other.getUid(),other.getUserID(),other.getCreatedDate(),other.getName(),other.getExportCode(),other.isCommentRequired(),other.isPictureRequired(),other.isActive());
+    }
+
     public long getUid() {
         return uid;
     }
