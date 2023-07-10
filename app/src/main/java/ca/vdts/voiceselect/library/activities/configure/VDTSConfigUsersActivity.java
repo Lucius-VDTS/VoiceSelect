@@ -685,29 +685,25 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             updateCurrentUser();
                             vdtsApplication.displayToast(
                                     this,
-                                    "Users imported successfully",
-                                    Toast.LENGTH_SHORT
+                                    "Users imported successfully"
                             );
                         } else {
                             vdtsApplication.displayToast(
                                     this,
-                                    "Error importing users",
-                                    Toast.LENGTH_SHORT
+                                    "Error importing users"
                             );
                         }
                     } else {
                         vdtsApplication.displayToast(
                                 this,
-                                "User file not found",
-                                Toast.LENGTH_SHORT
+                                "User file not found"
                         );
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     vdtsApplication.displayToast(
                             this,
-                            "User file not found",
-                            Toast.LENGTH_SHORT
+                            "User file not found"
                     );
                 }
             }

@@ -1,9 +1,5 @@
 package ca.vdts.voiceselect.activities.configure;
 
-import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
-import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
-import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
-import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
@@ -20,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -699,29 +694,25 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
                             vdtsApplication.displayToast(
                                     this,
-                                    "Layouts imported successfully",
-                                    LENGTH_SHORT
+                                    "Layouts imported successfully"
                             );
                         } else {
                             vdtsApplication.displayToast(
                                     this,
-                                    "Error importing layouts",
-                                    LENGTH_SHORT
+                                    "Error importing layouts"
                             );
                         }
                     } else {
                         vdtsApplication.displayToast(
                                 this,
-                                "Layout file not found",
-                                LENGTH_SHORT
+                                "Layout file not found"
                         );
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     vdtsApplication.displayToast(
                             this,
-                            "Layout file not found",
-                            Toast.LENGTH_SHORT
+                            "Layout file not found"
                     );
                 }
             }

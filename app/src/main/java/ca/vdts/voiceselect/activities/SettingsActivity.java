@@ -295,29 +295,25 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
                             vdtsApplication.displayToast(
                                     this,
-                                    "Settings imported successfully",
-                                    Toast.LENGTH_SHORT
+                                    "Settings imported successfully"
                             );
                         } else {
                             vdtsApplication.displayToast(
                                     this,
-                                    "Error importing settings",
-                                    Toast.LENGTH_SHORT
+                                    "Error importing settings"
                             );
                         }
                     } else {
                         vdtsApplication.displayToast(
                                 this,
-                                "Setting file not found",
-                                Toast.LENGTH_SHORT
+                                "Setting file not found"
                         );
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     vdtsApplication.displayToast(
                             this,
-                            "Settings file not found",
-                            Toast.LENGTH_SHORT
+                            "Settings file not found"
                     );
                 }
             }

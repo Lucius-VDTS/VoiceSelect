@@ -6,7 +6,7 @@ import static android.Manifest.permission.CAMERA;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
-import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.LENGTH_LONG;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_XLSX;
@@ -1018,20 +1018,17 @@ public class DataGatheringActivity extends AppCompatActivity
         if (commentIssue && pictureIssue){
             vdtsApplication.displayToast(
                     this,
-                    "This entry requires a comment and a picture.",
-                    0
+                    "This entry requires a comment and a picture."
             );
         } else if (commentIssue){
             vdtsApplication.displayToast(
                     this,
-                    "This entry requires a comment.",
-                    0
+                    "This entry requires a comment."
             );
         } else if (pictureIssue){
             vdtsApplication.displayToast(
                     this,
-                    "This entry requires a picture.",
-                    0
+                    "This entry requires a picture."
             );
         } else {
             if (currentEntry.getUid() > 0) {
@@ -1259,21 +1256,18 @@ public class DataGatheringActivity extends AppCompatActivity
             if (exporter.exportMedia(session)) {
                 vdtsApplication.displayToast(
                         this,
-                        "Session exported successfully",
-                        0
+                        "Session exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting session photos",
-                        0
+                        "Error exporting session photos"
                 );
             }
         } else {
             vdtsApplication.displayToast(
                     this,
-                    "Error exporting session",
-                    0
+                    "Error exporting session"
             );
         }
     }

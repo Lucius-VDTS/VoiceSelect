@@ -799,8 +799,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                             vdtsApplication.displayToast(
                                     this,
-                                    "Setup imported successfully",
-                                    Toast.LENGTH_SHORT
+                                    "Setup imported successfully"
                             );
 
                             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -817,23 +816,20 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         } else {
                             vdtsApplication.displayToast(
                                     this,
-                                    "Error importing Setup",
-                                    Toast.LENGTH_SHORT
+                                    "Error importing Setup"
                             );
                         }
                     } else {
                         vdtsApplication.displayToast(
                                 this,
-                                "Setup file not found",
-                                Toast.LENGTH_SHORT
+                                "Setup file not found"
                         );
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     vdtsApplication.displayToast(
                             this,
-                            "Setup file not found",
-                            Toast.LENGTH_SHORT
+                            "Setup file not found"
                     );
                 }
             }
