@@ -1014,7 +1014,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private void saveEntryButtonOnClick() {
         if (currentEntry == null) newEntry();
         boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotos.isEmpty();
-        boolean commentIssue = currentEntry.getComment() == null || currentEntry.getComment().isEmpty();
+        boolean commentIssue = currentSession.isCommentRequired() &&
+                (currentEntry.getComment() == null || currentEntry.getComment().isEmpty());
         if (commentIssue && pictureIssue){
             vdtsApplication.displayToast(
                     this,
