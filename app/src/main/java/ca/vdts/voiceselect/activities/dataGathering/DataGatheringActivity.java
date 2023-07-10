@@ -502,6 +502,7 @@ public class DataGatheringActivity extends AppCompatActivity
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
             columnValueMap.clear();
+            columnValueSpokenMap.clear();
             for (int index = 0; index < columnMap.size(); index++) {
                 columnValueMap.put(
                         index,
@@ -512,7 +513,9 @@ public class DataGatheringActivity extends AppCompatActivity
 
                 columnValueSpokenMap.put(
                         index,
-                        vsViewModel.findAllColumnValueSpokensByUser(currentUser.getUid())
+                        vsViewModel.findAllColumnValueSpokensByColumnAndUser(
+                                Objects.requireNonNull(columnMap.get(index)).getUid(),
+                                currentUser.getUid())
                 );
             }
 
@@ -601,6 +604,10 @@ public class DataGatheringActivity extends AppCompatActivity
                         dataGatheringRecyclerAdapter.getItemCount() + 1
                 )
         );
+
+        if (isHeadsetAvailable) {
+            initializeIristickEntryGrammar();
+        }
     }
 
     /**
@@ -1580,6 +1587,7 @@ public class DataGatheringActivity extends AppCompatActivity
         });
 
         initializeIristickVoiceCommands();
+//        initializeIristickEntryGrammar();
         initializeIristickCameraGrammar(headset);
     }
 
@@ -1587,8 +1595,123 @@ public class DataGatheringActivity extends AppCompatActivity
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
+                vc -> vc.add("End Session", this::endSessionButtonOnClick)
+        );
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
                 vc -> vc.add("Navigate Back", this::finish)
         );
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void initializeIristickEntryGrammar() {
+        if (isHeadsetAvailable) {
+            //Step By Step
+            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+                vg.addAlternativeGroup(stepped -> {
+                    //First entry value in row
+                    stepped.addAlternativeGroup(start -> {
+                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
+                        if (columnValueSpokenList != null) {
+                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                start.addToken(columnValueSpoken.getSpoken());
+                            }
+                        }
+
+                        start.addToken("Skip");
+                        start.addToken("Delete Last");
+                        start.addToken("Repeat Entry");
+                        start.addToken("End Session");
+                    });
+
+                    //Rest of entry values in row
+                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
+                        int finalIndex = index;
+                        stepped.addAlternativeGroup(middle -> {
+                            List<ColumnValueSpoken> columnValueSpokenList =
+                                    columnValueSpokenMap.get(finalIndex);
+                            if (columnValueSpokenList != null) {
+                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                                    middle.addToken(columnValueSpoken.getSpoken());
+                                }
+                            }
+
+                            middle.addToken("Skip");
+                            middle.addToken("Reset Entry");
+                        });
+                    }
+
+                    //End of row
+                    stepped.addAlternativeGroup(end -> {
+                        end.addToken("Make Comment");
+                        end.addToken("Open Camera");
+                        end.addToken("Reset Entry");
+                        end.addToken("Save Entry");
+                    });
+                });
+
+                //todo - need another alternative group based on whether comments/photos are required before saving
+
+                vg.setListener(((recognizer, tokens, tags) -> {
+                    //todo - stuff based on tokens
+                    String test = tokens[0];
+                }));
+            });
+
+            //Chained
+//            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+//                vg.addSequentialGroup(sg -> {
+//                    //First entry value in row
+//                    sg.addAlternativeGroup(start -> {
+//                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
+//                        if (columnValueSpokenList != null) {
+//                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+//                                start.addToken(columnValueSpoken.getSpoken());
+//                            }
+//                        }
+//
+//                        start.addToken("Skip");
+//                        start.addToken("Delete Last");
+//                        start.addToken("Repeat Entry");
+//                        start.addToken("End Session");
+//                    });
+//
+//                    //Rest of entry values in row
+//                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
+//                        int finalIndex = index;
+//                        sg.addAlternativeGroup(middle -> {
+//                            List<ColumnValueSpoken> columnValueSpokenList =
+//                                    columnValueSpokenMap.get(finalIndex);
+//                            if (columnValueSpokenList != null) {
+//                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+//                                    middle.addToken(columnValueSpoken.getSpoken());
+//                                }
+//                            }
+//
+//                            middle.addToken("Skip");
+//                            middle.addToken("Reset Entry");
+//                        });
+//                    }
+//
+//                    //End of row
+//                    sg.addAlternativeGroup(end -> {
+//                        end.addToken("Make Comment");
+//                        end.addToken("Open Camera");
+//                        end.addToken("Reset Entry");
+//                        end.addToken("Save Entry");
+//                    });
+//
+//                    //todo - need another alternative group based on whether comments/photos are required before saving
+//                });
+//
+//                vg.setListener(((recognizer, tokens, tags) -> {
+//                    //todo - stuff based on tokens
+//                    String test = tokens[0];
+//                }));
+//            });
+        }
     }
 
     @OptIn(markerClass = Experimental.class)
@@ -1694,63 +1817,6 @@ public class DataGatheringActivity extends AppCompatActivity
                     if (iriCameraSession != null) { takeIriPicture(); }
                 })
         );
-    }
-
-    @OptIn(markerClass = Experimental.class)
-    private void initializeIristickEntryGrammar() {
-        if (isHeadsetAvailable) {
-            //Step By Step Entry
-            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
-                vg.addSequentialGroup(sg -> {
-                    //First entry value in row
-                    sg.addAlternativeGroup(start -> {
-                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
-                        if (columnValueSpokenList != null) {
-                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                                start.addToken(columnValueSpoken.getSpoken());
-                            }
-                        }
-
-                        start.addToken("Skip");
-                        start.addToken("Delete Last");
-                        start.addToken("Repeat Entry");
-                        start.addToken("End Session");
-                    });
-
-                    //Rest of entry values in row
-                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
-                        int finalIndex = index;
-                        sg.addAlternativeGroup(middle -> {
-                            List<ColumnValueSpoken> columnValueSpokenList =
-                                    columnValueSpokenMap.get(finalIndex);
-                            if (columnValueSpokenList != null) {
-                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                                    middle.addToken(columnValueSpoken.getSpoken());
-                                }
-                            }
-
-                            middle.addToken("Skip");
-                            middle.addToken("Reset Entry");
-                        });
-                    }
-
-                    //End of row
-                    sg.addAlternativeGroup(end -> {
-                        end.addToken("Make Comment");
-                        end.addToken("Open Camera");
-                        end.addToken("Reset Entry");
-                        end.addToken("Save Entry");
-                    });
-
-                    //todo - need another alternative group based on whether comments/photos are required before saving
-                });
-
-                vg.setListener(((recognizer, tokens, tags) -> {
-                    //todo - stuff based on tokens
-                    String test = tokens[0];
-                }));
-            });
-        }
     }
 
     private void updateIristickHUD() {

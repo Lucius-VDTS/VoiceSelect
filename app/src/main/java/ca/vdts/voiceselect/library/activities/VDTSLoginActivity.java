@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -141,6 +140,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     private void userAdapterSelect(Integer index) {
         userAdapter.setSelectedEntity(index);
         currentUser = userAdapter.getSelectedEntity();
+
         inputPIN();
     }
 
@@ -263,8 +263,9 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                 executor.execute(() -> {
                     currentUser = vdtsViewModel.findUserByName(userName[0]);
                     handler.post(() -> {
-                        if (!Objects.equals(currentUser.getPassword(), "")) {
+                        if (currentUser.getPassword() != null) {
                             iristickHUD.selectUserPrompt.setVisibility(View.INVISIBLE);
+
                             initializeIristickInputPIN();
                         } else {
                             vdtsApplication.setCurrentUser(currentUser);

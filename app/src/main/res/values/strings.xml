@@ -110,8 +110,8 @@
     <string name="user_export_code_label">Code</string>
     <string name="user_export_code_value">Enter export code</string>
 
-    <string name="user_password_label">Password</string>
-    <string name="user_password_value">Enter admin password</string>
+    <string name="user_password_label">PIN</string>
+    <string name="user_password_value">Enter PIN</string>
     <string name="user_admin_Label">Admin</string>
     <string name="user_primary_Label">Default\nSpoken</string>
 
