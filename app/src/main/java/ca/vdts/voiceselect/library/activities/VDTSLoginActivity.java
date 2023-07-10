@@ -202,10 +202,11 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                         .duration(SHAKE_DURATION)
                         .repeat(SHAKE_REPEAT)
                         .playOn(userRecyclerView);
+
                 vdtsApplication.displayToast(
                         vdtsApplication.getApplicationContext(),
-                        "User Password: " + currentUser.getName() + " invalid",
-                        0);
+                        "User Password: " + currentUser.getName() + " invalid"
+                );
             }
         } else if (currentUser.getPassword().equals(iristickHUD.enterPINValue.getText().toString().trim())) {
             vdtsApplication.setCurrentUser(currentUser);

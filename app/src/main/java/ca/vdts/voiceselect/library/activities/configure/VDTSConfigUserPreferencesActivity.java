@@ -208,18 +208,19 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
             LOG.info("Feedback settings saved for: {}", currentUser.getName());
             vdtsApplication.displayToast(
                     this,
-                    "Preferences saved for: " + currentUser.getName(),
-                    0);
+                    "Preferences saved for: " + currentUser.getName()
+            );
         } catch (Exception e) {
             YoYo.with(Techniques.Shake)
                     .duration(SHAKE_DURATION)
                     .repeat(SHAKE_REPEAT)
                     .playOn(saveFeedbackButton);
+
+            LOG.error("{}: Unable to save preferences for {}", e, currentUser.getName());
             vdtsApplication.displayToast(
                     this,
-                    "Unable to save preferences for: " + currentUser.getName(),
-                    0);
-            LOG.error("{}: Unable to save preferences for {}", e, currentUser.getName());
+                    "Unable to save preferences for: " + currentUser.getName()
+            );
         }
     }
 

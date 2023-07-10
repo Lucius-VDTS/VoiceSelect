@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -196,8 +195,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     .playOn(settingsImportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can export columns"
             );
         } else {
            showImportDialog();
@@ -248,21 +246,18 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
                     vdtsApplication.displayToast(
                             this,
-                            "Settings imported successfully",
-                            Toast.LENGTH_SHORT
+                            "Settings imported successfully"
                     );
                 } else {
                     vdtsApplication.displayToast(
                             this,
-                            "Error importing settings",
-                            Toast.LENGTH_SHORT
+                            "Error importing settings"
                     );
                 }
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Setting file not found",
-                        Toast.LENGTH_SHORT
+                        "Setting file not found"
                 );
             }
         });
@@ -278,8 +273,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                     .playOn(settingsExportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can export columns"
             );
         } else {
             final VSViewModel viewModel = new ViewModelProvider(this).get(VSViewModel.class);
@@ -293,14 +287,12 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
             if (exporter.exportOptions()) {
                 vdtsApplication.displayToast(
                         this,
-                        "Options exported successfully",
-                        Toast.LENGTH_SHORT
+                        "Options exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting options",
-                        Toast.LENGTH_SHORT
+                        "Error exporting options"
                 );
             }
         }

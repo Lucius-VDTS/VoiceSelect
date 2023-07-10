@@ -3,8 +3,6 @@ package ca.vdts.voiceselect.activities.dataGathering;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.TextureView;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,7 +15,6 @@ import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.camera.IRICamera;
-import com.iristick.sdk.camera.IRICameraAFMode;
 import com.iristick.sdk.camera.IRICameraProfile;
 import com.iristick.sdk.camera.IRICameraSession;
 import com.iristick.sdk.camera.IRICameraType;
@@ -40,7 +37,6 @@ public class IristickCameraActivity extends AppCompatActivity implements IRIList
 
     //Views
     private TextureView cameraPreview;
-    private ImageButton takePhotoButton;
 
     private IRICamera iriCamera;
     private IRICameraSession iriCameraSession;
@@ -55,13 +51,6 @@ public class IristickCameraActivity extends AppCompatActivity implements IRIList
         IristickSDK.registerListener(this.getLifecycle(), this);
 
         cameraPreview = findViewById(R.id.cameraPreview);
-
-        takePhotoButton = findViewById(R.id.takePhotoButton);
-        takePhotoButton.setOnClickListener(this::takePhotoButtonOnClick);
-    }
-
-    private void takePhotoButtonOnClick(View view) {
-        takeIriPicture();
     }
 
     @Override
@@ -108,7 +97,6 @@ public class IristickCameraActivity extends AppCompatActivity implements IRIList
                 getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic -> {
                     ic.addOutput(cameraPreview);
                     ic.addOutput(iristickHUD.cameraPreviewHUD);
-                    ic.setAFMode(IRICameraAFMode.CONTINUOUS_PICTURE);
                 });
     }
 

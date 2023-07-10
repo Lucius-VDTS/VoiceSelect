@@ -5,255 +5,260 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!--  Columns  -->
-    <LinearLayout
-        android:id="@+id/columnLayout"
+    <!--  Camera Preview  -->
+    <TextureView
+        android:id="@+id/iriCameraPreview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintVertical_weight="1"
-        android:layout_marginStart="@dimen/margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:layout_marginTop="@dimen/margin"
+        android:layout_margin="@dimen/margin"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/entryLayout">
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <TextView
-            android:id="@+id/columnIndexLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:text="@string/data_gathering_index_label"
-            android:textColor="#ffffff">
-        </TextView>
-
-        <TextView
-            android:id="@+id/columnLastLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff">
-        </TextView>
-
-        <TextView
-            android:id="@+id/columnNextLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff">
-        </TextView>
-
-        <TextView
-            android:id="@+id/columnCommentLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:text="@string/data_gathering_comment_label">
-        </TextView>
-
-        <TextView
-            android:id="@+id/columnPhotoLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:text="@string/data_gathering_photo_label">
-        </TextView>
-    </LinearLayout>
-
-    <!--  Entries  -->
-    <LinearLayout
-        android:id="@+id/entryLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintVertical_weight="1"
-        android:layout_marginStart="@dimen/margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:layout_marginTop="@dimen/margin"
-        android:layout_marginBottom="@dimen/margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/columnLayout"
-        app:layout_constraintBottom_toTopOf="@id/sessionLayout">
-
-        <TextView
-            android:id="@+id/entryIndexValue"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="#ffffff">
-        </TextView>
-
-        <TextView
-            android:id="@+id/entryValueLast"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="#ffffff">
-        </TextView>
-
-        <TextView
-            android:id="@+id/entryValueNext"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/spinner_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="@color/black">
-        </TextView>
-
-<!--        <TextView-->
-<!--            android:id="@+id/entryValueComment"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="0.6"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_marginEnd="@dimen/margin"-->
-<!--            android:padding="@dimen/half_padding"-->
-<!--            android:background="@drawable/text_background"-->
-<!--            android:textSize="@dimen/xxs_text_size"-->
-<!--            android:textColor="#ffffff">-->
-<!--        </TextView>-->
-
-        <CheckBox
-            android:id="@+id/entryValueComment"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:layout_marginEnd="@dimen/margin"
-            android:background="@drawable/text_background"
-            android:clickable="false">
-        </CheckBox>
-
-        <TextView
-            android:id="@+id/entryValuePhoto"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:gravity="center"
-            android:padding="@dimen/half_padding"
-            android:background="@drawable/text_background"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="#ffffff">
-        </TextView>
-    </LinearLayout>
-
-    <!--  Session Footer  -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/sessionLayout"
+        android:id="@+id/dataGatheringView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintVertical_weight="0.5"
-        android:layout_marginStart="@dimen/margin"
-        android:layout_marginEnd="@dimen/margin"
-        android:layout_marginBottom="@dimen/margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/entryLayout"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/sessionLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="1"
-            android:gravity="center_vertical"
-            android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_session_label"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            app:layout_constraintStart_toStartOf="@id/sessionLayout"
-            app:layout_constraintEnd_toStartOf="@id/sessionValue">
-        </TextView>
-
-        <TextView
-            android:id="@+id/sessionValue"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="2"
-            android:gravity="center_vertical"
+        <!--  Columns  -->
+        <LinearLayout
+            android:id="@+id/columnLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintVertical_weight="1"
+            android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
-            android:padding="@dimen/half_padding"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            app:layout_constraintStart_toEndOf="@id/sessionLabel"
-            app:layout_constraintEnd_toStartOf="@id/sessionEntriesLabel">
-        </TextView>
+            android:layout_marginTop="@dimen/margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/entryLayout">
 
-        <TextView
-            android:id="@+id/sessionEntriesLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="0.9"
-            android:gravity="center_vertical|end"
-            android:padding="@dimen/half_padding"
-            android:text="@string/data_gathering_entries_label"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            app:layout_constraintStart_toEndOf="@id/sessionValue"
-            app:layout_constraintEnd_toStartOf="@id/sessionEntriesCount">
-        </TextView>
+            <TextView
+                android:id="@+id/columnIndexLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:text="@string/data_gathering_index_label"
+                android:textColor="#ffffff">
+            </TextView>
 
-        <TextView
-            android:id="@+id/sessionEntriesCount"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            app:layout_constraintHorizontal_weight="0.6"
-            android:gravity="center_vertical|end"
-            android:padding="@dimen/half_padding"
-            android:textSize="@dimen/xxs_text_size"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            app:layout_constraintStart_toEndOf="@id/sessionEntriesLabel"
-            app:layout_constraintEnd_toEndOf="parent">
-        </TextView>
+            <TextView
+                android:id="@+id/columnLastLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff">
+            </TextView>
+
+            <TextView
+                android:id="@+id/columnNextLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff">
+            </TextView>
+
+            <TextView
+                android:id="@+id/columnCommentLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:text="@string/data_gathering_comment_label">
+            </TextView>
+
+            <TextView
+                android:id="@+id/columnPhotoLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:text="@string/data_gathering_photo_label">
+            </TextView>
+        </LinearLayout>
+
+        <!--  Entries  -->
+        <LinearLayout
+            android:id="@+id/entryLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintVertical_weight="1"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/columnLayout"
+            app:layout_constraintBottom_toTopOf="@id/sessionLayout">
+
+            <TextView
+                android:id="@+id/entryIndexValue"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textColor="#ffffff">
+            </TextView>
+
+            <TextView
+                android:id="@+id/entryValueLast"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textColor="#ffffff">
+            </TextView>
+
+            <TextView
+                android:id="@+id/entryValueNext"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/spinner_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textColor="@color/black">
+            </TextView>
+
+            <CheckBox
+                android:id="@+id/entryValueComment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:layout_marginEnd="@dimen/margin"
+                android:background="@drawable/text_background"
+                android:clickable="false">
+            </CheckBox>
+
+            <TextView
+                android:id="@+id/entryValuePic"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:padding="@dimen/half_padding"
+                android:background="@drawable/text_background"
+                android:textSize="@dimen/xxs_text_size"
+                android:textColor="#ffffff">
+            </TextView>
+        </LinearLayout>
+
+        <!--  Session Footer  -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sessionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintVertical_weight="0.5"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/entryLayout"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/sessionLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintHorizontal_weight="1"
+                android:gravity="center_vertical"
+                android:padding="@dimen/half_padding"
+                android:text="@string/data_gathering_session_label"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                app:layout_constraintStart_toStartOf="@id/sessionLayout"
+                app:layout_constraintEnd_toStartOf="@id/sessionValue">
+            </TextView>
+
+            <TextView
+                android:id="@+id/sessionValue"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintHorizontal_weight="2"
+                android:gravity="center_vertical"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/half_padding"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                app:layout_constraintStart_toEndOf="@id/sessionLabel"
+                app:layout_constraintEnd_toStartOf="@id/sessionEntriesLabel">
+            </TextView>
+
+            <TextView
+                android:id="@+id/sessionEntriesLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintHorizontal_weight="0.9"
+                android:gravity="center_vertical|end"
+                android:padding="@dimen/half_padding"
+                android:text="@string/data_gathering_entries_label"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                app:layout_constraintStart_toEndOf="@id/sessionValue"
+                app:layout_constraintEnd_toStartOf="@id/sessionEntriesCount">
+            </TextView>
+
+            <TextView
+                android:id="@+id/sessionEntriesCount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintHorizontal_weight="0.6"
+                android:gravity="center_vertical|end"
+                android:padding="@dimen/half_padding"
+                android:textSize="@dimen/xxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                app:layout_constraintStart_toEndOf="@id/sessionEntriesLabel"
+                app:layout_constraintEnd_toEndOf="parent">
+            </TextView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

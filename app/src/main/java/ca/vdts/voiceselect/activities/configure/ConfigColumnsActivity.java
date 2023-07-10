@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -129,8 +128,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         .playOn(columnNameEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a column name",
-                        Toast.LENGTH_SHORT
+                        "Only an admin user can set a column name"
                 );
                 columnNameEditText.clearFocus();
             }
@@ -145,8 +143,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         .playOn(columnNameCodeEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin can set a column abbreviation",
-                        Toast.LENGTH_SHORT
+                        "Only an admin can set a column abbreviation"
                 );
                 columnNameCodeEditText.clearFocus();
             }
@@ -161,8 +158,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         .playOn(columnExportCodeEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin can set a column export code",
-                        Toast.LENGTH_SHORT
+                        "Only an admin can set a column export code"
                 );
                 columnExportCodeEditText.clearFocus();
             }
@@ -363,8 +359,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnNewButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create new columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can create new columns"
             );
         }
     }
@@ -405,8 +400,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                            .playOn(columnSaveButton);
                    vdtsApplication.displayToast(
                            this,
-                           "Invalid column spoken",
-                           Toast.LENGTH_SHORT
+                           "Invalid column spoken"
                    );
                }
                 clearSelection();
@@ -465,8 +459,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnDeleteButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can delete columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can delete columns"
             );
         }
     }
@@ -479,8 +472,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnImportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can import columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can import columns"
             );
         }else {
             showImportDialog();
@@ -528,8 +520,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
                     vdtsApplication.displayToast(
                             this,
-                            "Setup imported successfully",
-                            Toast.LENGTH_SHORT
+                            "Setup imported successfully"
                     );
 
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -546,15 +537,13 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                 } else {
                     vdtsApplication.displayToast(
                             this,
-                            "Error importing Setup",
-                            Toast.LENGTH_SHORT
+                            "Error importing Setup"
                     );
                 }
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Setup file not found",
-                        Toast.LENGTH_SHORT
+                        "Setup file not found"
                 );
             }
         });
@@ -570,8 +559,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnExportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can export columns"
             );
         } else {
             LOG.debug("Starting export");
@@ -579,19 +567,16 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     vsViewModel,
                     vdtsApplication,
                     this
-                    //saver
             );
             if (exporter.exportSetup()) {
                 vdtsApplication.displayToast(
                         this,
-                        "Columns exported successfully",
-                        Toast.LENGTH_SHORT
+                        "Columns exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting columns",
-                        Toast.LENGTH_SHORT
+                        "Error exporting columns"
                 );
             }
         }
@@ -611,8 +596,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnNameEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have a name",
-                    Toast.LENGTH_SHORT
+                    "A column must have a name"
             );
             return false;
         }
@@ -625,8 +609,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnNameCodeEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have an abbreviation,",
-                    Toast.LENGTH_SHORT
+                    "A column must have an abbreviation,"
             );
             return false;
         }
@@ -639,8 +622,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnExportCodeEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have an export code",
-                    Toast.LENGTH_SHORT
+                    "A column must have an export code"
             );
         }
 
@@ -654,8 +636,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnNameEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have a unique name",
-                    Toast.LENGTH_SHORT
+                    "A column must have a unique name"
             );
             return false;
         }
@@ -670,8 +651,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnNameCodeEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have a unique abbreviation",
-                    Toast.LENGTH_SHORT
+                    "A column must have a unique abbreviation"
             );
             return false;
         }
@@ -686,8 +666,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnExportCodeEditText);
             vdtsApplication.displayToast(
                     this,
-                    "A column must have a unique export code",
-                    Toast.LENGTH_SHORT
+                    "A column must have a unique export code"
             );
             return false;
         }
@@ -714,8 +693,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                                     .playOn(columnSpokenEditText);
                             vdtsApplication.displayToast(
                                     this,
-                                    "Column's spokens must be unique",
-                                    Toast.LENGTH_SHORT
+                                    "Column's spokens must be unique"
                             );
                             return false;
                         }
@@ -729,8 +707,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                                         .playOn(columnSpokenEditText);
                                 vdtsApplication.displayToast(
                                         this,
-                                        "Column's spokens contain a reserved word",
-                                        Toast.LENGTH_SHORT
+                                        "Column's spokens contain a reserved word"
                                 );
                                 return false;
                             }
@@ -747,8 +724,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnSpokenEditText);
             vdtsApplication.displayToast(
                     this,
-                    "Column must have a spoken term",
-                    Toast.LENGTH_SHORT
+                    "Column must have a spoken term"
             );
             return false;
         }

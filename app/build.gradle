@@ -46,7 +46,7 @@ dependencies {
 
     //The following dependencies were added after the application was created
     //Iristick
-    implementation 'com.iristick.android:iristick-sdk-trial:2.3'               //Original - 'com.iristick.android:iristick-sdk-trial:2.1'
+    implementation 'com.iristick.android:iristick-sdk-trial:2.4'                    //Original - 'com.iristick.android:iristick-sdk-trial:2.1'
 
     //Logging
     implementation 'org.slf4j:slf4j-api:1.7.36'                                     //Original - 'org.slf4j:slf4j-api:1.7.36'

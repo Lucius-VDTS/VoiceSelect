@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -121,8 +120,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         .playOn(userNameEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Must be an admin user to modify",
-                        Toast.LENGTH_SHORT
+                        "Must be an admin user to modify"
                 );
                 userNameEditText.clearFocus();
             }
@@ -137,8 +135,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         .playOn(userPrefixEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Must be an admin user to modify",
-                        Toast.LENGTH_SHORT
+                        "Must be an admin user to modify"
                 );
                 userPrefixEditText.clearFocus();
             }
@@ -153,8 +150,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         .playOn(userExportCodeEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Must be an admin user to modify",
-                        Toast.LENGTH_SHORT
+                        "Must be an admin user to modify"
                 );
                 userExportCodeEditText.clearFocus();
             }
@@ -173,8 +169,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         .playOn(userAdminSwitch);
                 vdtsApplication.displayToast(
                         this,
-                        "Must be an admin user to modify",
-                        Toast.LENGTH_SHORT
+                        "Must be an admin user to modify"
                 );
             }
         });
@@ -190,8 +185,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         .playOn(userPrimarySwitch);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can change the default spoken value",
-                        Toast.LENGTH_SHORT
+                        "Only an admin user can change the default spoken value"
                 );
             }
         });
@@ -315,8 +309,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     .playOn(newUserButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create a new user",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can create a new user"
             );
         }
     }
@@ -366,8 +359,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         LOG.info("Updated user: {}", user.getName());
                         vdtsApplication.displayToast(
                                 this,
-                                "Updated user: " + user.getName(),
-                                Toast.LENGTH_SHORT
+                                "Updated user: " + user.getName()
                         );
 
                         handler.post(() -> userAdapter.updateEntity(user));
@@ -380,8 +372,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             .playOn(saveUserButton);
                     vdtsApplication.displayToast(
                             this,
-                            "Unable to update user",
-                            Toast.LENGTH_SHORT
+                            "Unable to update user"
                     );
                 }
             } else {
@@ -455,8 +446,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             .playOn(saveUserButton);
                     vdtsApplication.displayToast(
                             this,
-                            "User does not meet requirements",
-                            Toast.LENGTH_SHORT
+                            "User does not meet requirements"
                     );
                 }
             }
@@ -468,8 +458,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     .playOn(saveUserButton);
             vdtsApplication.displayToast(
                     this,
-                    "Save user failed - admin/default spoken must exist",
-                    Toast.LENGTH_SHORT
+                    "Save user failed - admin/default spoken must exist"
             );
 
             resetUserButtonOnClick();
@@ -500,8 +489,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                             .playOn(deleteUserButton);
                     vdtsApplication.displayToast(
                             this,
-                            "Delete user failed - admin/default spoken must exist",
-                            Toast.LENGTH_SHORT
+                            "Delete user failed - admin/default spoken must exist"
                     );
 
                     resetUserButtonOnClick();
@@ -514,8 +502,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     .playOn(deleteUserButton);
             vdtsApplication.displayToast(
                     vdtsApplication,
-                    "Only an admin user can delete a user",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can delete a user"
             );
         }
     }
@@ -528,8 +515,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     .playOn(importButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can import users",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can import users"
             );
         }else {
             showImportDialog();
@@ -581,21 +567,18 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     updateCurrentUser();
                     vdtsApplication.displayToast(
                             this,
-                            "Users imported successfully",
-                            Toast.LENGTH_SHORT
+                            "Users imported successfully"
                     );
                 } else {
                     vdtsApplication.displayToast(
                             this,
-                            "Error importing users",
-                            Toast.LENGTH_SHORT
+                            "Error importing users"
                     );
                 }
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "User file not found",
-                        Toast.LENGTH_SHORT
+                        "User file not found"
                 );
             }
         });
@@ -611,8 +594,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     .playOn(exportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export users",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can export users"
             );
         }else {
             final Exporter exporter = new Exporter(
@@ -624,14 +606,12 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             if (exporter.exportUsers()) {
                 vdtsApplication.displayToast(
                         this,
-                        "Users exported successfully",
-                        Toast.LENGTH_SHORT
+                        "Users exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting users",
-                        Toast.LENGTH_SHORT
+                        "Error exporting users"
                 );
             }
         }

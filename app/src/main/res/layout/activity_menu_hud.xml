@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/four_x_margin"
+        android:layout_marginTop="@dimen/ten_margin"
         android:layout_marginStart="@dimen/four_x_margin"
         android:layout_marginEnd="@dimen/four_x_margin"
         app:layout_constraintTop_toTopOf="parent"
@@ -73,6 +73,21 @@
     </TextView>
 
     <TextView
+        android:id="@+id/recallLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginStart="@dimen/sixteen_x_margin"
+        android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:textSize="@dimen/xxs_text_size"
+        android:textColor="#ffffff"
+        android:text="@string/menu_recall_activity_button"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/resumeLabel">
+    </TextView>
+
+    <TextView
         android:id="@+id/configureLabel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -84,7 +99,7 @@
         android:textColor="#ffffff"
         android:text="@string/menu_configure_activity_button"
         android:background="@drawable/button_background"
-        app:layout_constraintTop_toBottomOf="@id/resumeLabel">
+        app:layout_constraintTop_toBottomOf="@id/recallLabel">
     </TextView>
 
     <TextView

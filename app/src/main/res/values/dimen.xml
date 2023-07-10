@@ -4,6 +4,8 @@
     <dimen name="half_margin">2dp</dimen>
     <dimen name="margin">4dp</dimen>
     <dimen name="double_margin">8dp</dimen>
+    <dimen name="ten_margin">10dp</dimen>
+    <dimen name="three_x_margin">12dp</dimen>
     <dimen name="four_x_margin">16dp</dimen>
     <dimen name="eight_x_margin">32dp</dimen>
     <dimen name="sixteen_x_margin">64dp</dimen>

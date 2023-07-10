@@ -189,9 +189,9 @@ public class VDTSApplication extends Application {
     }
 
     @WorkerThread
-    public void displayToast(Context context, String message, int length) {
+    public void displayToast(Context context, String message) {
         ContextCompat.getMainExecutor(context).execute(() -> {
-            Toast.makeText(context, message, length).show();
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         });
     }
 }

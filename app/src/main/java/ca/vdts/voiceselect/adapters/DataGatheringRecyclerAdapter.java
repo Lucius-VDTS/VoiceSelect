@@ -322,7 +322,7 @@ public class DataGatheringRecyclerAdapter
             entryValueScrollView.setScrollChangeListener(this);
             entryValueLinearLayout = v.findViewById(R.id.entryValueLinearLayout);
             entryCommentValue = v.findViewById(R.id.entryValueComment);
-            entryPhotoValue = v.findViewById(R.id.entryValuePhoto);
+            entryPhotoValue = v.findViewById(R.id.entryValuePic);
 
             initializeEntryValuesLayout();
             xCord.observe(dataGatheringActivity, this::scrollHorizontally);

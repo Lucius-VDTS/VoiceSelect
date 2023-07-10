@@ -260,8 +260,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
                 vdtsApplication.displayToast(
                         vdtsApplication,
-                        "Configure the application to start a session",
-                        0
+                        "Configure the application to start a session"
                 );
             } else {
                 YoYo.with(Techniques.Shake)
@@ -271,8 +270,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
                 vdtsApplication.displayToast(
                         vdtsApplication,
-                        "Create a layout to start a session",
-                        0
+                        "Create a layout to start a session"
                 );
             }
         }
@@ -298,8 +296,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     .playOn(startActivityButton);
             vdtsApplication.displayToast(
                     this,
-                    "Select a layout to start a session",
-                    0);
+                    "Select a layout to start a session"
+            );
         } else {
             //Create new session
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -355,8 +353,8 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     .playOn(resumeActivityButton);
             vdtsApplication.displayToast(
                     this,
-                    "A session has not been started",
-                    0);
+                    "A session has not been started"
+            );
         } else {
             Intent resumeActivityIntent = new Intent(this, DataGatheringActivity.class);
             startActivity(resumeActivityIntent);
@@ -468,6 +466,12 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     this.getLifecycle(),
                     this,
                     vc -> vc.add("Resume", this::resumeActivityButtonOnClick)
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Recall", this::recallActivityButtonOnClick)
             );
 
             IristickSDK.addVoiceCommands(

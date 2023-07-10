@@ -1,6 +1,5 @@
 package ca.vdts.voiceselect.activities.configure;
 
-import static android.widget.Toast.LENGTH_SHORT;
 import static ca.vdts.voiceselect.library.VDTSApplication.CONFIG_DIRECTORY;
 import static ca.vdts.voiceselect.library.VDTSApplication.EXPORT_FILE_LAYOUT;
 import static ca.vdts.voiceselect.library.VDTSApplication.FILE_EXTENSION_VDTS;
@@ -307,8 +306,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                                 .playOn(layoutNewButton);
                         vdtsApplication.displayToast(
                                 vdtsApplication.getApplicationContext(),
-                                "A layout must be created before it can be customized",
-                                0
+                                "A layout must be created before it can be customized"
                         );
                     } else {
                         layoutNameEditText.setText(selectedLayout.getName());
@@ -335,7 +333,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             columnEnabledSwitch.setEnabled(true);
             if (columnList.size() <= 1) {
                 String message = "Create more than one column to adjust column position";
-                vdtsApplication.displayToast(this, message, 0);
+                vdtsApplication.displayToast(this, message);
                 columnPositionSlider.setEnabled(false);
             } else {
                 columnPositionSlider.setEnabled(true);
@@ -441,7 +439,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .duration(SHAKE_DURATION)
                     .repeat(SHAKE_REPEAT)
                     .playOn(layoutSaveButton);
-            vdtsApplication.displayToast(this, message, 0);
+            vdtsApplication.displayToast(this, message);
         } else if (!layoutNameEditText.getText().toString().isEmpty() &&
                    !layoutExportCodeEditText.getText().toString().isEmpty()) {
             if (selectedLayout.getUid() >= 1) {
@@ -458,7 +456,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     updateLayoutHandler.post(() -> {
                         String message = "Updated layout: " + selectedLayout.getName();
                         LOG.info(message);
-                        vdtsApplication.displayToast(this, message, 0);
+                        vdtsApplication.displayToast(this, message);
 
                         layoutSpinner.setSelection(layoutSpinnerAdapter.getPosition(selectedLayout));
                         layoutSpinnerAdapter.notifyDataSetChanged();
@@ -531,7 +529,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
                         String message = "Created layout: " + newLayout.getName();
                         LOG.info(message);
-                        vdtsApplication.displayToast(this, message, 0);
+                        vdtsApplication.displayToast(this, message);
                     });
                 });
             }
@@ -546,7 +544,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .duration(SHAKE_DURATION)
                     .repeat(SHAKE_REPEAT)
                     .playOn(layoutExportCodeEditText);
-            vdtsApplication.displayToast(this, message, 0);
+            vdtsApplication.displayToast(this, message);
         }
     }
 
@@ -586,8 +584,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .playOn(layoutDeleteButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can delete columns",
-                    LENGTH_SHORT
+                    "Only an admin user can delete columns"
             );
         }
     }
@@ -600,8 +597,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .playOn(layoutImportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can import layouts",
-                    LENGTH_SHORT
+                    "Only an admin user can import layouts"
             );
         } else {
             showImportDialog();
@@ -649,21 +645,18 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
                     vdtsApplication.displayToast(
                             this,
-                            "Layouts imported successfully",
-                            LENGTH_SHORT
+                            "Layouts imported successfully"
                     );
                 } else {
                     vdtsApplication.displayToast(
                             this,
-                            "Error importing layouts",
-                            LENGTH_SHORT
+                            "Error importing layouts"
                     );
                 }
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Layout file not found",
-                        LENGTH_SHORT
+                        "Layout file not found"
                 );
             }
         });
@@ -679,8 +672,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
                     .playOn(layoutExportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export layouts",
-                    LENGTH_SHORT
+                    "Only an admin user can export layouts"
             );
         } else {
             //saver = Saver.createSaver(ONEDRIVE_APP_ID);
@@ -693,14 +685,12 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             if (exporter.exportColumnLayout()) {
                 vdtsApplication.displayToast(
                         this,
-                        "Column layout exported successfully",
-                        LENGTH_SHORT
+                        "Column layout exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting column layout",
-                        LENGTH_SHORT
+                        "Error exporting column layout"
                 );
             }
         }

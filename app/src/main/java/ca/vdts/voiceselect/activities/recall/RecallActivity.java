@@ -134,21 +134,18 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
             if (exporter.exportMedia(session)) {
                 vdtsApplication.displayToast(
                         this,
-                        "Session exported successfully",
-                        0
+                        "Session exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting session photos",
-                        0
+                        "Error exporting session photos"
                 );
             }
         } else {
             vdtsApplication.displayToast(
                     this,
-                    "Error exporting session",
-                    0
+                    "Error exporting session"
             );
         }
     }
@@ -162,9 +159,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
 
             ArrayList<Session> sessions = new ArrayList<>(sessionList);
 
-            runOnUiThread(()-> {
-                recallSessionRecyclerAdapter.setSessionDataset(sessions);
-            });
+            runOnUiThread(()-> recallSessionRecyclerAdapter.setSessionDataset(sessions));
         }).start();
     }
 

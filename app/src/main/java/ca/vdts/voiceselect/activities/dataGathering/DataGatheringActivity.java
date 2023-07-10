@@ -6,7 +6,7 @@ import static android.Manifest.permission.CAMERA;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
-import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.LENGTH_LONG;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_BRIGHTNESS;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_ZOOM;
 import static ca.vdts.voiceselect.library.VDTSApplication.PULSE_DURATION;
@@ -17,7 +17,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -38,6 +37,7 @@ import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,6 +52,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
@@ -62,6 +63,7 @@ import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Lifecycle;
@@ -78,6 +80,10 @@ import com.iristick.sdk.Experimental;
 import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
+import com.iristick.sdk.camera.IRICamera;
+import com.iristick.sdk.camera.IRICameraProfile;
+import com.iristick.sdk.camera.IRICameraSession;
+import com.iristick.sdk.camera.IRICameraType;
 import com.iristick.sdk.display.IRIWindow;
 
 import org.slf4j.Logger;
@@ -85,6 +91,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,6 +102,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -115,6 +124,7 @@ import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
 import ca.vdts.voiceselect.library.utilities.VDTSCustomLifecycle;
 import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtils;
+import ca.vdts.voiceselect.library.utilities.VDTSMediaScannerUtil;
 
 /**
  * Gather data for a particular session and its corresponding layout.
@@ -128,15 +138,16 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSUser currentUser;
     private Session currentSession;
     private Entry currentEntry;
+    private final AtomicBoolean entrySelected = new AtomicBoolean(false);
     private ColumnValue selectedColumnValue;
     private int emptyColumnValueIndex = -1;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
     private final HashMap<Integer, Column> columnMap = new HashMap<>();
-    private List<ColumnSpoken> columnSpokenList = new ArrayList<>();
+    private final HashMap<Integer, ColumnSpoken> columnSpokenMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
-    private HashMap<Integer, List<ColumnValueSpoken>> columnValueSpokenMap = new HashMap<>();
+    private final HashMap<Integer, List<ColumnValueSpoken>> columnValueSpokenMap = new HashMap<>();
     private final List<Spinner> columnValueSpinnerList = new ArrayList<>();
 
     private final List<Entry> entryList = new ArrayList<>();
@@ -178,6 +189,9 @@ public class DataGatheringActivity extends AppCompatActivity
     private boolean isHeadsetAvailable = false;
     private DataGatheringActivity.IristickHUD iristickHUD;
     private final HashMap<Integer, ColumnValue> entryHUDMap = new HashMap<>();
+    private IRICamera iriCamera;
+    private IRICameraSession iriCameraSession;
+    private boolean iriCameraCaptureInProgress = false;
 
     //GPS Components
     private boolean GPSConnected = false;
@@ -333,7 +347,8 @@ public class DataGatheringActivity extends AppCompatActivity
         } else {
             hidePreview();
         }
-        initializeIristickHUD();
+
+        initializeSession();
     }
 
     @Override
@@ -362,22 +377,12 @@ public class DataGatheringActivity extends AppCompatActivity
             runOnUiThread(
                     () -> vdtsApplication.displayToast(
                             this,
-                            "Use long press to exist camera before navigating back",
-                            Toast.LENGTH_LONG
+                            "Use long press to exit camera before navigating back"
                     )
             );
         } else {
             super.onBackPressed();
         }
-    }
-
-    private void initializeIristickHUD() {
-        IristickSDK.addWindow(this.getLifecycle(), () -> {
-            iristickHUD = new DataGatheringActivity.IristickHUD();
-            return iristickHUD;
-        });
-
-        initializeSession();
     }
 
     private void initializeSession() {
@@ -436,34 +441,55 @@ public class DataGatheringActivity extends AppCompatActivity
         );
         layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(() -> {
-            columnSpokenList = vsViewModel.findAllColumnSpokensByUser(currentUser.getUid());
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        executor.execute(() -> {
+//            columnSpokenList = vsViewModel.findAllColumnSpokensByUser(currentUser.getUid());
+//
+//            handler.post(() -> {
+//                if (columnMap.size() != 0) {
+//                    for (int index = 0; index < columnMap.size(); index++){
+//                        TextView columnText = new TextView(this);
+//                        columnText.setMinWidth(minWidthDimen);
+//                        columnText.setLayoutParams(layoutParams);
+//                        columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
+//                                marginPaddingDimen, marginPaddingDimen);
+//                        columnText.setGravity(Gravity.CENTER);
+//                        columnText.setMaxLines(1);
+//                        columnText.setBackground(
+//                                ContextCompat.getDrawable(this, R.drawable.text_background));
+//                        columnText.setText(currentUser.isAbbreviate() ?
+//                                Objects.requireNonNull(columnMap.get(index)).getNameCode() :
+//                                Objects.requireNonNull(columnMap.get(index)).getName());
+//                        columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+//                        columnLinearLayout.addView(columnText);
+//                    }
+//                }
+//
+//                initializeColumnValuesLayout();
+//            });
+//        });
 
-            handler.post(() -> {
-                if (columnMap.size() != 0) {
-                    for (int index = 0; index < columnMap.size(); index++){
-                        TextView columnText = new TextView(this);
-                        columnText.setMinWidth(minWidthDimen);
-                        columnText.setLayoutParams(layoutParams);
-                        columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
-                                marginPaddingDimen, marginPaddingDimen);
-                        columnText.setGravity(Gravity.CENTER);
-                        columnText.setMaxLines(1);
-                        columnText.setBackground(
-                                ContextCompat.getDrawable(this, R.drawable.text_background));
-                        columnText.setText(currentUser.isAbbreviate() ?
-                                Objects.requireNonNull(columnMap.get(index)).getNameCode() :
-                                Objects.requireNonNull(columnMap.get(index)).getName());
-                        columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-                        columnLinearLayout.addView(columnText);
-                    }
-                }
+        if (columnMap.size() != 0) {
+            for (int index = 0; index < columnMap.size(); index++){
+                TextView columnText = new TextView(this);
+                columnText.setMinWidth(minWidthDimen);
+                columnText.setLayoutParams(layoutParams);
+                columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
+                        marginPaddingDimen, marginPaddingDimen);
+                columnText.setGravity(Gravity.CENTER);
+                columnText.setMaxLines(1);
+                columnText.setBackground(
+                        ContextCompat.getDrawable(this, R.drawable.text_background));
+                columnText.setText(currentUser.isAbbreviate() ?
+                        Objects.requireNonNull(columnMap.get(index)).getNameCode() :
+                        Objects.requireNonNull(columnMap.get(index)).getName());
+                columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                columnLinearLayout.addView(columnText);
+            }
+        }
 
-                initializeColumnValuesLayout();
-            });
-        });
+        initializeColumnValuesLayout();
     }
 
     /**
@@ -573,12 +599,6 @@ public class DataGatheringActivity extends AppCompatActivity
                         dataGatheringRecyclerAdapter.getItemCount() + 1
                 )
         );
-
-        if (isHeadsetAvailable) {
-            initializeIristickVoiceCommands();
-            iristickHUD.sessionValue.setText(sessionValue.getText());
-            iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
-        }
     }
 
     /**
@@ -615,7 +635,15 @@ public class DataGatheringActivity extends AppCompatActivity
                     vdtsNamedPositionedAdapter =
                             (VDTSNamedPositionedAdapter) parent.getAdapter();
 
-                    if (isHeadsetAvailable) { updateIristickHUD(); }
+                    if (isHeadsetAvailable && !entrySelected.get()) {
+                        updateIristickHUD();
+                    }
+
+                    //todo - get last spinner in list
+//                    Spinner spinner = columnValueSpinnerList.get(columnValueSpinnerList.size() - 1);
+//                    if (!entrySelected.get() && ((Spinner) view).equals(spinner)) {
+//                        entrySelected.set(false);
+//                    }
                 }
 
                 @Override
@@ -633,7 +661,9 @@ public class DataGatheringActivity extends AppCompatActivity
                 );
 
                 if (isHeadsetAvailable) {
+                    iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
                     iristickHUD.sessionEntriesCount.setText(sessionEntriesCount.getText());
+                    iristickHUD.sessionValue.setText(sessionValue.getText());
                 }
             }
         }
@@ -678,6 +708,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             .distinct()
                             .boxed()
                             .collect(Collectors.toList());
+
                     for (int i = 0; i < columnValueSpinnerList.size(); i++) {
                         List<ColumnValue> columnValues = columnValueMap.get(i);
                         emptyColumnValueIndex = i;
@@ -688,27 +719,33 @@ public class DataGatheringActivity extends AppCompatActivity
                                 .boxed()
                                 .collect(Collectors.toList());
 
-                        //todo - break when no ids in currentEntryColumnValueIDs can be found in columnValueIDs
+                        //todo - break when no ids in currentEntryColumnValueIDs can be found in columnValueIDs//
 //                        if (columnValueIDs.stream().noneMatch(currentEntryValueColumnValueIDs::contains)) {
+//                            emptyColumnValueIndex = i;
 //                            break;
+//                        } else {
+//                            emptyColumnValueIndex = -1;
 //                        }
 
-//                        if (columnValueIDs.stream().noneMatch(currentEntryValueColumnValueIDs::contains)) {
-//                            break;
-//                        }
+                        if (currentEntryValueColumnValueIDs.size() > 0 && columnValueIDs.size() > 0) {
+                            if (i < currentEntryValueColumnValueIDs.size()) {
+                                if (!Objects.equals(currentEntryValueColumnValueIDs.get(i),
+                                        columnValueIDs.get(i))) {
+                                    emptyColumnValueIndex = i;
+                                    break;
+                                }
+                            } else {
+                                emptyColumnValueIndex = i;
+                                break;
+                            }
+                        } else {
+                            emptyColumnValueIndex = -1;
+                        }
                     }
-
-//                    List<ColumnValue> columnValues = columnValueMap.get(0);
-//                    selectedColumnValue = columnValues.stream()
-//                            .filter(
-//                                    cv -> currentEntryValueList.stream()
-//                                            .anyMatch(
-//                                                    ev -> ev.getColumnValueID() == cv.getUid()
-//                                            )
-//                            ).findFirst()
-//                            .orElse(null);
                 }
 
+                iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
+                iristickHUD.entryPicValue.setText(String.valueOf(currentEntryPhotos.size()));
                 updateIristickHUD();
             }
         } else {
@@ -719,6 +756,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void updateViews() {
+        entrySelected.set(true);
         runOnUiThread(() -> {
             if (currentEntry.getUid() > 0) {
                 List<Entry> entries = entryListLive.getValue();
@@ -726,11 +764,14 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnValueIndexValue.setText(
                         String.format(Locale.getDefault(), "%d", index + 1)
                 );
+
                 List<EntryValue> entryValues = entryValueListLive.getValue();
+
                 if (entryValues != null) {
                     List<EntryValue> currentEntryValues = entryValues.stream()
                             .filter(entryValue -> entryValue.getEntryID() == currentEntry.getUid())
                             .collect(Collectors.toList());
+
                     for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
                         List<ColumnValue> columnValues = columnValueMap.get(columnIndex);
                         if (columnValues != null) {
@@ -745,12 +786,14 @@ public class DataGatheringActivity extends AppCompatActivity
 
                             Spinner columnSpinner = columnValueSpinnerList.get(columnIndex);
                             if (columnSpinner != null) {
+                                columnSpinner.setEnabled(false);
                                 if (columnValue == null) {
                                     columnSpinner.setSelection(0);
                                 } else {
                                     int position = columnValues.indexOf(columnValue) + 1;
                                     columnSpinner.setSelection(position);
                                 }
+                                columnSpinner.setEnabled(true);
                             }
                         }
                     }
@@ -992,6 +1035,7 @@ public class DataGatheringActivity extends AppCompatActivity
             if (currentEntry == null) {
                 newEntry();
             }
+
             ExecutorService createEntryExecutor = Executors.newSingleThreadExecutor();
             Handler createEntryHandler = new Handler(Looper.getMainLooper());
             createEntryExecutor.execute(() -> {
@@ -999,6 +1043,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     currentEntry.setLatitude(currentLocation.getLatitude());
                     currentEntry.setLongitude(currentLocation.getLongitude());
                 }
+
                 long uid = vsViewModel.insertEntry(currentEntry);
                 currentEntry.setUid(uid);
                 createEntryHandler.post(() -> {
@@ -1036,9 +1081,11 @@ public class DataGatheringActivity extends AppCompatActivity
             if (insertPictureReferences.length > 0) {
                 vsViewModel.insertAllPictureReferences(insertPictureReferences);
             }
+
             if (updatePictureReferences.length > 0) {
                 vsViewModel.updateAllPictureReferences(updatePictureReferences);
             }
+
             handler.post(() -> {
                 if (insertPictureReferences.length > 0) {
                     int entryIndex = dataGatheringRecyclerAdapter.getEntryPosition(entryID);
@@ -1224,8 +1271,7 @@ public class DataGatheringActivity extends AppCompatActivity
         previewShowing = true;
         vdtsApplication.displayToast(
                 this,
-                "Use long press to exit camera",
-                Toast.LENGTH_LONG
+                "Use long press to exit camera"
         );
     }
 
@@ -1234,14 +1280,6 @@ public class DataGatheringActivity extends AppCompatActivity
         previewView.setVisibility(View.INVISIBLE);
         cameraLifecycle.performEvent(Lifecycle.Event.ON_STOP);
         previewShowing = false;
-    }
-
-    private void openCamera() {
-        Intent openCameraActivityIntent = new Intent(
-                this,
-                IristickCameraActivity.class
-        );
-        startActivity(openCameraActivityIntent);
     }
 
     private void takePicture() {
@@ -1285,6 +1323,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             if (currentEntry == null) {
                                 newEntry();
                             }
+
                             PictureReference pictureReference = new PictureReference(
                                     currentUser.getUid(),
                                     currentEntry.getUid(),
@@ -1300,6 +1339,8 @@ public class DataGatheringActivity extends AppCompatActivity
                         }
                     }
             );
+
+            new VDTSMediaScannerUtil(this, imageFile);
         } catch (IOException e) {
             LOG.error("IO Exception: ", e);
         }
@@ -1357,8 +1398,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 GPSConnected = true;
                 vdtsApplication.displayToast(
                         this,
-                        "GPS connection found",
-                        LENGTH_SHORT
+                        "GPS connection found"
                 );
             }
         }
@@ -1438,8 +1478,8 @@ public class DataGatheringActivity extends AppCompatActivity
             final String message = String.format(
                     Locale.getDefault(),
                     "onScroll - event1: %s, event2: %s, distance x: %.2f, distance y: %.2f",
-                    e1.toString(),
-                    e2.toString(),
+                    e1,
+                    e2,
                     distanceX,
                     distanceY
             );
@@ -1497,7 +1537,7 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             scrollDetector.onTouchEvent(motionEvent);
@@ -1509,6 +1549,7 @@ public class DataGatheringActivity extends AppCompatActivity
     public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
         IRIListener.super.onHeadsetAvailable(headset);
         isHeadsetAvailable = true;
+        initializeIristick(headset);
     }
 
     @Override
@@ -1517,26 +1558,133 @@ public class DataGatheringActivity extends AppCompatActivity
         isHeadsetAvailable = false;
     }
 
-    private void initializeIristickVoiceCommands() {
-        if (isHeadsetAvailable) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Open Camera", this::openCamera)
-            );
+    private void initializeIristick(IRIHeadset headset) {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new DataGatheringActivity.IristickHUD();
+            return iristickHUD;
+        });
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Navigate Back", this::finish)
-            );
-        }
+        initializeIristickVoiceCommands();
+        initializeIristickCameraGrammar(headset);
+    }
+
+    private void initializeIristickVoiceCommands() {
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Navigate Back", this::finish)
+        );
     }
 
     @OptIn(markerClass = Experimental.class)
-    private void initializeIristickGrammar() {
+    private void initializeIristickCameraGrammar(IRIHeadset headset) {
+        IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+           vg.addSequentialGroup(sg -> {
+               sg.addAlternativeGroup(ag -> {
+                   ag.addToken("Open");
+                   ag.addToken("Wide");
+                   ag.addToken("Zoom");
+                   ag.addToken("Show");
+                   ag.addToken("Hide");
+                   ag.addToken("Close");
+               });
+
+               sg.addToken("Camera");
+           });
+
+           vg.setListener((((recognizer, tokens, tags) -> {
+               switch(tokens[0]) {
+                   case "Open":
+                   case "Wide":
+                       if (iriCameraSession != null) { closeIriCamera(); }
+                       openIriCamera(headset, -1);
+                       break;
+                   case "Zoom":
+                       if (iriCameraSession != null) { closeIriCamera(); }
+                       openIriCamera(headset, 1);
+                       break;
+                   case "Show":
+                       if (iriCameraSession != null) {
+                           iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
+                           iristickHUD.iriCameraPreview.setVisibility(View.VISIBLE);
+                       }
+                       break;
+                   case "Hide":
+                       if (iriCameraSession != null) {
+                           iristickHUD.iriCameraPreview.setVisibility(View.INVISIBLE);
+                           iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
+                       }
+                       break;
+                   case "Close":
+                       closeIriCamera();
+                       break;
+               }
+           })));
+        });
+
+        IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+            vg.addSequentialGroup(sg -> {
+                sg.addToken("Zoom");
+
+                sg.addAlternativeGroup(zoomLevel -> {
+                    for (int index = 0; index <= 5; index++) {
+                        zoomLevel.addToken(String.valueOf(index));
+                    }
+                });
+            });
+
+            vg.setListener((((recognizer, tokens, tags) -> {
+                if (iriCameraSession != null) {
+                    int zoomLevel = Integer.parseInt(tokens[1]);
+                    switch(zoomLevel) {
+                        case 0:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(1.0f);
+                            });
+                            break;
+                        case 1:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(1.2f);
+                            });
+                            break;
+                        case 2:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(1.4f);
+                            });
+                            break;
+                        case 3:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(1.6f);
+                            });
+                            break;
+                        case 4:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(1.8f);
+                            });
+                            break;
+                        case 5:
+                            iriCameraSession.reconfigure(zoom -> {
+                                zoom.setZoom(2.0f);
+                            });
+                            break;
+                    }
+                }
+            })));
+        });
+
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                takePhoto -> takePhoto.add("Take Picture", () -> {
+                    if (iriCameraSession != null) { takeIriPicture(); }
+                })
+        );
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void initializeIristickEntryGrammar() {
         if (isHeadsetAvailable) {
-            //Step by step
+            //Step By Step Entry
             IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
                 vg.addSequentialGroup(sg -> {
                     //First entry value in row
@@ -1637,14 +1785,120 @@ public class DataGatheringActivity extends AppCompatActivity
                         R.drawable.spinner_background)
                 );
                 iristickHUD.entryCommentValue.setChecked(false);
-                iristickHUD.entryPhotoValue.setText("");
+                iristickHUD.entryPicValue.setText("");
             }
         }
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void openIriCamera(IRIHeadset headset, int cameraType) {
+        if (cameraType == 1) {
+            if (headset.findCamera(IRICameraType.ZOOM) != null) {
+                iriCamera = headset.findCamera(IRICameraType.ZOOM);
+                iristickHUD.displayToast(this, "Zoom Camera");
+            } else if (headset.findCamera(IRICameraType.WIDE_ANGLE) != null) {
+                iriCamera = headset.findCamera(IRICameraType.WIDE_ANGLE);
+                iristickHUD.displayToast(this, "Wide Camera");
+            }
+        } else {
+            if (headset.findCamera(IRICameraType.WIDE_ANGLE) != null) {
+                iriCamera = headset.findCamera(IRICameraType.WIDE_ANGLE);
+                iristickHUD.displayToast(this, "Wide Camera");
+            } else if (headset.findCamera(IRICameraType.ZOOM) != null) {
+                iriCamera = headset.findCamera(IRICameraType.ZOOM);
+                iristickHUD.displayToast(this, "Zoom Camera");
+            }
+        }
+
+        iriCameraSession = iriCamera.openSession(
+                getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic ->
+                        ic.addPreview(iristickHUD.iriCameraPreview));
+
+        if (cameraType == 1) {
+            iriCameraSession.reconfigure(zoomLevel -> {
+                zoomLevel.setZoom(1.0f);
+            });
+        }
+
+        iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
+        iristickHUD.iriCameraPreview.setVisibility(View.VISIBLE);
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void closeIriCamera() {
+        iriCameraSession.close();
+        iriCameraSession = null;
+        iristickHUD.iriCameraPreview.setVisibility(View.INVISIBLE);
+        iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
+    }
+
+    @OptIn(markerClass = Experimental.class)
+    private void takeIriPicture() {
+        if (iriCameraSession == null || iriCameraCaptureInProgress) {
+            return;
+        }
+
+        final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS),
+                "VoiceSelect/Pictures");
+
+        if (!photoDir.exists()) {
+            boolean mkdirResult = photoDir.mkdirs();
+            if (!mkdirResult) {
+                LOG.info("Failed to create image directory");
+                return;
+            }
+        }
+
+        iriCameraCaptureInProgress = true;
+        iriCameraSession.captureStillImage((iriCameraSession, iriPhoto) -> {
+            iriCameraCaptureInProgress = false;
+            try {
+                final File imageFile = File.createTempFile(
+                        VDTSImageFileUtils.generateFileName("", false),
+                        ".jpg",
+                        new File(photoDir.getPath())
+                );
+
+                VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+
+                OutputStream outputStream = Files.newOutputStream(imageFile.toPath());
+
+                if (iriPhoto != null) {
+                    iriPhoto.writeJpeg(outputStream);
+                    new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
+
+                    if (currentEntry == null) {
+                        newEntry();
+                    }
+                    PictureReference pictureReference = new PictureReference(
+                            currentUser.getUid(),
+                            currentEntry.getUserID(),
+                            imageFile.getPath(),
+                            currentLocation
+                    );
+
+                    currentEntryPhotos.add(pictureReference);
+                }
+
+                iristickHUD.entryPicValue.setText(String.valueOf(currentEntryPhotos.size()));
+
+                new VDTSMediaScannerUtil(this, imageFile);
+
+                LOG.info("Capture succeeded");
+            } catch (IOException e) {
+                LOG.error("Capture failed", e);
+            }
+        });
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
         //HUD Views
+        private TextureView iriCameraPreview;
+
+        private ConstraintLayout dataGatheringView;
+
         private TextView columnLastLabel;
         private TextView columnNextLabel;
 
@@ -1652,7 +1906,7 @@ public class DataGatheringActivity extends AppCompatActivity
         private TextView entryLastValue;
         private TextView entryNextValue;
         private CheckBox entryCommentValue;
-        private TextView entryPhotoValue;
+        private TextView entryPicValue;
 
         private TextView sessionValue;
         private TextView sessionEntriesCount;
@@ -1663,6 +1917,10 @@ public class DataGatheringActivity extends AppCompatActivity
             setContentView(R.layout.activity_data_gathering_hud);
 
             //HUD Views
+            iriCameraPreview = findViewById(R.id.iriCameraPreview);
+
+            dataGatheringView = findViewById(R.id.dataGatheringView);
+
             columnLastLabel = findViewById(R.id.columnLastLabel);
             columnNextLabel = findViewById(R.id.columnNextLabel);
 
@@ -1670,10 +1928,17 @@ public class DataGatheringActivity extends AppCompatActivity
             entryLastValue = findViewById(R.id.entryValueLast);
             entryNextValue = findViewById(R.id.entryValueNext);
             entryCommentValue = findViewById(R.id.entryValueComment);
-            entryPhotoValue = findViewById(R.id.entryValuePhoto);
+            entryPicValue = findViewById(R.id.entryValuePic);
 
             sessionValue = findViewById(R.id.sessionValue);
             sessionEntriesCount = findViewById(R.id.sessionEntriesCount);
+        }
+
+        @WorkerThread
+        public void displayToast(Context context, String message) {
+            ContextCompat.getMainExecutor(context).execute(() -> {
+                Toast.makeText(context, message, LENGTH_LONG).show();
+            });
         }
     }
 }

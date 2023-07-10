@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -149,8 +148,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         .playOn(findViewById(R.id.columnValueNameEditText));
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a value name",
-                        Toast.LENGTH_SHORT
+                        "Only an admin user can set a value name"
                 );
                 columnValueNameEditText.clearFocus();
             }
@@ -164,8 +162,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         .playOn(findViewById(R.id.columnValueNameCodeEditText));
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a value abbreviation",
-                        Toast.LENGTH_SHORT
+                        "Only an admin user can set a value abbreviation"
                 );
                 columnValueNameCodeEditText.clearFocus();
             }
@@ -179,8 +176,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         .playOn(findViewById(R.id.columnValueExportCodeEditText));
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a value export code",
-                        Toast.LENGTH_SHORT
+                        "Only an admin user can set a value export code"
                 );
                 columnValueExportCodeEditText.clearFocus();
             }
@@ -421,8 +417,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueNewButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create new Values",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can create new Values"
             );
         }
     }
@@ -468,8 +463,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                 .playOn(columnValueSaveButton);
                         vdtsApplication.displayToast(
                                 this,
-                                "Invalid column value",
-                                0
+                                "Invalid column value"
                         );
                         resetColumnValueButtonOnClick();
                     }
@@ -506,8 +500,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                 .playOn(columnValueSaveButton);
                         vdtsApplication.displayToast(
                                 this,
-                                "Invalid column value",
-                                0
+                                "Invalid column value"
                         );
                     }
                 }
@@ -520,8 +513,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueSaveButton);
             vdtsApplication.displayToast(
                     this,
-                    "Select a column to create values",
-                    0
+                    "Select a column to create values"
             );
         }
     }
@@ -551,8 +543,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueDeleteButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can delete columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can delete columns"
             );
         }
     }
@@ -565,8 +556,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueImportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can import columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can import columns"
             );
         }else {
             showImportDialog();
@@ -614,23 +604,20 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
                     vdtsApplication.displayToast(
                             this,
-                            "Setup imported successfully",
-                            Toast.LENGTH_SHORT
+                            "Setup imported successfully"
                     );
 
                     initializeColumnList();
                 } else {
                     vdtsApplication.displayToast(
                             this,
-                            "Error importing Setup",
-                            Toast.LENGTH_SHORT
+                            "Error importing Setup"
                     );
                 }
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Setup file not found",
-                        Toast.LENGTH_SHORT
+                        "Setup file not found"
                 );
             }
         });
@@ -646,8 +633,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueExportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export columns",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can export columns"
             );
         } else {
             LOG.debug("Starting export");
@@ -659,14 +645,12 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             if (exporter.exportSetup()) {
                 vdtsApplication.displayToast(
                         this,
-                        "Columns exported successfully",
-                        Toast.LENGTH_SHORT
+                        "Columns exported successfully"
                 );
             } else {
                 vdtsApplication.displayToast(
                         this,
-                        "Error exporting columns",
-                        Toast.LENGTH_SHORT
+                        "Error exporting columns"
                 );
             }
         }
@@ -742,8 +726,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                         .playOn(columnValueSpokenEditText);
                                 vdtsApplication.displayToast(
                                         this,
-                                        "Column value's spokens must be unique",
-                                        0
+                                        "Column value's spokens must be unique"
                                 );
                             }
                             return false;
@@ -759,8 +742,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                                             .playOn(columnValueSpokenEditText);
                                     vdtsApplication.displayToast(
                                             this,
-                                            "Column value's spokens contain a reserved word",
-                                            0
+                                            "Column value's spokens contain a reserved word"
                                     );
                                 }
                                 return false;
@@ -778,8 +760,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueSpokenEditText);
             vdtsApplication.displayToast(
                     this,
-                    "Column value must have a spoken term",
-                    0
+                    "Column value must have a spoken term"
             );
             return false;
         }
@@ -849,8 +830,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                         .playOn(columnValueSaveButton);
                 vdtsApplication.displayToast(
                         this,
-                        "Select a column to create values",
-                        0
+                        "Select a column to create values"
                 );
             }
         } else {
@@ -860,8 +840,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueNewButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create new Values",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can create new Values"
             );
         }
     }
@@ -919,7 +898,9 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             }
             columnValueAdapterSelect(-1);
         } else {
-            vdtsApplication.displayToast(this,"Invalid number range",0);
+            vdtsApplication.displayToast(
+                    this,
+                    "Invalid number range");
         }
     }
 
@@ -935,8 +916,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     .playOn(columnValueNewButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can create new Values",
-                    Toast.LENGTH_SHORT
+                    "Only an admin user can create new Values"
             );
         }
     }
@@ -998,7 +978,9 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             }
             columnValueAdapterSelect(-1);
         } else {
-            vdtsApplication.displayToast(this,"Invalid letter range",0);
+            vdtsApplication.displayToast(
+                    this,
+                    "Invalid letter range");
         }
     }
 
