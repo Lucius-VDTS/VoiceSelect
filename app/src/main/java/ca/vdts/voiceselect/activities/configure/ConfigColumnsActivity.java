@@ -391,7 +391,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                    executor.execute(() -> {
                        vsViewModel.updateColumn(workColumn);
                        updateColumnSpokens(workColumn, spokenList, false);
-                       handler.post(() -> columnAdapter.updateSelectedEntity());
+                       handler.post(() -> columnAdapter.updateEntity(workColumn));
                    });
                } else {
                    LOG.info("Invalid column spoken");
