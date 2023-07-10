@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.database.VSViewModel;
@@ -89,6 +90,9 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     //Iristick Components
     private VDTSConfigUsersActivity.IristickHUD iristickHUD;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +102,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
+
+        adapterLock = new ReentrantLock();
 
         //Views
         newUserButton = findViewById(R.id.userNewButton);
@@ -247,6 +253,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            adapterLock.lock();
             allUserList.clear();
             allUserList.addAll(vsViewModel.findAllActiveUsers());
             allUserList.remove(VDTS_USER_NONE);
@@ -258,6 +265,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 selectableUserList.add(currentUser);
             }
             handler.post(() -> userAdapter.setDataset(selectableUserList));
+            adapterLock.unlock();
         });
     }
 

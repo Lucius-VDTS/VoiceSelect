@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -97,6 +98,9 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     //Iristick Components
     private ConfigColumnsActivity.IristickHUD iristickHUD;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +110,8 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
 
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
+
+        adapterLock = new ReentrantLock();
 
         //Views
         columnNewButton = findViewById(R.id.layoutNewButton);
@@ -263,6 +269,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
             executor.execute(() -> {
+                adapterLock.lock();
                 columnList.clear();
                 columnList.addAll(vsViewModel.findAllActiveColumns());
                 columnList.remove(Column.COLUMN_NONE);
@@ -270,6 +277,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     columnAdapter.setDataset(columnList);
                     columnAdapterSelect(-1);
                 });
+                adapterLock.unlock();
             });
         }
     }

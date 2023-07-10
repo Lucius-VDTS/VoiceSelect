@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
@@ -52,6 +53,9 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
     private SwitchCompat openCheck;
     private SearchView searchView;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         vdtsApplication = (VDTSApplication) this.getApplication();
 
         vsViewModel = new ViewModelProvider(this).get(VSViewModel.class);
+
+        adapterLock = new ReentrantLock();
 
         openCheck = findViewById(R.id.openCheck);
         openCheck.setOnClickListener(v -> onOpenCheck());
@@ -152,6 +158,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
 
     private void updateSessions() {
         new Thread(() -> {
+            adapterLock.lock();
             recallSessionRecyclerAdapter.clearSelected();
 
             sessionList.clear();
@@ -160,6 +167,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
             ArrayList<Session> sessions = new ArrayList<>(sessionList);
 
             runOnUiThread(()-> recallSessionRecyclerAdapter.setSessionDataset(sessions));
+            adapterLock.unlock();
         }).start();
     }
 

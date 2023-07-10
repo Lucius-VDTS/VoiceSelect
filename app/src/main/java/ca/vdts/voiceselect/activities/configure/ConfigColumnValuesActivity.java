@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -110,6 +111,9 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     //Iristick Components
     private ConfigColumnValuesActivity.IristickHUD iristickHUD;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +124,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
         vdtsApplication = (VDTSApplication) this.getApplication();
         selectedColumn = Column.COLUMN_NONE;
         currentUser = vdtsApplication.getCurrentUser();
+
+        adapterLock = new ReentrantLock();
 
         //Views
         columnValueNewButton = findViewById(R.id.columnValueNewButton);
@@ -298,6 +304,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
             executor.execute(() -> {
+                adapterLock.lock();
                 columnValueList.clear();
                 columnValueList.addAll(
                         vsViewModel.findAllActiveColumnValuesByColumn(selectedColumn.getUid())
@@ -307,6 +314,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
                     columnValueAdapterSelect(-1);
                     disableViews();
                 });
+                adapterLock.unlock();
             });
         }
     }

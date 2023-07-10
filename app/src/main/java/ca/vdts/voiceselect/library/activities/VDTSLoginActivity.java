@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
@@ -69,6 +70,9 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     //Iristick Components
     private VDTSLoginActivity.IristickHUD iristickHUD;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,8 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         ttsEngine = vdtsApplication.getTTSEngine();
 
         vdtsViewModel = new ViewModelProvider(this).get(VDTSViewModel.class);
+
+        adapterLock = new ReentrantLock();
 
         userRecyclerView = findViewById(R.id.loginRecyclerView);
         userRecyclerView.setLayoutManager(
@@ -115,6 +121,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            adapterLock.lock();
             userList.clear();
             userList.addAll(vdtsViewModel.findAllActiveUsers());
             userList.remove(VDTSUser.VDTS_USER_NONE);
@@ -129,6 +136,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                     initializeIristick();
                 }
             });
+            adapterLock.unlock();
         });
     }
 

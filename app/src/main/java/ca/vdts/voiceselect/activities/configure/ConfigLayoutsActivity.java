@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.vdts.voiceselect.R;
 import ca.vdts.voiceselect.adapters.ConfigLayoutsAdapter;
@@ -107,12 +108,17 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     //Iristick Components
     private ConfigLayoutsActivity.IristickHUD iristickHUD;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config_layout);
 
         IristickSDK.registerListener(this.getLifecycle(), this);
+
+        adapterLock = new ReentrantLock();
 
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
@@ -186,8 +192,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
             vsViewModel.findAllLayoutColumnsByLayoutLive(selectedLayout.getUid()).observe(
                     this,
                     layoutColumns -> {
+                        adapterLock.lock();
                         layoutColumnList.clear();
                         layoutColumnList.addAll(layoutColumns);
+                        adapterLock.unlock();
                     }
             );
         }
@@ -255,6 +263,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            adapterLock.lock();
             if (layout != null) {
                 layoutColumnList.clear();
                 layoutColumnList.addAll(vsViewModel.findAllLayoutColumnsByLayout(layout));
@@ -287,6 +296,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
 
                 layoutColumnRecyclerView.setAdapter(configLayoutsAdapter);
             });
+            adapterLock.unlock();
         });
     }
 
