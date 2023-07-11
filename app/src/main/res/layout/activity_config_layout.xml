@@ -129,7 +129,7 @@
             android:layout_marginEnd="@dimen/margin"
             android:paddingStart="@dimen/double_padding"
             android:paddingEnd="@dimen/padding"
-            android:text="Comment Required"
+            android:text="@string/layout_comment_required_label"
             android:textSize="@dimen/large_text_size"/>
 
         <androidx.appcompat.widget.SwitchCompat
@@ -141,7 +141,7 @@
             android:layout_marginEnd="@dimen/margin"
             android:paddingStart="@dimen/double_padding"
             android:paddingEnd="@dimen/padding"
-            android:text="Picture Required"
+            android:text="@string/layout_picture_required_label"
             android:textSize="@dimen/large_text_size"/>
     </LinearLayout>
 

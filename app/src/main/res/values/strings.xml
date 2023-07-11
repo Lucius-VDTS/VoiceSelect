@@ -81,9 +81,6 @@
     <string name="dialogue_delete_button">Delete</string>
     <string name="dialogue_open_button">Open</string>
 
-<!--  Iristick Camera Activity  -->
-    <string name="iristick_camera_activity_label">Iristick Camera</string>
-
 <!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>
 
@@ -197,6 +194,9 @@
     <string name="layout_export_code_label">Code</string>
     <string name="layout_export_code_value">Enter export code</string>
 
+    <string name="layout_comment_required_label">Comment</string>
+    <string name="layout_picture_required_label">Picture</string>
+
     <string name="layout_column_name_label">Column Name</string>
     <string name="layout_column_enabled_label">Enabled</string>
     <string name="layout_column_enabled_yes">Yes</string>
@@ -216,11 +216,11 @@
     <string name="settings_free_mode">Free Form</string>
 
     <string name="settings_photo_label">Photo Settings:</string>
-    <string name="settings_print_name_on_picture">Print Name</string>
-    <string name="settings_print_time_on_picture">Print Time</string>
-    <string name="settings_print_gps_coordinates_on_picture">Print GPS</string>
+    <string name="settings_print_name_on_picture">Name</string>
+    <string name="settings_print_time_on_picture">Time</string>
+    <string name="settings_print_gps_coordinates_on_picture">GPS</string>
 
-    <string name="settings_export_label">Export Sessions As:</string>
+    <string name="settings_export_label">Export Settings:</string>
     <string name="settings_csv">CSV</string>
     <string name="settings_json">JSON</string>
     <string name="settings_excel">XLSX</string>
@@ -245,10 +245,12 @@
 <!--  Import Dialogue  -->
     <string name="import_dialogue_label">Current settings may be lost.</string>
 
+<!--  Yes / No Dialogue  -->
+    <string name="yes_no_dialogue_yes_button">Yes</string>
+    <string name="yes_no_dialogue_no_button">No</string>
+
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>
     <string name="number">NUMBER</string>
     <string name="comment_label">Comment:</string>
-
-
 </resources>
