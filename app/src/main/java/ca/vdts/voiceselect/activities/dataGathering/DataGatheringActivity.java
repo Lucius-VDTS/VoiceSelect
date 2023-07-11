@@ -104,6 +104,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import ca.vdts.voiceselect.R;
@@ -217,6 +218,9 @@ public class DataGatheringActivity extends AppCompatActivity
     private static final int ZOOM_LEVELS = 5;
     private int zoomLevel = 0;
 
+    //lock to prevent concurent list filling issues
+    private ReentrantLock adapterLock;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,6 +231,8 @@ public class DataGatheringActivity extends AppCompatActivity
 
         vdtsApplication = (VDTSApplication) this.getApplication();
         currentUser = vdtsApplication.getCurrentUser();
+
+        adapterLock = new ReentrantLock();
 
         columnLinearLayout = findViewById(R.id.columnLinearLayout);
         columnScrollView = findViewById(R.id.columnScrollView);
@@ -406,6 +412,7 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executor.execute(() -> {
+            adapterLock.lock();
             currentSessionLayoutList =
                     vsViewModel.findAllSessionLayoutsBySession(currentSession.getUid());
 
@@ -416,6 +423,7 @@ public class DataGatheringActivity extends AppCompatActivity
             }
 
             handler.post(this::initializeColumnsLayout);
+            adapterLock.unlock();
         });
     }
 
