@@ -144,6 +144,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private final AtomicBoolean entrySelected = new AtomicBoolean(false);
     private ColumnValue selectedColumnValue;
     private int emptyColumnValueIndex = -1;
+    private int spokenPosition = 0;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -525,18 +526,19 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnValueSpokenList = vsViewModel.findAllColumnValueSpokensByColumnAndUser(
                         Objects.requireNonNull(columnMap.get(index)).getUid(),
                         currentUser.getUid());
+
                 columnValueSpokenMap.put(
                         index,
                         columnValueSpokenList
                 );
 
-                HashMap<String, Long> spokenColumnValueSpokenIDMap = new HashMap<>();
+                HashMap<String, Long> columnValueSpokenIDMap = new HashMap<>();
                 for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-                    spokenColumnValueSpokenIDMap.put(
+                    columnValueSpokenIDMap.put(
                             columnValueSpoken.getSpoken(),
                             columnValueSpoken.getColumnValueID());
                 }
-                positionColumnValueSpokenIDMap.put(index, spokenColumnValueSpokenIDMap);
+                positionColumnValueSpokenIDMap.put(index, columnValueSpokenIDMap);
             }
 
             handler.post(() -> {
@@ -802,9 +804,9 @@ public class DataGatheringActivity extends AppCompatActivity
                             .collect(Collectors.toList());
 
                     for (int columnIndex = 0; columnIndex < columnValueSpinnerList.size(); columnIndex++) {
-                        List<ColumnValue> columnValues = columnValueMap.get(columnIndex);
-                        if (columnValues != null) {
-                            ColumnValue columnValue = columnValues.stream()
+                        List<ColumnValue> columnValueList = columnValueMap.get(columnIndex);
+                        if (columnValueList != null) {
+                            ColumnValue columnValue = columnValueList.stream()
                                     .filter(
                                             cv -> currentEntryValues.stream()
                                                     .anyMatch(
@@ -819,7 +821,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                 if (columnValue == null) {
                                     columnSpinner.setSelection(0);
                                 } else {
-                                    int position = columnValues.indexOf(columnValue) + 1;
+                                    int position = columnValueList.indexOf(columnValue) + 1;
                                     columnSpinner.setSelection(position);
                                 }
                                 columnSpinner.setEnabled(true);
@@ -1664,6 +1666,8 @@ public class DataGatheringActivity extends AppCompatActivity
                         });
                     }
 
+                    //todo - alternative end groups based on whether comments/photos are required before saving
+
                     //End of row
                     stepped.addAlternativeGroup(end -> {
                         end.addToken("Make Comment");
@@ -1673,13 +1677,32 @@ public class DataGatheringActivity extends AppCompatActivity
                     });
                 });
 
-                //todo - need another alternative group based on whether comments/photos are required before saving
-
                 vg.setListener(((recognizer, tokens, tags) -> {
-                    //todo - stuff based on tokens
-                    //todo - for loop through tokens
-                    String test = tokens[0];
-//                    String test1 = positionColumnValueSpokenIDMap.get(test);
+                    HashMap<String, Long> spokenColumnValueIDMap = positionColumnValueSpokenIDMap.get(spokenPosition);
+                    Long columnValueID = -1L;
+                    if (spokenColumnValueIDMap != null) { columnValueID = spokenColumnValueIDMap.get(tokens[0]); }
+
+                    List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
+                    ColumnValue columnValue = null;
+                    if (columnValueList != null) {
+                        Long finalColumnValueID = columnValueID;
+                        columnValue = columnValueList.stream()
+                                .filter(cv -> cv.getUid() == finalColumnValueID)
+                                .findFirst()
+                                .orElse(null);
+                    }
+
+                    Spinner columnValueSpinner = columnValueSpinnerList.get(spokenPosition);
+                    assert columnValueList != null;
+                    int position = columnValueList.indexOf(columnValue) + 1;
+                    columnValueSpinner.setSelection(position);
+
+                    if (Objects.equals(tokens[0], "Save Entry") ||
+                            Objects.equals(tokens[0], "Reset Entry")) {
+                        spokenPosition = 0;
+                    } else {
+                        spokenPosition++;
+                    }
                 }));
             });
 
