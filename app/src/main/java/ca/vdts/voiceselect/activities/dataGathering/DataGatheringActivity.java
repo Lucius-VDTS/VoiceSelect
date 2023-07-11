@@ -495,7 +495,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnText.setText(currentUser.isAbbreviate() ?
                         Objects.requireNonNull(columnMap.get(index)).getNameCode() :
                         Objects.requireNonNull(columnMap.get(index)).getName());
-                columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                columnText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
                 columnLinearLayout.addView(columnText);
             }
         }
@@ -1677,7 +1677,9 @@ public class DataGatheringActivity extends AppCompatActivity
 
                 vg.setListener(((recognizer, tokens, tags) -> {
                     //todo - stuff based on tokens
+                    //todo - for loop through tokens
                     String test = tokens[0];
+//                    String test1 = positionColumnValueSpokenIDMap.get(test);
                 }));
             });
 
@@ -1723,8 +1725,6 @@ public class DataGatheringActivity extends AppCompatActivity
 //                        end.addToken("Reset Entry");
 //                        end.addToken("Save Entry");
 //                    });
-//
-//                    //todo - need another alternative group based on whether comments/photos are required before saving
 //                });
 //
 //                vg.setListener(((recognizer, tokens, tags) -> {
