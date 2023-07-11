@@ -26,6 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/double_margin"
+                android:layout_marginHorizontal="@dimen/double_margin"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/photoConstraintLayout" >
 
@@ -33,7 +34,6 @@
                     android:id="@+id/entryModeLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/double_margin"
                     android:text="@string/settings_entry_mode_label"
                     android:textSize="@dimen/large_text_size"
                     android:labelFor="@id/entryModeGroup"
@@ -46,43 +46,34 @@
                     android:id="@+id/entryModeGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/double_margin"
+                    android:layout_marginTop="@dimen/margin"
                     android:layout_marginHorizontal="@dimen/double_margin"
                     android:fillViewport='true'
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/entryModeLabel">
 
                     <RadioButton
                         android:id="@+id/chainedRadio"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginStart="@dimen/double_margin"
-                        android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_chained_mode"
                         android:textSize="@dimen/large_text_size"/>
 
                     <RadioButton
                         android:id="@+id/stepRadio"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginStart="@dimen/double_margin"
-                        android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_step_mode"
                         android:textSize="@dimen/large_text_size" />
 
                     <RadioButton
                         android:id="@+id/freeRadio"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginStart="@dimen/double_margin"
-                        android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_free_mode"
                         android:textSize="@dimen/large_text_size" />
                 </RadioGroup>
@@ -93,6 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginHorizontal="@dimen/double_margin"
                 app:layout_constraintTop_toBottomOf="@id/entryModeConstraintLayout"
                 app:layout_constraintBottom_toTopOf="@id/exportConstraintLayout">
 
@@ -100,9 +92,6 @@
                     android:id="@+id/photoLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/double_margin"
-                    android:layout_marginStart="@dimen/double_margin"
-                    android:layout_marginEnd="@dimen/double_margin"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/photoGroup"
                     android:text="@string/settings_photo_label"
@@ -114,8 +103,8 @@
                     android:id="@+id/photoGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/double_margin"
                     android:layout_marginHorizontal="@dimen/double_margin"
+                    android:layout_marginTop="@dimen/margin"
                     android:orientation="horizontal"
                     android:fillViewport='true'
                     app:layout_constraintTop_toBottomOf="@id/photoLabel"
@@ -126,8 +115,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginStart="@dimen/double_margin"
                         android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_print_name_on_picture"
                         android:textSize="@dimen/large_text_size" />
@@ -137,7 +124,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
                         android:layout_marginStart="@dimen/double_margin"
                         android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_print_time_on_picture"
@@ -148,9 +134,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
                         android:layout_marginStart="@dimen/double_margin"
-                        android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_print_gps_coordinates_on_picture"
                         android:textSize="@dimen/large_text_size" />
                 </LinearLayout>
@@ -161,6 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/eight_x_margin"
+                android:layout_marginHorizontal="@dimen/double_margin"
                 app:layout_constraintTop_toBottomOf="@id/photoConstraintLayout"
                 app:layout_constraintBottom_toBottomOf="parent">
 
@@ -168,7 +153,6 @@
                     android:id="@+id/exportLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/double_margin"
                     android:text="@string/settings_export_label"
                     android:textSize="@dimen/large_text_size"
                     android:labelFor="@id/exportGroup"
@@ -181,8 +165,8 @@
                     android:id="@+id/exportGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/double_margin"
                     android:layout_marginHorizontal="@dimen/double_margin"
+                    android:layout_marginTop="@dimen/margin"
                     android:orientation="horizontal"
                     android:fillViewport='true'
                     app:layout_constraintTop_toBottomOf="@id/exportLabel"
@@ -193,8 +177,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
                         android:text="@string/settings_csv"
                         android:textSize="@dimen/large_text_size" />
 
@@ -203,8 +186,8 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:layout_marginEnd="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
                         android:text="@string/settings_json"
                         android:textSize="@dimen/large_text_size" />
 
@@ -213,8 +196,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginTop="@dimen/double_margin"
-                        android:layout_marginHorizontal="@dimen/double_margin"
+                        android:layout_marginStart="@dimen/double_margin"
                         android:text="@string/settings_excel"
                         android:textSize="@dimen/large_text_size" />
                 </LinearLayout>

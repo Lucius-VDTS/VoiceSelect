@@ -24,8 +24,9 @@
         android:layout_height="wrap_content"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:layout_margin="12dp"
-        android:text="YES"
+        android:layout_margin="@dimen/three_x_margin"
+        android:padding="@dimen/padding"
+        android:text="@string/yes_no_dialogue_yes_button"
         app:layout_constraintTop_toBottomOf="@id/mainLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/noButton"
@@ -37,11 +38,11 @@
         android:layout_height="wrap_content"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:layout_marginRight="12dp"
-        android:text="NO"
+        android:layout_marginEnd="@dimen/three_x_margin"
+        android:padding="@dimen/padding"
+        android:text="@string/yes_no_dialogue_no_button"
         app:layout_constraintTop_toBottomOf="@id/mainLabel"
         app:layout_constraintStart_toEndOf="@id/yesButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

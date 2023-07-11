@@ -110,13 +110,24 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/layoutRequiredControlsLabel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/double_margin"
+        android:layout_marginHorizontal="@dimen/double_margin"
+        android:textSize="@dimen/large_text_size"
+        android:textStyle="bold"
+        android:text="Required:"
+        app:layout_constraintTop_toBottomOf="@id/layoutValuesLinearLayout">
+    </TextView>
+
     <LinearLayout
         android:id="@+id/layoutRequiredControlsLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/double_margin"
-        app:layout_constraintTop_toBottomOf="@id/layoutValuesLinearLayout"
+        app:layout_constraintTop_toBottomOf="@id/layoutRequiredControlsLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -129,7 +140,7 @@
             android:layout_marginEnd="@dimen/margin"
             android:paddingStart="@dimen/double_padding"
             android:paddingEnd="@dimen/padding"
-            android:text="Comment Required"
+            android:text="@string/layout_comment_required_label"
             android:textSize="@dimen/large_text_size"/>
 
         <androidx.appcompat.widget.SwitchCompat
@@ -137,11 +148,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginStart="@dimen/double_margin"
-            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginEnd="@dimen/double_margin"
             android:paddingStart="@dimen/double_padding"
             android:paddingEnd="@dimen/padding"
-            android:text="Picture Required"
+            android:text="@string/layout_picture_required_label"
             android:textSize="@dimen/large_text_size"/>
     </LinearLayout>
 
