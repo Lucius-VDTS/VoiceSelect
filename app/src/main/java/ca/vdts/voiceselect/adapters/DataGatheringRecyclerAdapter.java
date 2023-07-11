@@ -370,7 +370,7 @@ public class DataGatheringRecyclerAdapter
                         paddingLRDimen, paddingTBDimen);
                 entryValueText.setGravity(Gravity.CENTER);
                 entryValueText.setMaxLines(1);
-                entryValueText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                entryValueText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
 
                 entryValueLinearLayout.addView(entryValueText);
             }
