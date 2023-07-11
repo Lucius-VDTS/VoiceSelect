@@ -4,21 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/commentDialogue">
+    android:id="@+id/pinDialogue">
 
     <EditText
-        android:id="@+id/commentValue"
+        android:id="@+id/pinValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/double_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
         android:padding="@dimen/double_padding"
         android:gravity="top|start"
-        android:lines="10"
-        android:inputType="textMultiLine"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="true"
         android:background="@drawable/dialogue_text_background"
         android:textColor="@color/black"
+        android:inputType="number"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

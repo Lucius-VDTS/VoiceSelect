@@ -18,7 +18,7 @@
 <!--  VDTS Login Activity  -->
     <string name="login_activity_label">User Login</string>
 
-    <string name="login_password_title">Enter Password</string>
+    <string name="login_password_title">Enter PIN</string>
 
     <!--  HUD  -->
     <string name="login_select_user_prompt">Say your user name or use your connected device to login.</string>

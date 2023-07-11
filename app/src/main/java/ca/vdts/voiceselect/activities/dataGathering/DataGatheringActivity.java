@@ -150,6 +150,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private final HashMap<Integer, ColumnSpoken> columnSpokenMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValue>> columnValueMap = new HashMap<>();
     private final HashMap<Integer, List<ColumnValueSpoken>> columnValueSpokenMap = new HashMap<>();
+    private final HashMap<Integer, HashMap<String, Long>> positionColumnValueSpokenIDMap = new HashMap<>();
     private final List<Spinner> columnValueSpinnerList = new ArrayList<>();
 
     private final List<Entry> entryList = new ArrayList<>();
@@ -503,6 +504,8 @@ public class DataGatheringActivity extends AppCompatActivity
         executor.execute(() -> {
             columnValueMap.clear();
             columnValueSpokenMap.clear();
+
+            List<ColumnValueSpoken> columnValueSpokenList;
             for (int index = 0; index < columnMap.size(); index++) {
                 columnValueMap.put(
                         index,
@@ -511,12 +514,21 @@ public class DataGatheringActivity extends AppCompatActivity
                         )
                 );
 
+                columnValueSpokenList = vsViewModel.findAllColumnValueSpokensByColumnAndUser(
+                        Objects.requireNonNull(columnMap.get(index)).getUid(),
+                        currentUser.getUid());
                 columnValueSpokenMap.put(
                         index,
-                        vsViewModel.findAllColumnValueSpokensByColumnAndUser(
-                                Objects.requireNonNull(columnMap.get(index)).getUid(),
-                                currentUser.getUid())
+                        columnValueSpokenList
                 );
+
+                HashMap<String, Long> spokenColumnValueSpokenIDMap = new HashMap<>();
+                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
+                    spokenColumnValueSpokenIDMap.put(
+                            columnValueSpoken.getSpoken(),
+                            columnValueSpoken.getColumnValueID());
+                }
+                positionColumnValueSpokenIDMap.put(index, spokenColumnValueSpokenIDMap);
             }
 
             handler.post(() -> {
@@ -1300,6 +1312,7 @@ public class DataGatheringActivity extends AppCompatActivity
         builder.setTitle(
                 vdtsApplication.getResources().getString(R.string.comment_dialogue_edit_comment)
         );
+
         final View customLayout = getLayoutInflater().inflate(
                 R.layout.dialogue_fragment_comment,
                 null

@@ -24,4 +24,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorStepHighlight">#EAE85B</color>
     <color name="colorBackground">#FFFFFF</color>
+
+<!-- Comment Dialogue -->
+    <color name="dialogueTextBackground">#D9DCE1</color>
 </resources>

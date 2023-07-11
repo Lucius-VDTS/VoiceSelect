@@ -57,7 +57,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     private final String[] userName = {""};
     private TextToSpeech ttsEngine;
 
-    private EditText passwordText;
+    private EditText pinText;
 
     //Recycler View
     private VDTSViewModel vdtsViewModel;
@@ -155,27 +155,33 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     private void inputPIN() {
         if (currentUser != null) {
             if (currentUser.getPassword() != null && !currentUser.getPassword().isEmpty()) {
-                passwordText = new EditText(this);
-                passwordText.setInputType(
+                final AlertDialog.Builder pinAlert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.login_password_title)
+                        .setMessage(currentUser.getName())
+                        .setCancelable(false);
+
+                final View customLayout = getLayoutInflater().inflate(
+                        R.layout.dialogue_fragment_pin,
+                        null
+                );
+
+                pinText = customLayout.findViewById(R.id.pinValue);
+                pinText.setInputType(
                         InputType.TYPE_CLASS_NUMBER |
                                 InputType.TYPE_NUMBER_VARIATION_PASSWORD
                 );
 
-                final AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this)
-                        .setTitle(R.string.login_password_title)
-                        .setMessage(currentUser.getName())
-                        .setCancelable(false)
-                        .setView(passwordText);
+                pinAlert.setView(customLayout);
 
-                passwordAlert.setPositiveButton("Submit", (dialog, which) -> enterPIN());
+                pinAlert.setPositiveButton("Submit", (dialog, which) -> enterPIN());
 
-                passwordAlert.setNegativeButton("Cancel", (dialog, which) -> {
+                pinAlert.setNegativeButton("Cancel", (dialog, which) -> {
                     userAdapterSelect(-1);
                     dialog.dismiss();
                 });
 
-                passwordAlert.show();
-                passwordText.requestFocus();
+                pinAlert.show();
+                pinText.requestFocus();
             } else {
                 vdtsApplication.setCurrentUser(currentUser);
 
@@ -190,8 +196,8 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
     }
 
     private void enterPIN() {
-        if (passwordText != null) {
-            if (currentUser.getPassword().equals(passwordText.getText().toString().trim())) {
+        if (pinText != null) {
+            if (currentUser.getPassword().equals(pinText.getText().toString().trim())) {
                 vdtsApplication.setCurrentUser(currentUser);
                 LOG.info("User Password: {} validated", currentUser.getName());
 

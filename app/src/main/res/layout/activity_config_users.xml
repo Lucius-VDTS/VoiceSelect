@@ -131,7 +131,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/userPasswordInputLayout"
+            android:id="@+id/userPINInputLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -141,7 +141,7 @@
             app:placeholderText="@string/user_password_value">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/userPasswordEditText"
+                android:id="@+id/userPINEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="number"

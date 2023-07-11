@@ -73,7 +73,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     private EditText userPrefixEditText;
     private EditText userExportCodeEditText;
 
-    private EditText userPasswordEditText;
+    private EditText userPINEditText;
     private SwitchCompat userAdminSwitch;
     private SwitchCompat userPrimarySwitch;
 
@@ -163,7 +163,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             }
         });
 
-        userPasswordEditText = findViewById(R.id.userPasswordEditText);
+        userPINEditText = findViewById(R.id.userPINEditText);
 
         userAdminSwitch = findViewById(R.id.userFeedbackSwitch);
         userAdminSwitch.setOnClickListener(v -> {
@@ -284,7 +284,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userNameEditText.setText(selectedUser.getName());
                 userPrefixEditText.setText(selectedUser.getSessionPrefix());
                 userExportCodeEditText.setText(selectedUser.getExportCode());
-                userPasswordEditText.setText(
+                userPINEditText.setText(
                         selectedUser.getPassword() != null ? selectedUser.getPassword() : ""
                 );
                 userAdminSwitch.setChecked(isAdmin);
@@ -293,7 +293,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 userNameEditText.setText("");
                 userPrefixEditText.setText("");
                 userExportCodeEditText.setText("");
-                userPasswordEditText.setText("");
+                userPINEditText.setText("");
                 userAdminSwitch.setChecked(false);
                 userPrimarySwitch.setChecked(false);
             }
@@ -301,7 +301,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
             userNameEditText.setText("");
             userPrefixEditText.setText("");
             userExportCodeEditText.setText("");
-            userPasswordEditText.setText("");
+            userPINEditText.setText("");
             userAdminSwitch.setChecked(false);
             userPrimarySwitch.setChecked(false);
         }
@@ -346,8 +346,8 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 user.setAuthority(userAdminSwitch.isChecked() ? 1 : 0);
                 user.setPrimary(userPrimarySwitch.isChecked());
 
-                final String password = userPasswordEditText.getText().toString().trim();
-                user.setPassword(!password.isEmpty() ? password : null);
+                final String pin = userPINEditText.getText().toString().trim();
+                user.setPassword(!pin.isEmpty() ? pin : null);
 
                 if (isValidUser(user)) {
                     if (user.getUid() == vdtsApplication.getCurrentUser().getUid()) {
@@ -386,14 +386,14 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                 }
             } else {
                 //Create new user
-                final String password = userPasswordEditText.getText().toString().trim();
+                final String pin = userPINEditText.getText().toString().trim();
                 final VDTSUser vdtsUser = new VDTSUser(
                         userNameEditText.getText().toString().trim(),
                         userExportCodeEditText.getText().toString().trim(),
                         userPrefixEditText.getText().toString().trim(),
                         userAdminSwitch.isChecked() ? 1 : 0,
                         userPrimarySwitch.isChecked(),
-                        !password.isEmpty() ? password : null
+                        !pin.isEmpty() ? pin : null
                 );
 
                 if (isValidUser(vdtsUser)) {
@@ -435,7 +435,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                         }
 
                         handler.post(() -> {
-                            //todo - maybe unnecessary
                             if (primaryUser != null) { userAdapter.updateEntity(primaryUser); }
 
                             userAdapter.addEntity(vdtsUser);
