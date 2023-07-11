@@ -69,11 +69,15 @@ public class VDTSBackupWorker extends Worker {
                 if (!mkDirResult) {
                     LOG.info("Failed to create directory: {}", dbBackupDir);
                 }
+            } else {
+                //Directory Exists. Delete a file if count is 5 already. Because we will be creating a new.
+                //This will create a conflict if the last backup file was also on the same date. In that case,
+                //we will reduce it to 4 with the function call but the below code will again delete one more file.
+                checkAndDeleteBackupFile(dbBackupDir, backupDir);
             }
 
             File dbBackupFile = new File(dbBackupDir, backupName);
 
-            //todo - delete existing backups - keep last two
             if (dbBackupFile.exists()) {
                 boolean deleteResult = dbBackupFile.delete();
                 if (deleteResult) {
@@ -120,6 +124,34 @@ public class VDTSBackupWorker extends Worker {
             } catch (IOException e) {
                 e.printStackTrace();
                 LOG.error("Backup error: ", e);
+            }
+        }
+    }
+
+    public static void checkAndDeleteBackupFile(File directory, String path) {
+        //This is to prevent deleting extra file being deleted which is mentioned in previous comment lines.
+        File currentDateFile = new File(path);
+        int fileIndex = -1;
+        long lastModifiedTime = System.currentTimeMillis();
+
+        if (!currentDateFile.exists()) {
+            File[] files = directory.listFiles();
+            if (files != null && files.length >= 3) {
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    long fileLastModifiedTime = file.lastModified();
+                    if (fileLastModifiedTime < lastModifiedTime) {
+                        lastModifiedTime = fileLastModifiedTime;
+                        fileIndex = i;
+                    }
+                }
+
+                if (fileIndex != -1) {
+                    File deletingFile = files[fileIndex];
+                    if (deletingFile.exists()) {
+                        deletingFile.delete();
+                    }
+                }
             }
         }
     }
