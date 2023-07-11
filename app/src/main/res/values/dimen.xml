@@ -35,12 +35,12 @@
     <dimen name="outline_width">4dp</dimen>
 
 <!--   Fonts   -->
-    <dimen name="xxxs_text_size">12sp</dimen>
-    <dimen name="xxs_text_size">14sp</dimen>
-    <dimen name="xs_text_size">16sp</dimen>
-    <dimen name="small_text_size">18sp</dimen>
-    <dimen name="medium_text_size">20sp</dimen>
-    <dimen name="large_text_size">22sp</dimen>
-    <dimen name="xl_text_size">24sp</dimen>
-    <dimen name="xxl_text_size">26sp</dimen>
+    <dimen name="xxxs_text_size">12dp</dimen>
+    <dimen name="xxs_text_size">14dp</dimen>
+    <dimen name="xs_text_size">16dp</dimen>
+    <dimen name="small_text_size">18dp</dimen>
+    <dimen name="medium_text_size">20dp</dimen>
+    <dimen name="large_text_size">22dp</dimen>
+    <dimen name="xl_text_size">24dp</dimen>
+    <dimen name="xxl_text_size">26dp</dimen>
 </resources>
