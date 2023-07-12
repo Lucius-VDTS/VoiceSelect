@@ -2,6 +2,7 @@ package ca.vdts.voiceselect.library.activities;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -182,6 +183,7 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
 
                 pinAlert.show();
                 pinText.requestFocus();
+                showKeyboardForSomeReason(pinText,this);
             } else {
                 vdtsApplication.setCurrentUser(currentUser);
 

@@ -4,6 +4,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -311,6 +312,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         if (currentUser.getAuthority() > 0) {
             userAdapterSelect(-1);
             userNameEditText.requestFocus();
+            showKeyboardForSomeReason(userNameEditText,this);
         } else {
             YoYo.with(Techniques.Shake)
                     .duration(SHAKE_DURATION)
@@ -325,7 +327,6 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
 
     public void resetUserButtonOnClick() {
         userAdapterSelect(userAdapter.getSelectedEntityIndex());
-        //userNameEditText.requestFocus();
     }
 
     public void saveUserButtonOnClick() {

@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.activities.configure;
 import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -429,6 +430,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         layoutSpinner.setSelection(0);
         configLayoutsAdapterSelect(-1);
         layoutNameEditText.requestFocus();
+        showKeyboardForSomeReason(layoutNameEditText,this);
     }
 
     private void resetLayoutButtonOnClick() {
@@ -438,6 +440,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         layoutExportCodeEditText.setText(selectedLayout.getExportCode());
         configLayoutsAdapterSelect(configLayoutsAdapter.getSelectedColumnIndex());
         layoutNameEditText.requestFocus();
+        showKeyboardForSomeReason(layoutNameEditText,this);
     }
 
     private void saveLayoutButtonOnClick() {
