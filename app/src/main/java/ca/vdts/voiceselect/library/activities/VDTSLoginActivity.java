@@ -2,7 +2,6 @@ package ca.vdts.voiceselect.library.activities;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
-import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -181,9 +181,10 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                     dialog.dismiss();
                 });
 
-                pinAlert.show();
+                AlertDialog d = pinAlert.create();
+                d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                d.show();
                 pinText.requestFocus();
-                showKeyboardForSomeReason(pinText,this);
             } else {
                 vdtsApplication.setCurrentUser(currentUser);
 

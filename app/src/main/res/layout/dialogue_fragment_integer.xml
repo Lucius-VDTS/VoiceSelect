@@ -63,6 +63,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/padding"
+            android:inputType="number"
             android:background="@drawable/dialogue_text_background"
             android:textColor="@color/black"
             android:textSize="@dimen/medium_text_size">
@@ -76,6 +77,7 @@
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             android:padding="@dimen/padding"
+            android:inputType="number"
             android:background="@drawable/dialogue_text_background"
             android:textColor="@color/black"
             android:textSize="@dimen/medium_text_size">
@@ -88,6 +90,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/margin"
             android:padding="@dimen/padding"
+            android:inputType="number"
             android:background="@drawable/dialogue_text_background"
             android:textColor="@color/black"
             android:textSize="@dimen/medium_text_size">

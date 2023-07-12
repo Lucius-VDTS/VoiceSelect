@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -849,6 +850,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
         AlertDialog dialog = builder.create();
         assert dialog.getWindow() != null;
+        minView.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
 
@@ -922,6 +925,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
         AlertDialog dialog = builder.create();
         assert dialog.getWindow() != null;
+        minView.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
 
