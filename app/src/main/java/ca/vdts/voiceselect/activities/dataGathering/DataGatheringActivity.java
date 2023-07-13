@@ -141,10 +141,12 @@ public class DataGatheringActivity extends AppCompatActivity
     private VDTSUser currentUser;
     private Session currentSession;
     private Entry currentEntry;
-    private final AtomicBoolean entrySelected = new AtomicBoolean(false);
+    private final AtomicBoolean isEntrySelected = new AtomicBoolean(false);
     private ColumnValue selectedColumnValue;
     private int emptyColumnValueIndex = -1;
     private int spokenPosition = 0;
+    private int spinnerPosition = 0;
+    private boolean isColumnSkipped = false;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -220,7 +222,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private static final int ZOOM_LEVELS = 5;
     private int zoomLevel = 0;
 
-    //lock to prevent concurent list filling issues
+    //Lock to prevent concurrent list filling issues
     private ReentrantLock adapterLock;
 
     @Override
@@ -666,7 +668,7 @@ public class DataGatheringActivity extends AppCompatActivity
                     vdtsNamedPositionedAdapter =
                             (VDTSNamedPositionedAdapter) parent.getAdapter();
 
-                    if (isHeadsetAvailable && !entrySelected.get()) {
+                    if (isHeadsetAvailable /*&& !entrySelected.get()*/) {
                         updateIristickHUD();
                     }
 
@@ -687,6 +689,13 @@ public class DataGatheringActivity extends AppCompatActivity
             if (entries != null) {
                 dataGatheringRecyclerAdapter.clearEntries();
                 dataGatheringRecyclerAdapter.addAllEntries(entries);
+
+                entryList.clear();
+                entryList.addAll(entries);
+
+                columnValueIndexValue.setText(
+                        String.format(Locale.getDefault(), "%d", entries.size() + 1)
+                );
                 sessionEntriesCount.setText(
                         String.format(Locale.getDefault(), "%d", entries.size())
                 );
@@ -787,17 +796,16 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void updateViews() {
-        entrySelected.set(true);
+        isEntrySelected.set(true);
         runOnUiThread(() -> {
             if (currentEntry.getUid() > 0) {
-                List<Entry> entries = entryListLive.getValue();
-                int index = entries != null ? entries.indexOf(currentEntry) : 0;
-                columnValueIndexValue.setText(
-                        String.format(Locale.getDefault(), "%d", index + 1)
-                );
+//                List<Entry> entries = entryListLive.getValue();
+//                int index = entries != null ? entries.indexOf(currentEntry) : 0;
+//                columnValueIndexValue.setText(
+//                        String.format(Locale.getDefault(), "%d", index + 1)
+//                );
 
                 List<EntryValue> entryValues = entryValueListLive.getValue();
-
                 if (entryValues != null) {
                     List<EntryValue> currentEntryValues = entryValues.stream()
                             .filter(entryValue -> entryValue.getEntryID() == currentEntry.getUid())
@@ -988,6 +996,7 @@ public class DataGatheringActivity extends AppCompatActivity
         });
 
         newEntry();
+        entryHUDMap.clear();
         updateViews();
     }
 
@@ -1101,6 +1110,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 });
             }
         }
+
+        isColumnSkipped = false;
     }
 
     private void savePictureReferences(long entryID) {
@@ -1210,6 +1221,7 @@ public class DataGatheringActivity extends AppCompatActivity
             if (insertEntryValues.length > 0) vsViewModel.insertAllEntryValues(insertEntryValues);
             if (updateEntryValues.length > 0) vsViewModel.updateAllEntryValues(updateEntryValues);
             if (deleteEntryValues.length > 0) vsViewModel.deleteAllEntryValues(deleteEntryValues);
+
             handler.post(() -> {
                 newEntry();
                 updateViews();
@@ -1577,7 +1589,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         @Override
         public boolean onDoubleTap(@NonNull MotionEvent e) {
-            // start/stop recording
+            //start/stop Recording
             return true;
         }
     }
@@ -1610,7 +1622,6 @@ public class DataGatheringActivity extends AppCompatActivity
         });
 
         initializeIristickVoiceCommands();
-//        initializeIristickEntryGrammar();
         initializeIristickCameraGrammar(headset);
     }
 
@@ -1666,8 +1677,6 @@ public class DataGatheringActivity extends AppCompatActivity
                         });
                     }
 
-                    //todo - alternative end groups based on whether comments/photos are required before saving
-
                     //End of row
                     stepped.addAlternativeGroup(end -> {
                         end.addToken("Make Comment");
@@ -1675,33 +1684,76 @@ public class DataGatheringActivity extends AppCompatActivity
                         end.addToken("Reset Entry");
                         end.addToken("Save Entry");
                     });
+
+//                    if (currentSession.isCommentRequired() && currentSession.isPictureRequired()) {
+//                        stepped.addAlternativeGroup(comment -> {
+//                            comment.addToken("Make Comment");
+//                            comment.addToken("Reset Entry");
+//                        });
+//
+//                        stepped.addAlternativeGroup(picture -> {
+//                            picture.addToken("Open Camera");
+//                            picture.addToken("Reset Entry");
+//                        });
+//
+//                        stepped.addAlternativeGroup(finish -> {
+//                            finish.addToken("Reset Entry");
+//                            finish.addToken("Save Entry");
+//                        });
+//                    } else if (currentSession.isCommentRequired()) {
+//                        stepped.addAlternativeGroup(end -> {
+//                            end.addToken("Make Comment");
+//                            end.addToken("Reset Entry");
+//                        });
+//
+//                        stepped.addAlternativeGroup(finish -> {
+//                            finish.addToken("Open Camera");
+//                            finish.addToken("Reset Entry");
+//                            finish.addToken("Save Entry");
+//                        });
+//                    } else if (currentSession.isPictureRequired()) {
+//                        stepped.addAlternativeGroup(end -> {
+//                            end.addToken("Open Camera");
+//                            end.addToken("Reset Entry");
+//                        });
+//
+//                        stepped.addAlternativeGroup(finish -> {
+//                            finish.addToken("Make Comment");
+//                            finish.addToken("Reset Entry");
+//                            finish.addToken("Save Entry");
+//                        });
+//                    } else {
+//
+//                    }
                 });
 
                 vg.setListener(((recognizer, tokens, tags) -> {
-                    HashMap<String, Long> spokenColumnValueIDMap = positionColumnValueSpokenIDMap.get(spokenPosition);
-                    Long columnValueID = -1L;
-                    if (spokenColumnValueIDMap != null) { columnValueID = spokenColumnValueIDMap.get(tokens[0]); }
-
-                    List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
-                    ColumnValue columnValue = null;
-                    if (columnValueList != null) {
-                        Long finalColumnValueID = columnValueID;
-                        columnValue = columnValueList.stream()
-                                .filter(cv -> cv.getUid() == finalColumnValueID)
-                                .findFirst()
-                                .orElse(null);
-                    }
-
-                    Spinner columnValueSpinner = columnValueSpinnerList.get(spokenPosition);
-                    assert columnValueList != null;
-                    int position = columnValueList.indexOf(columnValue) + 1;
-                    columnValueSpinner.setSelection(position);
-
-                    if (Objects.equals(tokens[0], "Save Entry") ||
-                            Objects.equals(tokens[0], "Reset Entry")) {
-                        spokenPosition = 0;
-                    } else {
-                        spokenPosition++;
+                    switch (tokens[0]) {
+                        case "Skip":
+                            spokenPosition++;
+                            isColumnSkipped = true;
+                            updateIristickHUD();
+                            break;
+                        case "Delete Last":
+                            spokenPosition = 0;
+                            break;
+                        case "Repeat Entry":
+                            spokenPosition = 0;
+                            break;
+                        case "Reset Entry":
+                            spokenPosition = 0;
+                            resetEntryButtonOnClick();
+                            break;
+                        case "Save Entry":
+                            spokenPosition = 0;
+                            saveEntryButtonOnClick();
+                            break;
+                        case "End Session":
+                            spokenPosition = 0;
+                            endSessionButtonOnClick();
+                            break;
+                        default:
+                            enterColumnValueCommand(tokens);
                     }
                 }));
             });
@@ -1756,6 +1808,32 @@ public class DataGatheringActivity extends AppCompatActivity
 //                }));
 //            });
         }
+    }
+
+    private void enterColumnValueCommand(String[] tokens) {
+        HashMap<String, Long> spokenColumnValueIDMap =
+                positionColumnValueSpokenIDMap.get(spokenPosition);
+        Long columnValueID = -1L;
+        if (spokenColumnValueIDMap != null) {
+            columnValueID = spokenColumnValueIDMap.get(tokens[0]);
+        }
+
+        List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
+        ColumnValue columnValue = null;
+        if (columnValueList != null) {
+            Long finalColumnValueID = columnValueID;
+            columnValue = columnValueList.stream()
+                    .filter(cv -> cv.getUid() == finalColumnValueID)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        Spinner columnValueSpinner = columnValueSpinnerList.get(spokenPosition);
+        assert columnValueList != null;
+        int position = columnValueList.indexOf(columnValue);
+        columnValueSpinner.setSelection(position + 1);
+        selectedColumnValue = columnValueList.get(position);
+        spokenPosition++;
     }
 
     @OptIn(markerClass = Experimental.class)
@@ -1865,18 +1943,23 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void updateIristickHUD() {
         if (iristickHUD != null) {
-            int spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
+            spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
+            if (isColumnSkipped) { spinnerPosition = spokenPosition - 1; }
 
-            if (selectedColumnValue != null || emptyColumnValueIndex >= 0) {
-                if (selectedColumnValue != null) {
+            if (selectedColumnValue != null ||
+                    emptyColumnValueIndex >= 0 ||
+                    isColumnSkipped) {
+                if (selectedColumnValue != null && !isColumnSkipped) {
                     entryHUDMap.put(spinnerPosition, selectedColumnValue);
-                } else {
+                } else if (!isColumnSkipped) {       //todo - select first empty entry
                     spinnerPosition = emptyColumnValueIndex;
                 }
 
+                //Set Column values
                 if (columnMap.size() > 0) {
                     iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
-                            columnMap.get(spinnerPosition)).getName());
+                                columnMap.get(spinnerPosition)).getName());
+
                     if (columnMap.size() != spinnerPosition + 1) {
                         iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
                                 columnMap.get(spinnerPosition + 1)).getName());
@@ -1890,9 +1973,20 @@ public class DataGatheringActivity extends AppCompatActivity
                     }
                 }
 
-                iristickHUD.entryLastValue.setText(selectedColumnValue != null ?
-                        selectedColumnValue.getName() :
-                        "");
+                //Set ColumnValue values
+                if (isColumnSkipped) {
+                    if (entryHUDMap.get(spinnerPosition) != null) {
+                        iristickHUD.entryLastValue.setText(
+                                Objects.requireNonNull(entryHUDMap.get(spokenPosition)).getName());
+                    } else {
+                        iristickHUD.entryLastValue.setText("");
+                    }
+                } else {
+                    iristickHUD.entryLastValue.setText(selectedColumnValue != null ?
+                            selectedColumnValue.getName() :
+                            "");
+                }
+
                 if (entryHUDMap.get(spinnerPosition + 1) != null ) {
                     iristickHUD.entryNextValue.setText(Objects.requireNonNull(
                             entryHUDMap.get(spinnerPosition + 1)).getName());
@@ -1913,6 +2007,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 iristickHUD.entryPicValue.setText("");
             }
         }
+
+        isColumnSkipped = false;
     }
 
     @OptIn(markerClass = Experimental.class)
