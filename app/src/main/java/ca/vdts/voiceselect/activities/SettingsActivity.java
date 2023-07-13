@@ -74,6 +74,9 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        IristickSDK.registerListener(this.getLifecycle(), this);
+
         vdtsApplication = (VDTSApplication) getApplication();
 
         nameOnPhotoCheck = findViewById(R.id.printNameOnPictureCheck);
@@ -327,7 +330,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Initialize Iristick when connected.
+     * Initialize Iristick voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {

@@ -280,19 +280,21 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                 executor.execute(() -> {
                     currentUser = vdtsViewModel.findUserByName(userName[0]);
                     handler.post(() -> {
-                        if (currentUser.getPassword() != null) {
-                            iristickHUD.selectUserPrompt.setVisibility(View.INVISIBLE);
+                        if (currentUser != null) {
+                            if (currentUser.getPassword() != null) {
+                                iristickHUD.selectUserPrompt.setVisibility(View.INVISIBLE);
 
-                            initializeIristickInputPIN();
-                        } else {
-                            vdtsApplication.setCurrentUser(currentUser);
+                                initializeIristickInputPIN();
+                            } else {
+                                vdtsApplication.setCurrentUser(currentUser);
 
-                            //Initialize TTS Engine
-                            ttsEngine.setSpeechRate(currentUser.getFeedbackRate());
-                            ttsEngine.setPitch(currentUser.getFeedbackPitch());
+                                //Initialize TTS Engine
+                                ttsEngine.setSpeechRate(currentUser.getFeedbackRate());
+                                ttsEngine.setPitch(currentUser.getFeedbackPitch());
 
-                            Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
-                            startActivity(vdtsMenuActivity);
+                                Intent vdtsMenuActivity = new Intent(this, VDTSMenuActivity.class);
+                                startActivity(vdtsMenuActivity);
+                            }
                         }
                     });
                 });

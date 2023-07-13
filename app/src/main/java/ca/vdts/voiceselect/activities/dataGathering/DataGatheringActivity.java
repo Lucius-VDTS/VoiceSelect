@@ -390,7 +390,7 @@ public class DataGatheringActivity extends AppCompatActivity
             runOnUiThread(
                     () -> vdtsApplication.displayToast(
                             this,
-                            "Use long press to exit camera before navigating back"
+                            "Use long press to exit camera"
                     )
             );
         } else {

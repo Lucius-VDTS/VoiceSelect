@@ -91,7 +91,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
     //Iristick Components
     private VDTSConfigUsersActivity.IristickHUD iristickHUD;
 
-    //lock to prevent concurent list filling issues
+    //Prevents asynchronous filling issues
     private ReentrantLock adapterLock;
 
     @Override

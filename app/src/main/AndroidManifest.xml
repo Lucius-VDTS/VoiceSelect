@@ -75,6 +75,7 @@
 
         <activity android:name=".activities.SettingsActivity"
             android:label="@string/menu_settings_activity_button" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="ca.vdts.voiceselect"

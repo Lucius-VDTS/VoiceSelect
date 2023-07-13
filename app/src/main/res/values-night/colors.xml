@@ -16,6 +16,6 @@
      <color name="colorStepHighlight">#EAE85B</color>
      <color name="colorBackground">#303030</color>
 
- <!-- Comment Dialogue -->
-     <color name="dialogueTextBackground">#D9DCE1</color>
+ <!-- Dialogue -->
+     <color name="dialogueTextBackground">#A9A9A9</color>
  </resources>
