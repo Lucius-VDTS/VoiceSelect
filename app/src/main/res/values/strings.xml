@@ -64,6 +64,7 @@
     <string name="data_gathering_session_label">Session:</string>
     <string name="data_gathering_entries_label">Entries:</string>
     <string name="data_gathering_end_button">End</string>
+    <string name="data_gathering_end_session_dialogue">Mark this session as finished?</string>
 
     <string name="data_gathering_hud_end_of_row">END</string>
 
