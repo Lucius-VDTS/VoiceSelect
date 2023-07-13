@@ -800,12 +800,6 @@ public class DataGatheringActivity extends AppCompatActivity
         isEntrySelected.set(true);
         runOnUiThread(() -> {
             if (currentEntry.getUid() > 0) {
-//                List<Entry> entries = entryListLive.getValue();
-//                int index = entries != null ? entries.indexOf(currentEntry) : 0;
-//                columnValueIndexValue.setText(
-//                        String.format(Locale.getDefault(), "%d", index + 1)
-//                );
-
                 List<EntryValue> entryValues = entryValueListLive.getValue();
                 if (entryValues != null) {
                     List<EntryValue> currentEntryValues = entryValues.stream()
@@ -896,13 +890,13 @@ public class DataGatheringActivity extends AppCompatActivity
 
         yesButton.setOnClickListener(view -> {
             finalDialog.dismiss();
-            deleteEntry();
+            deleteEntry(false);
         });
 
         noButton.setOnClickListener(view -> finalDialog.dismiss());
     }
 
-    private void deleteEntry() {
+    private void deleteEntry(boolean isDeleteLast) {
         ExecutorService deletePicturesService = Executors.newSingleThreadExecutor();
         Handler deletePicturesHandler = new Handler(Looper.getMainLooper());
         deletePicturesService.execute(() -> {
@@ -911,7 +905,14 @@ public class DataGatheringActivity extends AppCompatActivity
             currentEntryPhotos.toArray(pictureReferences);
             vsViewModel.deleteAllPictureReferences(pictureReferences);
             deletePicturesHandler.post(() -> {
-                final long deleteEntryID = currentEntry.getUid();
+                final long deleteEntryID;
+                if (isDeleteLast) {
+                    deleteEntryID = entryList.size();
+                    currentEntry = entryList.get((int) (deleteEntryID - 1));
+                    //todo - add feedback when row deleted
+                } else {
+                    deleteEntryID = currentEntry.getUid();
+                }
 
                 List<EntryValue> entryValueList = entryValueListLive.getValue();
                 if (entryValueList != null) {
@@ -932,9 +933,9 @@ public class DataGatheringActivity extends AppCompatActivity
                         ExecutorService deleteEntryService = Executors.newSingleThreadExecutor();
                         Handler deleteEntryHandler = new Handler(Looper.getMainLooper());
                         deleteEntryService.execute(() -> {
-                            dataGatheringRecyclerAdapter.removeEntry(currentEntry);
                             vsViewModel.deleteEntry(currentEntry);
                             deleteEntryHandler.post(() -> {
+                                dataGatheringRecyclerAdapter.removeEntry(currentEntry);
                                 newEntry();
                                 updateViews();
                             });
@@ -1254,7 +1255,7 @@ public class DataGatheringActivity extends AppCompatActivity
         );
         builder.setView(customLayout);
         TextView label = customLayout.findViewById(R.id.mainLabel);
-        label.setText("Mark this session as finished?");
+        label.setText(R.string.data_gathering_end_session_dialogue);
         Button yesButton = customLayout.findViewById(R.id.yesButton);
         Button noButton = customLayout.findViewById(R.id.noButton);
 
@@ -1737,15 +1738,17 @@ public class DataGatheringActivity extends AppCompatActivity
                             isColumnSkipped = true;
                             updateIristickHUD();
                             break;
-                        case "Delete Last":
-                            spokenPosition = 0;
-                            break;
-                        case "Repeat Entry":
-                            spokenPosition = 0;
-                            break;
                         case "Reset Entry":
                             spokenPosition = 0;
                             resetEntryButtonOnClick();
+                            break;
+                        case "Delete Last":
+                            spokenPosition = 0;
+                            deleteEntry(true);
+                            break;
+                        case "Repeat Entry":
+                            spokenPosition = 0;
+                            repeatEntryButtonOnClick();
                             break;
                         case "Save Entry":
                             spokenPosition = 0;
@@ -1901,34 +1904,22 @@ public class DataGatheringActivity extends AppCompatActivity
                     int zoomLevel = Integer.parseInt(tokens[1]);
                     switch(zoomLevel) {
                         case 0:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(1.0f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.0f));
                             break;
                         case 1:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(1.2f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.2f));
                             break;
                         case 2:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(1.4f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.4f));
                             break;
                         case 3:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(1.6f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.6f));
                             break;
                         case 4:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(1.8f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.8f));
                             break;
                         case 5:
-                            iriCameraSession.reconfigure(zoom -> {
-                                zoom.setZoom(2.0f);
-                            });
+                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(2.0f));
                             break;
                     }
                 }
@@ -2039,9 +2030,7 @@ public class DataGatheringActivity extends AppCompatActivity
                         ic.addPreview(iristickHUD.iriCameraPreview));
 
         if (cameraType == 1) {
-            iriCameraSession.reconfigure(zoomLevel -> {
-                zoomLevel.setZoom(1.0f);
-            });
+            iriCameraSession.reconfigure(zoomLevel -> zoomLevel.setZoom(1.0f));
         }
 
         iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
@@ -2160,9 +2149,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         @WorkerThread
         public void displayToast(Context context, String message) {
-            ContextCompat.getMainExecutor(context).execute(() -> {
-                Toast.makeText(context, message, LENGTH_LONG).show();
-            });
+            ContextCompat.getMainExecutor(context).execute(() -> Toast.makeText(context, message, LENGTH_LONG).show());
         }
     }
 }
