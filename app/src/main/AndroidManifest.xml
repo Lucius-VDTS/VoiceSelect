@@ -27,7 +27,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/vdts_voiceselect_icon"
         android:label="@string/voice_select_application_label"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/vdts_voiceselect_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.VoiceSelectGeneral"
         tools:replace="android:theme,android:icon">
