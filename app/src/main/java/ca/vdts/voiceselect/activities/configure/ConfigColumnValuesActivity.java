@@ -6,6 +6,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSBNFUtil.toPhonetic;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -411,8 +413,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private void resetFocus(){
         if (currentUser.getAuthority() < 1){
             columnValueSpokenEditText.requestFocus();
+            showKeyboardForSomeReason(columnValueSpokenEditText,this);
         } else {
             columnValueNameEditText.requestFocus();
+            showKeyboardForSomeReason(columnValueNameEditText,this);
         }
     }
 
@@ -846,6 +850,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
         AlertDialog dialog = builder.create();
         assert dialog.getWindow() != null;
+        minView.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
 
@@ -919,6 +925,8 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
 
         AlertDialog dialog = builder.create();
         assert dialog.getWindow() != null;
+        minView.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
 

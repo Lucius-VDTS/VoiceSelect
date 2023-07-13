@@ -41,6 +41,7 @@ import android.view.ScaleGestureDetector;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -1361,6 +1362,8 @@ public class DataGatheringActivity extends AppCompatActivity
 
         AlertDialog dialog = builder.create();
         assert dialog.getWindow() != null;
+        commentView.requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
 

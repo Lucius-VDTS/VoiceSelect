@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.text.InputType;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -180,7 +181,9 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
                     dialog.dismiss();
                 });
 
-                pinAlert.show();
+                AlertDialog d = pinAlert.create();
+                d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                d.show();
                 pinText.requestFocus();
             } else {
                 vdtsApplication.setCurrentUser(currentUser);

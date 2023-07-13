@@ -3,6 +3,7 @@ package ca.vdts.voiceselect.activities.configure;
 import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -353,8 +354,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private void resetFocus(){
         if (currentUser.getAuthority() < 1){
             columnSpokenEditText.requestFocus();
+            showKeyboardForSomeReason(columnSpokenEditText,this);
         } else {
             columnNameEditText.requestFocus();
+            showKeyboardForSomeReason(columnNameEditText,this);
         }
     }
 
