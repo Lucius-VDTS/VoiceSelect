@@ -136,7 +136,7 @@ public class Importer {
                             currentUser.setAutosave(user.getAutosave());
                             currentUser.setAbbreviate(user.isAbbreviate());
                             currentUser.setFeedback(user.getFeedback());
-                            currentUser.setFeedbackQueue(user.isFeedbackQueue());
+                            currentUser.setFeedbackFlushQueue(user.isFeedbackQueue());
                             currentUser.setFeedbackRate(user.getFeedbackRate());
                             currentUser.setFeedbackPitch(user.getFeedbackPitch());
                             currentUser.setActive(user.isActive());

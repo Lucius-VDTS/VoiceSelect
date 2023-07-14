@@ -88,7 +88,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     @Expose
     @SerializedName("feedbackQueue")
     @ColumnInfo(name = "feedbackQueue")
-    private boolean feedbackQueue;
+    private boolean feedbackFlushQueue;
 
     @Expose
     @SerializedName("feedbackRate")
@@ -125,8 +125,9 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
 
     //Default Constructor
     public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
-                    int authority, boolean primary, String password, int autosave, boolean abbreviate, int feedback,
-                    boolean feedbackQueue, float feedbackRate, float feedbackPitch) {
+                    int authority, boolean primary, String password, int autosave,
+                    boolean abbreviate, int feedback, boolean feedbackFlushQueue, float feedbackRate,
+                    float feedbackPitch) {
         this.uid = uid;
         this.name = name;
         this.exportCode = exportCode;
@@ -138,7 +139,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.autosave = autosave;
         this.abbreviate = abbreviate;
         this.feedback = feedback;
-        this.feedbackQueue = feedbackQueue;
+        this.feedbackFlushQueue = feedbackFlushQueue;
         this.feedbackRate = feedbackRate;
         this.feedbackPitch = feedbackPitch;
         this.active = true;
@@ -147,8 +148,8 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     //Non-Default Constructor
     @Ignore
     public VDTSUser(long uid, String name, String exportCode, String initials, String sessionPrefix,
-                    int authority, boolean primary, String password, int autosave,boolean abbreviate, int feedback,
-                    boolean feedbackQueue, float feedbackRate, float feedbackPitch,
+                    int authority, boolean primary, String password, int autosave, boolean abbreviate,
+                    int feedback, boolean feedbackFlushQueue, float feedbackRate, float feedbackPitch,
                     boolean active) {
         this.uid = uid;
         this.name = name;
@@ -161,7 +162,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.autosave = autosave;
         this.abbreviate = abbreviate;
         this.feedback = feedback;
-        this.feedbackQueue = feedbackQueue;
+        this.feedbackFlushQueue = feedbackFlushQueue;
         this.feedbackRate = feedbackRate;
         this.feedbackPitch = feedbackPitch;
         this.active = active;
@@ -191,7 +192,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
                 copy.getAutosave(),
                 copy.isAbbreviate(),
                 copy.getFeedback(),
-                copy.isFeedbackQueue(),
+                copy.isFeedbackFlushQueue(),
                 copy.getFeedbackRate(),
                 copy.getFeedbackPitch(),
                 copy.isActive()
@@ -211,7 +212,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.password = password;
         this.autosave = 0;
         this.feedback = 1;
-        this.feedbackQueue = false;
+        this.feedbackFlushQueue = false;
         this.feedbackRate = 1f;
         this.feedbackPitch = 1f;
         this.active = true;
@@ -305,12 +306,12 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
         this.feedback = feedback;
     }
 
-    public boolean isFeedbackQueue() {
-        return feedbackQueue;
+    public boolean isFeedbackFlushQueue() {
+        return feedbackFlushQueue;
     }
 
-    public void setFeedbackQueue(boolean feedbackQueue) {
-        this.feedbackQueue = feedbackQueue;
+    public void setFeedbackFlushQueue(boolean feedbackFlushQueue) {
+        this.feedbackFlushQueue = feedbackFlushQueue;
     }
 
     public float getFeedbackRate() {

@@ -100,7 +100,7 @@ public class User {
         autosave = user.getAutosave();
         abbreviate = user.isAbbreviate();
         feedback = user.getFeedback();
-        feedbackQueue = user.isFeedbackQueue();
+        feedbackQueue = user.isFeedbackFlushQueue();
         feedbackRate = user.getFeedbackRate();
         feedbackPitch = user.getFeedbackPitch();
         active = user.isActive();

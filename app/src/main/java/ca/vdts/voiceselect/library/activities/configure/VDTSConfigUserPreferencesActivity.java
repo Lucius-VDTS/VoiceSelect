@@ -132,7 +132,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
         autoSaveSwitch.setChecked(currentUser.getAutosave() == 1);
         abbreviateSwitch.setChecked(currentUser.isAbbreviate());
         enabledSwitch.setChecked(currentUser.getFeedback() == 1);
-        flushQueueSwitch.setChecked(currentUser.isFeedbackQueue());
+        flushQueueSwitch.setChecked(currentUser.isFeedbackFlushQueue());
         rateSeekBar.setProgress((int) (currentUser.getFeedbackRate() * 50));
         pitchSeekBar.setProgress((int) (currentUser.getFeedbackPitch() * 50));
     }
@@ -190,7 +190,7 @@ public class VDTSConfigUserPreferencesActivity extends AppCompatActivity impleme
                 currentUser.setFeedback(0);
             }
 
-            currentUser.setFeedbackQueue(flushQueueSwitch.isChecked());
+            currentUser.setFeedbackFlushQueue(flushQueueSwitch.isChecked());
 
             float rate = (float) rateSeekBar.getProgress() / 50;
             if (rate < 0.1) { rate = 0.1f; }

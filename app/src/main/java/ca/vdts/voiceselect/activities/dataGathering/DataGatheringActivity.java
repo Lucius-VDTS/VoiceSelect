@@ -31,6 +31,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
 import android.util.Range;
 import android.util.Rational;
 import android.util.TypedValue;
@@ -140,6 +141,9 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private VDTSApplication vdtsApplication;
     private VDTSUser currentUser;
+    private TextToSpeech currentUserTTSEngine;
+    private int currentUserFeedbackQueue;
+
     private Session currentSession;
     private Entry currentEntry;
     private final AtomicBoolean isEntrySelected = new AtomicBoolean(false);
@@ -235,7 +239,14 @@ public class DataGatheringActivity extends AppCompatActivity
         IristickSDK.registerListener(this.getLifecycle(), this);
 
         vdtsApplication = (VDTSApplication) this.getApplication();
+
         currentUser = vdtsApplication.getCurrentUser();
+        currentUserTTSEngine = vdtsApplication.getTTSEngine();
+        if (currentUser.isFeedbackFlushQueue()) {
+            currentUserFeedbackQueue = 0;
+        } else {
+            currentUserFeedbackQueue = 1;
+        }
 
         adapterLock = new ReentrantLock();
 
@@ -896,6 +907,37 @@ public class DataGatheringActivity extends AppCompatActivity
         noButton.setOnClickListener(view -> finalDialog.dismiss());
     }
 
+    private void deleteEntryFeedback(boolean isDeleteLast) {
+        String deleteEntry = "Delete row " + (entryList.size());
+        currentUserTTSEngine.speak(
+                deleteEntry,
+                currentUserFeedbackQueue,
+                null,
+                null);
+
+        if (isDeleteLast) {
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("Yes", () -> {
+                        deleteEntry(true);
+                        String rowDeleted = "Row " + (entryList.size()) + " deleted";
+                        currentUserTTSEngine.speak(
+                                rowDeleted,
+                                currentUserFeedbackQueue,
+                                null,
+                                null);
+                    })
+            );
+
+            IristickSDK.addVoiceCommands(
+                    this.getLifecycle(),
+                    this,
+                    vc -> vc.add("No", () -> deleteEntry(true))
+            );
+        }
+    }
+
     private void deleteEntry(boolean isDeleteLast) {
         ExecutorService deletePicturesService = Executors.newSingleThreadExecutor();
         Handler deletePicturesHandler = new Handler(Looper.getMainLooper());
@@ -1114,6 +1156,7 @@ public class DataGatheringActivity extends AppCompatActivity
         }
 
         isColumnSkipped = false;
+        spokenPosition = 0;
     }
 
     private void savePictureReferences(long entryID) {
@@ -1734,6 +1777,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 vg.setListener(((recognizer, tokens, tags) -> {
                     switch (tokens[0]) {
                         case "Skip":
+
                             spokenPosition++;
                             isColumnSkipped = true;
                             updateIristickHUD();
@@ -1744,7 +1788,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             break;
                         case "Delete Last":
                             spokenPosition = 0;
-                            deleteEntry(true);
+                            deleteEntryFeedback(true);
                             break;
                         case "Repeat Entry":
                             spokenPosition = 0;
@@ -1819,27 +1863,27 @@ public class DataGatheringActivity extends AppCompatActivity
     private void enterColumnValueCommand(String[] tokens) {
         HashMap<String, Long> spokenColumnValueIDMap =
                 positionColumnValueSpokenIDMap.get(spokenPosition);
-        Long columnValueID = -1L;
         if (spokenColumnValueIDMap != null) {
-            columnValueID = spokenColumnValueIDMap.get(tokens[0]);
-        }
+            if (spokenColumnValueIDMap.get(tokens[0]) != null) {
+                Long columnValueID = spokenColumnValueIDMap.get(tokens[0]);
 
-        List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
-        ColumnValue columnValue = null;
-        if (columnValueList != null) {
-            Long finalColumnValueID = columnValueID;
-            columnValue = columnValueList.stream()
-                    .filter(cv -> cv.getUid() == finalColumnValueID)
-                    .findFirst()
-                    .orElse(null);
-        }
+                List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
+                ColumnValue columnValue = null;
+                if (columnValueList != null) {
+                    columnValue = columnValueList.stream()
+                            .filter(cv -> cv.getUid() == columnValueID)
+                            .findFirst()
+                            .orElse(null);
+                }
 
-        Spinner columnValueSpinner = columnValueSpinnerList.get(spokenPosition);
-        assert columnValueList != null;
-        int position = columnValueList.indexOf(columnValue);
-        columnValueSpinner.setSelection(position + 1);
-        selectedColumnValue = columnValueList.get(position);
-        spokenPosition++;
+                Spinner columnValueSpinner = columnValueSpinnerList.get(spokenPosition);
+                assert columnValueList != null;
+                int position = columnValueList.indexOf(columnValue);
+                columnValueSpinner.setSelection(position + 1);
+                selectedColumnValue = columnValueList.get(position);
+                spokenPosition++;
+            }
+        }
     }
 
     @OptIn(markerClass = Experimental.class)
@@ -2149,7 +2193,8 @@ public class DataGatheringActivity extends AppCompatActivity
 
         @WorkerThread
         public void displayToast(Context context, String message) {
-            ContextCompat.getMainExecutor(context).execute(() -> Toast.makeText(context, message, LENGTH_LONG).show());
+            ContextCompat.getMainExecutor(context).execute(() ->
+                    Toast.makeText(context, message, LENGTH_LONG).show());
         }
     }
 }
