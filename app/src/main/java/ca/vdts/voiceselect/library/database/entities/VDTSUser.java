@@ -108,7 +108,7 @@ public class VDTSUser implements VDTSIndexedNamedInterface, VDTSBNFGrammarInterf
     //Default super user
     public static final VDTSUser VDTS_USER_NONE = new VDTSUser(
             -9001L,
-            "SUPER",
+            "",
             "",
             "",
             "",
