@@ -151,7 +151,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private int emptyColumnValueIndex = -1;
     private int spokenPosition = 0;
     private int spinnerPosition = 0;
-    private boolean isColumnSkipped = false;
+    private boolean isColumnNext = false;
+    private boolean isColumnPrevious = false;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -200,7 +201,7 @@ public class DataGatheringActivity extends AppCompatActivity
     //Iristick Components
     private boolean isHeadsetAvailable = false;
     private DataGatheringActivity.IristickHUD iristickHUD;
-    private final HashMap<Integer, ColumnValue> entryHUDMap = new HashMap<>();
+    private final HashMap<Integer, String> entryHUDMap = new HashMap<>();
     private IRICamera iriCamera;
     private IRICameraSession iriCameraSession;
     private boolean iriCameraCaptureInProgress = false;
@@ -466,35 +467,6 @@ public class DataGatheringActivity extends AppCompatActivity
                 resources.getDisplayMetrics()
         );
         layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
-
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        Handler handler = new Handler(Looper.getMainLooper());
-//        executor.execute(() -> {
-//            columnSpokenList = vsViewModel.findAllColumnSpokensByUser(currentUser.getUid());
-//
-//            handler.post(() -> {
-//                if (columnMap.size() != 0) {
-//                    for (int index = 0; index < columnMap.size(); index++){
-//                        TextView columnText = new TextView(this);
-//                        columnText.setMinWidth(minWidthDimen);
-//                        columnText.setLayoutParams(layoutParams);
-//                        columnText.setPadding(marginPaddingDimen, marginPaddingDimen,
-//                                marginPaddingDimen, marginPaddingDimen);
-//                        columnText.setGravity(Gravity.CENTER);
-//                        columnText.setMaxLines(1);
-//                        columnText.setBackground(
-//                                ContextCompat.getDrawable(this, R.drawable.text_background));
-//                        columnText.setText(currentUser.isAbbreviate() ?
-//                                Objects.requireNonNull(columnMap.get(index)).getNameCode() :
-//                                Objects.requireNonNull(columnMap.get(index)).getName());
-//                        columnText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-//                        columnLinearLayout.addView(columnText);
-//                    }
-//                }
-//
-//                initializeColumnValuesLayout();
-//            });
-//        });
 
         if (columnMap.size() != 0) {
             for (int index = 0; index < columnMap.size(); index++){
@@ -1123,7 +1095,7 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
 
-        isColumnSkipped = false;
+        isColumnNext = false;
         spokenPosition = 0;
     }
 
@@ -1686,6 +1658,7 @@ public class DataGatheringActivity extends AppCompatActivity
                         }
 
                         start.addToken("Next Column");
+                        start.addToken("Previous Column");
                         start.addToken("Delete Last");
                         start.addToken("Repeat Entry");
                         start.addToken("End Session");
@@ -1704,6 +1677,7 @@ public class DataGatheringActivity extends AppCompatActivity
                             }
 
                             middle.addToken("Next Column");
+                            middle.addToken("Previous Column");
                             middle.addToken("Reset Entry");
                         });
                     }
@@ -1718,31 +1692,51 @@ public class DataGatheringActivity extends AppCompatActivity
                 });
 
                 vg.setListener(((recognizer, tokens, tags) -> {
+                    String columnPositionFeedback;
                     switch (tokens[0]) {
                         case "Next Column":
                             LOG.info("Next Column");
-                            String columnValueFeedback;
                             if (spokenPosition + 1 < columnMap.size()) {
-                                columnValueFeedback = Objects.requireNonNull(
+                                columnPositionFeedback = Objects.requireNonNull(
                                         columnMap.get(spokenPosition + 1)).getName();
                             } else {
-                                columnValueFeedback = "End";
+                                columnPositionFeedback = "End";
                             }
                             currentUserTTSEngine.speak(
-                                    columnValueFeedback,
+                                    columnPositionFeedback,
                                     currentUserFeedbackMode,
                                     null,
                                     null
                             );
 
                             spokenPosition++;
-                            isColumnSkipped = true;
+                            isColumnNext = true;
+                            updateIristickHUD();
+                            break;
+                        case "Previous Column":
+                            LOG.info("Previous Column");
+                            if (spokenPosition - 1 < columnMap.size()) {
+                                columnPositionFeedback = Objects.requireNonNull(
+                                        columnMap.get(spokenPosition - 1)).getName();
+                            } else {
+                                columnPositionFeedback = "";
+                            }
+
+                            currentUserTTSEngine.speak(
+                                    columnPositionFeedback,
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+
+                            spokenPosition--;
+                            isColumnPrevious = true;
                             updateIristickHUD();
                             break;
                         case "Delete Last":
                             LOG.info("Delete Last");
                             spokenPosition = 0;
-                            confirmDeleteEntryVoice(true);
+                            confirmDeleteEntryVoice();
                             break;
                         case "Reset Entry":
                             LOG.info("Reset Entry");
@@ -1855,7 +1849,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
                 List<ColumnValue> columnValueList = columnValueMap.get(spokenPosition);
                 ColumnValue columnValue = null;
-                if (columnValueList != null) {
+                if (columnValueID != null && columnValueList != null) {
                     columnValue = columnValueList.stream()
                             .filter(cv -> cv.getUid() == columnValueID)
                             .findFirst()
@@ -1886,7 +1880,7 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
-    private void confirmDeleteEntryVoice(boolean isDeleteLast) {
+    private void confirmDeleteEntryVoice() {
         String deleteEntry = "Delete row " + (entryList.size());
         LOG.info("Delete row {}", entryList.size());
         currentUserTTSEngine.speak(
@@ -1895,36 +1889,34 @@ public class DataGatheringActivity extends AppCompatActivity
                 null,
                 null);
 
-        if (isDeleteLast) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Yes", () -> {
-                        LOG.info("Yes");
-                        deleteEntry(true);
-                        String rowDeleted = "Row " + (entryList.size()) + " deleted";
-                        currentUserTTSEngine.speak(
-                                rowDeleted,
-                                currentUserFeedbackMode,
-                                null,
-                                null);
-                    })
-            );
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Yes", () -> {
+                    LOG.info("Yes");
+                    deleteEntry(true);
+                    String rowDeleted = "Row " + (entryList.size()) + " deleted";
+                    currentUserTTSEngine.speak(
+                            rowDeleted,
+                            currentUserFeedbackMode,
+                            null,
+                            null);
+                })
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("No", () -> {
-                        LOG.info("No");
-                        currentUserTTSEngine.speak(
-                                "Row " + (entryList.size()) + " not deleted",
-                                currentUserFeedbackMode,
-                                null,
-                                null
-                        );
-                    })
-            );
-        }
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("No", () -> {
+                    LOG.info("No");
+                    currentUserTTSEngine.speak(
+                            "Row " + (entryList.size()) + " not deleted",
+                            currentUserFeedbackMode,
+                            null,
+                            null
+                    );
+                })
+        );
     }
 
     @OptIn(markerClass = Experimental.class)
@@ -2222,26 +2214,35 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void updateIristickHUD() {
         if (iristickHUD != null) {
-            spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition();
-            if (isColumnSkipped) { spinnerPosition = spokenPosition - 1; }
+            if (isColumnNext || isColumnPrevious) {
+                spinnerPosition = spokenPosition;
+            } else {
+                spinnerPosition = vdtsNamedPositionedAdapter.getSelectedSpinnerPosition() + 1;
+            }
 
             if (selectedColumnValue != null ||
-                    emptyColumnValueIndex >= 0 ||
-                    isColumnSkipped) {
-                if (selectedColumnValue != null && !isColumnSkipped) {
-                    entryHUDMap.put(spinnerPosition, selectedColumnValue);
-                } else if (!isColumnSkipped) {       //todo - select first empty entry
-                    spinnerPosition = emptyColumnValueIndex;
+                    isColumnNext ||
+                    isColumnPrevious) {
+                if (selectedColumnValue != null && !isColumnNext && !isColumnPrevious) {
+                    entryHUDMap.put(spinnerPosition - 1, selectedColumnValue.getName());
                 }
 
                 //Set Column values
                 if (columnMap.size() > 0) {
-                    iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
-                            columnMap.get(spinnerPosition)).getName());
+                    if (spinnerPosition - 1 >= 0) {
+                        iristickHUD.columnLastLabel.setText(Objects.requireNonNull(
+                                columnMap.get(spinnerPosition - 1)).getName());
+                    } else {
+                        iristickHUD.columnLastLabel.setText("");
+                    }
 
-                    if (columnMap.size() != spinnerPosition + 1) {
+                    if (columnMap.size() != spinnerPosition) {
                         iristickHUD.columnNextLabel.setText(Objects.requireNonNull(
-                                columnMap.get(spinnerPosition + 1)).getName());
+                                columnMap.get(spinnerPosition)).getName());
+                        iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
+                                this,
+                                R.drawable.spinner_background)
+                        );
                     } else {
                         iristickHUD.columnNextLabel.setText(
                                 R.string.data_gathering_hud_end_of_row);
@@ -2253,22 +2254,16 @@ public class DataGatheringActivity extends AppCompatActivity
                 }
 
                 //Set ColumnValue values
-                if (isColumnSkipped) {
-                    if (entryHUDMap.get(spinnerPosition) != null) {
-                        iristickHUD.entryLastValue.setText(
-                                Objects.requireNonNull(entryHUDMap.get(spokenPosition)).getName());
-                    } else {
-                        iristickHUD.entryLastValue.setText("");
-                    }
+                if (entryHUDMap.get(spinnerPosition - 1) != null) {
+                    iristickHUD.entryLastValue.setText(
+                            Objects.requireNonNull(entryHUDMap.get(spinnerPosition - 1)));
                 } else {
-                    iristickHUD.entryLastValue.setText(selectedColumnValue != null ?
-                            selectedColumnValue.getName() :
-                            "");
+                    iristickHUD.entryLastValue.setText("");
                 }
 
-                if (entryHUDMap.get(spinnerPosition + 1) != null ) {
+                if (entryHUDMap.get(spinnerPosition) != null ) {
                     iristickHUD.entryNextValue.setText(Objects.requireNonNull(
-                            entryHUDMap.get(spinnerPosition + 1)).getName());
+                            entryHUDMap.get(spinnerPosition)));
                 } else {
                     iristickHUD.entryNextValue.setText("");
                 }
@@ -2287,7 +2282,8 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
 
-        isColumnSkipped = false;
+        isColumnNext = false;
+        isColumnPrevious = false;
     }
 
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
