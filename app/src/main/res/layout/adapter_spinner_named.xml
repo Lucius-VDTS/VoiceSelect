@@ -9,6 +9,6 @@
     android:textSize="@dimen/large_text_size"
     app:autoSizeMinTextSize="@dimen/xs_text_size"
     app:autoSizeMaxTextSize="@dimen/large_text_size"
-    app:autoSizeStepGranularity="2sp"
+    app:autoSizeStepGranularity="@dimen/auto_size_step_granularity"
     app:autoSizeTextType="uniform">
 </TextView>

@@ -35,6 +35,7 @@
     <dimen name="outline_width">4dp</dimen>
 
 <!--   Fonts   -->
+    <dimen name="xxxxs_text_size">10dp</dimen>
     <dimen name="xxxs_text_size">12dp</dimen>
     <dimen name="xxs_text_size">14dp</dimen>
     <dimen name="xs_text_size">16dp</dimen>
@@ -43,4 +44,6 @@
     <dimen name="large_text_size">22dp</dimen>
     <dimen name="xl_text_size">24dp</dimen>
     <dimen name="xxl_text_size">26dp</dimen>
+
+    <dimen name="auto_size_step_granularity">2dp</dimen>
 </resources>

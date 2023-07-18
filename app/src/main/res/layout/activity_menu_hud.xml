@@ -11,8 +11,8 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_marginTop="@dimen/ten_margin"
-        android:layout_marginStart="@dimen/four_x_margin"
-        android:layout_marginEnd="@dimen/four_x_margin"
+        android:layout_marginStart="@dimen/double_margin"
+        android:layout_marginEnd="@dimen/double_margin"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -37,9 +37,9 @@
             android:layout_marginEnd="@dimen/margin"
             android:maxLines="1"
             android:textSize="@dimen/xxs_text_size"
-            app:autoSizeMinTextSize="@dimen/xxxs_text_size"
+            app:autoSizeMinTextSize="@dimen/xxxxs_text_size"
             app:autoSizeMaxTextSize="@dimen/xxs_text_size"
-            app:autoSizeStepGranularity="2sp"
+            app:autoSizeStepGranularity="@dimen/auto_size_step_granularity"
             app:autoSizeTextType="uniform"
             android:textColor="#ffffff">
         </TextView>

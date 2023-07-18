@@ -84,6 +84,7 @@ import com.iristick.sdk.IRIHeadset;
 import com.iristick.sdk.IRIListener;
 import com.iristick.sdk.IristickSDK;
 import com.iristick.sdk.camera.IRICamera;
+import com.iristick.sdk.camera.IRICameraAFStrategy;
 import com.iristick.sdk.camera.IRICameraProfile;
 import com.iristick.sdk.camera.IRICameraSession;
 import com.iristick.sdk.camera.IRICameraType;
@@ -206,6 +207,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private IRICamera iriCamera;
     private IRICameraSession iriCameraSession;
     private boolean iriCameraCaptureInProgress = false;
+    private int cameraType = -1;
 
     //GPS Components
     private boolean GPSConnected = false;
@@ -1701,100 +1703,102 @@ public class DataGatheringActivity extends AppCompatActivity
 
                 vg.setListener(((recognizer, tokens, tags) -> {
                     String columnPositionFeedback;
-                    switch (tokens[0]) {
-                        case "Next Column":
-                            LOG.info("Next Column");
-                            if (spokenPosition + 1 < columnMap.size()) {
-                                columnPositionFeedback = Objects.requireNonNull(
-                                        columnMap.get(spokenPosition + 1)).getName();
-                            } else {
-                                columnPositionFeedback = "End";
-                            }
-                            currentUserTTSEngine.speak(
-                                    columnPositionFeedback,
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-
-                            spokenPosition++;
-                            isColumnNext = true;
-                            updateIristickHUDViews();
-                            break;
-                        case "Previous Column":
-                            LOG.info("Previous Column");
-                            if (spokenPosition - 1 < columnMap.size()) {
-                                columnPositionFeedback = Objects.requireNonNull(
-                                        columnMap.get(spokenPosition - 1)).getName();
-                            } else {
-                                columnPositionFeedback = "";
-                            }
-
-                            currentUserTTSEngine.speak(
-                                    columnPositionFeedback,
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-
-                            spokenPosition--;
-                            isColumnPrevious = true;
-                            updateIristickHUDViews();
-                            break;
-                        case "Delete Last":
-                            LOG.info("Delete Last");
-                            spokenPosition = 0;
-                            isDeleteLast = true;
-                            confirmDeleteEntryVoice();
-                            break;
-                        case "Reset Entry":
-                            LOG.info("Reset Entry");
-                            currentUserTTSEngine.speak(
-                                    "Entry Reset",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            spokenPosition = 0;
-                            resetEntryButtonOnClick();
-                            break;
-                        case "Repeat Entry":
-                            if (dataGatheringRecyclerAdapter.getItemCount() > 0) {
-                                LOG.info("Repeat Entry");
+                    if (!isDeleteLast && iriCameraSession == null) {
+                        switch (tokens[0]) {
+                            case "Next Column":
+                                LOG.info("Next Column");
+                                if (spokenPosition + 1 < columnMap.size()) {
+                                    columnPositionFeedback = Objects.requireNonNull(
+                                            columnMap.get(spokenPosition + 1)).getName();
+                                } else {
+                                    columnPositionFeedback = "End";
+                                }
                                 currentUserTTSEngine.speak(
-                                        "Entry Repeated",
+                                        columnPositionFeedback,
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+
+                                spokenPosition++;
+                                isColumnNext = true;
+                                updateIristickHUDViews();
+                                break;
+                            case "Previous Column":
+                                LOG.info("Previous Column");
+                                if (spokenPosition - 1 < columnMap.size()) {
+                                    columnPositionFeedback = Objects.requireNonNull(
+                                            columnMap.get(spokenPosition - 1)).getName();
+                                } else {
+                                    columnPositionFeedback = "";
+                                }
+
+                                currentUserTTSEngine.speak(
+                                        columnPositionFeedback,
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+
+                                spokenPosition--;
+                                isColumnPrevious = true;
+                                updateIristickHUDViews();
+                                break;
+                            case "Delete Last":
+                                LOG.info("Delete Last");
+                                spokenPosition = 0;
+                                isDeleteLast = true;
+                                confirmDeleteEntryVoice();
+                                break;
+                            case "Reset Entry":
+                                LOG.info("Reset Entry");
+                                currentUserTTSEngine.speak(
+                                        "Entry Reset",
                                         currentUserFeedbackMode,
                                         null,
                                         null
                                 );
                                 spokenPosition = 0;
-                                repeatEntryButtonOnClick();
-                            }
-                            break;
-                        case "Save Entry":
-                            LOG.info("Save Entry");
-                            currentUserTTSEngine.speak(
-                                    "Entry Saved",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            spokenPosition = 0;
-                            saveEntryButtonOnClick();
-                            break;
-                        case "End Session":
-                            LOG.info("End Session");
-                            currentUserTTSEngine.speak(
-                                    "Session Finished",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            spokenPosition = 0;
-                            endSessionButtonOnClick();
-                            break;
-                        default:
-                            enterColumnValueCommandVoice(tokens);
+                                resetEntryButtonOnClick();
+                                break;
+                            case "Repeat Entry":
+                                if (dataGatheringRecyclerAdapter.getItemCount() > 0) {
+                                    LOG.info("Repeat Entry");
+                                    currentUserTTSEngine.speak(
+                                            "Entry Repeated",
+                                            currentUserFeedbackMode,
+                                            null,
+                                            null
+                                    );
+                                    spokenPosition = 0;
+                                    repeatEntryButtonOnClick();
+                                }
+                                break;
+                            case "Save Entry":
+                                LOG.info("Save Entry");
+                                currentUserTTSEngine.speak(
+                                        "Entry Saved",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                                spokenPosition = 0;
+                                saveEntryButtonOnClick();
+                                break;
+                            case "End Session":
+                                LOG.info("End Session");
+                                currentUserTTSEngine.speak(
+                                        "Session Finished",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                                spokenPosition = 0;
+                                endSessionButtonOnClick();
+                                break;
+                            default:
+                                enterColumnValueCommandVoice(tokens);
+                        }
                     }
                 }));
             });
@@ -1891,6 +1895,7 @@ public class DataGatheringActivity extends AppCompatActivity
         }
     }
 
+    //todo - fix repeat feedback bug
     private void confirmDeleteEntryVoice() {
         String deleteEntry = "Delete row " + (entryList.size());
         LOG.info("Delete row {}", entryList.size());
@@ -1906,13 +1911,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     this,
                     vc -> vc.add("Yes", () -> {
                         LOG.info("Yes");
-                        deleteEntry(true);
-                        String rowDeleted = "Row " + (entryList.size()) + " deleted";
+                        String rowDeleted = "Row " + entryList.size() + " Deleted";
                         currentUserTTSEngine.speak(
-                                rowDeleted,
+                                "Row Deleted",
                                 currentUserFeedbackMode,
                                 null,
                                 null);
+                        deleteEntry(true);
+                        isDeleteLast = false;
                     })
             );
 
@@ -1922,15 +1928,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     vc -> vc.add("No", () -> {
                         LOG.info("No");
                         currentUserTTSEngine.speak(
-                                "Row " + (entryList.size()) + " not deleted",
+                                "Delete Aborted",
                                 currentUserFeedbackMode,
                                 null,
                                 null
                         );
+                        isDeleteLast = false;
                     })
             );
-
-            isDeleteLast = false;
         }
     }
 
@@ -1946,6 +1951,7 @@ public class DataGatheringActivity extends AppCompatActivity
                    ag.addToken("Open");
                    ag.addToken("Wide");
                    ag.addToken("Zoom");
+                   ag.addToken("Focus");
                    ag.addToken("Show");
                    ag.addToken("Hide");
                    ag.addToken("Close");
@@ -1958,14 +1964,15 @@ public class DataGatheringActivity extends AppCompatActivity
                switch(tokens[0]) {
                    case "Open":
                        LOG.info("Open Camera");
-                       if (iriCameraSession != null) { closeIriCamera(); }
                        currentUserTTSEngine.speak(
                                "Camera",
                                currentUserFeedbackMode,
                                null,
                                null
                        );
-                       openIriCamera(headset, -1);
+                       if (iriCameraSession != null) { closeIriCamera(); }
+                       cameraType = -1;
+                       openIriCamera(headset);
                        break;
                    case "Wide":
                        LOG.info("Wide Camera");
@@ -1976,18 +1983,32 @@ public class DataGatheringActivity extends AppCompatActivity
                                null,
                                null
                        );
-                       openIriCamera(headset, -1);
+                       cameraType = -1;
+                       openIriCamera(headset);
                        break;
                    case "Zoom":
                        LOG.info("Zoom Camera");
-                       if (iriCameraSession != null) { closeIriCamera(); }
                        currentUserTTSEngine.speak(
                                "Camera Zoom",
                                currentUserFeedbackMode,
                                null,
                                null
                        );
-                       openIriCamera(headset, 1);
+                       if (iriCameraSession != null) { closeIriCamera(); }
+                       cameraType = 1;
+                       openIriCamera(headset);
+                       break;
+                   case "Focus":
+                       LOG.info("Focus Camera");
+                       if (iriCameraSession != null) {
+                           currentUserTTSEngine.speak(
+                                   "Camera Focused",
+                                   currentUserFeedbackMode,
+                                   null,
+                                   null
+                           );
+                           iriCameraSession.triggerAF();
+                       }
                        break;
                    case "Show":
                        LOG.info("Show Camera");
@@ -2031,6 +2052,7 @@ public class DataGatheringActivity extends AppCompatActivity
            })));
         });
 
+        //todo - doesn't change zoom - min/max available zoom is 1.0F - check device if zoom is available
         IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
             vg.addSequentialGroup(sg -> {
                 sg.addToken("Zoom");
@@ -2043,7 +2065,6 @@ public class DataGatheringActivity extends AppCompatActivity
             });
 
             vg.setListener((((recognizer, tokens, tags) -> {
-
                 if (iriCameraSession != null) {
                     int zoomLevel = Integer.parseInt(tokens[1]);
                     switch(zoomLevel) {
@@ -2118,13 +2139,6 @@ public class DataGatheringActivity extends AppCompatActivity
                 takePhoto -> takePhoto.add("Take Picture", () -> {
                     LOG.info("Take Picture");
                     if (iriCameraSession != null) {
-                        currentUserTTSEngine.speak(
-                                "Picture Taken",
-                                currentUserFeedbackMode,
-                                null,
-                                null
-                        );
-                        closeIriCamera();
                         takeIriPicture();
                     }
                 })
@@ -2132,7 +2146,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @OptIn(markerClass = Experimental.class)
-    private void openIriCamera(IRIHeadset headset, int cameraType) {
+    private void openIriCamera(IRIHeadset headset) {
         if (cameraType == 1) {
             if (headset.findCamera(IRICameraType.ZOOM) != null) {
                 iriCamera = headset.findCamera(IRICameraType.ZOOM);
@@ -2152,12 +2166,17 @@ public class DataGatheringActivity extends AppCompatActivity
         }
 
         iriCameraSession = iriCamera.openSession(
-                getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic ->
-                        ic.addPreview(iristickHUD.iriCameraPreview));
+                getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic -> {
+                    ic.addPreview(iristickHUD.iriCameraPreview);
+                    ic.setAFStrategy(IRICameraAFStrategy.SMOOTH);
+
+                });
 
         if (cameraType == 1) {
             iriCameraSession.reconfigure(zoomLevel -> zoomLevel.setZoom(1.0f));
         }
+
+        iriCameraSession.triggerAF();
 
         iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
         iristickHUD.iriCameraPreview.setVisibility(View.VISIBLE);
