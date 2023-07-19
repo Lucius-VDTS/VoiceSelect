@@ -315,14 +315,14 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         iristickHUD.enterPINValue.setVisibility(View.VISIBLE);
 
         String[] pin = {""};
-        IristickSDK.addVoiceGrammar(getLifecycle(), this, ac -> {
-            ac.addAlternativeGroup(ag -> {
+        IristickSDK.addVoiceGrammar(getLifecycle(), this, vg -> {
+            vg.addAlternativeGroup(ag -> {
                 for (int index = 0; index <= 9; index++) {
                     ag.addToken(String.valueOf(index));
                 }
             });
 
-            ac.setListener((recognizer, tokens, tags) -> {
+            vg.setListener((recognizer, tokens, tags) -> {
                 for (String token : tokens) {
                     pin[0] = pin[0].concat(token);
                 }
