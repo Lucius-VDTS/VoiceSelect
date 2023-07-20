@@ -148,6 +148,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private ColumnValue selectedColumnValue;
     private int spokenPosition = 0;
     private int spinnerPosition = 0;
+    private int listenerCounter = 0;
     private boolean isColumnNext = false;
     private boolean isColumnPrevious = false;
     private boolean isEntrySelected = false;
@@ -879,6 +880,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 });
             });
         });
+
+//        listenerCounter = 0;
     }
 
     private void deletePicture(PictureReference pictureReference) {
@@ -932,6 +935,7 @@ public class DataGatheringActivity extends AppCompatActivity
             vsViewModel.deleteAllPictureReferences(deletePictures);
         });
 
+//        listenerCounter = 0;
         newEntry();
         entryHUDMap.clear();
         connectedDeviceUpdateViews();
@@ -984,6 +988,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 valueExecutor.execute(() -> vsViewModel.insertAllEntryValues(copyEntryValues));
             });
         });
+
+//        listenerCounter = 0;
     }
 
     private void saveEntryButtonOnClick() {
@@ -1048,10 +1054,10 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
 
+        listenerCounter = 0;
         isEntrySelected = false;
         isColumnNext = false;
         isColumnPrevious = false;
-        spokenPosition = 0;
     }
 
     private void savePictureReferences(long entryID) {
@@ -1813,8 +1819,9 @@ public class DataGatheringActivity extends AppCompatActivity
                         start.addToken("Next Column");
                         start.addToken("Previous Column");
                         start.addToken("Delete Last");
-                        start.addToken("Repeat Entry");
+                        start.addToken("Repeat Last");
                         start.addToken("Save Entry");
+                        start.addToken("Delete Entry");
                         start.addToken("End Session");
                     });
 
@@ -1887,7 +1894,6 @@ public class DataGatheringActivity extends AppCompatActivity
                                 } else {
                                     columnPositionFeedback = "";
                                 }
-
                                 currentUserTTSEngine.speak(
                                         columnPositionFeedback,
                                         currentUserFeedbackMode,
@@ -1906,18 +1912,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                 isDeleteLast = true;
                                 iristickConfirmDeleteEntry();
                                 break;
-                            case "Reset Entry":
-                                LOG.info("Reset Entry");
-                                currentUserTTSEngine.speak(
-                                        "Entry Reset",
-                                        currentUserFeedbackMode,
-                                        null,
-                                        null
-                                );
-                                spokenPosition = 0;
-                                resetEntryButtonOnClick();
-                                break;
-                            case "Repeat Entry":
+                            case "Repeat Last":
                                 if (dataGatheringRecyclerAdapter.getItemCount() > 0) {
                                     LOG.info("Repeat Entry");
                                     currentUserTTSEngine.speak(
@@ -1930,6 +1925,17 @@ public class DataGatheringActivity extends AppCompatActivity
                                     repeatEntryButtonOnClick();
                                 }
                                 break;
+                            case "Reset Entry":
+                                LOG.info("Reset Entry");
+                                currentUserTTSEngine.speak(
+                                        "Entry Reset",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                                spokenPosition = 0;
+                                resetEntryButtonOnClick();
+                                break;
                             case "Save Entry":
                                 LOG.info("Save Entry");
                                 currentUserTTSEngine.speak(
@@ -1940,6 +1946,17 @@ public class DataGatheringActivity extends AppCompatActivity
                                 );
                                 spokenPosition = 0;
                                 saveEntryButtonOnClick();
+                                break;
+                            case "Delete Entry":
+                                LOG.info("Delete Entry");
+                                currentUserTTSEngine.speak(
+                                        "Entry Deleted",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                                spokenPosition = 0;
+                                iristickConfirmDeleteEntry();
                                 break;
                             case "End Session":
                                 LOG.info("End Session");
@@ -1973,16 +1990,19 @@ public class DataGatheringActivity extends AppCompatActivity
             });
 
             vg.setListener((recognizer, tokens, tags) -> {
-                int entryIndex = Integer.parseInt(tokens[1]);
-                LOG.info("Select Row " + entryIndex);
-                currentUserTTSEngine.speak(
-                        "Row " + entryIndex + " Selected",
-                        currentUserFeedbackMode,
-                        null,
-                        null
-                );
+                if (listenerCounter <= 0) {
+                    int entryIndex = Integer.parseInt(tokens[1]);
+                    LOG.info("Select Row " + entryIndex);
+                    currentUserTTSEngine.speak(
+                            "Row " + entryIndex + " Selected",
+                            currentUserFeedbackMode,
+                            null,
+                            null
+                    );
 
-                entryAdapterSelect(entryIndex - 1);
+                    listenerCounter++;
+                    entryAdapterSelect(entryIndex - 1);
+                }
             });
         });
     }
@@ -2037,11 +2057,11 @@ public class DataGatheringActivity extends AppCompatActivity
                 null,
                 null);
 
-        if (isDeleteLast) {
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("Yes", () -> {
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("Yes", () -> {
+                    if (isDeleteLast) {
                         LOG.info("Yes");
                         String rowDeleted = "Row " + entryList.size() + " Deleted";
                         currentUserTTSEngine.speak(
@@ -2051,13 +2071,15 @@ public class DataGatheringActivity extends AppCompatActivity
                                 null);
                         deleteEntry(true);
                         isDeleteLast = false;
-                    })
-            );
+                    }
+                })
+        );
 
-            IristickSDK.addVoiceCommands(
-                    this.getLifecycle(),
-                    this,
-                    vc -> vc.add("No", () -> {
+        IristickSDK.addVoiceCommands(
+                this.getLifecycle(),
+                this,
+                vc -> vc.add("No", () -> {
+                    if (isDeleteLast) {
                         LOG.info("No");
                         currentUserTTSEngine.speak(
                                 "Delete Aborted",
@@ -2066,9 +2088,9 @@ public class DataGatheringActivity extends AppCompatActivity
                                 null
                         );
                         isDeleteLast = false;
-                    })
-            );
-        }
+                    }
+                })
+        );
     }
 
     @OptIn(markerClass = Experimental.class)
