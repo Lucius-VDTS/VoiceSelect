@@ -17,6 +17,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -30,6 +31,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Range;
 import android.util.Rational;
@@ -151,6 +155,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private boolean isColumnPrevious = false;
     private boolean isEntrySelected = false;
     private boolean isDeleteLast = false;
+    private boolean isVoiceComment = false;
+    private boolean isVoiceCommentAppend = false;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -808,7 +814,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete Entry?");
+        builder.setTitle("Delete Entry");
         final View customLayout = getLayoutInflater().inflate(
                 R.layout.dialogue_fragment_yes_no,
                 null
@@ -1180,16 +1186,16 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void endSessionButtonOnClick() {
         if (currentSession!=null) {
-            showEndConfirmDialogue();
+            confirmEndSessionDialogue();
         }
     }
 
-    private void showEndConfirmDialogue() {
+    private void confirmEndSessionDialogue() {
         LOG.info("Showing End Confirm Dialog");
 
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("End Session?");
+        builder.setTitle("End Session");
         final View customLayout = getLayoutInflater().inflate(
                 R.layout.dialogue_fragment_yes_no,
                 null
@@ -1542,6 +1548,8 @@ public class DataGatheringActivity extends AppCompatActivity
     private final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+            //todo - uncomment and test
+            //            view.performClick();
             scrollDetector.onTouchEvent(motionEvent);
             return scaleDetector.onTouchEvent(motionEvent);
         }
@@ -1568,6 +1576,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
         iristickInitializeGlobalVoiceCommands();
         iristickInitializeCameraGrammar(headset);
+        iristickInitializeCommentGrammar();
     }
 
     private void iristickInitializeGlobalVoiceCommands() {
@@ -1576,8 +1585,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 this,
                 vc -> vc.add("Navigate Back", () -> {
                     LOG.info("Navigate Back");
-                    //todo - test - get different sound
-                    new MediaActionSound().play(MediaActionSound.FOCUS_COMPLETE);
+                    //todo - get different sound
+                    new MediaActionSound().play(MediaActionSound.SHUTTER_CLICK);
                     finish();
                 })
         );
@@ -1585,53 +1594,6 @@ public class DataGatheringActivity extends AppCompatActivity
 
     @OptIn(markerClass = Experimental.class)
     private void iristickInitializeEntryGrammar() {
-//            //Step By Step
-//            IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
-//                vg.addAlternativeGroup(stepped -> {
-//                    //First entry value in row
-//                    stepped.addAlternativeGroup(start -> {
-//                        List<ColumnValueSpoken> columnValueSpokenList = columnValueSpokenMap.get(0);
-//                        if (columnValueSpokenList != null) {
-//                            for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-//                                start.addToken(columnValueSpoken.getSpoken());
-//                            }
-//                        }
-//
-//                        start.addToken("Next Column");
-//                        start.addToken("Previous Column");
-//                        start.addToken("Delete Last");
-//                        start.addToken("Repeat Last");
-//                        start.addToken("Save Entry");
-//                        start.addToken("Delete Entry");
-//                        start.addToken("End Session");
-//                    });
-//
-//                    //Rest of entry values in row
-//                    for (int index = 1; index < columnValueSpokenMap.size(); index++) {
-//                        int finalIndex = index;
-//                        stepped.addAlternativeGroup(middle -> {
-//                            List<ColumnValueSpoken> columnValueSpokenList =
-//                                    columnValueSpokenMap.get(finalIndex);
-//                            if (columnValueSpokenList != null) {
-//                                for (ColumnValueSpoken columnValueSpoken : columnValueSpokenList) {
-//                                    middle.addToken(columnValueSpoken.getSpoken());
-//                                }
-//                            }
-//
-//                            middle.addToken("Next Column");
-//                            middle.addToken("Previous Column");
-//                            middle.addToken("Reset Entry");
-//                        });
-//                    }
-//
-//                    //End of row
-//                    stepped.addAlternativeGroup(end -> {
-//                        end.addToken("Make Comment");
-//                        end.addToken("Reset Entry");
-//                        end.addToken("Save Entry");
-//                    });
-//                });
-
         IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
             vg.addAlternativeGroup(ag -> {
                 ag.addToken("Next Column");
@@ -1768,16 +1730,6 @@ public class DataGatheringActivity extends AppCompatActivity
                             spokenPosition = 0;
                             endSessionButtonOnClick();
                             break;
-                        case "Make Comment":
-                            LOG.info("Make Comment");
-                            currentUserTTSEngine.speak(
-                                    "Speak Or Type Comment",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            showCommentDialogue();
-                            break;
                         default:
                             iristickEnterColumnValueCommands(tokens);
                     }
@@ -1786,7 +1738,6 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
-    //todo - fix repeat feedback bug
     private void iristickConfirmDeleteEntry() {
         String deleteEntry;
         if (isDeleteLast) {
@@ -1911,6 +1862,145 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @OptIn(markerClass = Experimental.class)
+    private void iristickInitializeCommentGrammar() {
+        IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+            vg.addSequentialGroup(sg -> {
+                sg.addAlternativeGroup(ag -> {
+                    ag.addToken("Make");
+                    ag.addToken("Add");
+                    ag.addToken("Clear");
+                    ag.addToken("Cancel");
+                    ag.addToken("Enter");
+                });
+
+                sg.addToken("Comment");
+            });
+
+            vg.setListener((((recognizer, tokens, tags) -> {
+                switch(tokens[0]) {
+                    case "Make":
+                        LOG.info("Make Comment");
+
+                        iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
+                        iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
+                        iristickHUD.commentView.setVisibility(View.VISIBLE);
+
+                        isVoiceComment = true;
+                        Handler commentHandler = new Handler(Looper.getMainLooper());
+                        commentHandler.postDelayed(this::iristickSpeakComment, 1000);
+                        break;
+                    case "Add":
+                        LOG.info("Add Comment");
+                        if (isVoiceComment) {
+                            isVoiceCommentAppend = true;
+                            Handler appendHandler = new Handler(Looper.getMainLooper());
+                            appendHandler.postDelayed(this::iristickSpeakComment, 1000);
+                        }
+                        break;
+                    case "Clear":
+                        LOG.info("Clear Comment");
+                        if (isVoiceComment) {
+                            currentUserTTSEngine.speak(
+                                    "Comment Cleared",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+
+                            iristickHUD.commentValue.setText("");
+                        }
+                        break;
+                    case "Cancel":
+                        LOG.info("Cancel");
+                        if (isVoiceComment) {
+                            currentUserTTSEngine.speak(
+                                    "Comment Cancelled",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+
+                            iristickHUD.commentValue.setText("");
+                            iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
+                            iristickHUD.commentView.setVisibility(View.INVISIBLE);
+                            iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
+
+                            isVoiceComment = false;
+                        }
+                        break;
+                    case "Enter":
+                        LOG.info("Enter Comment");
+                        if (isVoiceComment) {
+                            currentUserTTSEngine.speak(
+                                    "Comment Saved",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+
+                            currentEntry.setComment(iristickHUD.commentValue.getText().toString());
+
+                            iristickHUD.commentValue.setText("");
+                            iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
+                            iristickHUD.commentView.setVisibility(View.INVISIBLE);
+                            iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
+                            iristickHUD.entryCommentValue.setChecked(true);
+
+                            isVoiceComment = false;
+                        }
+                        break;
+                }
+            })));
+        });
+    }
+
+    private void iristickSpeakComment() {
+        SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {}
+
+            @Override
+            public void onBeginningOfSpeech() {}
+
+            @Override
+            public void onRmsChanged(float rmsdB) {}
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {}
+
+            @Override
+            public void onEndOfSpeech() {}
+
+            @Override
+            public void onError(int error) {}
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> recognizedSpeech = results.getStringArrayList(
+                        SpeechRecognizer.RESULTS_RECOGNITION);
+                if (isVoiceCommentAppend) {
+                    iristickHUD.commentValue.append(" " + recognizedSpeech.get(0));
+                    isVoiceCommentAppend = false;
+                } else {
+                    iristickHUD.commentValue.setText(recognizedSpeech.get(0));
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {}
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {}
+        });
+
+        speechRecognizer.startListening(
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                        .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM));
+    }
+
+    @OptIn(markerClass = Experimental.class)
     private void iristickInitializeCameraGrammar(IRIHeadset headset) {
         IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
             vg.addSequentialGroup(sg -> {
@@ -1987,7 +2077,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     null
                             );
                             iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
-                            iristickHUD.iriCameraPreview.setVisibility(View.VISIBLE);
+                            iristickHUD.iriCameraView.setVisibility(View.VISIBLE);
                         }
                         break;
                     case "Hide":
@@ -1999,7 +2089,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     null,
                                     null
                             );
-                            iristickHUD.iriCameraPreview.setVisibility(View.INVISIBLE);
+                            iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
                             iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
                         }
                         break;
@@ -2101,7 +2191,7 @@ public class DataGatheringActivity extends AppCompatActivity
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
-                takePhoto -> takePhoto.add("Take Picture", () -> {
+                vc -> vc.add("Take Picture", () -> {
                     LOG.info("Take Picture");
                     if (iriCameraSession != null) {
                         iristickTakePicture();
@@ -2126,9 +2216,10 @@ public class DataGatheringActivity extends AppCompatActivity
             }
         }
 
+        assert iriCamera != null;
         iriCameraSession = iriCamera.openSession(
                 getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic -> {
-                    ic.addPreview(iristickHUD.iriCameraPreview);
+                    ic.addPreview(iristickHUD.iriCameraView);
                     ic.setAFStrategy(IRICameraAFStrategy.SMOOTH);
 
                 });
@@ -2140,14 +2231,16 @@ public class DataGatheringActivity extends AppCompatActivity
         iriCameraSession.triggerAF();
 
         iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
-        iristickHUD.iriCameraPreview.setVisibility(View.VISIBLE);
+        iristickHUD.commentView.setVisibility(View.INVISIBLE);
+        iristickHUD.iriCameraView.setVisibility(View.VISIBLE);
     }
 
     @OptIn(markerClass = Experimental.class)
     private void iristickCloseCamera() {
         iriCameraSession.close();
         iriCameraSession = null;
-        iristickHUD.iriCameraPreview.setVisibility(View.INVISIBLE);
+        iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
+        iristickHUD.commentView.setVisibility(View.INVISIBLE);
         iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
     }
 
@@ -2294,7 +2387,7 @@ public class DataGatheringActivity extends AppCompatActivity
 ////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
     public static class IristickHUD extends IRIWindow {
         //HUD Views
-        private TextureView iriCameraPreview;
+        private TextureView iriCameraView;
 
         private ConstraintLayout dataGatheringView;
 
@@ -2310,13 +2403,20 @@ public class DataGatheringActivity extends AppCompatActivity
         private TextView sessionValue;
         private TextView sessionEntriesCount;
 
+        private ConstraintLayout commentView;
+        private TextView commentValue;
+        private TextView addCommentButton;
+        private TextView clearCommentButton;
+        private TextView cancelCommentButton;
+        private TextView enterCommentButton;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_data_gathering_hud);
 
             //HUD Views
-            iriCameraPreview = findViewById(R.id.iriCameraPreview);
+            iriCameraView = findViewById(R.id.iriCameraView);
 
             dataGatheringView = findViewById(R.id.dataGatheringView);
 
@@ -2331,6 +2431,13 @@ public class DataGatheringActivity extends AppCompatActivity
 
             sessionValue = findViewById(R.id.sessionValue);
             sessionEntriesCount = findViewById(R.id.sessionEntriesCount);
+
+            commentView = findViewById(R.id.commentView);
+            commentValue = findViewById(R.id.commentValue);
+            addCommentButton = findViewById(R.id.addCommentButton);
+            clearCommentButton = findViewById(R.id.clearCommentButton);
+            cancelCommentButton = findViewById(R.id.cancelCommentButton);
+            enterCommentButton = findViewById(R.id.enterCommentButton);
         }
     }
 }

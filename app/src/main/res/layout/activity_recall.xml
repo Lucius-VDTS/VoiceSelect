@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.recall.RecallActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/searchLayout"
@@ -18,34 +17,32 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/openCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:id="@+id/finishedCheck"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.65"
             android:layout_gravity="start"
-            android:layout_marginTop="@dimen/double_margin"
-            android:layout_marginStart="@dimen/double_margin"
             android:layout_marginEnd="@dimen/double_margin"
+            android:paddingStart="@dimen/padding"
+            android:paddingEnd="@dimen/padding"
             android:text="@string/incomplete_only"
             android:textSize="@dimen/medium_text_size"/>
 
         <SearchView
             android:id="@+id/sessionSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="@dimen/medium_text_size"
-            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_gravity="end"
+            android:textSize="@dimen/medium_text_size"
+            android:text=""
             android:iconifiedByDefault="false"
             android:queryHint="Search"
-            android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"
-            />
-
+            android:imeOptions="actionSearch|flagNoExtractUi|flagNoFullscreen"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/sesh_list"
+        android:id="@+id/sessionRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="@dimen/double_margin"

@@ -8,12 +8,12 @@
     <string name="main_activity_label">Voice Select</string>
 
     <string name="main_request_permissions_label">Grant all permissions to continue.</string>
-    <string name="main_request_permissions_button">Request Permissions</string>
+    <string name="main_request_permissions_button">REQUEST PERMISSIONS</string>
 
     <string name="main_settings_permissions_label">In order to continue select the \'Settings\'
         button below, then \'Permissions\'.
         \n\nGrant all permissions under \'Not allowed\', and relaunch the application.</string>
-    <string name="main_settings_permissions_button">Settings</string>
+    <string name="main_settings_permissions_button">SETTINGS</string>
 
 <!--  VDTS Login Activity  -->
     <string name="login_activity_label">User Login</string>
@@ -29,13 +29,13 @@
 <!--  Menu Activity  -->
     <string name="menu_activity_label">Menu</string>
 
-    <string name="menu_start_activity_button">Start</string>
-    <string name="menu_resume_activity_button">Resume</string>
-    <string name="menu_recall_activity_button">Recall</string>
-    <string name="menu_configure_activity_button">Configure</string>
-    <string name="menu_settings_activity_button">Settings</string>
-    <string name="menu_change_user_activity_button">Change User</string>
-    <string name="menu_about_activity_button">About Iristick</string>
+    <string name="menu_start_activity_button">START</string>
+    <string name="menu_resume_activity_button">RESUME</string>
+    <string name="menu_recall_activity_button">RECALL</string>
+    <string name="menu_configure_activity_button">CONFIGURE</string>
+    <string name="menu_settings_activity_button">SETTINGS</string>
+    <string name="menu_change_user_activity_button">CHANGE USER</string>
+    <string name="menu_about_activity_button">ABOUT IRISTICK</string>
 
     <!--  HUD  -->
     <string name="menu_layout_label">Layout:</string>
@@ -56,14 +56,14 @@
     <string name="data_gathering_photo_description">Open the camera</string>
     <string name="data_gathering_end_description">End the totalSession</string>
 
-    <string name="data_gathering_repeat_button">Repeat</string>
-    <string name="data_gathering_delete_button">Del</string>
-    <string name="data_gathering_reset_button">Reset</string>
-    <string name="data_gathering_save_button">Save</string>
+    <string name="data_gathering_repeat_button">REPEAT</string>
+    <string name="data_gathering_delete_button">DEL</string>
+    <string name="data_gathering_reset_button">RESET</string>
+    <string name="data_gathering_save_button">SAVE</string>
 
     <string name="data_gathering_session_label">Session:</string>
     <string name="data_gathering_entries_label">Entries:</string>
-    <string name="data_gathering_end_button">End</string>
+    <string name="data_gathering_end_button">END</string>
     <string name="data_gathering_end_session_dialogue">Mark this session as finished?</string>
 
     <string name="data_gathering_hud_end_of_row">END</string>
@@ -71,35 +71,39 @@
     <string name="comment_dialogue_edit_comment">Edit Comment</string>
     <string name="comment_dialogue_enter_label">Enter</string>
     <string name="comment_dialogue_cancel_label">Cancel</string>
+    <string name="comment_dialogue_add_label">ADD</string>
+    <string name="comment_dialogue_clr_label">CLEAR</string>
+    <string name="comment_dialogue_can_label">CANCEL</string>
+    <string name="comment_dialogue_ent_label">ENTER</string>
 
 <!-- Recall Activity -->
     <string name="menu_recall">Recall</string>
-    <string name="incomplete_only">Unfinished Only</string>
+    <string name="incomplete_only">Unfinished</string>
     <string name="search_label">Search:</string>
     <string name="status">Status:</string>
     <string name="status_open">Available</string>
     <string name="status_closed">Finished</string>
-    <string name="dialogue_delete_button">Delete</string>
-    <string name="dialogue_open_button">Open</string>
+    <string name="dialogue_delete_button">DELETE</string>
+    <string name="dialogue_open_button">OPEN</string>
 
 <!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>
 
-    <string name="config_users_activity_button">Users</string>
-    <string name="config_user_preferences_activity_button">User Preferences</string>
-    <string name="config_columns_activity_button">Columns</string>
-    <string name="config_column_values_activity_button">Values</string>
-    <string name="config_layouts_activity_button">Layouts</string>
+    <string name="config_users_activity_button">USERS</string>
+    <string name="config_user_preferences_activity_button">USER PREFERENCES</string>
+    <string name="config_columns_activity_button">COLUMNS</string>
+    <string name="config_column_values_activity_button">VALUES</string>
+    <string name="config_layouts_activity_button">LAYOUTS</string>
 
 <!--  Configure Users Activity  -->
     <string name="config_users_activity_label">Configure Users</string>
 
-    <string name="user_new_button">New</string>
-    <string name="user_reset_button">Reset</string>
-    <string name="user_save_button">Save</string>
-    <string name="user_delete_button">Del</string>
-    <string name="user_import_button">Import</string>
-    <string name="user_export_button">Export</string>
+    <string name="user_new_button">NEW</string>
+    <string name="user_reset_button">RESET</string>
+    <string name="user_save_button">SAVE</string>
+    <string name="user_delete_button">DEL</string>
+    <string name="user_import_button">IMPORT</string>
+    <string name="user_export_button">EXPORT</string>
 
     <string name="user_name_label">Name</string>
     <string name="user_name_value">Enter user name</string>
@@ -132,20 +136,20 @@
     <string name="feedback_sample_text_hint">Sample Text</string>
     <string name="feedback_sample_text_placeholder">Enter sample text</string>
 
-    <string name="feedback_test_button">Test Feedback</string>
-    <string name="feedback_reset_button">Reset</string>
-    <string name="feedback_default_button">Default</string>
-    <string name="feedback_save_button">Save</string>
+    <string name="feedback_test_button">TEST FEEDBACK</string>
+    <string name="feedback_reset_button">RESET</string>
+    <string name="feedback_default_button">DEFAULT</string>
+    <string name="feedback_save_button">SAVE</string>
 
 <!--  Configure Columns Activity  -->
     <string name="config_columns_activity_label">Configure Columns</string>
 
-    <string name="column_new_button">New</string>
-    <string name="column_reset_button">Reset</string>
-    <string name="column_save_button">Save</string>
-    <string name="column_delete_button">Del</string>
-    <string name="column_import_button">Import</string>
-    <string name="column_export_button">Export</string>
+    <string name="column_new_button">NEW</string>
+    <string name="column_reset_button">RESET</string>
+    <string name="column_save_button">SAVE</string>
+    <string name="column_delete_button">DEL</string>
+    <string name="column_import_button">IMPORT</string>
+    <string name="column_export_button">EXPORT</string>
 
     <string name="column_name_label">Name</string>
     <string name="column_name_value">Enter column name</string>
@@ -160,12 +164,12 @@
 <!--  Configure Values Activity  -->
     <string name="config_values_activity_label">Configure Values</string>
 
-    <string name="column_value_new_button">New</string>
-    <string name="column_value_reset_button">Reset</string>
-    <string name="column_value_save_button">Save</string>
-    <string name="column_value_delete_button">Del</string>
-    <string name="column_value_import_button">Import</string>
-    <string name="column_value_export_button">Export</string>
+    <string name="column_value_new_button">NEW</string>
+    <string name="column_value_reset_button">RESET</string>
+    <string name="column_value_save_button">SAVE</string>
+    <string name="column_value_delete_button">DEL</string>
+    <string name="column_value_import_button">IMPORT</string>
+    <string name="column_value_export_button">EXPORT</string>
 
     <string name="column_value_name_label">Value</string>
     <string name="column_value_name_value">Enter value</string>
@@ -177,8 +181,8 @@
     <string name="column_value_spoken_label">Spoken</string>
     <string name="column_value_spoken_value">Enter value spoken</string>
 
-    <string name="column_value_letters_button">Letters</string>
-    <string name="column_value_numbers_button">Numbers</string>
+    <string name="column_value_letters_button">LETTERS</string>
+    <string name="column_value_numbers_button">NUMBERS</string>
     <string name="column_value_number_range_label">Create Number Range</string>
     <string name="column_value_letter_range_label">Create Letter Range</string>
     <string name="column_values_min_label">Min:</string>
@@ -247,8 +251,8 @@
     <string name="import_dialogue_label">Current settings may be lost.</string>
 
 <!--  Yes / No Dialogue  -->
-    <string name="yes_no_dialogue_yes_button">Yes</string>
-    <string name="yes_no_dialogue_no_button">No</string>
+    <string name="yes_no_dialogue_yes_button">YES</string>
+    <string name="yes_no_dialogue_no_button">NO</string>
 
 <!--  VDTS BNF Service  -->
     <string name="inches">Inches</string>

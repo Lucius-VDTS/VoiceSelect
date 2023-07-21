@@ -60,7 +60,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_selector_recall);
+        setContentView(R.layout.activity_recall);
 
         vdtsApplication = (VDTSApplication) this.getApplication();
 
@@ -68,7 +68,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
 
         adapterLock = new ReentrantLock();
 
-        openCheck = findViewById(R.id.openCheck);
+        openCheck = findViewById(R.id.finishedCheck);
         openCheck.setOnClickListener(v -> onOpenCheck());
         searchView = findViewById(R.id.sessionSearch);
         searchView.setIconifiedByDefault(false);
@@ -78,7 +78,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
 
         openCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_FILTER,false));
 
-        headerRecyclerView = findViewById(R.id.sesh_list);
+        headerRecyclerView = findViewById(R.id.sessionRecyclerView);
         headerRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);

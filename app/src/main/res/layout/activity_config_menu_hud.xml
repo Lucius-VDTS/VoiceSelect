@@ -13,10 +13,11 @@
         android:layout_marginTop="@dimen/four_x_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:background="@drawable/button_background"
         android:textSize="@dimen/xxs_text_size"
+        android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/config_users_activity_button"
-        android:background="@drawable/button_background"
         app:layout_constraintTop_toTopOf="parent">
     </TextView>
 
@@ -29,9 +30,10 @@
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
         android:textSize="@dimen/xxs_text_size"
+        android:textStyle="bold"
+        android:background="@drawable/button_background"
         android:textColor="#ffffff"
         android:text="@string/config_user_preferences_activity_button"
-        android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/usersLabel">
     </TextView>
 
@@ -43,10 +45,11 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:background="@drawable/button_background"
         android:textSize="@dimen/xxs_text_size"
+        android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/config_columns_activity_button"
-        android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/userPreferencesLabel">
     </TextView>
 
@@ -58,10 +61,11 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:background="@drawable/button_background"
         android:textSize="@dimen/xxs_text_size"
+        android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/config_column_values_activity_button"
-        android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/columnsLabel">
     </TextView>
 
@@ -73,10 +77,11 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
+        android:background="@drawable/button_background"
         android:textSize="@dimen/xxs_text_size"
+        android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/config_layouts_activity_button"
-        android:background="@drawable/button_background"
         app:layout_constraintTop_toBottomOf="@id/valuesLabel">
     </TextView>
 </androidx.constraintlayout.widget.ConstraintLayout>
