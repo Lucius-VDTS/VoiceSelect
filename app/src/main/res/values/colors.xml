@@ -25,6 +25,9 @@
     <color name="colorStepHighlight">#EAE85B</color>
     <color name="colorBackground">#FFFFFF</color>
 
-<!-- Dialogue -->
+<!--  Dialogue  -->
     <color name="dialogueTextBackground">#A9A9A9</color>
+
+<!--  HUD  -->
+    <color name="hudTextBackground">#424242</color>
 </resources>

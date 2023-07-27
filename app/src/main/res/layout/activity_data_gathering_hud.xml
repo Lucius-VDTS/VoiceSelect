@@ -45,7 +45,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textStyle="bold"
                 android:text="@string/data_gathering_index_label"
@@ -60,7 +60,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textStyle="bold"
                 android:textColor="#ffffff">
@@ -74,7 +74,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textStyle="bold"
                 android:textColor="#ffffff">
@@ -88,7 +88,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textStyle="bold"
                 android:textColor="#ffffff"
@@ -102,7 +102,7 @@
                 android:layout_weight="0.6"
                 android:gravity="center"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textStyle="bold"
                 android:textColor="#ffffff"
@@ -133,7 +133,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textColor="#ffffff">
             </TextView>
@@ -146,7 +146,7 @@
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textColor="#ffffff">
             </TextView>
@@ -171,7 +171,7 @@
                 android:layout_weight="0.6"
                 android:gravity="center"
                 android:layout_marginEnd="@dimen/margin"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:clickable="false">
             </CheckBox>
 
@@ -182,7 +182,7 @@
                 android:layout_weight="0.6"
                 android:gravity="center"
                 android:padding="@dimen/half_padding"
-                android:background="@drawable/text_background"
+                android:background="@drawable/hud_text_background"
                 android:textSize="@dimen/xxs_text_size"
                 android:textColor="#ffffff">
             </TextView>

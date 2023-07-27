@@ -17,40 +17,53 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/layoutLabel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.7"
-            android:textSize="@dimen/xxs_text_size"
-            android:textColor="#ffffff"
-            android:text="@string/menu_layout_label">
-        </TextView>
-
-        <TextView
-            android:id="@+id/layoutValue"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
-            android:maxLines="1"
-            android:textSize="@dimen/xxs_text_size"
-            app:autoSizeMinTextSize="@dimen/xxxxs_text_size"
-            app:autoSizeMaxTextSize="@dimen/xxs_text_size"
-            app:autoSizeStepGranularity="@dimen/auto_size_step_granularity"
-            app:autoSizeTextType="uniform"
-            android:textColor="#ffffff">
-        </TextView>
+            android:layout_marginEnd="@dimen/double_margin"
+            android:background="@drawable/hud_text_background">
+
+            <TextView
+                android:id="@+id/layoutLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/padding"
+                android:textSize="@dimen/xxxs_text_size"
+                android:textStyle="bold"
+                android:textColor="#ffffff"
+                android:text="@string/menu_layout_label">
+            </TextView>
+
+            <TextView
+                android:id="@+id/layoutValue"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin"
+                android:maxLines="1"
+                android:textSize="@dimen/xxxs_text_size"
+                app:autoSizeMinTextSize="@dimen/xxxxs_text_size"
+                app:autoSizeMaxTextSize="@dimen/xxs_text_size"
+                app:autoSizeStepGranularity="@dimen/auto_size_step_granularity"
+                app:autoSizeTextType="uniform"
+                android:textStyle="bold"
+                android:textColor="#ffffff">
+            </TextView>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/startLabel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.85"
+            android:layout_weight="1.7"
             android:gravity="center"
-            android:textSize="@dimen/xxs_text_size"
+            android:textSize="@dimen/xxxs_text_size"
             android:textStyle="bold"
             android:textColor="#ffffff"
             android:text="@string/menu_start_activity_button"
@@ -66,7 +79,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
-        android:textSize="@dimen/xxs_text_size"
+        android:textSize="@dimen/xxxs_text_size"
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/menu_resume_activity_button"
@@ -82,7 +95,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
-        android:textSize="@dimen/xxs_text_size"
+        android:textSize="@dimen/xxxs_text_size"
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/menu_recall_activity_button"
@@ -98,7 +111,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
-        android:textSize="@dimen/xxs_text_size"
+        android:textSize="@dimen/xxxs_text_size"
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/menu_configure_activity_button"
@@ -114,7 +127,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
-        android:textSize="@dimen/xxs_text_size"
+        android:textSize="@dimen/xxxs_text_size"
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/menu_settings_activity_button"
@@ -130,7 +143,7 @@
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginStart="@dimen/sixteen_x_margin"
         android:layout_marginEnd="@dimen/sixteen_x_margin"
-        android:textSize="@dimen/xxs_text_size"
+        android:textSize="@dimen/xxxs_text_size"
         android:textStyle="bold"
         android:textColor="#ffffff"
         android:text="@string/menu_change_user_activity_button"

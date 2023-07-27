@@ -38,7 +38,7 @@
     <string name="menu_about_activity_button">ABOUT IRISTICK</string>
 
     <!--  HUD  -->
-    <string name="menu_layout_label">Layout:</string>
+    <string name="menu_layout_label">LAYOUT:</string>
     <string name="menu_layout_value">No Layouts</string>
 
 <!--  Data Gathering Activity  -->

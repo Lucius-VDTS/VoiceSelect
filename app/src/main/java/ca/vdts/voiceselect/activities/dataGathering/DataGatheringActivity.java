@@ -157,6 +157,7 @@ public class DataGatheringActivity extends AppCompatActivity
     private boolean isDeleteLast = false;
     private boolean isVoiceComment = false;
     private boolean isVoiceCommentAppend = false;
+    private boolean isRecordVideo = false;
 
     //Lists
     private List<SessionLayout> currentSessionLayoutList;
@@ -470,7 +471,7 @@ public class DataGatheringActivity extends AppCompatActivity
         layoutParams.setMargins(marginPaddingDimen, 0, marginPaddingDimen, 0);
 
         if (columnMap.size() != 0) {
-            for (int index = 0; index < columnMap.size(); index++){
+            for (int index = 0; index < columnMap.size(); index++) {
                 TextView columnText = new TextView(this);
                 columnText.setMinWidth(minWidthDimen);
                 columnText.setLayoutParams(layoutParams);
@@ -614,6 +615,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 )
         );
 
+        newEntry();
+
         if (isHeadsetAvailable) {
             iristickInitializeEntryGrammar();
         }
@@ -659,7 +662,8 @@ public class DataGatheringActivity extends AppCompatActivity
                 }
 
                 @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
             };
 
     private final Observer<List<Entry>> entryObserver = new Observer<List<Entry>>() {
@@ -892,9 +896,9 @@ public class DataGatheringActivity extends AppCompatActivity
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(
                 () -> {
-                    String[] projection = { MediaStore.Images.Media._ID };
+                    String[] projection = {MediaStore.Images.Media._ID};
                     String selection = MediaStore.Images.Media.DATA + " = ?";
-                    String[] selectionArgs = new String[] { pictureReference.getPath() };
+                    String[] selectionArgs = new String[]{pictureReference.getPath()};
 
                     Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     ContentResolver contentResolver = getContentResolver();
@@ -989,7 +993,11 @@ public class DataGatheringActivity extends AppCompatActivity
                 final EntryValue[] copyEntryValues = new EntryValue[entryValues.size()];
                 copyValueList.toArray(copyEntryValues);
                 ExecutorService valueExecutor = Executors.newSingleThreadExecutor();
-                valueExecutor.execute(() -> vsViewModel.insertAllEntryValues(copyEntryValues));
+                Handler valueHandler = new Handler(Looper.getMainLooper());
+                valueExecutor.execute(() -> {
+                    vsViewModel.insertAllEntryValues(copyEntryValues);
+                    valueHandler.post(this::newEntry);
+                });
             });
         });
 
@@ -1001,17 +1009,17 @@ public class DataGatheringActivity extends AppCompatActivity
         boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotos.isEmpty();
         boolean commentIssue = currentSession.isCommentRequired() &&
                 (currentEntry.getComment() == null || currentEntry.getComment().isEmpty());
-        if (commentIssue && pictureIssue){
+        if (commentIssue && pictureIssue) {
             vdtsApplication.displayToast(
                     this,
                     "This entry requires a comment and a picture."
             );
-        } else if (commentIssue){
+        } else if (commentIssue) {
             vdtsApplication.displayToast(
                     this,
                     "This entry requires a comment."
             );
-        } else if (pictureIssue){
+        } else if (pictureIssue) {
             vdtsApplication.displayToast(
                     this,
                     "This entry requires a picture."
@@ -1185,7 +1193,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void endSessionButtonOnClick() {
-        if (currentSession!=null) {
+        if (currentSession != null) {
             confirmEndSessionDialogue();
         }
     }
@@ -1229,18 +1237,18 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void export(Session session) {
         //ISaver saver = Saver.createSaver(ONEDRIVE_APP_ID);
-        final Exporter exporter = new Exporter(vsViewModel,vdtsApplication,this);
+        final Exporter exporter = new Exporter(vsViewModel, vdtsApplication, this);
         boolean CSV = true;
         boolean Excel = true;
         boolean JSON = true;
 
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV, false)) {
             CSV = exporter.exportSessionCSV(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
-            JSON= exporter.exportSessionJSON(session);
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)) {
+            JSON = exporter.exportSessionJSON(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,true)){
+        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, true)) {
             Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {
@@ -1304,7 +1312,8 @@ public class DataGatheringActivity extends AppCompatActivity
 
         builder.setNegativeButton(
                 vdtsApplication.getResources().getString(R.string.comment_dialogue_cancel_label),
-                (dialogInterface, i) -> {}
+                (dialogInterface, i) -> {
+                }
         );
 
         AlertDialog dialog = builder.create();
@@ -1402,7 +1411,7 @@ public class DataGatheringActivity extends AppCompatActivity
         if (isBetterLocation(location, currentLocation)) {
             currentLocation = location;
             LOG.debug("{}, {}", location.getLatitude(), location.getLongitude());
-            if (!GPSConnected){
+            if (!GPSConnected) {
                 GPSConnected = true;
                 vdtsApplication.displayToast(
                         this,
@@ -1600,6 +1609,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 ag.addToken("Previous Column");
                 ag.addToken("Delete Last");
                 ag.addToken("Repeat Last");
+                ag.addToken("Reset Entry");
                 ag.addToken("Save Entry");
                 ag.addToken("Delete Entry");
                 ag.addToken("End Session");
@@ -1877,7 +1887,7 @@ public class DataGatheringActivity extends AppCompatActivity
             });
 
             vg.setListener((((recognizer, tokens, tags) -> {
-                switch(tokens[0]) {
+                switch (tokens[0]) {
                     case "Make":
                         LOG.info("Make Comment");
 
@@ -1958,22 +1968,28 @@ public class DataGatheringActivity extends AppCompatActivity
         SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
-            public void onReadyForSpeech(Bundle params) {}
+            public void onReadyForSpeech(Bundle params) {
+            }
 
             @Override
-            public void onBeginningOfSpeech() {}
+            public void onBeginningOfSpeech() {
+            }
 
             @Override
-            public void onRmsChanged(float rmsdB) {}
+            public void onRmsChanged(float rmsdB) {
+            }
 
             @Override
-            public void onBufferReceived(byte[] buffer) {}
+            public void onBufferReceived(byte[] buffer) {
+            }
 
             @Override
-            public void onEndOfSpeech() {}
+            public void onEndOfSpeech() {
+            }
 
             @Override
-            public void onError(int error) {}
+            public void onError(int error) {
+            }
 
             @Override
             public void onResults(Bundle results) {
@@ -1988,10 +2004,12 @@ public class DataGatheringActivity extends AppCompatActivity
             }
 
             @Override
-            public void onPartialResults(Bundle partialResults) {}
+            public void onPartialResults(Bundle partialResults) {
+            }
 
             @Override
-            public void onEvent(int eventType, Bundle params) {}
+            public void onEvent(int eventType, Bundle params) {
+            }
         });
 
         speechRecognizer.startListening(
@@ -2018,7 +2036,7 @@ public class DataGatheringActivity extends AppCompatActivity
             });
 
             vg.setListener((((recognizer, tokens, tags) -> {
-                switch(tokens[0]) {
+                switch (tokens[0]) {
                     case "Open":
                         LOG.info("Open Camera");
                         currentUserTTSEngine.speak(
@@ -2027,13 +2045,17 @@ public class DataGatheringActivity extends AppCompatActivity
                                 null,
                                 null
                         );
-                        if (iriCameraSession != null) { iristickCloseCamera(); }
+                        if (iriCameraSession != null) {
+                            iristickCloseCamera();
+                        }
                         cameraType = -1;
                         iristickOpenCamera(headset);
                         break;
                     case "Wide":
                         LOG.info("Wide Camera");
-                        if (iriCameraSession != null) { iristickCloseCamera(); }
+                        if (iriCameraSession != null) {
+                            iristickCloseCamera();
+                        }
                         currentUserTTSEngine.speak(
                                 "Camera Wide",
                                 currentUserFeedbackMode,
@@ -2051,7 +2073,9 @@ public class DataGatheringActivity extends AppCompatActivity
                                 null,
                                 null
                         );
-                        if (iriCameraSession != null) { iristickCloseCamera(); }
+                        if (iriCameraSession != null) {
+                            iristickCloseCamera();
+                        }
                         cameraType = 1;
                         iristickOpenCamera(headset);
                         break;
@@ -2122,7 +2146,7 @@ public class DataGatheringActivity extends AppCompatActivity
             vg.setListener((((recognizer, tokens, tags) -> {
                 if (iriCameraSession != null) {
                     int zoomLevel = Integer.parseInt(tokens[1]);
-                    switch(zoomLevel) {
+                    switch (zoomLevel) {
                         case 0:
                             LOG.info("Zoom 0");
                             currentUserTTSEngine.speak(
@@ -2198,6 +2222,33 @@ public class DataGatheringActivity extends AppCompatActivity
                     }
                 })
         );
+
+//        IristickSDK.addVoiceCommands(
+//                this.getLifecycle(),
+//                this,
+//                vc -> vc.add("Start Recording", () -> {
+//                    LOG.info("Start Recording");
+//                    if (iriCameraSession != null) {
+//                        isRecordVideo = true;
+//                        iristickCloseCamera();
+//                        iristickOpenCamera(headset);
+//                        iristickRecordVideo()
+//                        //start recording from iristick camera
+//                    }
+//                })
+//        );
+//
+//        IristickSDK.addVoiceCommands(
+//                this.getLifecycle(),
+//                this,
+//                vc -> vc.add("End Recording", () -> {
+//                    LOG.info("End Recording");
+//                    if (iriCameraSession != null) {
+//                        isRecordVideo = false;
+//
+//                    }
+//                })
+//        );
     }
 
     @OptIn(markerClass = Experimental.class)
@@ -2217,17 +2268,44 @@ public class DataGatheringActivity extends AppCompatActivity
         }
 
         assert iriCamera != null;
-        iriCameraSession = iriCamera.openSession(
-                getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic -> {
-                    ic.addPreview(iristickHUD.iriCameraView);
-                    ic.setAFStrategy(IRICameraAFStrategy.SMOOTH);
-
-                });
-
-        if (cameraType == 1) {
-            iriCameraSession.reconfigure(zoomLevel -> zoomLevel.setZoom(1.0f));
+        if (isRecordVideo) {
+//            final File videoDir = new File(Environment.getExternalStoragePublicDirectory(
+//                    Environment.DIRECTORY_DOCUMENTS),
+//                    "VoiceSelect/Pictures");
+//
+//            if (!videoDir.exists()) {
+//                boolean mkdirResult = videoDir.mkdirs();
+//                if (!mkdirResult) {
+//                    LOG.info("Failed to create image directory");
+//                    return;
+//                }
+//            }
+//
+//            final ContentResolver resolver = getApplicationContext().getContentResolver();
+//            final ContentValues videoDetails = new ContentValues();
+//
+//            //todo - make video uri and add to set movie uri
+////            final Uri videoUri = resolver.insert(videoDir)
+//
+//            iriCameraSession = iriCamera.openSession(
+//                    getLifecycle(), IRICameraProfile.MOVIE_RECORDING, ic -> {
+//                        ic.addPreview(iristickHUD.iriCameraView);
+//                        ic.setMovieUri();
+//                        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
+//                                PackageManager.PERMISSION_GRANTED) {
+//                            ic.setMovieAudio(true);
+//                        }
+//                        ic.setAFStrategy(IRICameraAFStrategy.SMOOTH);
+//                    });
+        } else {
+            iriCameraSession = iriCamera.openSession(
+                    getLifecycle(), IRICameraProfile.STILL_CAPTURE, ic -> {
+                        ic.addPreview(iristickHUD.iriCameraView);
+                        ic.setAFStrategy(IRICameraAFStrategy.SMOOTH);
+                    });
         }
 
+        iriCameraSession.reconfigure(zoomLevel -> zoomLevel.setZoom(1.0f));
         iriCameraSession.triggerAF();
 
         iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
@@ -2304,6 +2382,24 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
+    private void iristickRecordVideo() {
+        if (iriCameraSession == null) {
+            return;
+        }
+
+        final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS),
+                "VoiceSelect/Video");
+
+        if (!photoDir.exists()) {
+            boolean mkdirResult = photoDir.mkdirs();
+            if (!mkdirResult) {
+                LOG.info("Failed to create video directory");
+                return;
+            }
+        }
+    }
+
     private void iristickUpdateHUDViews() {
         if (iristickHUD != null) {
             iristickHUD.entryIndexValue.setText(columnValueIndexValue.getText());
@@ -2346,7 +2442,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                 R.string.data_gathering_hud_end_of_row);
                         iristickHUD.entryNextValue.setBackground(ContextCompat.getDrawable(
                                 this,
-                                R.drawable.text_background)
+                                R.drawable.hud_text_background)
                         );
                     }
                 }
