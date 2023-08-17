@@ -109,7 +109,7 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
     //Iristick Components
     private ConfigLayoutsActivity.IristickHUD iristickHUD;
 
-    //lock to prevent concurent list filling issues
+    //Lock prevents concurrent list filling issue
     private ReentrantLock adapterLock;
 
     @Override
@@ -164,8 +164,10 @@ public class ConfigLayoutsActivity extends AppCompatActivity implements IRIListe
         vsViewModel.findAllActiveLayoutsLive().observe(
                 this,
                 layouts -> {
+                    adapterLock.lock();
                     layoutList.clear();
                     layoutList.addAll(layouts);
+                    adapterLock.unlock();
 
                     layoutList.remove(Layout.LAYOUT_NONE);
                     final Layout newLayout = Layout.LAYOUT_NONE;

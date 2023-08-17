@@ -70,9 +70,6 @@ public class VDTSBackupWorker extends Worker {
                     LOG.info("Failed to create directory: {}", dbBackupDir);
                 }
             } else {
-                //Directory Exists. Delete a file if count is 5 already. Because we will be creating a new.
-                //This will create a conflict if the last backup file was also on the same date. In that case,
-                //we will reduce it to 4 with the function call but the below code will again delete one more file.
                 checkAndDeleteBackupFile(dbBackupDir, backupDir);
             }
 
@@ -128,6 +125,12 @@ public class VDTSBackupWorker extends Worker {
         }
     }
 
+    /**
+     * Only keep 5 database backups.
+     *
+     * @param directory
+     * @param path
+     */
     public static void checkAndDeleteBackupFile(File directory, String path) {
         //This is to prevent deleting extra file being deleted which is mentioned in previous comment lines.
         File currentDateFile = new File(path);

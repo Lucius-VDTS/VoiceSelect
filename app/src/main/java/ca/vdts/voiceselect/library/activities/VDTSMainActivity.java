@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -168,7 +167,6 @@ public class VDTSMainActivity extends AppCompatActivity {
         if (grantResults.length == permissionsNeeded.size()) {
             if (permissionNotGranted) {
                 LOG.info("Permissions not granted");
-                Log.i("--", "Permissions not granted");
                 if (storedPermissionRequests.getInt("Requests", 0) == 1) {
                     requestPermissionsTextView.setVisibility(View.GONE);
                     requestPermissionsButton.setVisibility(View.GONE);
@@ -180,7 +178,6 @@ public class VDTSMainActivity extends AppCompatActivity {
                 }
             } else {
                 LOG.info("Permissions granted");
-                Log.i("--", "Permissions granted");
                 initializeDatabase();
                 Intent vdtsLoginActivity = new Intent(this, VDTSLoginActivity.class);
                 startActivity(vdtsLoginActivity);

@@ -73,7 +73,7 @@ import ca.vdts.voiceselect.files.JSONEntities.TotalSession;
 import ca.vdts.voiceselect.files.JSONEntities.Users;
 import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
-import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtils;
+import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtil;
 import ca.vdts.voiceselect.library.utilities.VDTSLocalDateTimeSerializerUtil;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -826,21 +826,21 @@ public class Exporter {
                                 success.set(false);
                             }
                             try {
-                                VDTSImageFileUtils.drawToBitmap(
+                                VDTSImageFileUtil.drawToBitmap(
                                         destination.getPath(),
-                                        application.getPreferences().getBoolean(
+                                        application.getVDTSPrefKeyValue().getBoolean(
                                                 PREF_PHOTO_PRINT_NAME,
                                                 false
                                         ) ?
                                                 photoName :
                                                 "",
-                                        application.getPreferences().getBoolean(
+                                        application.getVDTSPrefKeyValue().getBoolean(
                                                 PREF_PHOTO_PRINT_TIME,
                                                 false
                                         ) ?
                                                 photoTime :
                                                 "",
-                                        application.getPreferences().getBoolean(
+                                        application.getVDTSPrefKeyValue().getBoolean(
                                                 PREF_PHOTO_PRINT_GPS,
                                                 false
                                         ) ?

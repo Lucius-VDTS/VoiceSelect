@@ -121,26 +121,26 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
     private void updateControls() {
         nameOnPhotoCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_NAME, false)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_PHOTO_PRINT_NAME, false)
         );
         gpsOnPhotoCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_GPS, false)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_PHOTO_PRINT_GPS, false)
         );
         timeOnPhotoCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_PHOTO_PRINT_TIME, false)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_PHOTO_PRINT_TIME, false)
         );
 
         csvCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV, false)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_CSV, false)
         );
         jsonCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_JSON, false)
         );
         excelCheck.setChecked(
-                vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, true)
+                vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_XLSX, true)
         );
 
-        switch (vdtsApplication.getPreferences().getInt(PREF_ENTRY_METHOD, -1)) {
+        switch (vdtsApplication.getVDTSPrefKeyValue().getInt(PREF_ENTRY_METHOD, -1)) {
             case METHOD_CHAINED:
             default:
                 ((RadioButton) findViewById(R.id.chainedRadio)).setChecked(true);
@@ -155,40 +155,40 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     private void setEntryMethod(int order) {
-        vdtsApplication.getPreferences().setInt(PREF_ENTRY_METHOD, order);
+        vdtsApplication.getVDTSPrefKeyValue().setInt(PREF_ENTRY_METHOD, order);
     }
 
     public void nameOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(
                 PREF_PHOTO_PRINT_NAME,
                 nameOnPhotoCheck.isChecked()
         );
     }
 
     public void gpsOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(
                 PREF_PHOTO_PRINT_GPS,
                 gpsOnPhotoCheck.isChecked()
         );
     }
 
     public void timeOnPictureClick() {
-        vdtsApplication.getPreferences().setBoolean(
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(
                 PREF_PHOTO_PRINT_TIME,
                 timeOnPhotoCheck.isChecked()
         );
     }
 
     public void csvClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_EXPORT_CSV, csvCheck.isChecked());
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(PREF_EXPORT_CSV, csvCheck.isChecked());
     }
 
     public void jsonClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_EXPORT_JSON, jsonCheck.isChecked());
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(PREF_EXPORT_JSON, jsonCheck.isChecked());
     }
 
     public void excelClick() {
-        vdtsApplication.getPreferences().setBoolean(PREF_EXPORT_XLSX, excelCheck.isChecked());
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(PREF_EXPORT_XLSX, excelCheck.isChecked());
     }
 
     public void onImportClick() {

@@ -127,8 +127,8 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.adapters.VDTSNamedPositionedAdapter;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSClickListenerUtil;
-import ca.vdts.voiceselect.library.utilities.VDTSCustomLifecycle;
-import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtils;
+import ca.vdts.voiceselect.library.utilities.VDTSCustomLifecycleUtil;
+import ca.vdts.voiceselect.library.utilities.VDTSImageFileUtil;
 import ca.vdts.voiceselect.library.utilities.VDTSMediaScannerUtil;
 
 /**
@@ -218,7 +218,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     //Device Camera Components
     private PreviewView previewView;
-    private VDTSCustomLifecycle cameraLifecycle;
+    private VDTSCustomLifecycleUtil cameraLifecycle;
     private Camera camera;
     private GestureDetector scrollDetector;
     private ScaleGestureDetector scaleDetector;
@@ -302,7 +302,7 @@ public class DataGatheringActivity extends AppCompatActivity
         previewView = findViewById(R.id.cameraPreview);
         previewView.setOnTouchListener(onTouchListener);
 
-        cameraLifecycle = new VDTSCustomLifecycle();
+        cameraLifecycle = new VDTSCustomLifecycleUtil();
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
                 .getInstance(this);
         cameraProviderFuture.addListener(
@@ -414,7 +414,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void initializeSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
-        long currentSessionID = vdtsApplication.getPreferences().getLong(currentSessionKey);
+        long currentSessionID = vdtsApplication.getVDTSPrefKeyValue().getLong(currentSessionKey);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -480,7 +480,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 columnText.setGravity(Gravity.CENTER);
                 columnText.setMaxLines(1);
                 columnText.setBackground(
-                        ContextCompat.getDrawable(this, R.drawable.text_background));
+                        ContextCompat.getDrawable(this, R.drawable.edit_text_background));
                 columnText.setText(currentUser.isAbbreviate() ?
                         Objects.requireNonNull(columnMap.get(index)).getNameCode() :
                         Objects.requireNonNull(columnMap.get(index)).getName());
@@ -1224,7 +1224,7 @@ public class DataGatheringActivity extends AppCompatActivity
             Handler endHandler = new Handler(Looper.getMainLooper());
             endExecutor.execute(() -> {
                 vsViewModel.updateSession(currentSession);
-                vdtsApplication.getPreferences().setLong(
+                vdtsApplication.getVDTSPrefKeyValue().setLong(
                         String.format("%s_SESSION", currentUser.getExportCode()),
                         -1L);
                 export(currentSession);
@@ -1242,13 +1242,13 @@ public class DataGatheringActivity extends AppCompatActivity
         boolean Excel = true;
         boolean JSON = true;
 
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV, false)) {
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_CSV, false)) {
             CSV = exporter.exportSessionCSV(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON, false)) {
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_JSON, false)) {
             JSON = exporter.exportSessionJSON(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX, true)) {
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_XLSX, true)) {
             Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {
@@ -1355,7 +1355,7 @@ public class DataGatheringActivity extends AppCompatActivity
                 }
             }
             final File imageFile = File.createTempFile(
-                    VDTSImageFileUtils.generateFileName("", false),
+                    VDTSImageFileUtil.generateFileName("", false),
                     ".jpg",
                     new File(photoDir.getPath())
             );
@@ -1379,7 +1379,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     .repeat(PULSE_REPEAT)
                                     .playOn(previewView);
 
-                            VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                            VDTSImageFileUtil.addGPS(imageFile.getPath(), currentLocation);
                             if (currentEntry == null) {
                                 newEntry();
                             }
@@ -2345,12 +2345,12 @@ public class DataGatheringActivity extends AppCompatActivity
             iriCameraCaptureInProgress = false;
             try {
                 final File imageFile = File.createTempFile(
-                        VDTSImageFileUtils.generateFileName("", false),
+                        VDTSImageFileUtil.generateFileName("", false),
                         ".jpg",
                         new File(photoDir.getPath())
                 );
 
-                VDTSImageFileUtils.addGPS(imageFile.getPath(), currentLocation);
+                VDTSImageFileUtil.addGPS(imageFile.getPath(), currentLocation);
 
                 OutputStream outputStream = Files.newOutputStream(imageFile.toPath());
 

@@ -29,7 +29,7 @@
                 android:id="@+id/layoutLabel"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.7"
+                android:layout_weight="0.8"
                 android:gravity="center_vertical"
                 android:paddingStart="@dimen/padding"
                 android:textSize="@dimen/xxxs_text_size"

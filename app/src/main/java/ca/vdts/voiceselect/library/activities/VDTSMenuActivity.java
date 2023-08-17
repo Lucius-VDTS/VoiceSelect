@@ -39,9 +39,9 @@ import java.util.concurrent.Executors;
 
 import ca.vdts.voiceselect.BuildConfig;
 import ca.vdts.voiceselect.R;
+import ca.vdts.voiceselect.activities.RecallActivity;
 import ca.vdts.voiceselect.activities.SettingsActivity;
 import ca.vdts.voiceselect.activities.dataGathering.DataGatheringActivity;
-import ca.vdts.voiceselect.activities.recall.RecallActivity;
 import ca.vdts.voiceselect.database.VSViewModel;
 import ca.vdts.voiceselect.database.entities.Column;
 import ca.vdts.voiceselect.database.entities.Layout;
@@ -174,7 +174,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
     private void initializeCurrentSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
-        long currentSessionID = vdtsApplication.getPreferences().getLong(
+        long currentSessionID = vdtsApplication.getVDTSPrefKeyValue().getLong(
                 currentSessionKey,
                 -1L);
 
@@ -188,7 +188,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
 
     private void initializeCurrentLayout() {
         final String layoutKey = currentUser.getExportCode().concat("_LAYOUT");
-        final long layoutID = vdtsApplication.getPreferences().getLong(
+        final long layoutID = vdtsApplication.getVDTSPrefKeyValue().getLong(
                  layoutKey,
                 -1L
         );
@@ -335,7 +335,7 @@ public class VDTSMenuActivity extends AppCompatActivity implements IRIListener {
                     currentSession.setUid(currentSessionID);
 
                     //Attach new session to current user
-                    vdtsApplication.getPreferences().setLong(
+                    vdtsApplication.getVDTSPrefKeyValue().setLong(
                             String.format("%s_SESSION", currentUser.getExportCode()),
                             currentSession.getUid());
                     LOG.info("Attached session to: {}", currentUser.getName());

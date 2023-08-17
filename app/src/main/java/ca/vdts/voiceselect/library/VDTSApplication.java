@@ -62,7 +62,7 @@ public class VDTSApplication extends Application {
     private VDTSDatabase vdtsDatabase;
 
     //VDTSPreferences
-    private VDTSPrefKeyValue preferences;
+    private VDTSPrefKeyValue vdtsPrefKeyValue;
     private VDTSPrefRepository vdtsPrefRepository;
 
     //VDTSUser
@@ -81,7 +81,7 @@ public class VDTSApplication extends Application {
     public static final int PULSE_DURATION = 100;
     public static final int PULSE_REPEAT = 1;
 
-    //Strings
+    //Export Strings
     public static final String EXPORT_FILE_USERS = "Users";
     public static final String EXPORT_FILE_SETUP = "Setup";
     public static final String EXPORT_FILE_LAYOUT = "Layout";
@@ -96,7 +96,6 @@ public class VDTSApplication extends Application {
     //Directory
     public static final String CONFIG_DIRECTORY = "Configuration"+ File.separator;
     public static final String SESSIONS_DIRECTORY = "Sessions"+ File.separator;
-
 
     @Override
     public void onCreate() {
@@ -119,7 +118,7 @@ public class VDTSApplication extends Application {
         return this.ttsEngine;
     }
 
-    //todo - can probably be simplified
+    //todo - can probably be simplified/improved to handle crashes gracefully
     public VDTSUser getCurrentUser() {
         if (currentVDTSUser != null) {
             return currentVDTSUser;
@@ -135,7 +134,7 @@ public class VDTSApplication extends Application {
                     .getInterfaceInstance(this)
                     .vdtsUserDao()
                     .findUserByID(
-                            this.getPreferences().getLong(
+                            this.getVDTSPrefKeyValue().getLong(
                                     "CURRENT_USER", VDTSUser.VDTS_USER_NONE.getUid()))));
             thread.start();
 
@@ -163,7 +162,7 @@ public class VDTSApplication extends Application {
             currentVDTSUser = VDTSUser.VDTS_USER_NONE;
         }
 
-        this.getPreferences().setLong("CURRENT_USER", currentVDTSUser.getUid());
+        this.getVDTSPrefKeyValue().setLong("CURRENT_USER", currentVDTSUser.getUid());
         LOG.debug("VDTSUser set");
     }
 
@@ -182,19 +181,18 @@ public class VDTSApplication extends Application {
         vdtsApplication.vdtsDatabase = VDTSDatabase;
     }
 
-    public VDTSPrefKeyValue getPreferences() {
-        if (vdtsPrefRepository == null || preferences == null) {
+    public VDTSPrefKeyValue getVDTSPrefKeyValue() {
+        if (vdtsPrefRepository == null || vdtsPrefKeyValue == null) {
             vdtsPrefRepository = VDTSPrefRepository.getInstance(getApplicationInstance(this));
-            preferences = new VDTSPrefKeyValue(vdtsPrefRepository);
+            vdtsPrefKeyValue = new VDTSPrefKeyValue(vdtsPrefRepository);
         }
 
-        return preferences;
+        return vdtsPrefKeyValue;
     }
 
     @WorkerThread
     public void displayToast(Context context, String message) {
-        ContextCompat.getMainExecutor(context).execute(() -> {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-        });
+        ContextCompat.getMainExecutor(context).execute(() ->
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show());
     }
 }

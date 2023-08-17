@@ -5,10 +5,10 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
 
-public class VDTSCustomLifecycle implements LifecycleOwner {
+public class VDTSCustomLifecycleUtil implements LifecycleOwner {
     private final LifecycleRegistry lifecycleRegistry;
 
-    public VDTSCustomLifecycle() {
+    public VDTSCustomLifecycleUtil() {
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.setCurrentState(Lifecycle.State.INITIALIZED);
     }

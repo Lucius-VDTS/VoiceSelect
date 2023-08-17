@@ -738,7 +738,7 @@ public class Importer {
                 }
                 if (options != null) {
                     options.getOptions().forEach(
-                            option -> application.getPreferences().setPref(
+                            option -> application.getVDTSPrefKeyValue().setPref(
                                     option.getKey(),
                                     option.getValue()
                             )

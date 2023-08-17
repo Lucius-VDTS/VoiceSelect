@@ -19,8 +19,6 @@
     <string name="login_activity_label">User Login</string>
 
     <string name="login_password_title">Enter PIN</string>
-
-    <!--  HUD  -->
     <string name="login_select_user_prompt">Say your user name or use your connected device to login.</string>
     <string name="login_user_label">User:</string>
     <string name="login_enter_pin_prompt">Say your PIN then \'enter\' to continue.</string>
@@ -33,7 +31,7 @@
     <string name="menu_resume_activity_button">RESUME</string>
     <string name="menu_recall_activity_button">RECALL</string>
     <string name="menu_configure_activity_button">CONFIGURE</string>
-    <string name="menu_settings_activity_button">SETTINGS</string>
+    <string name="menu_settings_activity_button">Settings</string>
     <string name="menu_change_user_activity_button">CHANGE USER</string>
     <string name="menu_about_activity_button">ABOUT IRISTICK</string>
 

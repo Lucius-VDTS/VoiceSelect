@@ -31,8 +31,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-public class VDTSImageFileUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(VDTSImageFileUtils.class);
+public class VDTSImageFileUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(VDTSImageFileUtil.class);
     private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(
             "yyyy-MM-dd HH-mm-ss"
     );
@@ -40,7 +40,7 @@ public class VDTSImageFileUtils {
             "yyyy-MM-dd HH-mm-ss.SSS"
     );
 
-    public VDTSImageFileUtils() {
+    public VDTSImageFileUtil() {
     }
 
     public static String generateFileName(String label, boolean precise) {

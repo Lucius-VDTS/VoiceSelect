@@ -108,7 +108,7 @@ public class VDTSConfigMenuActivity extends AppCompatActivity implements IRIList
 
     private void initializeCurrentSession() {
         String currentSessionKey = currentUser.getExportCode().concat("_SESSION");
-        long currentSessionID = vdtsApplication.getPreferences().getLong(
+        long currentSessionID = vdtsApplication.getVDTSPrefKeyValue().getLong(
                 currentSessionKey,
                 -1L);
 

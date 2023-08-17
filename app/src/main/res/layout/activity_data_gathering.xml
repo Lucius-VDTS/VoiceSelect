@@ -43,7 +43,7 @@
             android:paddingEnd="@dimen/half_padding"
             android:paddingTop="@dimen/padding"
             android:paddingBottom="@dimen/padding"
-            android:background="@drawable/text_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="@dimen/large_text_size"
             android:textStyle="bold"
             android:text="@string/data_gathering_index_label">
@@ -79,7 +79,7 @@
             android:paddingEnd="@dimen/half_padding"
             android:paddingTop="@dimen/padding"
             android:paddingBottom="@dimen/padding"
-            android:background="@drawable/text_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="@dimen/large_text_size"
             android:textStyle="bold"
             android:text="@string/data_gathering_comment_label">
@@ -97,7 +97,7 @@
             android:paddingEnd="@dimen/half_padding"
             android:paddingTop="@dimen/padding"
             android:paddingBottom="@dimen/padding"
-            android:background="@drawable/text_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="@dimen/large_text_size"
             android:textStyle="bold"
             android:text="@string/data_gathering_photo_label">
@@ -145,7 +145,7 @@
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/half_margin"
             android:padding="@dimen/padding"
-            android:background="@drawable/text_background"
+            android:background="@drawable/edit_text_background"
             android:textSize="@dimen/large_text_size">
         </TextView>
 

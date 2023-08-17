@@ -30,7 +30,8 @@
         android:roundIcon="@drawable/vdts_voiceselect_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.VoiceSelectGeneral"
-        tools:replace="android:theme,android:icon">
+        tools:replace="android:theme,android:icon"
+        tools:targetApi="s">
 
         <activity
             android:name=".library.activities.VDTSMainActivity"
@@ -52,7 +53,7 @@
         <activity android:name=".activities.dataGathering.DataGatheringActivity"
             android:label="@string/data_gathering_activity_label" />
 
-        <activity android:name=".activities.recall.RecallActivity"
+        <activity android:name=".activities.RecallActivity"
             android:label="@string/menu_recall" />
 
         <activity android:name=".library.activities.configure.VDTSConfigMenuActivity"

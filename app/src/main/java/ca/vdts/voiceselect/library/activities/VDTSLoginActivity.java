@@ -60,18 +60,20 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
 
     private EditText pinText;
 
-    //Recycler View
-    private VDTSViewModel vdtsViewModel;
-    private VDTSIndexedNamedAdapter<VDTSUser> userAdapter;
-    private RecyclerView userRecyclerView;
+    //Views
+    private TextView footerUserLabel;
     private TextView footerUserValue;
     private TextView footerVersionValue;
     private final List<VDTSUser> userList = new ArrayList<>();
 
+    private VDTSViewModel vdtsViewModel;
+    private RecyclerView userRecyclerView;
+    private VDTSIndexedNamedAdapter<VDTSUser> userAdapter;
+
     //Iristick Components
     private VDTSLoginActivity.IristickHUD iristickHUD;
 
-    //lock to prevent concurent list filling issues
+    //Lock prevents recycler view entry duplication
     private ReentrantLock adapterLock;
 
     @Override
@@ -104,8 +106,12 @@ public class VDTSLoginActivity extends AppCompatActivity implements IRIListener 
         userRecyclerView.setAdapter(userAdapter);
 
         VDTSUser currentUser = vdtsApplication.getCurrentUser();
-        footerUserValue = findViewById(R.id.footerUserValue);
-        footerUserValue.setText(currentUser.getName());
+        if (currentUser.getUid() != -9001) {
+            footerUserLabel = findViewById(R.id.footerUserLabel);
+            footerUserLabel.setVisibility(View.VISIBLE);
+            footerUserValue = findViewById(R.id.footerUserValue);
+            footerUserValue.setText(currentUser.getName());
+        }
 
         footerVersionValue = findViewById(R.id.footerVersionValue);
         footerVersionValue.setText(BuildConfig.VERSION_NAME);

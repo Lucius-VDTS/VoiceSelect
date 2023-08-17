@@ -136,7 +136,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         .playOn(columnNameEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin user can set a column name"
+                        "Only admin users can set column name"
                 );
                 columnNameEditText.clearFocus();
             }
@@ -151,7 +151,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                         .playOn(columnNameCodeEditText);
                 vdtsApplication.displayToast(
                         this,
-                        "Only an admin can set a column abbreviation"
+                        "Only admin users can set column abbreviation"
                 );
                 columnNameCodeEditText.clearFocus();
             }

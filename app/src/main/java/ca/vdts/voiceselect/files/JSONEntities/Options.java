@@ -39,62 +39,62 @@ public class Options {
         if (preferences.hasKey(PREF_REQUIRE_PHOTO)) {
             options.add(new Option(PREF_REQUIRE_PHOTO, preferences.getString(PREF_REQUIRE_PHOTO)));
         }*/
-        if (application.getPreferences().hasKey(PREF_PHOTO_PRINT_NAME)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_PHOTO_PRINT_NAME)) {
             options.add(
                     new Option(
                             PREF_PHOTO_PRINT_NAME,
-                            application.getPreferences().getString(PREF_PHOTO_PRINT_NAME)
+                            application.getVDTSPrefKeyValue().getString(PREF_PHOTO_PRINT_NAME)
                     )
             );
         }
-        if (application.getPreferences().hasKey(PREF_PHOTO_PRINT_GPS)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_PHOTO_PRINT_GPS)) {
             options.add(
                     new Option(
                             PREF_PHOTO_PRINT_GPS,
-                            application.getPreferences().getString(PREF_PHOTO_PRINT_GPS)
+                            application.getVDTSPrefKeyValue().getString(PREF_PHOTO_PRINT_GPS)
                     )
             );
         }
-        if (application.getPreferences().hasKey(PREF_PHOTO_PRINT_TIME)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_PHOTO_PRINT_TIME)) {
             options.add(
                     new Option(
                             PREF_PHOTO_PRINT_TIME,
-                            application.getPreferences().getString(PREF_PHOTO_PRINT_TIME)
+                            application.getVDTSPrefKeyValue().getString(PREF_PHOTO_PRINT_TIME)
                     )
             );
         }
         /*if (preferences.hasKey(PREF_ONE_DRIVE)) {
             options.add(new Option(PREF_ONE_DRIVE, preferences.getString(PREF_ONE_DRIVE)));
         }*/
-        if (application.getPreferences().hasKey(PREF_EXPORT_CSV)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_EXPORT_CSV)) {
             options.add(
                     new Option(
                             PREF_EXPORT_CSV,
-                            application.getPreferences().getString(PREF_EXPORT_CSV)
+                            application.getVDTSPrefKeyValue().getString(PREF_EXPORT_CSV)
                     )
             );
         }
-        if (application.getPreferences().hasKey(PREF_EXPORT_JSON)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_EXPORT_JSON)) {
             options.add(
                     new Option(
                             PREF_EXPORT_JSON,
-                            application.getPreferences().getString(PREF_EXPORT_JSON)
+                            application.getVDTSPrefKeyValue().getString(PREF_EXPORT_JSON)
                     )
             );
         }
-        if (application.getPreferences().hasKey(PREF_EXPORT_XLSX)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_EXPORT_XLSX)) {
             options.add(
                     new Option(
                             PREF_EXPORT_XLSX,
-                            application.getPreferences().getString(PREF_EXPORT_XLSX)
+                            application.getVDTSPrefKeyValue().getString(PREF_EXPORT_XLSX)
                     )
             );
         }
-        if (application.getPreferences().hasKey(PREF_ENTRY_METHOD)) {
+        if (application.getVDTSPrefKeyValue().hasKey(PREF_ENTRY_METHOD)) {
             options.add(
                     new Option(
                             PREF_ENTRY_METHOD,
-                            application.getPreferences().getString(PREF_ENTRY_METHOD)
+                            application.getVDTSPrefKeyValue().getString(PREF_ENTRY_METHOD)
                     )
             );
         }

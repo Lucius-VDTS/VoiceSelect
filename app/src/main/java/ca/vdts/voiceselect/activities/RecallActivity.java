@@ -1,4 +1,4 @@
-package ca.vdts.voiceselect.activities.recall;
+package ca.vdts.voiceselect.activities;
 
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_CSV;
 import static ca.vdts.voiceselect.library.VDTSApplication.PREF_EXPORT_JSON;
@@ -76,7 +76,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         searchView.setOnQueryTextListener(this);
 
 
-        openCheck.setChecked(vdtsApplication.getPreferences().getBoolean(PREF_FILTER,false));
+        openCheck.setChecked(vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_FILTER,false));
 
         headerRecyclerView = findViewById(R.id.sessionRecyclerView);
         headerRecyclerView.setHasFixedSize(true);
@@ -116,7 +116,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
 
 
     public void onOpenCheck() {
-        vdtsApplication.getPreferences().setBoolean(PREF_FILTER, openCheck.isChecked());
+        vdtsApplication.getVDTSPrefKeyValue().setBoolean(PREF_FILTER, openCheck.isChecked());
         recallSessionRecyclerAdapter.setFilterOpen(openCheck.isChecked());
     }
 
@@ -127,13 +127,13 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         boolean Excel = true;
         boolean JSON = true;
 
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_CSV,false)){
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_CSV,false)){
             CSV = exporter.exportSessionCSV(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_JSON,false)){
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_JSON,false)){
             JSON= exporter.exportSessionJSON(session);
         }
-        if (vdtsApplication.getPreferences().getBoolean(PREF_EXPORT_XLSX,true)){
+        if (vdtsApplication.getVDTSPrefKeyValue().getBoolean(PREF_EXPORT_XLSX,true)){
             Excel = exporter.exportSessionExcel(session);
         }
         if (CSV && Excel && JSON) {
@@ -206,7 +206,7 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
             });
 
         openButton.setOnClickListener(v -> {
-            vdtsApplication.getPreferences().setLong(
+            vdtsApplication.getVDTSPrefKeyValue().setLong(
                     String.format("%s_SESSION", currentUser.getExportCode()),
                     recallSessionRecyclerAdapter.getSelected().getUid());
             finalDialog.dismiss();
