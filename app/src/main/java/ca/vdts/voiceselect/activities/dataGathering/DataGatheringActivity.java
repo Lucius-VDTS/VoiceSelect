@@ -1407,7 +1407,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(@NonNull Location location) {
         if (isBetterLocation(location, currentLocation)) {
             currentLocation = location;
             LOG.debug("{}, {}", location.getLatitude(), location.getLongitude());
@@ -1422,12 +1422,12 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
+    public void onProviderEnabled(@NonNull String provider) {
         LOG.debug("onProviderEnabled: {}", provider);
     }
 
     @Override
-    public void onProviderDisabled(String provider) {
+    public void onProviderDisabled(@NonNull String provider) {
         LOG.debug("onProviderDisabled: {}", provider);
     }
 
@@ -2457,23 +2457,23 @@ public class DataGatheringActivity extends AppCompatActivity
         });
     }
 
-    private void iristickRecordVideo() {
-        if (iriCameraSession == null) {
-            return;
-        }
-
-        final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS),
-                "VoiceSelect/Video");
-
-        if (!photoDir.exists()) {
-            boolean mkdirResult = photoDir.mkdirs();
-            if (!mkdirResult) {
-                LOG.info("Failed to create video directory");
-                return;
-            }
-        }
-    }
+//    private void iristickRecordVideo() {
+//        if (iriCameraSession == null) {
+//            return;
+//        }
+//
+//        final File photoDir = new File(Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_DOCUMENTS),
+//                "VoiceSelect/Video");
+//
+//        if (!photoDir.exists()) {
+//            boolean mkdirResult = photoDir.mkdirs();
+//            if (!mkdirResult) {
+//                LOG.info("Failed to create video directory");
+//                return;
+//            }
+//        }
+//    }
 
     private void iristickUpdateHUDViews() {
         if (iristickHUD != null) {
