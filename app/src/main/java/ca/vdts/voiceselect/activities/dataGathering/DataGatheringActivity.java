@@ -1646,12 +1646,15 @@ public class DataGatheringActivity extends AppCompatActivity
                             } else {
                                 columnPositionFeedback = "End";
                             }
-                            currentUserTTSEngine.speak(
-                                    columnPositionFeedback,
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        columnPositionFeedback,
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
 
                             spokenPosition++;
                             isColumnNext = true;
@@ -1671,12 +1674,15 @@ public class DataGatheringActivity extends AppCompatActivity
                             } else {
                                 columnPositionFeedback = "";
                             }
-                            currentUserTTSEngine.speak(
-                                    columnPositionFeedback,
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        columnPositionFeedback,
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
 
                             spokenPosition--;
                             isColumnPrevious = true;
@@ -1692,35 +1698,43 @@ public class DataGatheringActivity extends AppCompatActivity
                         case "Repeat Last":
                             if (dataGatheringRecyclerAdapter.getItemCount() > 0) {
                                 LOG.info("Repeat Entry");
-                                currentUserTTSEngine.speak(
-                                        "Entry Repeated",
-                                        currentUserFeedbackMode,
-                                        null,
-                                        null
-                                );
-                                spokenPosition = 0;
-                                repeatEntryButtonOnClick();
+                                if (currentUser.getFeedback() == 1) {
+                                    currentUserTTSEngine.speak(
+                                            "Entry Repeated",
+                                            currentUserFeedbackMode,
+                                            null,
+                                            null
+                                    );
+                                    spokenPosition = 0;
+                                    repeatEntryButtonOnClick();
+                                }
                             }
                             break;
                         case "Reset Entry":
                             LOG.info("Reset Entry");
-                            currentUserTTSEngine.speak(
-                                    "Entry Reset",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Entry Reset",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             spokenPosition = 0;
                             resetEntryButtonOnClick();
                             break;
                         case "Save Entry":
                             LOG.info("Save Entry");
-                            currentUserTTSEngine.speak(
-                                    "Entry Saved",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Entry Saved",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             spokenPosition = 0;
                             saveEntryButtonOnClick();
                             break;
@@ -1731,12 +1745,15 @@ public class DataGatheringActivity extends AppCompatActivity
                             break;
                         case "End Session":
                             LOG.info("End Session");
-                            currentUserTTSEngine.speak(
-                                    "Session Finished",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Session Finished",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             spokenPosition = 0;
                             endSessionButtonOnClick();
                             break;
@@ -1758,11 +1775,13 @@ public class DataGatheringActivity extends AppCompatActivity
             deleteEntry = "Delete row " + selectedEntryIndex;
         }
 
-        currentUserTTSEngine.speak(
-                deleteEntry,
-                currentUserFeedbackMode,
-                null,
-                null);
+        if (currentUser.getFeedback() == 1) {
+            currentUserTTSEngine.speak(
+                    deleteEntry,
+                    currentUserFeedbackMode,
+                    null,
+                    null);
+        }
 
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
@@ -1775,11 +1794,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     } else {
                         rowDeleted = "Row " + selectedEntryIndex + " Deleted";
                     }
-                    currentUserTTSEngine.speak(
-                            rowDeleted,
-                            currentUserFeedbackMode,
-                            null,
-                            null);
+
+                    if (currentUser.getFeedback() == 1) {
+                        currentUserTTSEngine.speak(
+                                rowDeleted,
+                                currentUserFeedbackMode,
+                                null,
+                                null);
+                    }
 
                     deleteEntry(isDeleteLast);
                     isDeleteLast = false;
@@ -1791,12 +1813,15 @@ public class DataGatheringActivity extends AppCompatActivity
                 this,
                 vc -> vc.add("No", () -> {
                     LOG.info("No");
-                    currentUserTTSEngine.speak(
-                            "Delete Aborted",
-                            currentUserFeedbackMode,
-                            null,
-                            null
-                    );
+                    if (currentUser.getFeedback() == 1) {
+                        currentUserTTSEngine.speak(
+                                "Delete Aborted",
+                                currentUserFeedbackMode,
+                                null,
+                                null
+                        );
+                    }
+
                     isDeleteLast = false;
                 })
         );
@@ -1833,11 +1858,13 @@ public class DataGatheringActivity extends AppCompatActivity
                     columnValueFeedback = tokens[0] + " End";
                 }
 
-                currentUserTTSEngine.speak(
-                        columnValueFeedback,
-                        currentUserFeedbackMode,
-                        null,
-                        null);
+                if (currentUser.getFeedback() == 1) {
+                    currentUserTTSEngine.speak(
+                            columnValueFeedback,
+                            currentUserFeedbackMode,
+                            null,
+                            null);
+                }
             }
         }
     }
@@ -1857,12 +1884,14 @@ public class DataGatheringActivity extends AppCompatActivity
                 if (listenerCounter <= 0) {
                     selectedEntryIndex = Integer.parseInt(tokens[1]);
                     LOG.info("Select Row " + selectedEntryIndex);
-                    currentUserTTSEngine.speak(
-                            "Row " + selectedEntryIndex + " Selected",
-                            currentUserFeedbackMode,
-                            null,
-                            null
-                    );
+                    if (currentUser.getFeedback() == 1) {
+                        currentUserTTSEngine.speak(
+                                "Row " + selectedEntryIndex + " Selected",
+                                currentUserFeedbackMode,
+                                null,
+                                null
+                        );
+                    }
 
                     listenerCounter++;
                     entryAdapterSelect(selectedEntryIndex - 1);
@@ -1910,12 +1939,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Clear":
                         LOG.info("Clear Comment");
                         if (isVoiceComment) {
-                            currentUserTTSEngine.speak(
-                                    "Comment Cleared",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Comment Cleared",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
 
                             iristickHUD.commentValue.setText("");
                         }
@@ -1923,12 +1954,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Cancel":
                         LOG.info("Cancel");
                         if (isVoiceComment) {
-                            currentUserTTSEngine.speak(
-                                    "Comment Cancelled",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Comment Cancelled",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
 
                             iristickHUD.commentValue.setText("");
                             iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
@@ -1941,12 +1974,14 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Enter":
                         LOG.info("Enter Comment");
                         if (isVoiceComment) {
-                            currentUserTTSEngine.speak(
-                                    "Comment Saved",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Comment Saved",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
 
                             currentEntry.setComment(iristickHUD.commentValue.getText().toString());
 
@@ -2039,12 +2074,15 @@ public class DataGatheringActivity extends AppCompatActivity
                 switch (tokens[0]) {
                     case "Open":
                         LOG.info("Open Camera");
-                        currentUserTTSEngine.speak(
-                                "Camera",
-                                currentUserFeedbackMode,
-                                null,
-                                null
-                        );
+                        if (currentUser.getFeedback() == 1) {
+                            currentUserTTSEngine.speak(
+                                    "Camera",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+                        }
+
                         if (iriCameraSession != null) {
                             iristickCloseCamera();
                         }
@@ -2056,23 +2094,30 @@ public class DataGatheringActivity extends AppCompatActivity
                         if (iriCameraSession != null) {
                             iristickCloseCamera();
                         }
-                        currentUserTTSEngine.speak(
-                                "Camera Wide",
-                                currentUserFeedbackMode,
-                                null,
-                                null
-                        );
+
+                        if (currentUser.getFeedback() == 1) {
+                            currentUserTTSEngine.speak(
+                                    "Camera Wide",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+                        }
+
                         cameraType = -1;
                         iristickOpenCamera(headset);
                         break;
                     case "Zoom":
                         LOG.info("Zoom Camera");
-                        currentUserTTSEngine.speak(
-                                "Camera Zoom",
-                                currentUserFeedbackMode,
-                                null,
-                                null
-                        );
+                        if (currentUser.getFeedback() == 1) {
+                            currentUserTTSEngine.speak(
+                                    "Camera Zoom",
+                                    currentUserFeedbackMode,
+                                    null,
+                                    null
+                            );
+                        }
+
                         if (iriCameraSession != null) {
                             iristickCloseCamera();
                         }
@@ -2082,24 +2127,30 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Focus":
                         LOG.info("Focus Camera");
                         if (iriCameraSession != null) {
-                            currentUserTTSEngine.speak(
-                                    "Camera Focused",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Camera Focused",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             iriCameraSession.triggerAF();
                         }
                         break;
                     case "Show":
                         LOG.info("Show Camera");
                         if (iriCameraSession != null) {
-                            currentUserTTSEngine.speak(
-                                    "Camera Shown",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Camera Shown",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             iristickHUD.dataGatheringView.setVisibility(View.INVISIBLE);
                             iristickHUD.iriCameraView.setVisibility(View.VISIBLE);
                         }
@@ -2107,12 +2158,15 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Hide":
                         LOG.info("Hide Camera");
                         if (iriCameraSession != null) {
-                            currentUserTTSEngine.speak(
-                                    "Camera Hidden",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Camera Hidden",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             iristickHUD.iriCameraView.setVisibility(View.INVISIBLE);
                             iristickHUD.dataGatheringView.setVisibility(View.VISIBLE);
                         }
@@ -2120,12 +2174,15 @@ public class DataGatheringActivity extends AppCompatActivity
                     case "Close":
                         LOG.info("Close Camera");
                         if (iriCameraSession != null) {
-                            currentUserTTSEngine.speak(
-                                    "Camera Closed",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
+                            if (currentUser.getFeedback() == 1) {
+                                currentUserTTSEngine.speak(
+                                        "Camera Closed",
+                                        currentUserFeedbackMode,
+                                        null,
+                                        null
+                                );
+                            }
+
                             iristickCloseCamera();
                         }
                         break;
@@ -2133,84 +2190,102 @@ public class DataGatheringActivity extends AppCompatActivity
             })));
         });
 
-        //todo - doesn't change zoom - min/max available zoom is 1.0F - check device if zoom is available
-        IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
-            vg.addToken("Zoom");
-
-            vg.addAlternativeGroup(zoomLevel -> {
-                for (int index = 0; index <= 5; index++) {
-                    zoomLevel.addToken(String.valueOf(index));
-                }
-            });
-
-            vg.setListener((((recognizer, tokens, tags) -> {
-                if (iriCameraSession != null) {
-                    int zoomLevel = Integer.parseInt(tokens[1]);
-                    switch (zoomLevel) {
-                        case 0:
-                            LOG.info("Zoom 0");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 0",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.0f));
-                            break;
-                        case 1:
-                            LOG.info("Zoom 1");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 1",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.2f));
-                            break;
-                        case 2:
-                            LOG.info("Zoom 2");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 2",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.4f));
-                            break;
-                        case 3:
-                            LOG.info("Zoom 3");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 3",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.6f));
-                            break;
-                        case 4:
-                            LOG.info("Zoom 4");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 4",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.8f));
-                            break;
-                        case 5:
-                            LOG.info("Zoom 5");
-                            currentUserTTSEngine.speak(
-                                    "Zoom Level 5",
-                                    currentUserFeedbackMode,
-                                    null,
-                                    null
-                            );
-                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(2.0f));
-                            break;
-                    }
-                }
-            })));
-        });
+        //todo - doesn't change zoom - min/max available zoom is 1.0F due to use of full resolution image from both cameras
+//        IristickSDK.addVoiceGrammar(getLifecycle(), getApplicationContext(), vg -> {
+//            vg.addToken("Zoom");
+//
+//            vg.addAlternativeGroup(zoomLevel -> {
+//                for (int index = 0; index <= 5; index++) {
+//                    zoomLevel.addToken(String.valueOf(index));
+//                }
+//            });
+//
+//            vg.setListener((((recognizer, tokens, tags) -> {
+//                if (iriCameraSession != null) {
+//                    int zoomLevel = Integer.parseInt(tokens[1]);
+//                    switch (zoomLevel) {
+//                        case 0:
+//                            LOG.info("Zoom 0");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 0",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.0f));
+//                            break;
+//                        case 1:
+//                            LOG.info("Zoom 1");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 1",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.2f));
+//                            break;
+//                        case 2:
+//                            LOG.info("Zoom 2");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 2",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.4f));
+//                            break;
+//                        case 3:
+//                            LOG.info("Zoom 3");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 3",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.6f));
+//                            break;
+//                        case 4:
+//                            LOG.info("Zoom 4");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 4",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(1.8f));
+//                            break;
+//                        case 5:
+//                            LOG.info("Zoom 5");
+//                            if (currentUser.getFeedback() == 1) {
+//                                currentUserTTSEngine.speak(
+//                                        "Zoom Level 5",
+//                                        currentUserFeedbackMode,
+//                                        null,
+//                                        null
+//                                );
+//                            }
+//
+//                            iriCameraSession.reconfigure(zoom -> zoom.setZoom(2.0f));
+//                            break;
+//                    }
+//                }
+//            })));
+//        });
 
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
