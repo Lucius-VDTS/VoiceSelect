@@ -1634,60 +1634,66 @@ public class DataGatheringActivity extends AppCompatActivity
                 if (!isDeleteLast && iriCameraSession == null) {
                     switch (tokens[0]) {
                         case "Next Column":
-                            LOG.info("Next Column");
-                            if (isEntrySelected) {
-                                spokenPosition = vdtsNamedPositionedAdapter
-                                        .getSelectedSpinnerPosition() + 1;
+                            if (spokenPosition <= vdtsNamedPositionedAdapter.getSelectedSpinnerPosition()) {
+                                LOG.info("Next Column");
+                                if (isEntrySelected) {
+                                    spokenPosition = vdtsNamedPositionedAdapter
+                                            .getSelectedSpinnerPosition() + 1;
+                                }
+
+                                if (spokenPosition + 1 < columnMap.size()) {
+                                    columnPositionFeedback = Objects.requireNonNull(
+                                            columnMap.get(spokenPosition + 1)).getName();
+                                } else {
+                                    columnPositionFeedback = "End";
+                                }
+
+                                if (currentUser.getFeedback() == 1) {
+                                    currentUserTTSEngine.speak(
+                                            columnPositionFeedback,
+                                            currentUserFeedbackMode,
+                                            null,
+                                            null
+                                    );
+                                }
+
+                                spokenPosition++;
+                                isColumnNext = true;
+                                isEntrySelected = false;
+                                iristickUpdateHUDViews();
                             }
 
-                            if (spokenPosition + 1 < columnMap.size()) {
-                                columnPositionFeedback = Objects.requireNonNull(
-                                        columnMap.get(spokenPosition + 1)).getName();
-                            } else {
-                                columnPositionFeedback = "End";
-                            }
-
-                            if (currentUser.getFeedback() == 1) {
-                                currentUserTTSEngine.speak(
-                                        columnPositionFeedback,
-                                        currentUserFeedbackMode,
-                                        null,
-                                        null
-                                );
-                            }
-
-                            spokenPosition++;
-                            isColumnNext = true;
-                            isEntrySelected = false;
-                            iristickUpdateHUDViews();
                             break;
                         case "Previous Column":
-                            LOG.info("Previous Column");
-                            if (isEntrySelected) {
-                                spokenPosition = vdtsNamedPositionedAdapter
-                                        .getSelectedSpinnerPosition() + 1;
+                            if (spokenPosition > 0) {
+                                LOG.info("Previous Column");
+                                if (isEntrySelected) {
+                                    spokenPosition = vdtsNamedPositionedAdapter
+                                            .getSelectedSpinnerPosition() + 1;
+                                }
+
+                                if (spokenPosition - 1 < columnMap.size()) {
+                                    columnPositionFeedback = Objects.requireNonNull(
+                                            columnMap.get(spokenPosition - 1)).getName();
+                                } else {
+                                    columnPositionFeedback = "";
+                                }
+
+                                if (currentUser.getFeedback() == 1) {
+                                    currentUserTTSEngine.speak(
+                                            columnPositionFeedback,
+                                            currentUserFeedbackMode,
+                                            null,
+                                            null
+                                    );
+                                }
+
+                                spokenPosition--;
+                                isColumnPrevious = true;
+                                isEntrySelected = false;
+                                iristickUpdateHUDViews();
                             }
 
-                            if (spokenPosition - 1 < columnMap.size()) {
-                                columnPositionFeedback = Objects.requireNonNull(
-                                        columnMap.get(spokenPosition - 1)).getName();
-                            } else {
-                                columnPositionFeedback = "";
-                            }
-
-                            if (currentUser.getFeedback() == 1) {
-                                currentUserTTSEngine.speak(
-                                        columnPositionFeedback,
-                                        currentUserFeedbackMode,
-                                        null,
-                                        null
-                                );
-                            }
-
-                            spokenPosition--;
-                            isColumnPrevious = true;
-                            isEntrySelected = false;
-                            iristickUpdateHUDViews();
                             break;
                         case "Delete Last":
                             LOG.info("Delete Last");
