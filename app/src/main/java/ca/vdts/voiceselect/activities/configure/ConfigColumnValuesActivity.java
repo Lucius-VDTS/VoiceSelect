@@ -6,7 +6,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 import static ca.vdts.voiceselect.library.utilities.VDTSBNFUtil.toPhonetic;
-import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboard;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -413,10 +413,10 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     private void resetFocus(){
         if (currentUser.getAuthority() < 1){
             columnValueSpokenEditText.requestFocus();
-            showKeyboardForSomeReason(columnValueSpokenEditText,this);
+            showKeyboard(columnValueSpokenEditText,this);
         } else {
             columnValueNameEditText.requestFocus();
-            showKeyboardForSomeReason(columnValueNameEditText,this);
+            showKeyboard(columnValueNameEditText,this);
         }
     }
 

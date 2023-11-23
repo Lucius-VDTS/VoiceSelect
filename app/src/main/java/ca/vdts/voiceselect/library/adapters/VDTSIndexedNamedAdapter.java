@@ -94,7 +94,7 @@ public class VDTSIndexedNamedAdapter<Entity extends VDTSIndexedNamedInterface>
             holder.linearLayout.setBackgroundResource(R.drawable.recycler_view_middle_item);
         }
 
-        Drawable backgroundResource = holder.linearLayout.getBackground();;
+        Drawable backgroundResource = holder.linearLayout.getBackground();
         int backgroundColor;
         if (position == selectedIndex) {
             backgroundColor = ContextCompat.getColor(context, R.color.colorBackgroundSelected);

@@ -114,7 +114,6 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         return false;
     }
 
-
     public void onOpenCheck() {
         vdtsApplication.getVDTSPrefKeyValue().setBoolean(PREF_FILTER, openCheck.isChecked());
         recallSessionRecyclerAdapter.setFilterOpen(openCheck.isChecked());

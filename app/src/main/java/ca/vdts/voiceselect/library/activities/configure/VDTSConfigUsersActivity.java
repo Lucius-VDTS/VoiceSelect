@@ -4,7 +4,7 @@ import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
 import static ca.vdts.voiceselect.library.database.entities.VDTSUser.VDTS_USER_NONE;
-import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboard;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -312,7 +312,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
         if (currentUser.getAuthority() > 0) {
             userAdapterSelect(-1);
             userNameEditText.requestFocus();
-            showKeyboardForSomeReason(userNameEditText,this);
+            showKeyboard(userNameEditText,this);
         } else {
             YoYo.with(Techniques.Shake)
                     .duration(SHAKE_DURATION)
@@ -571,7 +571,7 @@ public class VDTSConfigUsersActivity extends AppCompatActivity implements IRILis
                     this,
                     "Only an admin user can export users"
             );
-        }else {
+        } else {
             final Exporter exporter = new Exporter(
                     vsViewModel,
                     vdtsApplication,

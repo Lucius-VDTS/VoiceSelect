@@ -3,7 +3,7 @@ package ca.vdts.voiceselect.activities.configure;
 import static ca.vdts.voiceselect.library.VDTSApplication.SELECT_FOLDER;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_DURATION;
 import static ca.vdts.voiceselect.library.VDTSApplication.SHAKE_REPEAT;
-import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboardForSomeReason;
+import static ca.vdts.voiceselect.library.utilities.VDTSToolUtil.showKeyboard;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -354,10 +354,10 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     private void resetFocus(){
         if (currentUser.getAuthority() < 1){
             columnSpokenEditText.requestFocus();
-            showKeyboardForSomeReason(columnSpokenEditText,this);
+            showKeyboard(columnSpokenEditText,this);
         } else {
             columnNameEditText.requestFocus();
-            showKeyboardForSomeReason(columnNameEditText,this);
+            showKeyboard(columnNameEditText,this);
         }
     }
 
@@ -471,7 +471,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnDeleteButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can delete columns"
+                    "Only admin users can delete columns"
             );
         }
     }
@@ -484,7 +484,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnImportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can import columns"
+                    "Only admin users can import columns"
             );
         }else {
             showImportDialog();
@@ -526,7 +526,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
                     .playOn(columnExportButton);
             vdtsApplication.displayToast(
                     this,
-                    "Only an admin user can export columns"
+                    "Only admin users can export columns"
             );
         } else {
             LOG.debug("Starting export");

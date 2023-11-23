@@ -23,9 +23,10 @@ public class VDTSToolUtil {
         return value != null && PATTERN.matcher(value).matches();
     }
 
-    public static void showKeyboardForSomeReason(View view, Activity activity){
-        if(view.requestFocus()){
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+    public static void showKeyboard(View view, Activity activity){
+        if (view.requestFocus()) {
+            InputMethodManager imm =
+                    (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(view,InputMethodManager.SHOW_IMPLICIT);
         }
     }

@@ -73,11 +73,11 @@ public class VDTSApplication extends Application {
     private VDTSFeedbackUtil vdtsFeedbackUtil;
     private TextToSpeech ttsEngine;
 
-    //Shake settings
+    //Shake Settings
     public static final int SHAKE_DURATION = 200;
     public static final int SHAKE_REPEAT = 2;
 
-    //Pulse settings
+    //Pulse Settings
     public static final int PULSE_DURATION = 100;
     public static final int PULSE_REPEAT = 1;
 

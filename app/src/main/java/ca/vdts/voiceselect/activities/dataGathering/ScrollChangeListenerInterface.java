@@ -1,7 +1,7 @@
 package ca.vdts.voiceselect.activities.dataGathering;
 
 /**
- * Interface primarily used to setScrollChangeListener on ObservableHorizontalScrollView
+ * Interface used to setScrollChangeListener on ObservableHorizontalScrollView
  */
 public interface ScrollChangeListenerInterface {
     void onScrollChanged(ObservableHorizontalScrollView observableHorizontalScrollView,
