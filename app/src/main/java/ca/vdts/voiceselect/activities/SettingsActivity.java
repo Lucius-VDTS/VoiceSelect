@@ -282,7 +282,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
 
                 try {
                     File file = FileUtil.from(this,originalUri );
-                    LOG.debug("file", "File...:::: uti - "+file .getPath()+" file -" + file + " : " + file .exists());
+                    LOG.debug("file", "File...:::: uti - " + file.getPath() + " file -" + file + " : " + file.exists());
 
                     if (file.exists()) {
                         final VSViewModel viewModel = new ViewModelProvider(this).get(
@@ -295,7 +295,6 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
                         );
                         if (importer.importOptions(file)) {
                             updateControls();
-
                             vdtsApplication.displayToast(
                                     this,
                                     "Settings imported successfully"
@@ -330,7 +329,7 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
     }
 
     /**
-     * Initialize Iristick voice commands when connected.
+     * Initialize Iristick HUD and voice commands when connected.
      */
     private void initializeIristick() {
         IristickSDK.addWindow(this.getLifecycle(), () -> {
@@ -341,19 +340,19 @@ public class SettingsActivity extends AppCompatActivity implements IRIListener {
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
-                vc -> vc.add("Combined",()->setEntryMethod(METHOD_CHAINED))
+                vc -> vc.add("Combined", () -> setEntryMethod(METHOD_CHAINED))
         );
 
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
-                vc -> vc.add("Step By Step",()->setEntryMethod(METHOD_STEP))
+                vc -> vc.add("Step By Step", () -> setEntryMethod(METHOD_STEP))
         );
 
         IristickSDK.addVoiceCommands(
                 this.getLifecycle(),
                 this,
-                vc -> vc.add("Free Form",()->setEntryMethod(METHOD_FREE))
+                vc -> vc.add("Free Form", () -> setEntryMethod(METHOD_FREE))
         );
 
         IristickSDK.addVoiceCommands(

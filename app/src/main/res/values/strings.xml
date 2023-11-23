@@ -12,7 +12,7 @@
 
     <string name="main_settings_permissions_label">In order to continue select the \'Settings\'
         button below, then \'Permissions\'.
-        \n\nGrant all permissions under \'Not allowed\', and relaunch the application.</string>
+        \n\n Grant all permissions under \'Not allowed\', and relaunch the application.</string>
     <string name="main_settings_permissions_button">SETTINGS</string>
 
 <!--  VDTS Login Activity  -->
@@ -31,7 +31,7 @@
     <string name="menu_resume_activity_button">RESUME</string>
     <string name="menu_recall_activity_button">RECALL</string>
     <string name="menu_configure_activity_button">CONFIGURE</string>
-    <string name="menu_settings_activity_button">Settings</string>
+    <string name="menu_settings_activity_button">SETTINGS</string>
     <string name="menu_change_user_activity_button">CHANGE USER</string>
     <string name="menu_about_activity_button">ABOUT IRISTICK</string>
 
@@ -75,14 +75,19 @@
     <string name="comment_dialogue_ent_label">ENTER</string>
 
 <!-- Recall Activity -->
-    <string name="menu_recall">Recall</string>
-    <string name="incomplete_only">Unfinished</string>
-    <string name="search_label">Search:</string>
-    <string name="status">Status:</string>
-    <string name="status_open">Available</string>
-    <string name="status_closed">Finished</string>
-    <string name="dialogue_delete_button">DELETE</string>
-    <string name="dialogue_open_button">OPEN</string>
+    <string name="recall_activity_label">Recall</string>
+
+    <string name="recall_unfinished_switch">Unfinished</string>
+    <string name="recall_search_box_hint">Search:</string>
+    <string name="recall_status_label">Status:</string>
+    <string name="recall_status_available">Available</string>
+    <string name="recall_status_finished">Finished</string>
+    <string name="recall_dialogue_open_button">OPEN</string>
+    <string name="recall_dialogue_export_button">EXPORT</string>
+    <string name="recall_dialogue_delete_button">DELETE</string>
+
+    <!--  HUD  -->
+    <string name="recall_hud_text">Use your connected device to recall a session.</string>
 
 <!--  Configure Menu Activity  -->
     <string name="config_activity_label">Configure</string>

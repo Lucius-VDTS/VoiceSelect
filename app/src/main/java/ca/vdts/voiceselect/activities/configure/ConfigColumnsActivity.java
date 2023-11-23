@@ -99,7 +99,7 @@ public class ConfigColumnsActivity extends AppCompatActivity implements IRIListe
     //Iristick Components
     private ConfigColumnsActivity.IristickHUD iristickHUD;
 
-    //lock to prevent concurent list filling issues
+    //Prevent asynchronous filling issue
     private ReentrantLock adapterLock;
 
     @Override

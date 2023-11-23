@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/four_x_margin"
         android:layout_marginEnd="@dimen/four_x_margin"
         android:gravity="center"
-        android:text="@string/config_hud_text"
+        android:text="@string/recall_hud_text"
         android:textColor="#ffffff"
         android:textSize="@dimen/medium_text_size"
         android:textStyle="bold"

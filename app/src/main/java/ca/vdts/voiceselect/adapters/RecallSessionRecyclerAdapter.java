@@ -67,9 +67,9 @@ public class RecallSessionRecyclerAdapter extends RecyclerView.Adapter<RecallSes
         holder.idView.setText(String.valueOf(position+1));
         holder.sessionView.setText(session.name());
         if (session.getEndDate() ==null ) {
-            holder.statusView.setText(R.string.status_open);
+            holder.statusView.setText(R.string.recall_status_available);
         } else {
-            holder.statusView.setText(R.string.status_closed);
+            holder.statusView.setText(R.string.recall_status_finished);
         }
 
         if (size == 1) {

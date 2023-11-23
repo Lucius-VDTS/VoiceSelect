@@ -14,11 +14,17 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.iristick.sdk.IRIHeadset;
+import com.iristick.sdk.IRIListener;
+import com.iristick.sdk.IristickSDK;
+import com.iristick.sdk.display.IRIWindow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +44,9 @@ import ca.vdts.voiceselect.library.VDTSApplication;
 import ca.vdts.voiceselect.library.database.entities.VDTSUser;
 import ca.vdts.voiceselect.library.utilities.VDTSOuterClickListenerUtil;
 
-public class RecallActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class RecallActivity extends AppCompatActivity implements
+        SearchView.OnQueryTextListener,
+        IRIListener {
     private static final Logger LOG = LoggerFactory.getLogger(RecallActivity.class);
     private VDTSApplication vdtsApplication;
 
@@ -53,14 +61,19 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
     private SwitchCompat openCheck;
     private SearchView searchView;
 
-    //lock to prevent concurent list filling issues
+    //Prevent asynchronous filling issue
     private ReentrantLock adapterLock;
+
+    //Iristick Components
+    private RecallActivity.IristickHUD iristickHUD;
 
     @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recall);
+
+        IristickSDK.registerListener(this.getLifecycle(), this);
 
         vdtsApplication = (VDTSApplication) this.getApplication();
 
@@ -259,5 +272,30 @@ public class RecallActivity extends AppCompatActivity implements SearchView.OnQu
         });
 
         noButton.setOnClickListener(v -> finalDialog.dismiss());
+    }
+
+    @Override
+    public void onHeadsetAvailable(@NonNull IRIHeadset headset) {
+        IRIListener.super.onHeadsetAvailable(headset);
+        initializeIristick();
+    }
+
+    /**
+     * Initialize Iristick HUD and voice commands when connected.
+     */
+    private void initializeIristick() {
+        IristickSDK.addWindow(this.getLifecycle(), () -> {
+            iristickHUD = new RecallActivity.IristickHUD();
+            return iristickHUD;
+        });
+    }
+
+////HUD_SUBCLASS////////////////////////////////////////////////////////////////////////////////////
+    public static class IristickHUD extends IRIWindow {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_recall_hud);
+        }
     }
 }

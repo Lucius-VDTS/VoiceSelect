@@ -64,7 +64,7 @@
         android:layout_marginStart="73dp"
         android:layout_marginEnd="@dimen/margin"
         android:textSize="@dimen/medium_text_size"
-        android:text="@string/status"
+        android:text="@string/recall_status_label"
         android:layout_weight="0.2"/>
 
     <TextView

@@ -14,7 +14,7 @@
         android:minHeight="0dp"
         android:layout_margin="@dimen/three_x_margin"
         android:padding="@dimen/padding"
-        android:text="@string/dialogue_open_button"
+        android:text="@string/recall_dialogue_open_button"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -40,7 +40,7 @@
         android:minHeight="0dp"
         android:layout_margin="@dimen/three_x_margin"
         android:padding="@dimen/padding"
-        android:text="@string/dialogue_delete_button"
+        android:text="@string/recall_dialogue_delete_button"
         app:layout_constraintTop_toBottomOf="@id/exportButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

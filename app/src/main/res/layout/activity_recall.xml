@@ -25,7 +25,7 @@
             android:layout_marginEnd="@dimen/double_margin"
             android:paddingStart="@dimen/padding"
             android:paddingEnd="@dimen/padding"
-            android:text="@string/incomplete_only"
+            android:text="@string/recall_unfinished_switch"
             android:textSize="@dimen/medium_text_size"/>
 
         <SearchView
