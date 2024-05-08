@@ -174,7 +174,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private final List<PictureReference> pictureReferenceList = new ArrayList<>();
     private LiveData<List<PictureReference>> pictureReferencesListLive;
-    private final List<PictureReference> currentEntryPhotos = new ArrayList<>();
+    private final List<PictureReference> currentEntryPhotoList = new ArrayList<>();
 
     //Views
     private LinearLayout columnLinearLayout;
@@ -718,8 +718,8 @@ public class DataGatheringActivity extends AppCompatActivity
         if (index != null) {
             dataGatheringRecyclerAdapter.setSelected(index);
             currentEntry = dataGatheringRecyclerAdapter.getEntry(index);
-            currentEntryPhotos.clear();
-            currentEntryPhotos.addAll(dataGatheringRecyclerAdapter.getPictureReferences(index));
+            currentEntryPhotoList.clear();
+            currentEntryPhotoList.addAll(dataGatheringRecyclerAdapter.getPictureReferences(index));
             selectedColumnValue = null;
             isEntrySelected = true;
             isColumnNext = false;
@@ -845,9 +845,9 @@ public class DataGatheringActivity extends AppCompatActivity
         ExecutorService deletePicturesService = Executors.newSingleThreadExecutor();
         Handler deletePicturesHandler = new Handler(Looper.getMainLooper());
         deletePicturesService.execute(() -> {
-            currentEntryPhotos.forEach(this::deletePicture);
-            final PictureReference[] pictureReferences = new PictureReference[currentEntryPhotos.size()];
-            currentEntryPhotos.toArray(pictureReferences);
+            currentEntryPhotoList.forEach(this::deletePicture);
+            final PictureReference[] pictureReferences = new PictureReference[currentEntryPhotoList.size()];
+            currentEntryPhotoList.toArray(pictureReferences);
             vsViewModel.deleteAllPictureReferences(pictureReferences);
             deletePicturesHandler.post(() -> {
                 final long deleteEntryID;
@@ -932,7 +932,7 @@ public class DataGatheringActivity extends AppCompatActivity
     }
 
     private void resetEntryButtonOnClick() {
-        List<PictureReference> deletePictureReference = currentEntryPhotos.stream()
+        List<PictureReference> deletePictureReference = currentEntryPhotoList.stream()
                 .filter(pictureReference -> pictureReference.getUid() == 0)
                 .collect(Collectors.toList());
         deletePictureReference.forEach(this::deletePicture);
@@ -1006,7 +1006,7 @@ public class DataGatheringActivity extends AppCompatActivity
 
     private void saveEntryButtonOnClick() {
         if (currentEntry == null) newEntry();
-        boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotos.isEmpty();
+        boolean pictureIssue = currentSession.isPictureRequired() && currentEntryPhotoList.isEmpty();
         boolean commentIssue = currentSession.isCommentRequired() &&
                 (currentEntry.getComment() == null || currentEntry.getComment().isEmpty());
         if (commentIssue && pictureIssue) {
@@ -1076,7 +1076,7 @@ public class DataGatheringActivity extends AppCompatActivity
         final List<PictureReference> insertPictureReferenceList = new ArrayList<>();
         final List<PictureReference> updatePictureReferenceList = new ArrayList<>();
 
-        currentEntryPhotos.forEach(pictureReference -> {
+        currentEntryPhotoList.forEach(pictureReference -> {
             pictureReference.setEntryID(entryID);
             if (pictureReference.getUid() > 0) {
                 updatePictureReferenceList.add(pictureReference);
@@ -1276,7 +1276,7 @@ public class DataGatheringActivity extends AppCompatActivity
         columnScrollView.setScrollX(0);
         currentEntry = new Entry(currentUser.getUid(), currentSession.getUid());
         selectedColumnValue = null;
-        currentEntryPhotos.clear();
+        currentEntryPhotoList.clear();
     }
 
     private void showCommentDialogue() {
@@ -1390,7 +1390,7 @@ public class DataGatheringActivity extends AppCompatActivity
                                     imageFile.getPath(),
                                     currentLocation
                             );
-                            currentEntryPhotos.add(pictureReference);
+                            currentEntryPhotoList.add(pictureReference);
                         }
 
                         @Override
@@ -2449,10 +2449,10 @@ public class DataGatheringActivity extends AppCompatActivity
                             currentLocation
                     );
 
-                    currentEntryPhotos.add(pictureReference);
+                    currentEntryPhotoList.add(pictureReference);
                 }
 
-                iristickHUD.entryPicValue.setText(String.valueOf(currentEntryPhotos.size()));
+                iristickHUD.entryPicValue.setText(String.valueOf(currentEntryPhotoList.size()));
 
                 new VDTSMediaScannerUtil(this, imageFile);
 

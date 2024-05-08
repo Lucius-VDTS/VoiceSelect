@@ -94,8 +94,8 @@ public class VDTSApplication extends Application {
     public static final String FILE_EXTENSION_MP4 = ".mp4";
 
     //Directory
-    public static final String CONFIG_DIRECTORY = "Configuration"+ File.separator;
-    public static final String SESSIONS_DIRECTORY = "Sessions"+ File.separator;
+    public static final String CONFIG_DIRECTORY = "Configuration" + File.separator;
+    public static final String SESSIONS_DIRECTORY = "Sessions" + File.separator;
 
     @Override
     public void onCreate() {

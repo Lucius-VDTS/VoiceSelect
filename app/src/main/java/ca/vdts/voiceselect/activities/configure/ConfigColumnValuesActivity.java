@@ -113,7 +113,7 @@ public class ConfigColumnValuesActivity extends AppCompatActivity implements IRI
     //Iristick Components
     private ConfigColumnValuesActivity.IristickHUD iristickHUD;
 
-    //Prevent asynchronous filling issue
+    //Prevent asynchronous list filling issue
     private ReentrantLock adapterLock;
 
     @Override

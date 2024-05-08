@@ -61,7 +61,7 @@ public class RecallActivity extends AppCompatActivity implements
     private SwitchCompat openCheck;
     private SearchView searchView;
 
-    //Prevent asynchronous filling issue
+    //Prevent asynchronous list filling issue
     private ReentrantLock adapterLock;
 
     //Iristick Components

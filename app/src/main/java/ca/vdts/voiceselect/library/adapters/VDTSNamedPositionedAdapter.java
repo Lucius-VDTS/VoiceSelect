@@ -67,7 +67,9 @@ public class VDTSNamedPositionedAdapter<Entity> extends ArrayAdapter<Entity> {
         return getView(position, convertView, parent);
     }
 
-    public int getSelectedSpinnerPosition() { return spinnerPosition; }
+    public int getSelectedSpinnerPosition() {
+        return spinnerPosition;
+    }
 
     /**
      * Receives an entity and an integer and produces a string
